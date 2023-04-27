@@ -1,0 +1,80 @@
+---
+title: "Cohere tutorial: How to use Cohere for content moderation"
+description: "In this tutorial we will show you how to use Cohere to moderate content in your app"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/how-to-use-cohere-for-content-moderation.jpg"
+authorUsername: "ezzcodeezzlife"
+---
+
+Content like posts and comments from users are awesome, but sometimes it can be toxic, racist and hateful. We definitely don't want that in our app. 
+To solve this problem we can use the AI based tool Cohere. Cohere is a state-of-the-art language model API that can help us to moderate content in our app. Basically we can send a text from a user to Cohere and we will get back a classification of this text. The classification can be benign or toxic, hateful, racist, etc.
+In this tutorial we will show you how to use Cohere to moderate content in your app, so you can remove toxic content from your app before it gets published!
+
+# Let's get started
+
+First we will head over to Cohere and create an account. After we have created an account we will get an API key. We will need this API key later in our app.
+You can do this here: https://cohere.ai/
+
+Next, we can check out the Cohere Playground. It's great for testing your ideas and getting started with a project. You have a clean UI and can export your code in multiple languages. For this tutorial we will add a couple of examples in the Cohere Classify Playground like this:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere-tut.JPG" />
+
+You can see that each example has a text and a label. The label can be toxic or benign. With these examples the model can better determine if a new text is toxic or not.
+
+Now you can already test the classification below the examples field with some input texts. You can see that the model is already pretty good at classifying the text.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere-tut2.JPG" />
+
+That's already pretty cool! But how do we get this working in our app? We can simply press the "Export code" button and choose the language we want to use. You can choose from Python, Nodejs, Go and additionally Curl and the Cohere CLI. For now we will use Pyhton.
+
+After export the code looks like this:
+
+```python 
+import cohere 
+from cohere.classify import Example 
+co = cohere.Client('{apiKey}') 
+response = co.classify( 
+  model='large', 
+  inputs=["My grandma has birthday today", "I want to kill santa claus"], 
+  examples=
+    [
+      Example("yo how are you", "benign"), 
+      Example("PUDGE MID!", "benign"), 
+      Example("I would buy this again", "benign"), 
+      Example("I think I saw it first", "benign"), 
+      Example("bring me a potion", "benign"), 
+      Example("The order is 5 days late", "benign"), 
+      Example("I will honestly kill you", "toxic"), 
+      Example("get rekt moron", "toxic"), 
+      Example("go to hell", "toxic"), 
+      Example("you are hot trash", "toxic")
+    ]
+) 
+print('The confidence levels of the labels are: {}'.format(response.classifications)) 
+```
+
+Make sure you have the Cohere client package installed. If not you can do this with the help 
+of pythons package manager PIP:
+
+```
+pip install cohere
+```
+
+You can dynamically change the `inputs` field to the content of your users. Note that 
+you don't have to provide two or more inputs. You can also run it with only one input text.
+
+You can extract the prediction and the confidence from the response like this:
+
+```
+prediction = response.classifications[0].prediction # toxic
+confidence = response.classifications[0].confidence # 0.98
+```
+
+In summary, in this tutorial you have learned how to use Cohere to moderate content in your app.
+You have also encountered the Cohere Python client and how you can use it to send text inputs to Cohere and get back a classification of this text. You can use this classification to decide if the content is allowed in your app or not.
+
+Join our AI Hackathons to test your knowledge and build with assistance of our mentors AI based tools to change the world! Check the upcoming ones under the link [https://lablab.ai/event](https://lablab.ai/event)
+
+Join our [OpenAI Hackathon](https://lablab.ai/event/openai-hackathon) or learn more about [Stable Diffusion models](https://lablab.ai/blog/state-of-the-art-ai-stable-diffusion-models) - stay up to date with the AI tools.
+
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
+

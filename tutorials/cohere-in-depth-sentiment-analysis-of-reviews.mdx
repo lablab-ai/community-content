@@ -1,0 +1,64 @@
+---
+title: "Cohere tutorial: How to use Cohere to get in depth insights from customer reviews" 
+description: "In this tutorial, we'll use sentiment analysis to get in depth insights from customer reviews with the help of Cohere Generate"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/thumnailcoheresentiment.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## Why sentiment analysis?
+
+[Sentiment analysis](https://en.wikipedia.org/wiki/Sentiment_analysis) is a process of determining whether a piece of writing is positive, negative or neutral. It’s also known as opinion mining, deriving the opinion or attitude of a speaker. A common use case for sentiment analysis is to analyze customer reviews. Sentiment analysis can help you understand customer sentiment towards your product or service. It can also help you understand what customers like or dislike about your product or service. Sentiment analysis can also be used to analyze social media posts, news articles, and other forms of text data. It is often used by businesses to gain insights into customer opinions and preferences, as well as to monitor brand reputation and track mentions of their products or services. Additionally, sentiment analysis can be used in political campaigns to track public opinion and in the entertainment industry to gauge audience reaction to movies, TV shows, and other forms of media. Sentiment analysis can be performed using a variety of techniques, including natural language processing (NLP) like we will do in this tutorial with the help of Cohere.
+
+## Why Cohere?
+
+[Cohere](https://cohere.ai/) is a natural language processing (NLP) platform that makes it easy to build, deploy, and manage NLP models. Cohere provides a suite of NLP tools that can be used across a variety of use cases, including sentiment analysis, text classification, and entity extraction. Cohere is a great tool for building NLP processes in applications and services. 
+
+In the past sentiment analysis was a very difficult task to do and it wasn't very accurate either. For example a review or any text data was checked word by word and if the word was positive or negative it was given a score based on a massive list of word / score pairs. Additionally you could only check for overall sentiment and not for specific topics within a review or text. This now changed with the help of Cohere. Today we will create a sentiment analysis application with Cohere and Replit and use it to get in depth insights from customer reviews, which will look something like this:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/sc1.PNG" />
+
+## Let's get started
+
+First we need to create a new [Replit](https://replit.com/) project. You can do this by going to Replit.com clicking on the "New repl" button in the top right corner. You can choose a language for your project and we will go with Python. Give your Replit a title and click "Create Replit". Now that we have our Replit project we can start coding. Let's head over to Cohere Playground. The Playground is a great place to test out your ideas and get a feel for how Cohere works. You can also use the Playground to test out different models and see how they perform. For our use cases, 
+we need to structure our prompt in a specific way. We will pass in a couple of hardcoded examples to instruct the model on what we want it to do. At the end of the prompt, we will then add the text we want to analyze dynamically.
+Our prompt will look something like this:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/sc2.PNG" />
+
+You can see that we have a couple of examples of positive and negative reviews. Each review of the prompt is structured
+in a specific way. The first line is just `Review:` followed by the actual review. The second thing is the `Extracted Sentiment:`
+followed by the sentiment of the review with multiple keywords. The keywords are in a JSON like format. This makes it easy
+to work with after the analysis. The last thing is the `--` to indicate the end of the review. Afterwards set the `Stop sequence`
+to `--` to indicate the end of the prompt. Furthermore, set the `Number of tokens` to 500. You can also test out different
+parameters to get the best result for your use case.
+
+Now let's use the `Export Code` button to export the code. Then head over to Replit and create a new file called `cohere.py`. There
+you can paste the code from the Playground. Then replace `{apiKey}` with your Cohere API key. You can find your API key in the
+Cohere dashboard.
+
+## Add your reviews
+
+Now we need to add our reviews to the code. You can connect any data source you need to your code. For this tutorial, we will use a hardcoded list of reviews. You can add your reviews to the `reviews` list.
+
+reviews ["I had a nice stay here in the hotel, the room was comfy, the pool was huge and the hotel bar was fantastic. Super good location right in the center of Los Angeles", "Great service, but I could not turn off the AC, the food was not as advertised though"]
+
+Now we can loop over the list and [dynamically add the reviews to the prompt](https://lablab.ai/t/stable-diffusion-prompt-engineering). We will also print the result to the console.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/sc3.PNG" />
+
+Next, you need to install the Cohere package with pip. You can do this in the `Shell` tab by running the following command in the terminal:
+
+**pip install cohere**
+
+Now we can run the code and see what happens. You can do this by clicking on the "Run" button in the top right corner. You can see that the code is running and we get a result. The results are two JSON-like objects with the sentiment of the review. You can continue working with the result in your code. For example you can save the result to a database or use it to create a dashboard to visualize the results.
+
+## Conclusion
+
+In this tutorial, we used Cohere to get in depth insights from customer reviews. We used sentiment analysis to get the sentiment of the reviews
+and the keywords that are associated with the sentiment. We used the Cohere Playground to create our prompt and export the code. Then we used
+Replit to run the code and get the results. You can use the same process to analyze any text data you want. And if you want to test your coding skills, or just want to create a Cohere based working application, you should join one of our [upcoming AI Hackathons](https://lablab.ai/event)..
+
+You can find this entire project on [Replit](https://replit.com/@ezzcodeezzlife/Cohere-Sentiment-Demo?v=1)
+
+**Thank you!** 
+If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)

@@ -1,0 +1,157 @@
+---
+title: "Cohere tutorial: How to create a dog's breed recognition API"
+description: "In this tutorial you will find out how to combine the power of Cohere AI and FastAPI for creating a dog's breed recognition API."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/89db7165-1571-492f-4516-f88636487500/full"
+authorUsername: "jakub.misilo"
+---
+ 
+In today's world, there are many sources to get information about animals. Sometimes, however, the description alone is not enough to determine the type of animal or its breed. So why not use Cohere AI?
+ 
+In this Cohere tutorial, we will try to create an API that can be used to determine the breed of a dog based on a short description - using the Cohere API, and then generate a photo using DALL·E 2.
+ 
+And if you want to learn more on how to use Cohere AI, check out our Cohere tutorial page.
+ 
+And if you want to try out this tutorial or other our AI tutorials with a group of like-minded people from around the world, sign in to our AI Hackathons.
+ 
+## 🏹 Let's start
+ 
+We need to start by creating a directory for our project. We will call it `dog-breed-recognition` and then we will create a virtual environment for it.
+ 
+```bash
+mkdir dog-breed-recognition
+cd dog-breed-recognition
+python3 -m venv venv
+.\venv\Scripts\activate
+```
+ 
+We have to create Cohere and OpenAI account, and then download API Keys. We will use them for APIs authorization. Let's create `.env` file and put them there:
+ 
+```
+COHERE_API_KEY=<COHERE API KEY>
+OPENAI_API_KEY=<OPENAI API KEY>
+```
+ 
+Now let's install all the necessary libraries:
+ 
+```bash
+pip install python-dotenv
+pip install --upgrade cohere
+pip install openai
+pip install fastapi[all]
+```
+ 
+Now we can create an `app.py` file and start writing our code.
+ 
+## 🤖 Coding!
+ 
+First, we need to import all the necessary libraries and load environment variables:
+ 
+```python
+import os
+import cohere
+import openai
+from dotenv import load_dotenv
+from fastapi import FastAPI
+ 
+# load env. variables
+load_dotenv()
+```
+ 
+Then we need to create a FastAPI app and authorize Cohere and OpenAI clients:
+ 
+```python
+app = FastAPI()
+ 
+# initialize the Cohere Client with an API Key
+co = cohere.Client(os.getenv('COHERE_API_KEY'))
+openai.api_key = os.getenv('OPENAI_API_KEY')
+```
+ 
+Now I will define a prompt for Cohere's LLM. It will be used to generate a prediction of a dog's breed. I will pass some examples of dog's breeds and their descriptions to the model. I will prepare space for our description, which will be passed to the model.
+ 
+```python
+def generate_prompt(description):
+    prompt = f'''Please predict the dog's breed in the description.
+ 
+Description: This dog is a medium-sized breed of dog that was developed in the United States. The breed is often used as a working dog on farms and ranches, and is also a popular companion animal.
+Breed: Australian Shepher
+--
+Description: This dog is a cheerful, high-spirited breed that is well suited for a variety of activities, including hunting, agility, and obedience. They are very intelligent and easily trained, and are excellent companions for active families. They are also known for their friendly dispositions and love of children.
+Breed: Brittany
+--
+Description: They are large, muscular dogs with a short, thick coat. They have a wide head and a short, square muzzle. Their eyes are small and their ears are floppy. They have a thick neck and a strong, muscular body. Their tail is short and their legs are muscular.
+Breed: American Bulldog
+--
+Description: This dog is a medium-sized breed of dog that is native to Poland. They are intelligent and active dogs that are known for their herding abilities. They have a thick, shaggy coat that can be either black, white, or brindle in color. They are loyal and protective dogs that make great family pets.
+Breed: Polish Lowland Sheepdog
+--
+Description: They are large, working breed of dog known for its obedience, loyalty, and intelligence. They are strong, agile dogs with a well-proportioned build. They have a long head, erect ears, and a long, thick coat. The breed is intelligent and easily trained, making them excellent working dogs. They are used in a variety of roles, including law enforcement, search and rescue, and as assistance dogs.
+Breed: German Shepherd Dog
+--
+Description: They are a medium-sized breed of dog, originally bred in England as gun dogs. They are bred to be lovable companions and are often considered one of the best breeds for families. They are relatively easy to train and are known for being intelligent and eager to please. Cockers have a reputation for being one of the most affectionate dog breeds, and are also known for being good with children.
+Breed: Cocker Spaniel
+--
+Description: {description}
+Breed:
+'''
+    return prompt
+```
+ 
+Now we can define an endpoint for our prediction. We will use Cohere's LLM to generate a prediction. We will pass our prompt to the model and then we will return the result. Then the result will be used for generating a photo.
+ 
+```python
+@app.get('/')
+def breed_prediction(description: str):
+    prompt = generate_prompt(description)
+    response = co.generate(
+        model='xlarge',
+        prompt=prompt,
+        max_tokens=5,
+        temperature=0.75,
+        stop_sequences=['--'],
+    )
+ 
+    breed = response.generations[0].text.strip()
+ 
+    img = openai.Image.create(
+        prompt=f'Image of {breed}',
+        n=1,
+        size='512x512'
+    )
+ 
+    img = img['data'][0]['url']
+ 
+ 
+    return {
+        'breed': breed,
+        'img': img
+    }
+```
+ 
+## 🚀 Running the app
+ 
+Now we can run our app:
+ 
+```bash
+uvicorn app:app --reload
+```
+ 
+We can test our app by sending a request to the endpoint. I will use Postman for that. It's a great tool for testing APIs. We can download it [here](https://www.postman.com/downloads/). That's how our request URL should look like:
+ 
+```
+localhost:8000/?description=<description>
+```
+ 
+My description looks like:
+ 
+```
+This is a large, white, fluffy dog with a thick coat. They are very friendly and love being around people. They were originally bred in Siberia to help people with their daily chores, such as pulling sleds and herding reindeer.
+```
+ 
+## 🧑‍🚀 Let's check results!
+ 
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/coherebreed-res.png" caption="Prediction: 'Siberian Husky'" />
+ 
+You can judge the results yourself! It's amazing how much we can get out of text right now. I encourage you to try your descriptions and share your results on our [lablab.ai Discord](https://discord.gg/lablab-ai-877056448956346408)!
+ 
+And progress your knowledge and change your career within the most growing industry right now! Join our AI Hackathons!

@@ -1,0 +1,120 @@
+---
+title: "Cohere tutorial: chat/conversation Summarizer with Cohere"
+description: "How to create a chat summarizer with Cohere and Python"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e37e51f2-7b7b-44bf-964c-2327ed795e00/full"
+authorUsername: "ezzcodeezzlife"
+---
+
+## Why use Cohere AI?
+
+Imagine you are participating in one of the lablab.ai’s AI Hackathons and you need to come up with a Cohere based tool. You start brainstorming on discord; everyone’s typing and you get lost in the tons of content. And you come up with an idea…
+
+Or AI hackathons apart, maybe you have a chat bot on your website and you want to summarize the conversation between the user and the bot? This tutorial will show you how to do that with Cohere and Python. 
+
+And if you want to get started with Cohere, feel free to to go through our [cohere guides](https://docs.cohere.ai/).
+
+### Let’s start!
+
+This data often is valuable for the business and can be used for further analysis. A conversation would typically look like this:
+
+
+```
+AI: Hi there, how can I assist you today?
+Customer: I want to get more information about your pricing.
+AI: Our pricing is $10 per month for the first 10 users, and $5 per month for each additional user.
+Customer: Where can I find more information about your pricing?
+AI: You can find more information about our pricing on our website.
+Customer: What is your website?
+AI: Our website is www.abc.com
+```
+
+With the help of our small program, wecan just summarize the entire conversation 
+in one simple sentence like:
+
+```
+Customer wants to get more information about your pricing.
+```
+
+### Prerequisites
+
+- Python 3.6 or higher
+- Cohere API key
+
+### Step 1: Install the Cohere Python library
+
+The first step is to install the Cohere Python library. You can do this by running the following command:
+
+```bash
+pip install cohere
+```
+
+### Step 2: Create a Cohere client
+
+The next step is to create a Cohere client. You can do this by running the following code: (You can find your API on the Cohere dashboard)
+
+```python
+import cohere 
+co = cohere.Client('YOUR_KEY_HERE') 
+```
+
+Next, let's create a response object and call Generate on the Cohere client. 
+
+```python
+response = co.generate( 
+  model='xlarge', 
+  prompt="""Summarize this dialogue:
+  Customer: Please connect me with a support agent.
+  AI: Hi there, how can I assist you today?
+  Customer: I forgot my password and lost access to the email affiliated to my account. Can you please help me?
+  AI: Yes of course. First I\'ll need to confirm your identity and then I can connect you with one of our support agents.
+  TLDR: A customer lost access to their account.
+  --
+  Summarize this dialogue:
+  AI: Hi there, how can I assist you today?
+  Customer: I want to book a product demo.
+  AI: Sounds great. What country are you located in?
+  Customer: I\'ll connect you with a support agent who can get something scheduled for you.
+  TLDR: A customer wants to book a product demo.
+  --
+  Summarize this dialogue:
+  AI: Hi there, how can I assist you today?
+  Customer: I want to get more information about your pricing.
+  AI: I can pull this for you, just a moment.
+  TLDR:""", 
+  max_tokens=20, 
+  temperature=0.6, 
+  k=0, 
+  p=1, 
+  frequency_penalty=0, 
+  presence_penalty=0, 
+  stop_sequences=["--"], 
+) 
+print('Prediction: {}'.format(response.generations[0].text)) 
+```
+
+We will choose the 
+model xlarge for this example, and you can find more information about different
+model sizes on the Cohere website. Next, let's call the prompt and passin two
+examples of a summarized dialog. So right here you can see the summary of
+this dialogue at the top. Next, let's pass in our new chat that hasn't been 
+summarized yet. You can see the TLDR is empty. Then let's pass
+in a few more parameters. You can choose these to your needs. And then 
+let's pass in a stop sequence. This stop sequence tells
+the AI to stop generating when exactly this sequence is reached. So for
+example, you can see that the example sequence is always at the end
+of the summary. At the end, let's print out our prediction.
+
+Now we can check if our program works by executing the Python file. You can use the 
+summarizer to summarize conversations, for example on Slack, Discord, Telegram or 
+Emails. 
+
+```bash
+python filename.py
+```
+
+You can find the code for this tutorial [here](https://github.com/lablab-ai/cohere-chat-summary).
+
+And if you wonder [how to use with Cohere](https://lablab.ai/blog/how-to-use-cohere-top-5-business-ideas-with-cohere-api) or [how to start with Cohere](https://lablab.ai/t/cohere-playground) we got you covered. Just start and [build with Cohere app](https://lablab.ai/blog/state-of-the-art-ai-top-5-ai-apps-you-can-build-with-cohere-api).
+
+
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)

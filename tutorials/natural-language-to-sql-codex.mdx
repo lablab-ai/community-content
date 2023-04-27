@@ -1,0 +1,127 @@
+---
+title: "OpenAI Codex tutorial: Natural language to SQL query with OpenAI Codex"
+description: "How to create a custom SQL QUERY from a natural language using Openai Codex"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/natural_language_to_sql_query_codex_1.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## What is OpenAI Codex?
+
+OpenAI Codex is an artificial intelligence model developed by OpenAI. It parses natural language and generates code in response. It is used to power GitHub Copilot, a programming autocompletion tool. Codex is a descendant of OpenAI's GPT-3 model, fine-tuned for use in programming applications. OpenAI has released an API for Codex in closed beta.
+
+You can get access to the Codex waitlist here: https://openai.com/blog/openai-codex/ and getting accepted usually is within a few days.
+
+## The idea
+
+The idea is to generate a SQL query from a natural language. For example, if we want to get all the users that are older than 25 years old, we can write the following sentence:
+
+> Get all the users that are older than 25 years old
+
+And the model will generate the following SQL query:
+
+> SELECT * FROM users WHERE age > 25
+
+This enables us to write SQL queries without knowing SQL syntax. This is very useful for non-technical people that want to query a database.
+
+## Let's get started
+
+Make sure you got access to Codex. If you don't have access, you can get access to the Codex waitlist here: https://openai.com/blog/openai-codex/ and getting accepted usually is within a few days.
+Before we write any code, you can do some testing first on the OpenAI playground: https://beta.openai.com/playground. 
+I can really recommend you to do some testing first, because it will help you understand how the model works.  
+
+First, we need to install the OpenAI Codex library:
+
+```python
+!pip install openai
+```
+
+You can find the full documentation of this library here:https://github.com/openai/openai-python
+
+Then, we need to import the library and set the API key
+
+```python
+import openai
+
+openai.api_key = "YOUR_API_KEY"
+```
+
+Now, we can start writing some code. We will start by creating a function that will generate a SQL query from a natural language. We will use the `openai.Completion.create` function to generate the SQL query. We will pass the following parameters:
+
+- `engine`: The engine that will be used to generate the SQL query. We will use `davinci-codex` for this tutorial.
+- `prompt`: The natural language that will be used to generate the SQL query.
+- `max_tokens`: The maximum number of tokens that will be generated.
+- `temperature`: The temperature of the model. The higher the temperature, the more random the text will be. Lower temperature results in more predictable text.
+- `top_p`: The cumulative probability for top-p sampling. 1.0 means no restrictions. Lower top_p results in more random completions.
+- `frequency_penalty`: The cumulative probability for top-p sampling. 1.0 means no restrictions. Lower top_p results in more random completions.
+- `presence_penalty`: The cumulative probability for top-p sampling. 1.0 means no restrictions. Lower top_p results in more random completions.
+- `stop`: The sequence of tokens that will stop the generation.
+
+```python
+def generate_sql_query(prompt, max_tokens=100, temperature=0.5, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0, stop=["\n"]):
+    response = openai.Completion.create(
+        engine="code-davinci-002",
+        prompt=prompt,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        frequency_penalty=frequency_penalty,
+        presence_penalty=presence_penalty,
+        stop=stop
+    )
+    return response.choices[0].text
+```
+
+Now, we can test our function. We will use the following prompt:
+
+> Get all the users that are older than 25 years old
+
+```python
+generate_sql_query("Get all the users that are older than 25 years old")
+```
+
+The model will generate the following SQL query:
+
+```sql
+SELECT * FROM users WHERE age > 25
+```
+
+Now we put it all together in one file and add input via the console.
+
+```python
+import openai
+
+openai.api_key = "YOUR_API_KEY"
+
+def generate_sql_query(prompt, max_tokens=100, temperature=0.5, top_p=1.0, frequency_penalty=0.0, presence_penalty=0.0):
+    response = openai.Completion.create(
+        engine="davinci-codex",
+        prompt=prompt,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        frequency_penalty=frequency_penalty,
+        presence_penalty=presence_penalty,
+    )
+    return response.choices[0].text
+
+prompt = input("Enter your prompt - What data do you need?: ")
+print(generate_sql_query(prompt))
+```
+
+Now run the file and enter your prompt and get back the SQL query.
+
+## Conclusion
+
+In this tutorial, we learned how to generate a SQL query from a natural language using OpenAI Codex. We also learned how to use the OpenAI Codex library.
+You can continue improving this project by adding a database and a web interface. You can also add more prompts to the request to guide the model into the right direction and make it more accurate.
+You could also add your database schema in the prompt to make it more accurate. For example like this:
+
+```
+USER: ID (INT), NAME (VARCHAR), AGE (DATE)
+POST: ID (INT), TITLE (VARCHAR), BODY (VARCHAR), USER_ID (INT)
+COMMENT: ID (INT), BODY (VARCHAR), POST_ID (INT), USER_ID (INT)
+```
+
+**Thank you** for reading. If you enjoyed this tutorial you can find more and continue reading 
+[on our tutorial page](https://lablab.ai/t/) - [Fabian Stehle](https://github.com/ezzcodeezzlife), 
+Junior Data Scientist at [New Native](https://newnative.ai/)

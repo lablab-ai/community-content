@@ -1,0 +1,47 @@
+---
+title: "How to use GPT-3 tutorial: Build your own GPT-3 Powered application using streamlit"
+description: "In this tutorial you will build your own GPT-3 Powered application and deploy it"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/GPT-3%20Powered%20App%20with%20streamlit.jpg"
+---
+
+By the end of this GPT-3 tutorial, you will have built and deployed your very own web application that is powered by GPT-3. You will be able to use the GPT-3 library to build your own applications. The tutorial is suitable for everyone who have some basic knowledge of Python. If you are not familiar with this language, you may want to check out the following resources before getting started
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/GPT-3%20Powered%20App%20with%20streamlit.jpg" />
+
+We will be using **GPT-3** from OpenAI, a 175 Billion parameter text transformer. Additonally we will be using **Python** and **Streamlit** and **GitHub** to build and host our application. The purpose of this tutorial is to cover the basics in getting a web application powered by GPT-3 up and running.
+
+### 1. Getting OpenAI API key
+
+You can get one by signing up at from [beta.openai.com](https://beta.openai.com). Once your account is created, you can go to your profile and click the "API Keys" tab or simply click this link [OpenAI API Keys](https://beta.openai.com/account/api-keys).
+
+### 2. Clone GPT-3 boilerplate from Github
+
+In this tutorial we will be using a GPT-3 boilerplate that will make our lives easier and allow you to build your own GPT-3 powered application in 20 minutes.
+
+Copy this repository [GPT-3-Boilerplate](https://github.com/nextgrid/streamlit_gpt3_boilerplate) onto your computer and add to your own repositories
+
+### 2. Running the project locally
+
+1. You need to go into your project folder and create a virtual environment as your choice (I used  https://docs.python.org/3/library/venv.html)
+2. Activate the virtual environment by running the following commandif you used venv: `./venv/Scripts/activate`
+3. Install the dependencies by running the following command: `pip install -r requirements.txt`
+4. Run the application by running the following command: `streamlit run gpt_app.py`
+5. The application will be open in a browser window where you need to enter your API key first.
+
+### 3. About the boilerplate application
+
+The boilerplate application itself is a Poem generator that will generate a poem based on the input words.
+We are using the text-davinci-002 model from OpenAI which is defined in the `model.py` file.
+Feel free to change the model to any other model that you want to use, and play with the model parameters.
+For example you can change **temperature to 0.9** to generate a more random poem.
+Feel free to change the whole prompt to any other sentence you want to use.
+
+### 4. Deploy the application on StreamLit
+ 1. Go to https://share.streamlit.io/ and register your account.
+ 2. Click on New app
+ 3. Choose your Repository, Branch name and the main file path (in our case `gpt_app.py`) <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/deploy_streamlit.jpg"/>
+ 4. Click Deploy!
+
+## Final words
+
+Hope you enjoyed this simple tutorial. Hopefully you now have a simple fundation that will allow you to build other type of applications.

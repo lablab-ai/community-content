@@ -1,0 +1,141 @@
+---
+title: "OpenAI Whisper tutorial: Updating our Whisper API with GPT-3"
+description: "In this tutorial we will update our previously created Flask Whisper API to use GPT-3 to generate summary text."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/whisper-api-flask-gpt3-docker.png"
+authorUsername: Flafi
+---
+
+## What is Whisper?
+
+Whisper is an automatic State-of-the-Art speech recognition system from OpenAI that has been trained on 680,000 hours 
+of multilingual and multitask supervised data collected from the web. This large and diverse 
+dataset leads to improved robustness to accents, background noise and technical language. In 
+addition, it enables transcription in multiple languages, as well as translation from those 
+languages into English. OpenAI released the models and code to serve as a foundation for building useful
+applications that leverage speech recognition.
+
+## What is GPT-3?
+
+GPT-3 is a language model from OpenAI that can generate text. It is trained on a large dataset of text from the web.
+
+## How to start?
+
+This tutorial is an upgrade of the previous tutorial [Whisper API with Flask and Docker](https://lablab.ai/t/whisper-api-flask-docker). 
+
+So please first check that out :) If you already did that you can continue here.
+
+
+## OpenAI API key
+
+If you don't have it already please go to [OpenAI](https://openai.com/api/) and create an account. And create your API key.
+Never share your API key in public repository!
+
+## Updates to requirement.txt
+
+We are adding openai package to our file
+
+## Creating file for gpt3 function
+
+We will create a new file called gpt3.py and add the following code to it. In the prompt I was using the summary option to summarize the text,
+ but you can use anything you want. And you can tweak the parameters as well.
+
+```python
+import openai
+
+def gpt3complete(speech):
+    # Completion function call engine: text-davinci-002
+
+    Platformresponse = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt="Write a short summary of this text: {}".format(speech),
+        temperature=0.7,
+        max_tokens=1500,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        )
+
+    return Platformresponse.choices[0].text
+
+```
+
+## Update app.py
+
+On the top we will update our imports. Instead of "MY_API_KEY" please insert the API key you created earlier.
+
+```python
+import openai
+import gpt3
+# GPT-3 API Key
+openai.api_key = "MY_API_KEY"
+```
+
+## Update the /whisper route
+We will integrate our new GPT3 function into the route. So when we are getting the result from whisper we will pass it to the gpt3 function and return the result.
+
+```python
+@app.route('/whisper', methods=['POST'])
+def handler():
+    if not request.files:
+        # If the user didn't submit any files, return a 400 (Bad Request) error.
+        abort(400)
+
+    # For each file, let's store the results in a list of dictionaries.
+    results = []
+
+    # Loop over every file that the user submitted.
+    for filename, handle in request.files.items():
+        # Create a temporary file.
+        # The location of the temporary file is available in `temp.name`.
+        temp = NamedTemporaryFile()
+        # Write the user's uploaded file to the temporary file.
+        # The file will get deleted when it drops out of scope.
+        handle.save(temp)
+        # Let's get the transcript of the temporary file.
+        result = model.transcribe(temp.name)
+        text = result['text']
+        # Let's get the summary of the soundfile
+        summary = gpt3.gpt3complete(text)
+        # Now we can store the result object for this file.
+        results.append({
+            'filename': filename,
+            'transcript': text.strip(),
+            'summary': summary.strip(),
+        })
+
+    # This will be automatically converted to JSON.
+    return {'results': results}
+```
+
+
+## How to run the container?
+1. Open a terminal and navigate to the folder where you created the files.
+2. Run the following command to build the container:
+
+```bash
+docker build -t whisper-api .
+```
+3. When built is ready, run the following command to run the container:
+
+```bash
+docker run -p 5000:5000 whisper-api
+```
+
+## How to test the API?
+1. You can test the API by sending a POST request to the route `http://localhost:5000/whisper` with a file in it. Body should be form-data.
+2. You can use the following curl command to test the API:
+
+```bash
+curl -F "file=@/path/to/file" http://localhost:5000/whisper
+```
+3. In result you should get a JSON object with the transcript and summary in it.
+
+## How to deploy the API?
+This API can be deployed anywhere where Docker can be used. Just keep in mind that this setup currently using CPU for processing the audio files.
+If you want to use GPU you need to change Dockerfile and share the GPU. I won't go into this deeper as this is an introduction.
+[Docker GPU](https://docs.docker.com/config/containers/resource_constraints/)
+
+You can find the whole code [here](https://github.com/lablab-ai/whisper-api-flask/tree/gpt3-summarizer)
+
+**Thank you** for reading! If you enjoyed this tutorial you can find more and continue reading 
+[on our tutorial page](https://lablab.ai/t/)

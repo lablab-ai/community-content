@@ -1,0 +1,154 @@
+---
+title: "Stable Diffusion tutorial: How to create Stable diffusion API on a GCP VM instance"
+description: "In this step by step AI tutorial I will show you how to create a stable diffusion API on a GCP VM instance in few minutes"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/33a3e9b5-2881-4721-de40-9e5471bbbf00/full"
+authorUsername: Flafi
+---
+
+## What is Stable Diffusion?
+
+Stable Diffusion is a deep learning, text-to-image model released in 2022.
+It is primarily used to generate detailed images conditioned on text descriptions,
+though it can also be applied to other tasks such as inpainting, outpainting, and generating
+image-to-image translations guided by a text prompt. [Stability.ai](https://stability.ai/)
+
+
+## Creating GCP account
+
+You will have to create a GCP account if you don't have one already https://cloud.google.com/free and 
+set up a billing account because with the free tier you cannot use GPU. It is good idea to set up a Budget with alerts, as GPU usage
+is very expensive.
+
+## Requesting GPU
+
+You will need to enable Compute Engine API in your project. You can do that by going to the [APIs & Services](https://console.cloud.google.com/apis/library) page and searching for Compute Engine API. Click on the API and click on Enable.
+Once it's enabled you will need to request the ability to make virtual machines with GPU. You can find this in Quotas by filtering for GPUs (all regions) and requesting increase from 0 to 1. You need to enter a reason, so you can write that you're using an ML model that requires GPU. Approvals can take up to a day or two, so be patient. https://cloud.google.com/compute/quotas
+
+Lastly, create a project. You can call it whatever you want. I called it "stable-diffusion-project".
+
+## Creating VM instance
+
+Go to https://console.cloud.google.com/compute/instances and click Create instance. Let's name is stable-diffusion-instance.
+Select the region you want to use. Keep in mind not every region and zone has GPU support, so you might have to change a few times.
+In Machine configuration choose GPU. And here it is up to you and your budget. If you choose A100 you will get the best performance,
+but it is also the most expensive. I chose T4, because it is enough in my opinion and it cost around 300dollar a month if it runs all the time.
+Machine type I chose n1-standard-4 with 15GB or memory. You can choose whatever you want, but I would recommend at least 15GB of memory.
+Boot disk you will have to change, so click change and at the Operating system look for `Deep Learning Linux`, in version `Debian 10 based Deep Learning VM with M99` (When you read it there might be already a newer version).
+Here you can also change the Boot disk size if you want to play around with other models as well, 50GB wont be enough.
+From there, under "Firewall" check both `Allow HTTP traffic` and `Allow HTTPS traffic`.
+Under "Advanced options", in "Networking" add a network tag like `stable-diffusion-tag`.
+Later we will create a networking rule for anything with this tag to expose it to the outside internet.
+Good thing in GCP instances if it is not running you don't pay.
+
+## Creating a firewall rule
+
+Go to https://console.cloud.google.com/networking/firewalls/list and click Create Firewall Rule.
+Name it `stable-diffusion-rule` and in the Targets section, select `Tags` and add the tag you created earlier `stable-diffusion-tag`.
+In the Source IP ranges section, add `0.0.0.0/0` and in the Protocols and ports section, add `tcp:5000` and click create.
+
+
+## Accessing the compute instance
+
+Easiest way is to access it via SSH from the console. Go to https://console.cloud.google.com/compute/instances and click on the instance you created.
+
+## Setting up stable diffusion on the instance
+
+When you first log in to your instance you will be asked to install Nvidia driver, just type 'Y'.
+Remember when you stop and start again the VM you will have to reinstall the drivers!
+```bash
+sudo /opt/deeplearning/install-driver.sh
+```
+Next you will need to clone two repositories.
+```bash
+git clone https://github.com/replicate/cog-stable-diffusion
+```
+```bash
+git clone https://github.com/replicate/cog
+```
+
+Then install (Cog)[https://github.com/replicate/cog#install] Docker is already installed on this VM so you just need to run
+```bash
+sudo rm $(which cog)
+sudo curl -o /usr/local/bin/cog -L https://github.com/replicate/cog/releases/latest/download/cog_`uname -s`_`uname -m`
+sudo chmod +x /usr/local/bin/cog
+```
+
+Now build our Docker image
+```bash
+cd cog-stable-diffusion
+cog build
+```
+
+The model needs weighs to work, so we will download them from Hugging face. You need to create an account there if your don't have one already.
+https://huggingface.co/ create and Auth token https://huggingface.co/settings/tokens.  Copy your auth token and use it to download weighs with this script.
+```bash
+cog run script/download-weights <your-hugging-face-auth-token>
+```
+
+After these installations you can already test if the model is running
+```bash
+cog predict -i prompt="A cat sitting on a table"
+```
+
+After it runs you should have an `output-1.png`. You can download it through the terminal.
+
+In your cog-stable-diffusion directory type `pwd` to get your current working directory.
+You should get something like `/home/<your username>/cog-stable-diffusion`.
+You have to add that as a volume when we start the stable diffusion docker image so that the image can access the hugging face weights.
+That command is:
+```bash
+docker run -p 5000:5000 -v /home/<username>/cog-stable-diffusion:/src --gpus=all cog-cog-stable-diffusion
+```
+
+With that running, your service should be accessible on the internet.
+Find your compute instance's external IP back in the Compute instances list.
+
+
+## How to test the API?
+```bash
+curl http://<external ip>:5000/predictions -X POST -H "Content-Type: application/json" \
+-d '{"input": {
+  "prompt": "monkey scuba diving",
+}}'
+```
+
+Unfortunately the response payload is base64 encoded, so you will have to decode it.
+You can do it online https://codebeautify.org/base64-to-image-converter
+
+## Extra :)
+Deforum has a very nice model to create short videos :) you can check it here https://replicate.com/deforum/deforum_stable_diffusion
+If you want you can try it out with same method, you just have to stop the current container.
+```bash
+docker run -d -p 5000:5000 --gpus=all r8.im/deforum/deforum_stable_diffusion@sha256:e22e77495f2fb83c34d5fae2ad8ab63c0a87b6b573b6208e1535b23b89ea66d6
+```
+Testing
+```bash
+curl http://localhost:5000/predictions -X POST -H "Content-Type: application/json" \
+  -d '{"input": {
+    "max_frames": "...",
+    "animation_prompts": "...",
+    "angle": "...",
+    "zoom": "...",
+    "translation_x": "...",
+    "translation_y": "...",
+    "color_coherence": "...",
+    "sampler": "...",
+    "fps": "...",
+    "seed": "..."
+  }}'
+  ```
+  The response is also base64 encoded, so you will have to decode it to mp4.
+<VideoPlayer
+url={"https://storage.googleapis.com/lablab-static-eu/videos/tutorials/girl.mp4"}
+playing={true}
+muted={true}
+controls={true}
+/>
+
+
+**Thank you** for reading! If you enjoyed this tutorial you can find more and continue reading 
+[on our tutorial page](https://lablab.ai/t/)
+
+I used the following contents to create this tutorial 
+1. https://medium.com/@ba_wolf/host-a-stable-diffusion-api-on-google-compute-engine-eca3794ec605
+2. https://towardsdatascience.com/how-to-run-a-stable-diffusion-server-on-google-cloud-platform-gcp-c879357808bf

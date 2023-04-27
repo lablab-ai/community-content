@@ -1,0 +1,88 @@
+---
+title: "Auto-GPT tutorial: How to set up Auto-GPT"
+description: "A step by step guide on how to set up Auto-GPT in your computer"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8acde362-3352-46b8-5307-073ece9a3200/full"
+authorUsername: "EmmanuelIriarte"
+---
+
+Hey Friends! Are you ready to dive into the fascinating world of Auto-GPT and generative models? Well, hold onto something because we're about to embark on a journey to explore this cutting-edge technology. I promise that by the end of this tutorial, you'll be well-versed in setting up Auto-GPT and understanding its relationship with generative models, no matter your field of expertise. If you want to know more about ways how to use [AutoGPT API](https://lablab.ai/blog/evolutionizing-business-with-autogpt-why-you-should-use-autogpt) for your business, we got you covered :)
+
+## What is Auto-GPT and how is it related to Generative Agents?
+So, what's the deal with Auto-GPT? Simply put, it's an incredibly powerful AI model designed for various tasks like text generation, translation, and other wonders. It works its magic using a technique called Generative Pre-trained Transformer (GPT), which is a type of generative model. 
+Now, let's talk about generative models. They're AI models that can generate new data based on the patterns they've learned from existing data. Think of them as the master artists of the AI world, creating new, never-before-seen masterpieces.
+In a nutshell, Auto-GPT and generative models are like PB&J - a match made in heaven. They work in harmony to bring forth the remarkable power of AI, enabling us to tackle a wide array of problems with ease.
+Setting up Auto-GPT is much like assembling a jigsaw puzzle - you need to get all the pieces in the right place. First, you'll need to acquire a pre-trained GPT model, which you can do by browsing popular repositories like GitHub. Once you have the model, you can customize it according to your specific task by fine-tuning its parameters.
+And that's it, folks! You've now got a solid grasp of Auto-GPT and its relationship with generative models. Welcome to the future of AI! Exciting times await, so go forth and conquer the world of artificial intelligence..
+ 
+
+## Setting up Auto-GPT
+ 
+Ready to see Auto-GPT in action? Great! Just feed it some input data, and watch as it generates astonishingly relevant and coherent outputs. You'll be amazed at how well it grasps the nuances of language, making it a perfect tool for various applications.
+Setting up Auto-GPT is much like assembling a jigsaw puzzle - you need to get all the pieces in the right place. First, you'll need to acquire a pre-trained GPT model, which you can do by browsing popular repositories like GitHub. Once you have the model, you can customize it according to your specific task by fine-tuning its parameters.
+Now, let's learn how to set up this amazing Auto-GPT, shall we?🚀
+
+To set up Auto-GPT in your computer you will need the latest version of python 🐍.
+
+### 1. Go to GitHub.
+Go to the GitHub repository where you can find [Auto-GPT source code](https://github.com/Significant-Gravitas/Auto-GPT/tree/v0.2.2) 🌐 and copy the repository URL 📋
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8d42cf8c-2bd5-49d9-0873-fe64d2885200/full" alt="github screenshot"/>
+
+### 2. Clone the repository.	
+Open the terminal of your computer 💻, navigate to where you would like to clone the repository and execute the following command:
+ 
+```
+git clone https://github.com/Significant-Gravitas/Auto-GPT.git
+ 
+```
+
+### 3. Install the required dependencies.
+Make sure you are in the directory where the repository was cloned (otherwise navigate to it using the “cd” command) and install all the required dependencies by executing the command:
+```
+pip install -r requirements.txt
+
+```
+
+### 4. Give Auto-GPT access to your API keys.
+For Auto-GPT to work it needs access to GPT-4 (GPT-3.5 can also work but will return less favorable results and has a higher tendency to hallucinate), to configure the settings for Auto-GPT you need to set it up with your own API key 🔑, if you don’t have one you can get it from [Open AI´s website] 🌐 (https://platform.openai.com/account/api-keys) For this you will need to create a new account (if you don´t have one already) and click “Create new secret key” 🔐
+ 
+You can then give a name to your key, something like Auto-GPT and click create 🆕
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/30f977de-808f-4163-3937-2f53f64f0500/full"/>
+
+Remember to keep your key safely stored since you won’t be able to see it after this (you can always create a new one and change it in the configurations file)🤫
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/636052e5-f5a9-4d43-38eb-44db9a7b2100/full"/>
+
+To give Auto-GPT access to your API key you will need to open the file under the name .env.template in the directory where you clone the repository, there you will need to replace “your-api-openai-key” by your actual API key 🔑
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/611d7e36-cbe9-4e33-7c2b-96bc86d98c00/full"/>
+
+### 5. Give memory to your agent.
+It is also possible to give your Auto-GPT memory for the LLM (Large language model) to be able to retrieve information. You can do this using different vector databases (such as Redis, Weaviate, Milvus and Pinecone) but for simplicity in this tutorial we will use Pinecone. 🌲
+For this next step you will need to go to [Pinecone website] (https://app.pinecone.io/) 🌐  and set a free account (unfortunately at the moment due to high demand there is a waiting list on the Starter plan) once the account has been made. You will have to go to “API keys”, then “Create API key” 🔑
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5845b86f-b50e-4190-4bbe-39d48d488b00/full"/>
+
+Now, you can give your API key a name, something like “autogpt” might be a good fit. 🆒
+
+Once you have all this set up, you need to give Auto-GPT access to these keys. 🔓
+In the same file where you set up Open AI’s API key you will need to replace “your-pinecone-api-key” (a) and “your-pinecone-region” (b) you can obtain this information from the API key you just created in Pinecone. 🤔
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5a4d0360-9b84-48e3-154f-6dec87df3400/full"/>
+
+### 6. Replace the values in yout .env.template file
+Copy the key and environment and replace the values in the following lines 
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0d8f2228-7e24-403b-8c94-802f9bb5e600/full"/>
+
+### 7. Rename your .env file.
+Once you have finished the configuration remember to rename the file .env.template to .env 🔄
+
+### 8. Run your agent.
+Now go back to the terminal and navigate to the directory where the repository was cloned and run the following command: 💻
+```
+python -m autogpt
+```
+
+🎉 Now that the agent is running, you have to give it a name (or by default I will be named “Entrepreneur-GPT”), define the role of the AI 🤖 and the goals it wishes to accomplish one by one, and there you have it! 🚀
+ 
+Finally, sit back and watch your AI buddy create some fantastic content. You're now an Auto-GPT whisperer! 🐴
+
+
+So, there you have it! A swift and sweet tutorial for understanding Auto-GPT and its relationship with generative models. Enjoy your newfound power and keep exploring! And I invite you to learn more about [AutoGPT app] (https://lablab.ai/tech/autogpt)🌟🎉
+
+And if you want to text your new skills and create an app based on AutoGPT, we invite you to the [AutoGPT Hackathon] (https://lablab.ai/t/autogpt-tutorial-how-to-set-up-your-own-ai-bot-in-under-30-minutes)!

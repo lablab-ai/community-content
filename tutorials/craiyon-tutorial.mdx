@@ -1,0 +1,66 @@
+---
+title: "Free AI art Generator tutorial: Craiyon - Generate Images From Any Text Prompt"
+description: "Find out how to create Images from Text with the help of Craiyon (DALL·E mini)!"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/craiyon-cover.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## What is Craiyon?
+
+AI Image generation is in the hype at the moment. OpenAI had the first impressive model for generating images with DALL·E. Craiyon (formaly Dalle-e Mini) is an attempt at reproducing those results with an open-source model for Image generation. It's easily accessible, free without limits to how many images you can generate at craiyon.com.
+
+## How does Craiyon work? - simple explanation
+
+Basically Craiyon looks at millions of images from the internet with their associated captions and determines repeating and identity-forming patterns from these images. (The AI determines what is common to all images.) Over time, Craiyon then determines what makes up these images. Once Craiyon has completed this,it can create its own new images, since it now knows what constitutes a word or phrase. Here it must be said, of course, that Craiyon  does not really understand the words entered, but only tries to reproduce the essence of the words in images.
+Several models are combined together to achieve these results: [detailed resource](https://wandb.ai/dalle-mini/dalle-mini/reports/DALL-E-Mini-Explained-with-Demo--Vmlldzo4NjIxODA)
+- an image encoder that turns raw images into a sequence of numbers with its associated decoder
+- a model that turns a text prompt into an encoded image
+- a model that judges the quality of the images generated for better filtering 
+
+## Craiyon in action
+
+Go to www.craiyon.com. There you will find an input field for your prompts. Type in something interesting like “spaceship flying to mars”, click generate and you will get the generation results about 20 seconds later. 
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/craiyon1.jpg" />
+
+In order to get better results you can use the following prompt tips: 
+
+### Add art style descriptions
+
+There are a million different art styles out there, each with their own unique flair. Some are realistic, while others are more abstract. Some are calm and serene, while others are chaotic and wild. It's up to you, the artist, to decide what style you want to use for your piece. 
+
+- Artist style like “Picasso”, “Van Gogh”
+- Tools used like “watercolors”, “oil painting”
+- Styles: “Impressionism”, “Expressionism”, “Abstract”
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/craiyon2.jpg" />
+
+### Add composition descriptions
+
+Composition refers to the overall physical arrangement of objects in the artwork. In other words, composition refers to how the various elements of the painting are arranged within the picture frame.
+
+- “aerial view” or “long shot” or “portrait” or “wide-angle” or “fish-eye lens” or “extreme close-up” or “macro” or “bokeh.”
+- Merge objects: 
+“looks like” or “in the shape of” , “inside of” or “next to” 
+
+### Add atmosphere/mood descriptions
+
+The atmosphere or mood of an artwork can be just as important as the subject matter. After all, how the artist chooses to portray the subject can have a big impact on how the viewer perceives it.
+- “dark” or “colorful” or “futuristic” or “vintage” or “abstract” or “soothing” or “foggy” or “early morning” or childish.”
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/craiyon3.jpg" />
+
+If you want to learn more about how to structure your prompt to get better results, these are two great resources on prompt engineering: 
+
+- [Dalle-2 prompt engineering guide - Google Docs](https://docs.google.com/document/d/11WlzjBT0xRpQhP9tFMtxzd0q6ANIdHPUBkMV-YB043U/edit)
+- [Promt book - Slidehow](https://pitch.com/v/DALL-E-prompt-book-v1-tmd33y)
+
+##  Conclusion
+
+Craiyon is a fantastic tool for creating images from textual descriptions and its ease of use and accessibility make it a great option for anyone looking to generate images from text. In this tutorial , we've covered how to use Craiyon to generate images from text, how to structure your prompt to get better results, and some tips and tricks for prompt engineering. Now it's your turn to create something amazing 
+
+**Thank you!** - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
+
+### More resources
+https://github.com/borisdayma/dalle-mini
+https://huggingface.co/spaces/dalle-mini/dalle-mini

@@ -1,0 +1,97 @@
+---
+title: "AI21 Labs tutorial: how to use AI21 Labs API?"
+description: "In this tutorial, we will try to use AI21 Labs models to test its text-generating ability. We will use the official SDK for Python and a large model from AI21. We will test it with some simple examples."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-main.jpg"
+authorUsername: "jakub.misilo"
+---
+ 
+## What is AI21 Labs?
+ 
+AI21 Labs is an artificial intelligence research lab that focuses on natural language understanding. Their goal is to revolutionize the way we write and read. It’s an amazing generative AI text-to-text technology, which can improve the work of your app.	
+Company’s motto is really to the point:
+'They say two heads are better than one. We say two heads - one human and one intelligent machine - are the best.' 
+ 
+## Let's start!
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-robot.png" alt="AI21 Labs - image robot" />
+
+*Please create your [AI21 account](https://studio.ai21.com/)*
+ 
+First, we need to prepare our environment. Let's create a directory and virtual environment.
+ 
+```bash
+mkdir ai21-labs
+cd ai21-labs
+ 
+python3 -m venv venv
+ 
+# Linux/Mac OS
+source venv/bin/activate
+ 
+# Windows
+.\venv\Scripts\activate
+```
+ 
+Then, we need to install the SDK for Python.
+ 
+```bash
+pip install -U ai21
+```
+ 
+Last thing, we need to create a file for our Python code.
+ 
+## Code!
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-keyboard.png" alt="AI21 Labs - keyboard" />
+
+Let's import the library.
+ 
+```python
+import ai21
+```
+ 
+Now we have to define our API key. You can find it in your [AI21 account](https://studio.ai21.com/account/account).
+ 
+```python
+ai21.api_key = '<API_KEY>'
+```
+ 
+To generate text we have to provide some parameters into `ai21.Completion.execute` function. Here's what it looks like in my case:
+ 
+```python
+  response = ai21.Completion.execute(
+    model='j1-large',
+    prompt=prompt,
+    temperature=0.65,
+    minTokens=4,
+    maxTokens=32,
+    numResults=1
+)
+```
+ 
+Feel free to play with these parameters. You can find more information about them [here](https://docs.ai21.com/reference/j1-complete).
+ 
+## Let's test it out!
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-lab.png" alt="AI21 Labs - image lab" />
+
+
+Prompt: "Last day I was in school"
+ 
+Response: ", and Christopher, my childhood friend and classmate, came in. We started talking, and he told me that he had something to tell me. He said that his class teacher saw us having lunch together in the school canteen."
+
+ 
+
+**Prompt: "When I was little my mother told me a tale:"**
+ 
+**Response: "'Once upon a time', she said 'there lived a fisherman and his wife. They had one son, who meant well, but who was very clumsy. One day, when the fisherman was away"**
+
+ 
+## Conclusions
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-conc.png" alt="AI21 Labs - image cats" />
+ 
+In my opinion, you must try to test the AI21 Labs models yourself! You will certainly not regret it. It will be worth it to test many types of prompts, depending on your use case. Give it a try, because every generative AI is a unique tool and ChatGPT is not the only one out there.
+
+And where better to test your skills than during an AI Hackathon? With a group of like-minded people and with assistance of our mentors?
+First AI21 Labs Hackathon is a 7 days AI Hackathon, join in and shape the future!

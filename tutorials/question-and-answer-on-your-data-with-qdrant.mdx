@@ -1,0 +1,193 @@
+---
+title: "Question and Answer on your data with Qdrant"
+description: "Today, we will build a Question and Answer Chat Bot with knowledge from your own PDF files. We will use Qdrant, a state-of-the-art open-source vector search engine"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/thumb-qdrant.tut.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## What is Qdrant?
+
+Qdrant (read: quadrant ) is a vector similarity search engine. It provides a production-ready service with a 
+convenient API to store, search, and manage points - vectors with an additional payload. Qdrant is tailored to 
+extended filtering support. It makes it useful for all sorts of neural network or semantic-based matching, 
+faceted search, and other applications.
+
+Qdrant is released under the open-source Apache License 2.0. Its source code is available on [GitHub](https://github.com/qdrant/qdrant).
+
+Our overall plan is to:
+1. Create a new free Qdrant cloud cluster
+2. Use pdfplumber to extract text from PDF and create embeddings
+3. Use Qdrant to index the embeddings
+4. Use Qdrant to search for the most similar embeddings based on a users input
+5. Generate a response based on the most similar embedding
+
+So, without wasting more time - let’s get started!
+
+### Create a new free Qdrant cloud cluster
+
+Go to [qdrant.tech](https://qdrant.tech/) and create a new account, and then create a new cluster. You can get
+the pyhton code to connect to your cluster by clicking on the "Code Sample" button. You can find your `api_key`
+under `Access` tab. 
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/clusterqdrant.PNG" />
+
+Next we can connect to our cluster and create a new collection from our code. Set the size to the dimension of your embeddings.
+For OPenAI's ada002 embeddings model the size is 1536.
+
+```python
+from qdrant_client import QdrantClient
+
+qdrant_client = QdrantClient(
+    host="<HOSTNAME>", 
+    api_key="<API_KEY>",
+)
+
+qdrant_client.recreate_collection(
+    collection_name="mycollection",
+    vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE),
+)
+print("Create collection reponse:", qdrant_client)
+
+collection_info = qdrant_client.get_collection(collection_name="mycollection")
+
+print("Collection info:", collection_info)
+```
+
+### Use pdfplumber to extract text from PDF and create embeddings
+
+We will use pdfplumber to extract text from PDF files. This can be a bit tricky depending on the PDF, because of how PDF files are structured.
+
+In this example we will use the SpaceX Starship Users Guide, but you can use any PDF file you want.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/starshipguide.PNG" />
+
+
+```python	
+import pdfplumber
+
+fulltext = ""
+with pdfplumber.open("starship.pdf") as pdf:
+    # loop over all the pages
+    for page in pdf.pages:
+        fulltext += page.extract_text()
+
+print(fulltext)
+```
+
+Next we will splitt the text into chunks of max 500 characters and in the next step we will create embeddings for each chunk. This will help 
+us create a better context for our question and answer chat bot. Since the input size for OpenAI's generation model is 4k tokens,
+we will split the text into chunks of max 500 characters. This will make sure that we can fit multiple 
+chunks as context to our prompt
+
+
+```python
+text = fulltext
+
+chunks = []
+while len(text) > 500:
+    last_period_index = text[:500].rfind('.')
+    if last_period_index == -1:
+        last_period_index = 500
+    chunks.append(text[:last_period_index])
+    text = text[last_period_index+1:]
+chunks.append(text)
+
+
+for chunk in chunks:
+    print(chunk)
+    print("---")
+```
+
+We will use OpenAI's ada002 embeddings model to create embeddings for each chunk. 
+
+```python
+from qdrant_client.http.models import PointStruct
+
+points = []
+i = 1
+for chunk in chunks:
+    i += 1
+
+    print("Embeddings chunk:", chunk)
+    response = openai.Embedding.create(
+        input=chunk,
+        model="text-embedding-ada-002"
+    )
+    embeddings = response['data'][0]['embedding']
+
+    points.append(PointStruct(id=i, vector=embeddings, payload={"text": chunk}))
+```
+
+### Use qdrant to index the embeddings
+
+Basically, just insert all points from our list into our collection.
+
+```python
+operation_info = qdrant_client.upsert(
+    collection_name="mycollection",
+    wait=True,
+    points=points
+)
+
+print("Operation info:", operation_info)
+```
+
+### Use Qdrant to search for the most similar embeddings based on a users input
+
+Now we can search for the most similar embeddings based on a user's input. We will use the new OpenAI gpt-3.5-turbo model to generate a response. 
+
+```python
+def create_answer_with_context(query):
+    response = openai.Embedding.create(
+        input="What is starship?",
+        model="text-embedding-ada-002"
+    )
+    embeddings = response['data'][0]['embedding']
+
+    search_result = qdrant_client.search(
+        collection_name="mycollection",
+        query_vector=embeddings, 
+        limit=5
+    )
+
+    prompt = "Context:\n"
+    for result in search_result:
+        prompt += result.payload['text'] + "\n---\n"
+    prompt += "Question:" + query + "\n---\n" + "Answer:"
+
+    print("----PROMPT START----")
+    print(":", prompt)
+    print("----PROMPT END----")
+
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+        )
+
+    return completion.choices[0].message.content
+```
+
+### Generate a response based on the most similar embeddings
+
+Now we can get the users input, query similar embeddings and generate a response with the context of the most similar embeddings.
+
+```python
+input = "what is starship?"
+answer = create_answer_with_context(input)
+print(answer)
+
+# Starship is a fully reusable transportation system designed by SpaceX to service Earth orbit needs as well as missions to the Moon and Mars. It is a two-stage vehicle composed of the Super Heavy rocket (booster) and Starship (spacecraft) powered by sub-cooled methane and oxygen, with a substantial mass-to-orbit capability. Starship can transport satellites, payloads, crew, and cargo to a variety of orbits and landing sites. It is also designed to evolve rapidly to meet near term and future customer needs while maintaining the highest level of reliability.
+```
+
+## Is Qdrant worth using?
+
+Well, of course it is! With Qdrant we can add as much knowledge to our GPT3 or GPT 3.5 prompt as we want. You can also build similar image / audio / video search and recommendation systems. Qdrant gives you awesome query filter controlls, collections, optimizers and [much more](https://qdrant.tech/documentation)!
+
+Regarding this tutorial, you can find the full code for this tutorial [here on GitHub](https://github.com/lablab-ai/qdrant-q-and-a-on-pdf/blob/main/qdrant-q-and-a.ipynb). And of course you can use the code examples to add this kind of system to your own application
+
+And we always encourage you to test your skills during our AI Hackathons. Best way to check what you have learnt here, network with other like-minded people from all around the world and actually build a working prototype which can be a milestone for your very own startup! See the [upcoming events](https://lablab.ai/event)!
+
+**Thank you!** 
+If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)

@@ -1,0 +1,149 @@
+---
+title: "Cohere tutorial: Answering questions based on given data"
+description: "In this tutorial we will show you how to use Cohere AI to answer questions based on given data."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Cohere_Semantic_Search_1.png"
+authorUsername: "Flafi"
+---
+ 
+# Why should I use Cohere to answer questions based on data?
+
+To answer questions based on data is basically extracting information from text, which is a common task in language processing. And as Coheres large language models are an AI based technology, this can improve the understanding and further processing of the data.
+ 
+## Let's get started
+ 
+Register to Cohere if you haven't done it already https://dashboard.cohere.ai/register
+
+Before I was creating the nextjs project I was trying out my concept on the Cohere playground. It is a great tool to test out your ideas and get a feeling for the API. You can find it here: https://os.cohere.ai/playground 
+
+### Create a new project
+
+I was using our repository that is public on GitHub. You can find it here: https://github.com/lablab-ai/nextjs-cohere-boilerplate
+
+You can clone the repository and install all the dependencies with npm or yarn.
+
+### API key
+
+Create a new API key for you project on the Cohere dashboard. You can find it here: https://dashboard.cohere.ai/api-keys
+The created API you need to place into the env file of the project.
+(Never share your API key with anyone, don't commit it to a public repository!)
+
+### Updating index.js
+
+Now we will update the index.js file to be able to handle more input than one. I also renamed the states to make it more clear.
+
+```js
+  const [question, setQuestion] = useState("");
+  const [companyData, setCompanyData] = useState("");
+```
+
+Update the fetch request, as we will change the endpoint name and we will send more information.
+
+```js
+  const res = await fetch("/api/answer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ question, companyData }),
+  });
+
+  const data = await res.json();
+  setOutput(data.summary);
+```
+
+We will also need to update the frontend as we will have two inputs:
+
+```js
+    <div className="flex flex-col justify-center items-center m-2 ">
+      <div className="flex flex-col w-full lg:w-1/2">
+        <h1 className="font-medium leading-tight text-4xl mt-0 mb-2 text-blue-700">
+          Company info answer bot
+        </h1>
+        <h2>Company Data</h2>
+        <textarea
+          className="w-full h-64 mb-10 text-sm p-4  text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Paste article here"
+          value={companyData}
+          onChange={(v) => setCompanyData(v.target.value)}
+        />
+        <h2>Question</h2>
+        <textarea
+          className="w-full h-64 text-sm p-4  text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Paste article here"
+          value={question}
+          onChange={(v) => setQuestion(v.target.value)}
+        />
+        <button
+          onClick={handleClick}
+          className="m-4 bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+        >
+          {loading ? "loading..." : "Send question"}
+        </button>
+        {output ? `Answer: ${output}` : null}
+      </div>
+    </div>
+```
+
+### Updating the API
+
+Let's rename the api file to answer.js and update the code.
+
+we will need the question and the companyDate fields from the request body.
+
+```js
+const { question, companyData } = req.body;
+```
+
+We will still use the generate model., but we will change the prompt of course.
+
+
+### Creating the perfect prompt for the work
+
+First of all, we will show an example of a good prompt and a bad prompt. I am using a short company data text from wikipedia.
+
+First time we are asking about the company and we place the correct answer in the answer field. Second time I am creating a bad question,
+)not regarding the company). I used the question "How are you?" and placed the answer "This question is not related to the company".
+This way the model will know how to react on a question that is irrelevant and not covered in the company data text.
+My prompt is the following:
+
+```js
+  prompt: `This program will answer questions based on the provided data:\n\nData: Siemens AG is a German multinational conglomerate corporation and the largest industrial manufacturing company in Europeheadquartered in Munich with branch offices abroad. Siemens & Halske was founded by Werner von Siemens and Johann Georg Halske on 1 October 1847. The principal divisions of the corporation are Industry, Energy, Healthcare (Siemens Healthineers), and Infrastructure & Cities, which represent the main activities of the corporation.The corporation is a prominent maker of medical diagnostics equipment and its medical health-care division, which generates about 12 percent of the corporation\'s total sales, is its second-most profitable unit, after the industrial automation division. In this area, it is regarded as a pioneer and the company with the highest revenue in the world.The corporation is a component of the Euro Stoxx 50 stock market index. Siemens and its subsidiaries employ approximately 303,000 people worldwide and reported global revenue of around €62 billion in 2021 according to its earnings release.\n\nQuestion: When the company was founded?\nAnswer: on 1 October 1847.\n--\nQuestion: How are you?\nAnswer: This question is not related to the company.\n--\nQuestion: Who was/were the founder?\nAnswer: Werner von Siemens and Johann Georg Halske\n--\nData:${companyData}\nQuestion: ${question}?\nAnswer:`
+```
+
+At the end I am slicing the last part of the response to get the correct answer.
+  
+  ```js
+       res.status(200).json({ summary: response.body.generations[0].text.slice(0,-3) });
+  ```
+
+### We can start our application
+
+Let's start our application with yarn or npm run dev script.
+
+### Testing the application
+
+For a test porpose, I placed a short description about Robert Bosch GmbH from wikipedia:
+
+```javascript
+`Robert Bosch GmbH , commonly known as Bosch and stylized as BOSCH, is a German multinational engineering and technology company headquartered in Gerlingen, Germany. The company was founded by Robert Bosch in Stuttgart in 1886. Bosch is 92% owned by Robert Bosch Stiftung, a charitable institution. Although the charity is funded by owning the vast majority of shares, it has no voting rights and is involved in health and social causes unrelated to Bosch’s business.
+Bosch's core operating areas are spread across four business sectors: mobility (hardware and software), consumer goods (including household appliances and power tools), industrial technology (including drive and control) and energy and building technology.`
+```
+
+I asked question regarding the company that the text contain. "What are the main sectors?"
+Answer: mobility, consumer goods, industrial technology and energy and building technology.
+
+This is correct! The model was able to understand the question and answer it correctly.
+Of course the prompt can be always finetuned to get better results. Because the model will try to answer everything.
+ 
+### Conclusion
+ 
+Cohere is a great tool for creating a chatbot. It is easy to use and it is free for a limited number of requests.
+
+Here you can find the code for this project: https://github.com/lablab-ai/cohere-nextjs-answerbot
+ 
+Join our AI Hackathons to test your knowledge and build with assistance of our mentors AI based tools to change the world! Check the upcoming ones under the link [here paste the link to upcoming Hackathons page]
+ 
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
+ 
+Check out our upcoming hackathons:
+[Upcoming hackathons](https://lablab.ai/event)

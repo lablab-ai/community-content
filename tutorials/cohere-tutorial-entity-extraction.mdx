@@ -1,0 +1,52 @@
+---
+title: "Cohere tutorial: Entity extraction"
+description: "In this tutorial we will show you how to use Cohere AI to extract entities from text."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere_entity_extraction.jpg"
+authorUsername: "Flafi"
+---
+ 
+Extracting information from text is a common task in language processing.
+LLMs can extract entities that are difficult to extract using other NLP methods (and where pre-training provides the model with some context on these entities).
+This is an overview of using generative LLMs to extract entities
+ 
+# Let's get started
+ 
+First of all, register to Cohere https://dashboard.cohere.ai/register
+ 
+After registration you need to head over to the Playground https://os.cohere.ai/playground
+ 
+Next, we can check out the Cohere Playground.The Cohere Classify Playground is a great tool for testing your ideas and getting started with a project. It has a clean UI and can export your code in multiple languages.
+ 
+We will choose generate endpoint with default language model.
+ 
+ 
+For this example I will use the Extract entities from Invoices example. And rewrite it just to show how great this model is.
+ 
+We will extract names from sentences. You can paste the following sentences in the Playground and see how the model extracts the names.
+ 
+ 
+```bash
+Extract names from sentences.
+ 
+Sentence: Bob went to the market to buy something for lunch
+Name: Bob
+--
+Sentence: Peter Parker was Spiderman in real life
+Name: Peter Parker
+--
+Sentence: Once I have seen Buffy the vampire slayer
+Name:
+```
+ 
+In my test it was correctly generating the answer even with two examples.
+ 
+And from the playground we can export the code in multiple languages.
+ 
+# Conclusion
+ 
+Cohere is giving a great solution to extract entities from text with endless possibilities.
+ 
+Join our AI Hackathons to test your knowledge and build with assistance of our mentors AI based tools to change the world! Check the upcoming ones here: [Cohere Thanksgiving Hackathon](https://lablab.ai/event/cohere-thanksgiving-hackathon) &
+[Cohere Holiday Hackathon](https://lablab.ai/event/cohere-holiday-hackathon)
+ 
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) 

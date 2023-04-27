@@ -1,0 +1,71 @@
+---
+title: "How to use Cohere: Cohere Playground"
+description: "How to use Cohere's Playground"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere_playground_thumb%20(1).png"
+authorUsername: Flafi
+---
+
+Hello! This is a Cohere tutorial on how to use Cohere's Playground. Co:here is a powerful neural network, which can generate, embed, and classify text.
+
+If you just want to check something fast and don't want to create a new project on your computer, you can use the Playground. It's a great way to test out Cohere's features and see how they work, as well without spending too much time on setting everything up!
+
+
+## 🚀 Let's start!
+
+First of all, register to Cohere https://dashboard.cohere.ai/register
+
+After registration you need to head over to the Playground https://os.cohere.ai/playground
+
+On the top you will see the 3 main tabs: **Generate**, **Embed** and **Classify**.
+
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere_playground.jpeg" />
+
+On each main tab on the left side you will see Example presets. This is a big help from Cohere to get you started. You can use these examples to get a better understanding of how Cohere works, how prompts are working
+
+
+## Generate
+
+Let's take an example on the **Generate** tab. You can see example preset Blog Posts.
+
+
+```python
+This program will generate an introductory paragraph to a blog post given a blog title, audience, and tone of voice.
+--
+Blog Title: Best Activities in Toronto
+Audience: Millennials
+Tone of Voice: Lighthearted
+First Paragraph: Looking for fun things to do in Toronto? When it comes to exploring Canada's largest city, there's an ever-evolving set of activities to choose from. Whether you're looking to visit a local museum or sample the city's varied cuisine, there is plenty to fill any itinerary. In this blog post, I'll share some of my favorite recommendations
+--
+Blog Title: Mastering Dynamic Programming
+Audience: Developers
+Tone: Informative
+First Paragraph: In this piece, we'll help you understand the fundamentals of dynamic programming, and when to apply this optimization technique. We'll break down bottom-up and top-down approaches to solve dynamic programming problems.
+--
+Blog Title: How to use Cohere's Playground
+Audience: Athletes
+Tone: Enthusiastic
+First Paragraph:
+```
+At the beginning we are giving two examples for the model to learn from separated by `--` stop sequence that we are setting on the right side.
+We can change the blog title at the end to "How to use Cohere's Playground" and click Generate on the right bottom corner.
+
+
+On the right side of the screen we have the **PARAMETERS** tab. Here we can choose what size of model we want to use. Smaller the model the faster the generation will be.
+We can also choose the temperature of the model. The higher the temperature the more random the output will be.
+We can also choose the number of tokens we want to generate.
+Frequency penalty is a way to penalize the model for repeating the same words. The higher the frequency penalty the less likely the model will repeat the same words.
+
+
+Code can be exported in many languages Python, node.js, go, curl, cli. So basically you can just copy the code into your project and you are good to go :)
+You can also share your playground state with others, by clicking on the share button.
+And on the bottom you can save the state for yourself
+
+
+I hope you enjoyed this short introduction to Cohere's Playground.
+Thank you and Have fun!
+
+**You might want to read more :) :**
++ https://docs.cohere.ai/docs/playground-overview
++ https://docs.cohere.ai/docs/the-cohere-platform
+

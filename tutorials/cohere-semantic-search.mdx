@@ -1,0 +1,172 @@
+---
+title: "Cohere tutorial: Semantic Search with Cohere"
+description: "How to create a semantic search engine with Cohere"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/smeantic-search-cohere.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## What is semantic search?
+
+Semantic search is the capability of computers to search by meaning, going beyond the typical keyword matching search.
+Semantic search uses natural language processing, artificial intelligence and machine learning to understand the user's 
+query, the context of the query and the user's intent. Semantic search looks at the relationship between words, 
+or the meaning of words, to provide more accurate and relevant search results than traditional keyword searches.
+
+
+Semantic search engines have many practical applications. For example, StackOverflow's "similar questions" feature is 
+enabled by such a search engine. Additionally, they can be used to build a private search engine for internal documents 
+or records. This article will show you how to build a basic semantic search engine. This article covers the usage of an archive 
+of questions to embed, search with an index and nearest neighbour search and visualization based on the embeddings.
+
+### Let's get started
+
+For this Cohere AI tutorial we will use the example data that is provided by Cohere. You can find the full notebook code [here](https://colab.research.google.com/github/cohere-ai/notebooks/blob/main/notebooks/Basic_Semantic_Search.ipynb) 
+
+First we will get get the archive of questions, then embed them and finally search using an index and nearest neighbour search. At 
+the end we will visualize the results based on the embeddings. To run this tutorial you will need to have a Cohere account. 
+You can sign up for a free account [here](https://cohere.ai/).
+
+Lets start by installing the necessary libraries.
+
+```bash
+!pip install cohere umap-learn altair annoy datasets tqdm
+```
+
+Then create a new notebook or Pythin file and import the necessary libraries.
+
+```python
+import cohere
+import numpy as np
+import re
+import pandas as pd
+from tqdm import tqdm
+from datasets import load_dataset
+import umap
+import altair as alt
+from sklearn.metrics.pairwise import cosine_similarity
+from annoy import AnnoyIndex
+import warnings
+warnings.filterwarnings('ignore')
+pd.set_option('display.max_colwidth', None)
+```
+
+#### Get the Archive of Questions
+
+Next, we will get the archive of questions from Cohere. This archive is the [trec](https://www.tensorflow.org/datasets/catalog/trec) 
+dataset, which is a collection of questions with categories. We will use the `load_dataset` function from the `datasets` library 
+to load the dataset.
+
+```python
+# Get dataset
+dataset = load_dataset("trec", split="train")
+# Import into a pandas dataframe, take only the first 1000 rows
+df = pd.DataFrame(dataset)[:1000]
+# Preview the data to ensure it has loaded correctly
+df.head(10)
+```
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/df_cohere.JPG" />
+
+#### Embed the Archive of Questions
+
+Now we can embed the questions using Cohere. We will use the `embed` function from the Cohere library to embed the questions.
+It should only take a few seconds to generate one thousand embeddings of this length.
+
+```python
+# Paste your API key here. Remember to not share publicly
+api_key = ''
+
+# Create and retrieve a Cohere API key from dashboard.cohere.ai/welcome/register
+co = cohere.Client(api_key)
+
+# Get the embeddings
+embeds = co.embed(texts=list(df['text']),
+                  model='large',
+                  truncate='LEFT').embeddings
+```
+
+Now we can build the index and search for the nearest neighbours. We will use the `AnnoyIndex` function from the `annoy` library.
+The optimization problem of finding the point in a given set that is closest (or most similar) to a given point is known as nearest neighbour search.
+
+```python
+# Create the search index, pass the size of embedding
+search_index = AnnoyIndex(embeds.shape[1], 'angular')
+# Add all the vectors to the search index
+for i in range(len(embeds)):
+    search_index.add_item(i, embeds[i])
+search_index.build(10) # 10 trees
+search_index.save('test.ann')
+```
+
+#### Find the Neighbours of an example from the dataset
+
+We can use the index we built to find the nearest neighbours of both existing questions and new 
+questions that we embed. If we're only interested in measuring the similarities between the questions 
+in the dataset (no outside queries) a simple way is to calculate the similarities between every 
+pair of embeddings we have.
+
+```python
+# Choose an example (we'll retrieve others similar to it)
+example_id = 92
+# Retrieve nearest neighbors
+similar_item_ids = search_index.get_nns_by_item(example_id,10,
+                                                include_distances=True)
+# Format and print the text and distances
+results = pd.DataFrame(data={'texts': df.iloc[similar_item_ids[0]]['text'],
+                             'distance': similar_item_ids[1]}).drop(example_id)
+print(f"Question:'{df.iloc[example_id]['text']}'\nNearest neighbors:")
+results # only in notebooks, use print(results) in scripts
+```
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere_df_2.JPG" />
+
+#### Find the Neighbours of a User Query
+
+We can use a technique such as embedding to find the nearest neighbours of a user query. By 
+embedding the query, we can measure its similarity with items in the dataset and identify the 
+closest neighbours.
+
+#### Visualization
+
+```python
+#@title Plot the archive {display-mode: "form"}
+
+# UMAP reduces the dimensions from 1024 to 2 dimensions that we can plot
+reducer = umap.UMAP(n_neighbors=20) 
+umap_embeds = reducer.fit_transform(embeds)
+# Prepare the data to plot and interactive visualization
+# using Altair
+df_explore = pd.DataFrame(data={'text': df['text']})
+df_explore['x'] = umap_embeds[:,0]
+df_explore['y'] = umap_embeds[:,1]
+
+# Plot
+chart = alt.Chart(df_explore).mark_circle(size=60).encode(
+    x=#'x',
+    alt.X('x',
+        scale=alt.Scale(zero=False)
+    ),
+    y=
+    alt.Y('y',
+        scale=alt.Scale(zero=False)
+    ),
+    tooltip=['text']
+).properties(
+    width=700,
+    height=400
+)
+chart.interactive()
+```
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere_vizusal.JPG" />
+
+This brings us to an end to this introductory guide on semantic search using sentence embeddings. Going 
+forward, when constructing a search product, there are additional factors to consider (e.g. handling 
+lengthy texts or training to optimize the embeddings for a particular purpose). Feel free to explore 
+and experiment with other data.
+
+You can find upcoming hackathons and events on [events page](https://lablab.ai/event/).
+
+Identify a problem around you and [build cohere app](https://lablab.ai/blog/state-of-the-art-ai-top-5-ai-apps-you-can-build-with-cohere-api) to fix it.
+
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)

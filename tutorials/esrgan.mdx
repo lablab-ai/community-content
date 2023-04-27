@@ -1,0 +1,179 @@
+---
+title: "AI art prompt guide: How to improve the resolution of images with AI"
+description: "This tutorial is showing step by step how to use ESRGAN to improve the resolution of your images."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-title.png"
+---
+
+Enhanced Super-Resolution Generative Adversarial Networks (ESRGAN) is a kind of the GAN model. The main idea of the GANs models is to prepare two neural networks, which are playing a game together. Players are the generator and the discriminator. The first of them is generating data, the second has to check if a photo is real or fake. 
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-tutorial.png" />
+
+In the first step, the generator creates a new image. Then the discriminator verifies whether the generated photo is real or not. At this point, GAN calculates two losses, for generator and discriminator. The generator learns how good was his image and the discriminator learns how good was his verification. 
+
+[ESRGAN](https://arxiv.org/abs/1809.00219) is the pre-trained model with vgg19 weights.
+Do Not Reinvent The Wheel. (Artist [DALL-E](https://openai.com/dall-e-2/))
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-wheel.png" />
+
+## How to prepare ESRGAN for your purpose
+Firstly you have to upload your dataset to [Google Drive](https://drive.google.com/). In this tutorial, I will use the dataset from [Kaggle](https://kaggle.com) called [CalebA](https://www.kaggle.com/datasets/jessicali9530/celeba-dataset). This dataset contains over 200k images of celebrities' faces. The resolution is 218x178 with 3 channels.
+
+*If you want to use the same dataset, I recommend uploading only 10 000 images.*
+
+Nevertheless, you can use whatever you want!
+
+### Notebook
+ESRGAN needs GPU with a large memory capacity, so in the tutorial, I use [Google Colab](https://research.google.com./colaboratory/). In which you can change **Runtime type**, click **Runtime**  and choose **GPU** in **Hardware accelerator**. 
+ 
+ ### Repository 
+ 
+Now we need to clone the repository with implemented ESRGAN 
+
+```bash
+!git clone https://github.com/eriklindernoren/PyTorch-GAN
+%cd PyTorch-GAN/
+```
+ and install requirements.
+```bash
+!sudo pip3 install -r requirements.txt
+%cd implementations/esrgan/
+```
+ 
+### Loading data
+
+Then, we can connect Google Drive with Google Colab by command:
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+I use the patool lib to extract files from my rar to Google Colab.
+
+```python
+!pip install patool
+import patoolib
+patoolib.extract_archive("/content/drive/MyDrive/name_of_your_file.rar", outdir="/content/PyTorch-GAN/data")
+``` 
+**Important** `outdir`must be `"/content/PyTorch-GAN/data"`
+
+### Testing dataset
+
+A good practice is to have a testing dataset. The data was not used to train a model. To create testing set we can transfer some data from `data/name_of_your_folder` to `data/test` folder. 
+
+Firstly we have to create a new folder
+```python
+!mkdir -p /content/PyTorch-GAN/data/test
+```
+After that, we move a few images to `test` folder.
+```python
+import os
+from glob import glob
+
+paths = glob("/content/PyTorch-GAN/data/name_of_your_folder/*")
+samples = 5 # count of photos to move
+
+for no, path in enumerate(paths[:samples]):
+    os.replace(path, f"/content/PyTorch-GAN/data/test/{no}.jpg")
+```
+
+If the uploaded count of images is too big. You can use:
+
+```python
+import os
+from glob import glob
+
+paths = glob("/content/PyTorch-GAN/data/name_of_your_folder/*")
+samples = 1000 # count of photos to left
+
+for no, path in enumerate(paths):
+  if no > samples:
+    os.remove(path)
+```
+
+### Training
+
+Let's train the neural network!
+
+To train the ESRGAN model we have to write a command with arguments:
+```python
+!python3 esrgan.py --dataset_name 10k --n_epochs 20 --checkpoint_interval 250
+```
+
+Available arguments:
+
+`--dataset_name` name of your folder in `/content/PyTorch-GAN/data`
+
+`--n_epochs` number of epochs (default 200)
+
+`--hr_height`height of output (default 256)
+
+`--hr_width` width of output  (default 256)
+
+`--channesl`channels of input (default 3)
+
+`--checkpoint_interval` I recommend setting it as 250 if you have a small dataset. (default 5000)
+
+The rest arguments you can find [HERE](https://github.com/eriklindernoren/PyTorch-GAN/blob/master/implementations/esrgan/esrgan.py).
+
+Inside the folder `'/content/PyTorch-GAN/implementations/esrgan/images/training` you can find the saved images from the training process.
+
+### Testing
+
+To test our model we need an image. We use the images which we have transferred before to `test` folder.
+
+```python
+from glob import glob
+paths = glob("/content/PyTorch-GAN/data/test/*")
+print(path)
+```
+```notebook
+/content/PyTorch-GAN/data/test/0.jpg
+/content/PyTorch-GAN/data/test/1.jpg
+/content/PyTorch-GAN/data/test/2.jpg
+/content/PyTorch-GAN/data/test/3.jpg
+/content/PyTorch-GAN/data/test/4.jpg
+```
+
+We can run the model with the command:
+```python
+!python3 test_on_image.py --image_path /content/PyTorch-GAN/data/test/0.jpg --checkpoint_model /content/PyTorch-GAN/implementations/esrgan/saved_models/generator_1.pth
+```
+Available arguments:
+
+`--image_path` name of your image in `/content/PyTorch-GAN/data/test/0.jpg`
+
+`--checkpoint_model` name of your trained generator `/content/PyTorch-GAN/implementations/esrgan/saved_models/generator_X.pth`
+
+**X replace with a number of the last trained epoch.**
+
+The generated image you can find in `/content/PyTorch-GAN/implementations/esrgan/images/outputs/`
+
+If you want to copy the image to your google cloud write
+
+```python
+!sudo cp -r /content/PyTorch-GAN/implementations/esrgan/images/outputs/sr-name_of_image.jpg /content/drive/MyDrive/
+```
+## Conclusion
+
+The idea of GAN models is amazing, two neural networks play together to be better in every epoch -`Use a neural network to teach a neural network`. 
+The GAN models have more and more types, one of them is used in the tutorial ESRGAN. These neural networks are prepared to work with images and make them better.
+This is a powerful model, but it also needs a lot of computing power. Below you can see the results after 5 epochs and 10 000 training data. They are not ideal, but if you run your training process for much more epochs the results will be awesome! Just try it!
+
+I hope you like my tutorial!
+
+Stay tuned for future tutorials!
+
+**Thank you!** - [Adrian Banachowicz](https://www.linkedin.com/in/adrian-banachowicz/), Data Science Intern in [New Native](https://newnative.ai/)
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-results-5-epoch.png" />
+
+
+
+
+esrgan is released under a CC-BY-NC-ND-4.0 [license](https://github.com/leverxgroup/esrgan/blob/master/LICENSE). 
+ESRGAN - https://arxiv.org/abs/1809.00219   
+author - Xintao Wang, Ke Yu, Shixiang Wu, Jinjin Gu, Yihao Liu, Chao Dong, Chen Change Loy, Yu Qiao, and Xiaoou Tang.
+
+
+
+

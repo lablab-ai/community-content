@@ -1,0 +1,156 @@
+---
+title: "How to use Cohere to classify news headlines with Nextjs" 
+description: "In this tutorial, we'll build a Nextjs app that uses Cohere to classify news headlines."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/thumbnail-cohere.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+In this tutorial we'll build a Nextjs app that uses Cohere to classify news headlines. We'll 
+use the Cohere API to classify news headlines and display the results in a Nextjs app.
+
+## What is Cohere?
+
+Cohere is a machine learning API that can classify text categories (and much more). It's 
+a great way to add machine learning to your app without having to build your own models.
+
+## What is Nextjs?
+
+Nextjs is a React framework that makes it easy to build server-rendered React apps. It's
+great for building static sites and web apps.
+
+## Prerequisites
+
+To follow along with this tutorial, you'll need:
+
+- A Cohere account. You can sign up for free at [cohere.ai](https://cohere.ai).
+- A Nextjs app. You can create one with `npx create-next-app`.
+
+## Build the user interface
+
+First, we'll build the user interface for our app. in our `index.js` file, we'll add a
+`textarea` and a `button` to press. 
+
+```jsx
+const [text, setText] = useState("");
+
+return (
+  <div className="flex flex-col h-screen  items-center">
+    <h1 className="text-3xl font-bold underline">
+      Cohere Headline classifier
+    </h1>
+    <p className="py-4">Enter headline here</p>
+    <textarea
+      onChange={(e) => setText(e.target.value)}
+      className="block p-2.5 w-1/2 text-sm text-gray-900 bg-gray-50 rounded-lg border 
+      border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 
+      dark:border-gray-600 dark:placeholder-gray-400 dark:text-white 
+      dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    ></textarea>
+    <button
+      onClick={classify}
+      className="bg-blue-500 hover:bg-blue-700 text-white font-bold my-4 p-4 rounded"
+    >
+      Classify
+    </button>
+    <p>Classification:</p>
+    <pre>{JSON.stringify(classification, null, 2)}</pre>
+  </div>
+)
+```
+This will give us a simple UI to enter a headline and press a button to classify it, that 
+looks like this:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/classify.JPG" />
+
+## Classify the text
+
+Les build the classify function. First import the cohere client & add you API key. You can 
+find your API key on your [dashboard](https://dashboard.cohere.ai/).
+
+```
+const cohere = require("cohere-ai");
+cohere.init("YOUR-API-KEY");
+```
+
+```js
+const [classification, setClassification] = useState("");
+
+  const classify = async () => {
+    text == "" && alert("Please enter some text");
+    const response = await cohere.classify({
+      model: "large",
+      inputs: [text],
+      examples: [
+        {
+          text: "New Era Begins at Warner Bros. Tinged with Nostalgia",
+          label: "Technology",
+        },
+        {
+          text: "As Gas Prices Went Up, So Did the Hunt for Electric Vehicles",
+          label: "Technology",
+        },
+        { text: "Facial Recognition Goes to War", label: "Technology" },
+        {
+          text: "US Says It Secretly Removed Malware Worldwide",
+          label: "Technology",
+        },
+        { text: "The Old-Timers Are Chasing Netflix", label: "Technology" },
+        {
+          text: "Few Cars, Lots of Customers: Why Autos Are an Inflation Risk",
+          label: "Economy",
+        },
+        {
+          text: "Supply Chains Widely Tainted by Forced Labour in China",
+          label: "Economy",
+        },
+        {
+          text: "The US Economy is Booming. Why are Economists Worrying About a Recession?",
+          label: "Economy",
+        },
+        {
+          text: "Industries hit hard by the pandemic continued their rebound",
+          label: "Economy",
+        },
+        {
+          text: "Energy prices in Europe soar 45 percent as inflation hits another record",
+          label: "Economy",
+        },
+        {
+          text: "New Drug Slashed Deaths Among Patients With Severe Covid, Maker Claims",
+          label: "Health",
+        },
+        { text: "Is 30 minutes of Exercise a Day Enough?", label: "Health" },
+        {
+          text: "With a $2.1 Million Cure Their Only Hope, Parents Plead for Help Online",
+          label: "Health",
+        },
+        {
+          text: "The FDA suspends use of a Glaxo antibody drug in the US as an Omnicron subvariant spreads",
+          label: "Health",
+        },
+        { text: "What to know about the Bird Flu Outbreak", label: "Health" },
+      ],
+    });
+    setClassification(response.body.classifications);
+  };
+```
+
+As you can see here, we have to add some examples to the `classify` function. We can add as many
+examples as we want. The more examples we add, the more accurate the classification will be.
+Then we can add the text from the `textarea` to the `inputs` array. The `model` parameter is the
+size of the model we want to use. We will use `large`. The larger the model, the more accurate the
+classification will be, but the slower it will be. The `large` model is a good balance between
+accuracy and speed.
+
+## Deploy to Vercel
+
+Now that we have a working app, we can deploy it to Vercel. Vercel is a great way to deploy
+Nextjs apps. It has a free tier and easy to use. Upload your project to GitHub and connect it
+on Vercel.com.
+
+You can find this entire project on [GitHub](https://github.com/lablab-ai/cohere-headline-classify-nextjs)
+
+Also we invite you to join our [Hackathon artificial inteligence](https://lablab.ai/event) and learn more about [lablab](https://lablab.ai/)
+
+**Thank you!** 
+If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)

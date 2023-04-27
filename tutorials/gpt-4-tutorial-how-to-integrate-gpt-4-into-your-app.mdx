@@ -1,0 +1,162 @@
+---
+title: "GPT-4 tutorial: How to integrate GPT-4 into your website"
+description: "A step by step guide how to integrate newest OpenAI’s technology, GPT-4 into your website"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/gpt4-integration-main.png"
+authorUsername: "jakub.misilo"
+---
+
+## GPT-4 is here!
+
+GPT-4 is a new large multimodal model from OpenAI. It is the fourth generation of the GPT language model. GPT-4 outperforms GPT-3 in many tasks. Thanks to its broad general knowledge it’s better to use it instead of previous models. In this tutorial, we will show you how to integrate GPT-4 into a streamlit project.
+
+### How to get access to GPT-4?
+
+GPT-4 API is not available for everyone, it's still in a `limited beta`. You can apply for access on [OpenAI's website](https://openai.com/waitlist/gpt-4-api). To do so, you need to fill out a form with your data and answer some questions. If you will be accepted, you will receive an email with the invitation to the GPT-4 beta.
+
+## How to change GPT-3 to GPT-4?
+
+Changing GPT-3 to GPT-4 is a little bit tricky. GPT-4 like `gpt-3.5-turbo` model, is optimized for chat completion, not text completion. Thanks to its wide general knowledge, it also works well for traditional text completion. Because of that, we should change our `completion` functions to `chat completion`. 
+In this tutorial, we will use Python SDK and lablab.ai's **GPT-3 Streamlit Boilerplate**.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/gpt4-integration-1.png" />
+
+### Clone our repository
+
+First of all, we need to clone our repository. You can do it by running this command:
+
+```bash
+git clone https://github.com/nextgrid/streamlit_gpt3_boilerplate
+```
+
+Let's go to the project directory:
+
+```bash
+cd streamlit_gpt3_boilerplate
+```
+
+### Install dependencies
+
+Now we need to install all dependencies. You can do it by running:
+
+```bash
+pip install -r requirements.txt
+```
+
+### GPT-3 -> GPT-4
+
+To do so we need to open `model.py`. We should take care of `GeneralModel` class. To be able to use GPT-4, we need to change `openai.Completion.create` to `openai.ChatCompletion.create`. We also need to adjust `kwargs` params to fit GPT-4 needs. Also in the `create` function itself we have to add `model` parameter, change `prompt` keyword to `messages`, and extract content from the final response differently.
+
+*Feel free to change parameters passed to the model (e.g. temperature) and see how it affects the output.*
+
+**BEFORE**
+
+```python
+class GeneralModel:
+    def __init__(self):
+        print("Model Initialization--->")
+
+    def query(self, prompt, myKwargs={}):
+        """
+        wrapper for the API to save the prompt and the result
+        """
+
+        # arguments to send the API
+        kwargs = {
+            "engine": "text-davinci-002",
+            "temperature": 0.85,
+            "max_tokens": 600,
+            "best_of": 1,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "stop": ["###"],
+        }
+
+        for kwarg in myKwargs:
+            kwargs[kwarg] = myKwargs[kwarg]
+
+        r = openai.Completion.create(prompt=prompt, **kwargs)["choices"][0][
+            "text"
+        ].strip()
+        return r
+
+    def model_prediction(self, inp, api_key):
+        """
+        wrapper for the API to save the prompt and the result
+        """
+        # Setting the OpenAI API key got from the OpenAI dashboard
+        set_openai_key(api_key)
+        output = self.query(poem.format(input=inp))
+        return output
+```
+
+**AFTER**
+
+```python
+class GeneralModel:
+    def __init__(self):
+        print("Model Initialization--->")
+
+    def query(self, prompt, myKwargs={}):
+        """
+        wrapper for the API to save the prompt and the result
+        """
+
+        # arguments to send the API
+        kwargs = {
+            "temperature": 0.9,
+            "max_tokens": 600,
+        }
+
+        for kwarg in myKwargs:
+            kwargs[kwarg] = myKwargs[kwarg]
+
+        r = openai.ChatCompletion.create(
+            model="gpt-4", messages=[{"role": "system", "content": prompt}], **kwargs
+        )
+
+        return r["choices"][0]["message"]["content"].strip()
+
+    def model_prediction(self, inp, api_key):
+        """
+        wrapper for the API to save the prompt and the result
+        """
+        # Setting the OpenAI API key got from the OpenAI dashboard
+        set_openai_key(api_key)
+        output = self.query(poem.format(inp=inp))
+
+        return output
+```
+
+### Run the project
+
+Now we can run the project. You can do it by running:
+
+```bash
+streamlit run gpt_app.py
+```
+
+Let's try to generate a poem!
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ss%20tutorial%20gpt4.png" caption="Result!"/>
+
+## So is GPT-4 API worth implementing?
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/gpt4-integration-2.png" />
+
+Yeah, sure! Changing GPT-3 to GPT-4 is not hard, it requires only a few changes, you can find them in this tutorial or OpenAI's tutorials and documentation. It's worth trying it because GPT-4 is a great model and it's at least worth trying it! And as you may have read, it has much more power, hallucinates less, has new amazing features (like image inputs) and more! 
+
+It’s up to you, what you will build on top of it, but you just got a new powerful tool to use. As you’re currently building with Whisper and ChatGPT API, you might consider upgrading your project with the GPT-4 API.
+
+And if you want to build with AI, we encourage you to join the lablab.ai community 
+
+or
+
+Join our upcoming Whisper and ChatGPT AI Hackathon, or any other using cutting edge AI technology.
+
+Build a working prototype and accelerate it with our slingshot program.
+
+Shape the world with AI
+Change your life with lablab.ai
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)

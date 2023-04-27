@@ -1,0 +1,297 @@
+---
+title: "How to use Cohere tutorial: How to create a Cohere powered summarization Chrome Extension"
+description: "Find out how to create AI powered Chrome extension for you medium.com posts!"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Chrome%20Extension%20with%20co_here-.jpg"
+---
+
+Hello! Have you ever had to do something urgent, and you really wanted to read an article, even though it was a very long one? In this tutorial, you will learn how to create a Google Chrome extension that will allow you to summarize an article and reduce reading time. So let's get started!
+
+*This tutorial requires some HTML, CSS, JavaScript knowledge, but it is not something that cannot be learned quickly!*
+
+## 🚀 Let's start!
+
+### ❓ How to create a Chrome extension?
+
+So, we will start creating an extension by creating the appropriate files. My file structure looks like this:
+
+```
+|-popup-/-popup.html
+|       
+|
+|-scripts-/-index.js
+|
+|
+|-styles-/-index.css
+|
+|-manifest.json
+|
+```
+
+`popup` directory contains .html file for extension popup, we will not use it that much I will just put extension name here.
+
+`scripts` directory contains .js file for extension logic - generating buttons and summarization.
+
+Styles directory contains .css file for extension styling.
+
+`manifest.json` is a file that contains all the information about the extension. We will start with it.
+
+### 📚 Manifest file
+
+As I wrote before, `manifest.json` is a file that contains all the information about the extension. It is a JSON format file. This will be our content for this file:
+
+```json
+{
+  "name": "Post Summary Generator",
+  "description": "Summary generator using Cohere technology",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.medium.com/*",
+        "https://*.towardsai.net/*",
+        "https://*.towardsdatascience.com/*",
+        "https://*.levelup.gitconnected.com/*"
+      ],
+      "css": ["styles/index.css"],
+      "js": [
+        "scripts/index.js"
+      ]
+    }
+  ]
+}
+```
+
+What will be the most important for us:
+
+- `css` - Path to our css file
+- `js` - Path to our js file
+- `matches` - List of domains where we want to use our extension (in my case, I want to use it on medium.com, towardsai.net, towardsdatascience.com, levelup.gitconnected.com, but there are more domains that you can use, feel free to add some more. For me it will be enough)
+
+### 🔁 Load extension to browser
+
+To load extension, go to browser, then to settings > extensions. Turn on developer mode and load extension with button in top left corner. Select your extension folder and you are done!
+
+## 📝 Let's code!
+
+### 📜 popup.html
+
+To this file I will just put basic html template, with extension name.
+
+```html
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cohere powered summarization Chrome Extension</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <p>Cohere powered summarization Chrome Extension</p>
+</body>
+```
+
+### 🎨 index.css
+
+Here I will put some styles for buttons we will use for summarization. They will not be beautiful, but for now they are to fulfill their role. I will explain why I will use such classes in the next section.
+
+```css
+.btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-summary {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #000000;
+    border-radius: 100%;
+}
+
+.btn-summary:hover {
+    cursor: pointer;
+    background-color: #ededed;
+}
+
+.btn-side {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 2rem;
+}
+
+.btn-bottom {
+    width: 2rem;
+    height: 2rem;
+    margin-left: 1rem;
+}
+```
+
+### 🤖 index.js
+
+Here we will put our logic for extension. First, we will create a function that will generate buttons for summarization. We will use `document.createElement` to create buttons and `document.body.appendChild` to append them to the body of the page. We will also add event listeners to buttons, so when we click on them, we will call function for summarization.
+
+We want to put out button next to out user photo. To do it we have to append it to two places - sidebar, which is available for desktop view, and bottom bar - for mobile view. To do it I will got to page and using dev tools I will take element selectors for these elements. There are two possible situations - we will go to main page and the choose one of articles, or we will go directly to article. The selectors are slightly different in both options, which will be included in the guide.
+
+We will create three functions that will be used in the tutorial - `loadButtons`, `prediction`, `cohereReq`. 
+
+```js
+const loadButtons = () => {}
+
+const prediction = e => {}
+
+const cohereReq = prompt => {}
+```
+
+We will start with loading buttons. We want to load them when the page loads, but not the home page. If we go to the main page, it will be better to load them on `click` or `scroll` - when we enter the article from the main page, the `onload` event is not performed, so it will be the right solution for us. Let's code it:
+
+```js
+const loadButtons = () => {
+  // don't want to add these buttons to main page
+  // so if there is nothing after e.g. 'medium.com/' url we will just return 
+  if (window.location.pathname.length < 2) return;
+
+  // Bottom button
+  // add if there isn't already one (we can performe some events more than once, but don't want to add more than one button)
+  if (!document.querySelector(".btn-bottom")) {
+    const bottomBar = (
+      document.querySelector("#root > div > div.l.c > div > div > div.v.w.x.y.z.ab.ac.ae.af > nav > div:nth-child(3) > div > div.ec.an.dp.ed > div") || 
+      document.querySelector("#root > div > div.y.c > div > div > div.jc.jd.je.jf.jg.jh.ji.jj.jk > nav > div:nth-child(3) > div > div > div")
+    )
+
+    // here we are creating structure for button
+    const btnBottom = document.createElement("a")
+    btnBottom.classList.add("btn-bottom")
+    btnBottom.classList.add("btn-summary")
+    btnBottom.textContent = "S"
+
+    // we will create container for button
+    const btnBottomContainer = document.createElement("div")
+    btnBottomContainer?.classList.add("btn-container")
+    
+    // and then append container with button to the bar
+    btnBottomContainer?.appendChild(btnBottom)
+    bottomBar?.appendChild(btnBottomContainer)
+  }
+  
+  // Side button
+  if (document.querySelector(".btn-side")) return
+
+  const sideBar = (
+    document.querySelector("#root > div > div.l.c > div > div > div.v.w.x.y.z.ab.ac.ae.af > nav > div.ag.h.k.j.i.cv > div") || 
+    document.querySelector("#root > div > div.y.c > div > div > div.jc.jd.je.jf.jg.jh.ji.jj.jk > nav > div.cx.h.k.j.i.hz > div")
+  )
+
+  const btnSide = document.createElement("a")
+  btnSide.classList.add("btn-side")
+  btnSide.classList.add("btn-summary")
+  btnSide.textContent = "SUM"
+
+  const btnSideContainer = document.createElement("div")
+  btnSideContainer?.classList.add("btn-container")
+    
+  btnSideContainer?.appendChild(btnSide)
+  sideBar?.appendChild(btnSideContainer)
+
+  // for all buttons we want to add event listener that will call function for summarization
+  const allButtons = document.querySelectorAll(".btn-summary")
+  allButtons.forEach(btn => btn.addEventListener("click", prediction))
+}
+```
+
+To load buttons on particular event we will use `window.onload` event:
+
+```js
+window.onload = () => {
+  loadButtons()
+
+  window.addEventListener("scroll", loadButtons)
+  window.addEventListener("click", loadButtons)
+};
+```
+
+Now let's code functions for summarization. We will use `cohereReq` function to get summary from Cohere API.
+
+```js
+// request to cohere xlarge model
+const cohereReq = async prompt => {
+  const modelSettings = JSON.stringify({
+    model: "xlarge",
+    prompt,
+    max_tokens: 1024,
+    temperature: 0.6,
+    k: 0,
+    p: 0.75
+  })
+
+  const reqBody = {
+    method: "POST",
+    mode: 'cors',
+    headers: {
+        "Authorization": "BEARER {YOUR_COHERE_API_KEY}",  // replace with your API key
+        "Content-Type": "application/json", 
+        "Cohere-Version": "2021-11-08",   // model version
+        // I added some headers to prevent CORS errors
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+    },
+    body: modelSettings,
+    redirect: "follow"
+  };
+
+  // make request
+  let response = await fetch("https://api.cohere.ai/generate", reqBody);
+  response = response.json();
+
+  return response;
+}
+```
+
+Now let's implement logic for extracting data from page and calling `cohereReq` function. We will use `prediction` function for it.
+
+```js
+const prediction = async e => {
+  const articleElement = document.querySelector("section > div > div:nth-child(2)")
+
+  // extract headings, text, skip images
+  let texts = []
+  const heading = articleElement.querySelector("h1")?.textContent
+
+  // get text from each element
+  for (const node of (articleElement.childNodes || [])) 
+    if (node.textContent !== heading) 
+      texts.push(node.textContent.split(" "));
+
+  // flatten array
+  texts = texts.flat()
+
+  // remove empty strings
+  texts = texts.filter(text => text !== ""  && text !== " ")
+  
+  const prompt = `Summarize shortly this article, without code! If you want to finish use '--'. Article:
+
+Article heading: ${heading || texts[0]}
+
+Article content: ${texts.slice(0, 800).join(" ")}
+`
+
+  const response = await cohereReq(prompt)
+
+  // from response get generations (if response exists), from generations get first element (if generations exist), and from it get text (if theres is element exists)
+  const text = response?.generations?.shift()?.text
+
+  console.log(text)
+}
+```
+
+Okay so now we can use it! Let's go to Medium and try it out!
+
+As you can see, we can only get the answer in the console. I did it specifically to leave the improvement for you. Think of it as a challenge! Try to improve the performance of the model by editing the prompt. Create a nice popup in `popup.html`, and generate a popup for the received reply. Create spinner during waiting for reply. You can also edit the main button. Show off the result of your work on our [Discord](https://discord.com/invite/XnxrJ8ytRs), in tutorial's text channel! I am waiting eagerly to see what you have managed to create!
+
+Thank you and Have fun! - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/), Junior Data Scientist in [New Native](https://newnative.ai/)

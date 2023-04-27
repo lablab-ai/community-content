@@ -1,0 +1,85 @@
+---
+title: "Stable Diffusion Tutorial: Applying Stable Diffusion API to Google Colab"
+description: "This tutorial showcases a step by step guide, how to easily implement Stable Diffusion API into Google Colab."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6e3adc9f-99b2-4dd3-d091-54698c2c3c00/full"
+authorUsername: ervindotai
+---
+
+## Applying Stable Diffusion API to Google Colab
+
+Stable Diffusion is a text-to-image diffusion model that can be applied to image generation. Diffusion models are capable of generating photo-realistic images from text. Stable Diffusion was created by a mixture of researchers and engineers from CompVis, LAION and StabilityAI. Stable Diffusion is advantageous from other image generation models due to low costs and public availability for researchers. Being publicly available allows users to directly import code into an integrated development environment such as Google Colabatory. 
+
+### Stable Diffusion to Google Colab
+
+The minimal Stable Diffusion code below is adapted for free use. Google Colab may prompt that the notebook requires high RAM. Minimal code does not exceed RAM allocations, although expanding processes may exceed free resource allocations. 
+
+How to run Stable Diffusion code within Google Colab:
+
+1. Create a Huggingface account
+    1. Accept the terms of service for the [stable-diffusion-v1-4](https://huggingface.co/CompVis/stable-diffusion-v1-4)
+    2. Access your [Huggingface token](https://huggingface.co/settings/tokens)
+
+2. Open Google Colab and run each cell sequentially
+(Google Colab is installing packages and library requirements for functionality.)
+    1. After installation, authenticate your Huggingface login with the token mentioned in 1.1
+    2. Run the final cell and enter desired prompt for Stable Diffusion
+
+```
+ !pip install transformers scipy ftfy "ipywidgets>=7,<8" datasets 
+```
+
+```
+ !git clone https://github.com/huggingface/diffusers.git
+```
+
+```
+!pip install git+https://github.com/huggingface/diffusers.git 
+```
+
+```
+ cd diffusers 
+```
+
+```
+ from huggingface_hub import notebook_login
+
+notebook_login()
+```
+
+```
+ import torch
+from torch import autocast
+from diffusers import StableDiffusionPipeline, LMSDiscreteScheduler
+import requests
+from PIL import Image
+from io import BytesIO
+from google.colab import files
+
+lms = LMSDiscreteScheduler(
+    beta_start=0.00085, 
+    beta_end=0.012, 
+    beta_schedule="scaled_linear"
+)
+
+pipe = StableDiffusionPipeline.from_pretrained(
+    "CompVis/stable-diffusion-v1-4", 
+    scheduler=lms,
+    revision="fp16", 
+    use_auth_token=True
+).to("cuda")
+
+user_input = input('Enter prompt for Stable Diffusion: ')
+
+prompt = user_input
+with autocast("cuda"):
+    image = pipe(prompt)["sample"][0]  
+
+Image
+```
+
+The code above is the minimal way to use Stable Diffusion API in Google Colab. Advanced technologies can be built upon this code, such as web 
+applications using gradio or automated post-processing that enhance desirable effects. Advanced documentation is provided by 
+Huggingface at [https://github.com/huggingface/diffusers](https://github.com/huggingface/diffusers). 
+
+In depth documentation of Stable Diffusion and Google Colab is 
+available at [https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/stable_diffusion.ipynb](https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers/stable_diffusion.ipynb)

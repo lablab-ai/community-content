@@ -1,0 +1,172 @@
+---
+title: "AI21 Labs Tutorial: how to create a contextual answers app"
+description: "A deep dive AI tutorial on how to create a contextual answer app with AI21 Labs API and Flask"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-thumbnail-api.png"
+authorUsername: "weasel"
+---
+
+## What is AI21 Studio?
+[AI21 Studio](https://www.ai21.com/studio) is a powerful and versatile platform designed to help developers harness the capabilities of cutting-edge language models, specifically Jurassic-2, to build a wide range of AI-driven applications. With its user-friendly API and specialized endpoints, AI21 Studio enables developers to easily tackle various natural language processing tasks, such as text generation, summarization, paraphrasing, and more. The platform offers customizable solutions, allowing users to fine-tune their own models to suit their specific requirements. In this tutorial, we will explore the key features of AI21 Studio, learn how to get started with its API, and see a real-world example of its applications.
+
+## Where to start? 
+Firstly you need to create an account and sign up for a free trial. Find more information [here](https://studio.ai21.com/sign-up).
+Then you should familiarise yourself with AI21 Studio, if you don't have any prior expierence with it. You will find the models, tools, APIs and their [AI documentation](https://docs.ai21.com/docs/overview) and [API Reference](https://docs.ai21.com/reference/j2-complete-api-ref) useful. After some reading and playing around with the models obtain your [API key](https://studio.ai21.com/account). You will need it to access the API from your code.
+
+### Contextual API
+
+The [Contextual Answers API](https://docs.ai21.com/reference/contextual-answers-api-ref) is a powerful system designed to provide accurate and reliable question answering based on specific document context. This API ensures that answers are derived solely from the provided context, avoiding any factual issues that may arise when using traditional language models. If the answer to a question is not present in the document, the model will indicate this instead of providing a potentially inaccurate answer.
+
+As a task-specific API, it is optimized for efficiency and can be easily integrated into existing systems without requiring any prompt engineering. Moreover, it is user-friendly, making it an efficient solution for accurate and context-based question answering.
+
+The Contextual Answers API requires two parameters for a successful request:
+
+1. context: A string containing the document context for which the question will be answered.
+2. question: A string containing the question to be answered based on the provided context.
+
+The API returns the following parameters in its response:
+
+1. answer: A string containing the answer to the question based on the provided context. The answer will be null if the model cannot find an answer in the provided context.
+2. id: A unique identifier assigned by the API to identify the specific request that generated the response. This parameter can be useful for tracking and logging purposes, particularly if multiple requests are being made to the API.
+
+```python
+Python
+
+payload = {
+    "context": "In 2020 and 2021, enormous QE — approximately $4.4 trillion, or 18%, of 2021 gross domestic product (GDP) — and enormous fiscal stimulus (which has been and always will be inflationary) — approximately $5 trillion, or 21%, of 2021 GDP — stabilized markets and allowed companies to raise enormous amounts of capital. In addition, this infusion of capital saved many small businesses and put more than $2.5 trillion in the hands of consumers and almost $1 trillion into state and local coffers. These actions led to a rapid decline in unemployment, dropping from 15% to under 4% in 20 months — the magnitude and speed of which were both unprecedented. Additionally, the economy grew 7% in 2021 despite the arrival of the Delta and Omicron variants and the global supply chain shortages, which were largely fueled by the dramatic upswing in consumer spending and the shift in that spend from services to goods. Fortunately, during these two years, vaccines for COVID-19 were also rapidly developed and distributed.In today's economy, the consumer is in excellent financial shape (on average), with leverage among the lowest on record, excellent mortgage underwriting (even though we've had home price appreciation), plentiful jobs with wage increases and more than $2 trillion in excess savings, mostly due to government stimulus. Most consumers and companies (and states) are still flush with the money generated in 2020 and 2021, with consumer spending over the last several months 12% above pre-COVID-19 levels. (But we must recognize that the account balances in lower-income households, smaller to begin with, are going down faster and that income for those households is not keeping pace with rising inflation.) Today's economic landscape is completely different from the 2008 financial crisis when the consumer was extraordinarily overleveraged, as was the financial system as a whole — from banks and investment banks to shadow banks, hedge funds, private equity, Fannie Mae and many other entities. In addition, home price appreciation, fed by bad underwriting and leverage in the mortgage system, led to excessive speculation, which was missed by virtually everyone — eventually leading to nearly $1 trillion in actual losses.",
+    "question": "Did the economy shrink after the Omicron variant arrived?"
+}
+
+JSON
+
+{
+  "id": "36d2ec63-ef15-2296-af51-ef34206fc655",
+  "answer": "The Delta and Omicron variants and the global supply chain shortages did not slow down economic growth."
+}
+```
+
+### Setting up the project
+
+Firstly install **Flask**, a light-weight backend framework with the help of Pythons PIP.
+You can do it using this command
+
+```code
+pip install flask
+```
+You can also install [Postman](https://www.postman.com/downloads/). Postman is an application that helps developers build, test, and manage APIs (Application Programming Interfaces). It provides a user-friendly interface for designing API requests, setting parameters, headers, and authentication. 
+
+Create a python file and name it app.py.
+Fill it with this minimal boilkerplate code to get started.
+```python
+from flask import Flask, request
+import requests as req
+
+app = Flask(__name__)
+
+@app.route("/")
+def def get_answer(methods=['GET']):
+    return "<p>Hello, World!</p>"
+
+
+app.run()
+```
+
+### Implementing the API 
+
+Now that we have set up the bare bones of our project, let's modify it to use the AI21 API.
+
+The API requires two arguments - context and question. Modify the get_answer() method following the API guide. Save your API key to a seperate file (e.g. .env) to a variable API_KEY outside of the scope of the API_key method.
+
+```python
+# load form env API_KEY
+API_KEY = os.environ.get('API_KEY')
+```
+
+In the **get_answer** method save context and question to variables
+
+```python
+context = request.args.getlist('context')[0]
+question =  request.args.getlist('question')[0]
+```
+
+Additionaly provide url, payload and headers
+```python
+url = "https://api.ai21.com/studio/v1/experimental/answer"
+
+payload = {
+    "context": context,
+    "question": question
+    }
+
+headers = {
+    "accept": "application/json",
+    "content-type": "application/json",
+    "Authorization": f'Bearer {API_KEY}'
+    }
+```
+Finally return the proccesed data
+
+```python
+response = req.post(url, json=payload, headers=headers)
+return response.text
+```
+The whole Flask app should look something like this
+```python
+from flask import Flask, request
+import requests as req
+import os
+
+app = Flask(__name__)
+
+# load form env API_KEY
+API_key = os.environ.get('API_KEY')
+
+@app.route("/")
+def get_answer():
+
+    context = request.args.getlist('context')[0]
+    question =  request.args.getlist('question')[0]
+
+
+    url = "https://api.ai21.com/studio/v1/experimental/answer"
+
+    payload = {
+        "context": context,
+        "question": question
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "Authorization": f'Bearer {API_KEY}'
+    }
+
+    response = req.post(url, json=payload, headers=headers)
+    return response.text
+
+
+app.run()
+```
+### Testing in Postman
+Open postman and run your app. You can run your app with the following command
+```python
+flask --app app run
+```
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Postman_1.png" />
+
+Insert you **context** and **question**  parameters.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Postman_2.png" />
+
+And these are the results
+```json
+{"id":"cfde030b-ffcd-4867-bf00-98af82f19932",
+"answer":"No, the economy grew 7% in 2021 despite the arrival of the Delta and Omicron variants and the global supply chain shortages."}
+```
+
+## Summary
+This tutorial covered creating a basic Flask web API and providing contextual anserws based on the AI21 Contextual Answers API. This example could be further improved with creating a frontend. For that check out our other AI21 [tutorial](https://lablab.ai/t/ai21-labs-tutorial-how-to-create-a-text-improver-app).
+
+And if you want to test in real world you skills working with AI21 studio, you can join our upcoming AI21 lab [AI Hackathon](https://lablab.ai/event/ai21-labs-hackathon-2) and building an amazing tool during this 7 days event.
+
+What are you waiting for?
+
+Join the AI revolution and with lablab.ai's community create better future!

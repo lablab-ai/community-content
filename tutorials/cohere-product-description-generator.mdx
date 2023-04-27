@@ -1,0 +1,116 @@
+---
+title: "Cohere tutorial: Build a product description generator API with Cohere"
+description: "In this tutorial you will build your own product description generator API with cohere."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Product%20description%20generator-.jpg"
+---
+
+By the end of this tutorial, you will have a working product description generator API with cohere. You can use this API to generate product descriptions for your own products. This tutorial is suitable for everyone who have some basic knowledge of Javascript/NodeJS. If you are not familiar with this language, you may want to check out the following resources before getting started.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Product%20description%20generator-.jpg" />
+
+We will be using **xlarge** model from Cohere.
+
+### 1. Getting Cohere API Key
+
+You can get one by signing up [https://app.cohere.io/dashboard](https://app.cohere.io/dashboard). Visit the Cohere dashboard to retrieve your API key. If you haven't previously connected a session, you should see it in the main screen. Otherwise, you can find it in the settings page.
+
+### 2. Clone the Express boilerplate from Github
+
+In this tutorial we will be using an express boilerplate that will make our lives easier.
+
+Copy this repository [Express Boilerplate](https://github.com/nextgrid/product-description-generator-cohere-api/tree/starter) onto your computer and add to your own repositories
+
+### 2. Running the project locally
+
+1.  Install the dependencies with yarn or npm
+2.  Run the server with `yarn dev` or `npm dev`
+
+### 3. Add the Cohere API key to the .env file
+
+Create a .env file in the root of the project and add your API key to it. Remember never share your API key with anyone.
+`COHERE_API_KEY={YOUR_API_KEY}`
+
+### 4. Create Routing for the API
+
+1.  Create routes folder in the root of the project
+2.  Create `description.js` file in the routes folder
+3.  Add the following code to the `description.js` file to have a working router
+
+```js
+const express = require("express");
+const router = express.Router();
+
+router.post("/", async (req, res) => {
+  res.send("Hello World!");
+});
+
+module.exports = router;
+```
+
+4. Add the route to the `index.js` file in the root of the project
+5. Add the import to the top of the file `const description = require("./routes/description.js");
+6. Add the route under the app.get route `app.use("/", description);`
+
+### 5. Create generator function
+
+1. Create a folder in the root of the project called `lib`
+2. Create a file name called `description-generator.js` in the lib folder
+3. Add the following code to the `description-generator.js` file to have a working generator function
+
+```js
+require("dotenv").config();
+const cohere = require("cohere-ai");
+cohere.init(process.env.COHERE_API_KEY);
+
+const generator = async ({ product, keywords }) => {
+  const response = await cohere.generate({
+    model: "xlarge",
+    prompt: `Given a product and keywords, this program will generate exciting product descriptions. Here are some examples:\n\nProduct: Monitor\nKeywords: curved, gaming\nExciting Product Description: When it comes to serious gaming, every moment counts. This curved gaming monitor delivers the unprecedented immersion you need to play your best.\n--\nProduct: Surfboard\nKeywords: 6”, matte finish\nExciting Product Description: This 6” surfboard is designed for fun. It\'s a board that almost anyone can pick up, ride, and get psyched on.\n--\nProduct: ${product}\nKeywords: ${keywords}\nExciting Product Description:`,
+    max_tokens: 50,
+    temperature: 0.8,
+    k: 0,
+    p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+    stop_sequences: ["--"],
+    return_likelihoods: "NONE",
+  });
+  return response.body.generations[0].text;
+};
+module.exports = generator;
+```
+
+### 6. Use the generator function in the POST route
+
+Update the `description.js` file with the following code to use the generator function in the POST route
+
+```js
+const express = require("express");
+const router = express.Router();
+const generator = require("../lib/description-generator");
+
+router.post("/", async (req, res) => {
+  const { product, keywords } = req.body;
+  const description = await generator({ product, keywords });
+  res.send(description.slice(0, -3));
+});
+
+module.exports = router;
+```
+
+### 7. Run the project locally and test it with Postman or Insomnia or whatever you prefer :)
+
+  Send a Post request to [localhost:3000/description](localhost:3000/description) with these keys, `product` and `keywords`
+
+  ```json
+  {
+    "product": "LG Gamin monitor",
+    "keywords": "curved, gaming, 120hz, 4k"
+  }
+  ```
+
+
+
+## Final words
+
+Hope you enjoyed this simple tutorial. Feel free to change to prompt and play with it :)

@@ -1,0 +1,114 @@
+---
+title: "Google Colab AI art prompt guide tutorial: How to create an image generator in a few steps"
+description: "Nowadays there are more and more image generators. I will show you how to deploy one of them."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/image-generator/title.jpg"
+authorUsername: AdiAdi
+---
+
+An image generator is an algorithm that creates images from scratch. The most common type of image generator is a graphics program, which can create images from scratch or existing images. Other types of image generators include fractal generators and random number generators.
+
+Image generators are used in a variety of fields, including art, science, and engineering. In art, image generators can be used to create digital art, such as computer-generated 3D models or 2D images. In science, image generators can be used to create simulations or models of real-world phenomena, such as the behavior of particles in a plasma. In engineering, image generators can be used to create designs for products or structures.
+
+Image generators are not limited to creating images from scratch. They can also be used to modify existing images. For example, an image generator can be used to add color to a black-and-white image or to remove blemishes from a digital photo.
+
+Image generators can be used for both personal and commercial purposes. Many image generators are available for free on the Internet, while others are available for purchase.
+
+# Diffusers
+
+[Suraj Patil](https://huggingface.co/valhalla), [Pedro Cuenca](https://huggingface.co/pcuenq), [Nathan Lambert](https://huggingface.co/natolambert), and [Patric von Platen](https://huggingface.co/patrickvonplaten) create great image generator. You can find the paper [here](https://arxiv.org/abs/2112.10752). In this tutorial, I will show you how you can use it. Please read about license [here](https://bigscience.huggingface.co/blog/the-bigscience-rail-license).
+
+In this tutorial, we will use [Google Colab](https://colab.research.google.com). This platform allows using good GPU. To do it you have to click Runtime, then change Runtime type, and choose GPU.
+
+In the beginning we are going to connect our [Google Colab](https://colab.research.google.com) with our Google Drive, to do that use
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+ When you run this command, you will be able to log in to your disc.
+
+ Now, we have to install all the needed requirements, we will do it with `pip`. If you want to see logs, please remove `> /dev/null 2>&1`
+
+ ```python
+!pip install diffusers==0.2.4 > /dev/null 2>&1
+!pip install transformers scipy ftfy > /dev/null 2>&1
+!pip install "ipywidgets>=7,<8" > /dev/null 2>&1
+ ```
+
+If everything is fine we can move to the next step and connect by a token with [Hugging Face](https://huggingface.co/settings/tokens). Just create an account and create a token (Settings -> Access Tokens -> New token). 
+
+```python
+from google.colab import output
+from huggingface_hub import notebook_login
+output.enable_custom_widget_manager()
+notebook_login()
+```
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/image-generator/token.JPG" />
+
+We are almost ready to create an image!
+
+If you want to create more than one photo I recommend do create a new folder.
+
+```python
+!mkdir "Saved data" 
+```
+
+We should also create a pipe
+```python
+pipe = pipe.to("cuda")
+```
+
+Finally, we can create images. We will create it with a `prompt`, that will be used in the loop to create `N`-images.
+
+```python
+from torch import autocast
+
+prompt = "cat is fighting with robots, digtal art"  # prompt to describe images to create
+no_of_images = 100 # number of images to generate
+
+for i in range(no_of_images):
+
+  with autocast("cuda"):
+    image = pipe(prompt, height=512, width=768, num_inference_steps=50)["sample"][0]
+
+  image.save(f"Saved data/sample_{i}.png") # if you not create folder 
+  
+image
+```
+
+There are serval arguments such as:
+
+`height`, `width` - size of generated image
+
+`num_inference_steps` - number of generation steps
+
+More information you can find [here](https://huggingface.co/CompVis/stable-diffusion-v1-4)
+
+### Result
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/image-generator/koty.png" />
+
+
+If your purpose is to create images with the shape 300x300px you can generate images with bigger resolution and then resize them.
+
+```python
+import cv2
+from glob import glob
+
+# glob is reading all names of images in the folder Saved data
+for i in glob("/content/Saved data/*.png"):  
+    img = cv2.imread(i, cv2.IMREAD_COLOR)
+    img = cv2.resize(img, (300, 300))
+    cv2.imwrite(i, img)
+```
+
+In the end, you can copy your folder to your Google Drive. 
+```python
+!sudo cp -r '/content/Saved data' /content/drive/MyDrive/
+```
+
+Stay tuned for future tutorials!
+The Colab of this code can check [here](https://colab.research.google.com/drive/16gjNv67X0V_7qTB_doQJkir4gBi2BJWa?usp=sharing).
+
+**Thank you!** - [Adrian Banachowicz](https://www.linkedin.com/in/adrian-banachowicz/), Data Science Intern in [New Native](https://newnative.ai/)
+

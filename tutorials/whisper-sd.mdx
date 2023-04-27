@@ -1,0 +1,135 @@
+---
+title: "Stable Diffusion and OpenAI Whisper prompt tutorial: Generating pictures based on speech - Whisper & Stable Diffusion"
+description: "In this tutorial you will learn how to generate pictures based on speech using recently published OpenAI's Whisper and hot Stable Diffusion models!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67ab343e-db32-4189-df0e-4262d115c900/full"
+authorUsername: jakub.misilo
+---
+
+The world of artificial intelligence is developing incredibly fast! Thanks to recently published models, we have the ability to create images from the spoken words. This opens up a lot of possibilities for us. This tutorial will give you the basics for creating your own application that uses these technologies.
+
+## 🚀 Getting started
+
+**🔑 Note**: For this tutorial I will use Google Colab as I do not have a computer with a GPU. You can use your local computer. Remember to use GPU!
+
+First, we need to install the depedencies we need. We will install FFmpeg - tool to record, convert and stream audio and video.
+
+```bash
+!apt update 
+!apt install ffmpeg
+```
+
+Now I will install necessary packages:
+
+```bash
+!pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+!pip install git+https://github.com/openai/whisper.git 
+!pip install diffusers==0.2.4
+!pip install transformers scipy ftfy
+!pip install "ipywidgets>=7,<8"
+```
+
+**🔑 Note**: If you have any problems installing Whisper go [here](https://github.com/openai/whisper).
+
+Next step is authentication of the Stable Diffusion with Hugging Face.
+
+```python
+from google.colab import output
+from huggingface_hub import notebook_login
+
+output.enable_custom_widget_manager()
+notebook_login()
+```
+
+Now we will check if we are using GPU.
+
+```python
+from torch.cuda import is_available
+
+assert is_available(), 'GPU is not available.'
+```
+
+Okay, now we are ready to start!
+
+## 🤖 Coding!
+
+### 🎤 Speech to text
+
+**🔑 Note**: To not lose time I recorded my prompt and put it in main directory.
+
+We will start by extracting my prompt from file, using [OpenAI's Whisper](https://github.com/openai/whisper) small model. There are some bigger and smaller models, you can choose which you will use. 
+
+For extraction I utilized code from official repository. I also added some "tips" to the end of the prompt.
+
+```python
+import whisper
+
+# loading model
+model = whisper.load_model('small')
+
+# loading audio file
+audio = whisper.load_audio('prompt.m4a')
+# padding audio to 30 seconds
+audio = whisper.pad_or_trim(audio)
+
+# generating spectrogram
+mel = whisper.log_mel_spectrogram(audio).to(model.device)
+
+# decoding
+options = whisper.DecodingOptions()
+result = whisper.decode(model, mel, options)
+
+# ready prompt!
+prompt = result.text
+
+# adding tips
+prompt += ' hd, 4k resolution, cartoon style'
+print(prompt) # -> fiery unicorn in a rainbow world hd, 4k resolution, cartoon style
+```
+
+### 🎨 Text to image
+
+Now we will use [Stable Diffusion](https://github.com/CompVis/stable-diffusion) for generating image from text. Let's load model.
+
+```python 
+import torch
+from diffusers import StableDiffusionPipeline
+
+pipe = StableDiffusionPipeline.from_pretrained(
+    'CompVis/stable-diffusion-v1-4',
+    revision='fp16',
+    torcj_dtype=torch.float16,
+    use_auth_token=True
+)
+
+pipe = pipe.to("cuda")
+```
+
+Using `pipe` we can generate image from text.
+
+```python
+with torch.autocast('cuda'):
+    image = pipe(prompt)['sample'][0]
+```
+
+Let's check our result using:
+
+```python
+import matplotlib.pyplot as plt
+
+plt.imshow(image)
+plt.title(prompt)
+plt.axis('off')
+plt.savefig('result.jpg')
+plt.show()
+```
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/result.jpg" caption="Our result!"/>
+
+Wow! Maybe our result could be better, but we didn't change any parameters. The most important thing is that we are able to generate an image with our voice. Isn't that great? Remember what we were able to do 10 years ago and what we can do today!
+
+Hope you had as much fun as I did creating this program. **Thank you** and I hope you will check back here!
+
+[Jakub Misiło](https://www.linkedin.com/in/jmisilo/), Junior Data Scientist in [New Native](https://newnative.ai/)
+
+[Colab Notebook with code](https://colab.research.google.com/drive/1Qy_Ihe_XFUW5bYfSqY-scHZ6-o7t7O5Z?usp=sharing)
+{/* [Notebook on Github]() */}
