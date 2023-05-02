@@ -8,13 +8,13 @@ In this guide you will learn how to publish technology pages on lablab.
 
 ### General information
 
-- [Check out the technology page template](https://github.com/lablab-ai/technologies/blob/main/template.mdx)
+- [Check out the technology page template](https://github.com/lablab-ai/community-content/blob/main/technologies/template.mdx)
 - Please **don’t** copy the content from other websites!
 - Please **don’t** use AI content generators to create the content for this page!
 
 If you want to publish a new technology on lablab.ai, follow these steps:
 
-1. Create a folder for the technology you're adding in this GitHub repository: [https://github.com/lablab-ai/technologies](https://github.com/lablab-ai/technologies)
+1. Create a folder for the technology you're adding in this GitHub repository: [https://github.com/lablab-ai/community-content/tree/main/technologies)
 2. Here create the folder, and create a file named 'index.mdx'  for the technology.
 3. If you're adding multiple technologies from the same provider, create a folder with the provider's name, and include an 'index.mdx' file that describes the provider, as well as separate pages for each technology they offer. You can find a good example of this in the [OpenAI folder of our GitHub repo](https://github.com/lablab-ai/technologies/tree/main/openai).
 
@@ -45,11 +45,11 @@ If you want to publish a new technology on lablab.ai, follow these steps:
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5eea603-1d54-4f4f-695f-aff9fea5fc00/full" alt="start building with the technology"/>
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ee5b4e35-9d20-4c6d-11bf-6470d82cc700/full" alt="boilerplates and libraries"/>
 
-Finally, visit our GitHub repo and add AI technologies here, get inspiration from the existing pages when creating your own: [https://github.com/lablab-ai/technologies](https://github.com/lablab-ai/technologies).
+Finally, visit our GitHub repo and add AI technologies here, get inspiration from the existing pages when creating your own: [https://github.com/lablab-ai/community-content/tree/main/technologies](https://github.com/lablab-ai/community-content/tree/main/technologies).
 
 ## How to add page?
 
 1. Write it!
 2. Create two pull requests:
-    - to `technologies` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
+    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
     - to `main` branch
