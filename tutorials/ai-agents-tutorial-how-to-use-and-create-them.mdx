@@ -1,15 +1,15 @@
 ---
-title: "AI Agents tutorial: How to use and create AI Agents & Tools?"
-description: "Have you heard of AI Agents? It's worth learning about their capabilities, how you can use them, add to them and create tools for them!"
-image: ""
-authorUsername: "jakub.misilo"
+title: 'AI Agents tutorial: How to use and build AI Agents'
+description: 'Have you heard of AI Agents? If you didn’t - don’t worry. In a few moments you’re gonna learn everything about AI Agents - their capabilities, how to use them and create tools for them!'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c77c8021-39ee-4d97-7ffd-31d6bb0fd100/full'
+authorUsername: 'jakub.misilo'
 ---
 
 ## Introduction
 
 AI Agents are rapidly gaining popularity through their ability to solve a given task on their own. I'm guessing you've heard of projects like [AutoGPT](https://lablab.ai/tech/autogpt), [BabyAGI](https://lablab.ai/tech/babyagi) or [CAMEL](https://lablab.ai/tech/camel). Today you will at least partially learn how they work!
 
-### What is AI Agent?
+### What is an AI Agent?
 
 AI Agent is a computer system that is designed to make decisions, choose tools and take actions to achieve specific, usually a predefined goal or set of goals. The agent operates autonomously, rarely requiring human intervention in its operations.
 
@@ -19,7 +19,7 @@ It is the right powerful tools, as well as self-reliance, that currently makes A
 
 Currently, there are several options to try Agents. You can choose off-the-shelf solutions such as [AutoGPT](https://lablab.ai/tech/autogpt). It so happens that our team has already worked with them, you can find tutorials on our platform.
 
-Another option is to build the Agent yourself. I will choose this very way. It will use [LangChain](https://lablab.ai/tech/langchain) for this. It is a framework created for building applications based on Large Language Models. It is very powerful and makes working with Models and Agents significantly easier! 
+Another option is to build the Agent yourself. I will choose this very way. It will use [LangChain](https://lablab.ai/tech/langchain) for this. It is a framework created for building applications based on Large Language Models. It is very powerful and makes working with Models and Agents significantly easier!
 
 ## Coding part
 
@@ -27,7 +27,7 @@ We already know why it's worth learning Agents. Now let's get to work and try to
 
 ### Project structure
 
-Let's start by creating new directory and initializing Python environment.
+Let's start by creating a new directory and initializing the Python environment.
 
 ```bash
 mkdir ai-agents
@@ -103,7 +103,7 @@ llm_chain.run("Integral of x * (log(x)^2)")
 
 As you can see, both answers are false. The correct value of the integral is: `1/4 x^2 (1 - 2 log(x) + 2 log^2(x))`. On the other hand, what lablab.ai is I don't think I need to explain to anyone 😉.
 
-Incorrect answers are due to LLM's lack of numeracy skills, and lack of up-to-date information. The model we used has information up to September 2021. The lablab.ai platform was created later. However, for both problems we have solutions! 
+Incorrect answers are due to LLM's lack of numeracy skills, and lack of up-to-date information. The model we used has information up to September 2021. The lablab.ai platform was created later. However, for both problems we have solutions!
 
 ### Prepare Tools for Agent
 
@@ -122,7 +122,7 @@ search_tool = Tool(
 )
 ```
 
-Simple as that! Now let's create a tool for solving math problems. We will create custom class for this. There are many APIs created by [Wolfram Alpha](https://www.wolframalpha.com/), but I will use one of simplest.
+Simple as that! Now let's create a tool for solving math problems. We will create a custom class for this. There are many APIs created by [Wolfram Alpha](https://www.wolframalpha.com/), but I will use one of simplest.
 
 ```python
 class WA:
@@ -198,6 +198,6 @@ As you can see with Tools the results are much better! The integral is counted c
 
 ### What can be improved?
 
-To improve applications it suggests trying [other types of Agents](https://python.langchain.com/en/latest/modules/agents/agents/agent_types.html#react-docstore), for them it will also be worth using [memory, here Vector Databases](https://python.langchain.com/en/latest/modules/memory/how_to_guides.html) can come in handy. Fortunately, [LangChain](https://lablab.ai/tech/langchain) also supports them!
+To improve applications it suggests trying other types of [Agents](https://python.langchain.com/en/latest/modules/agents/agents/agent_types.html#react-docstore), for them it will also be worth using memory, here [Vector Databases](https://python.langchain.com/en/latest/modules/memory/how_to_guides.html) can come in handy. Fortunately, [LangChain](https://lablab.ai/tech/langchain) also supports them!
 
 **Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)
