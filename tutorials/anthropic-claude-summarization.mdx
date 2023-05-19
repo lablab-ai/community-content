@@ -1,13 +1,15 @@
 ---
-title: "Claude tutorial: How to summarize PDF files with Claude"
-description: "Have you checked Claude yet? It's a language model whose context size is as high as 100k tokens! Today we'll check out its summarization ability."
-image: ""
+title: "Anthropic Claude tutorial: How to summarize PDF files with Claude"
+description: "Have you checked Anthropic’s Claude yet? It's a language model whose context size can reach 100k tokens, which is approximately 75 000 words! Let’s test out Anthropic’s Claude summarization ability!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/84d5a685-6177-4183-2a3b-17f875002a00/full"
 authorUsername: "jakub.misilo"
 ---
 
 ## What is Claude?
 
-[Claude](https://lablab.ai/tech/anthropic/claude) is Large Language Model, created by [Anthropic](https://lablab.ai/tech/anthropic). Claude can help you as a chatbot, summarization tool, code writing and more. Recently Anthropic announced that Claude will increase its context size to 100k tokens! This is a large capacity that will allow many people to speed up their work with large documents and books. Previously, just reading such long texts could take about 5h. Now the model will be able to read, summarize, analyze the text and answer questions in a few minutes! Let's check it out!
+[Claude](https://lablab.ai/tech/anthropic/claude) is a Large Language Model, created by [Anthropic](https://lablab.ai/tech/anthropic). Claude can help you as a chatbot, summarization tool, code writing and more. Recently Anthropic announced that Claude will increase its context size to 100k tokens, which is around 75 000 words! This is a large capacity that will allow many people to speed up their work with large documents and books. Previously, just reading such long texts could take about 5h. Now the model will be able to read, summarize, analyze the text and answer questions in a few minutes! And also Anthropic’s Claud is focused mostly on safety. Also users claim that interaction with their LLM gives more human feeling. Maybe a new leader arised, and we will be all using  Anthropic Apps in near future?
+
+Maybe, but first test what we came for and check it out
 
 ### How to use it?
 
@@ -64,7 +66,7 @@ anthropic_client = anthropic.Client(API_KEY)
 
 ### Usage
 
-In order to use Claude effectively I will create a function that will summarize the given PDF file. We will provide the path to the file, then read it, check the length of the text and if it is okay then send it to the API and summarize it. So let's do it!
+In order to use Claude effectively I will create a function that will summarize the given PDF file. We will provide the path to the file, then read it, check the length of the text and if it is okay, then send it to the API and summarize it. So let's do it!
 
 ```python
 def summarize_pdf(path: str) -> str:
@@ -92,7 +94,7 @@ summary_little_prince = summarize_pdf(PATH_LITTLE_PRINCE)
 **Result**
 
 ```
-The story is narrated by an aviator whose plane crashes in the Sahara desert. There he meets a little boy who is a prince from a tiny asteroid. The little prince tells the aviator about his tiny planet, how he cared for his small rose and protected it from baobabs, and his adventures traveling the universe. 
+The story is narrated by an aviator whose plane crashes in the Sahara desert. There he meets a little boy who is a prince from a tiny asteroid. The little prince tells the aviator about his tiny planet, how he cared for his small rose and protected it from baobabs, and his adventures traveling the universe.
 The little prince visits six other asteroids, each inhabited by a single adult. He discovers the pompous and pointless life of each one, especially the businessman, geographer, and conceited man. He realizes how absurd and meaningless their lives are.
 He eventually lands on Earth, where he meets a snake, fox, flowers, and railway switchman. The fox teaches him that “One sees clearly only with the heart. What is essential is invisible to the eye.” The little prince realizes the fox is the only creature that truly understands him.
 A year later, the little prince returns to say goodbye to the fox before returning to his tiny planet. The little prince is worried that his beloved rose, left alone for so long, may have suffered in his absence. The aviator never learns whether the rose survived.
@@ -112,6 +114,10 @@ The story is set in 1940s Cuba. The main character is Santiago, an old fisherman
 
 ## Conclusion
 
-As you can see both summaries are mostly accurate. This means that Claude is able to handle large texts. I'm already looking forward to how it will look in the future
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c5d5aa8-9d06-4e24-a0c5-e2d52dde3f00/full" alt="an old men and the sea" />
+
+As you can see both summaries are mostly accurate. This means that Claude is able to handle large texts. I'm already looking forward to how it will look in the future.
+
+And if you want to build your own Anthropic application, you will soon have a unique opportunity to skip the waitlist. If you are a member of the lablab.ai’s community, and you signed up to Anthropic Hackathon before 23.05, check our step by step guide on how to get Anthropic Claude API before everyone else.
 
 **Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)
