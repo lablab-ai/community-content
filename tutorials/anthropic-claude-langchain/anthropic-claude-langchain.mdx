@@ -1,7 +1,7 @@
 ---
-title: "Anthropic Claude + LangChain Tutorial: How to create Anthropic Claude + LangChain with React and FastAPI"
-description: "In this tutorial we will build a Anthropic’s Claude powered website. We will use Anthropic’s Claude API, React, Tailwind CSS and Axios. I'll be using the Anthropic’s Claude LangChain library. You may also use instead of Anthropic’s Claude API, either Python SDK or TypeScript/JavaScript SDK."
-image: "image"
+title: "Anthropic Claude + LangChain Tutorial: How to create FullStak AI Assistant website with Anthropic's Claude + LangChain"
+description: "In this tutorial we will build FullStak AI Assistant website with Anthropic's Claude + LangChain. We will use Anthropic's Claude LangChain library, React, Tailwind CSS and Axios."
+image: "./images/thumbnail.png"
 authorUsername: "abdibrokhim"
 ---
 
@@ -11,13 +11,11 @@ authorUsername: "abdibrokhim"
 
 ## What will we do?
 
-<Img src="./images/" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
-
-In this tutorial we will build a Anthropic’s Claude powered website. We will use [Anthropic’s Claude API](https://console.anthropic.com/docs), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/) and [Axios](https://axios-http.com/docs/intro). I'll be using the [Anthropic's Claude LangChain library](https://python.langchain.com/en/latest/_modules/langchain/llms/anthropic.html). You may also use instead of Anthropic’s Claude API, either [Python SDK](https://console.anthropic.com/docs/api/libraries#python) or [TypeScript/JavaScript SDK](https://console.anthropic.com/docs/api/libraries#typescript).
+In this tutorial we will build FullStak AI Assistant website with Anthropic's Claude + LangChain. We will use [Anthropic's Claude LangChain library](https://python.langchain.com/en/latest/_modules/langchain/llms/anthropic.html), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/) and [Axios](https://axios-http.com/docs/intro). You may also use, either Anthropic's Claude [Python SDK](https://console.anthropic.com/docs/api/libraries#python) or [TypeScript/JavaScript SDK](https://console.anthropic.com/docs/api/libraries#typescript).
 
 ### Prerequisites
 
-***To use Anthropic’s Claude API you must apply for [early access](https://anthropic.com/earlyaccess)!***
+To use Anthropic’s Claude API you must apply for [early access](https://anthropic.com/earlyaccess)
 
 ### Setting up the project
 
@@ -42,7 +40,7 @@ source venv/bin/activate
 venv\Scripts\activate.bat
 ```
 
-### Custom API
+## Custom API with FastAPI
 
 We will use [FastAPI](https://fastapi.tiangolo.com/) to create a custom API. Create a new file called `api.py` and add the following code:
 
@@ -128,7 +126,11 @@ Open a browser and go to `http://127.0.0.1:8000/`. You should see the following:
 {"responce": "Hello World!"}
 ```
 
-Now go to `http://127.0.0.1:8000/docs` you will see the automatic interactive API documentation (provided by [Swagger UI](https://swagger.io/)). Click try it out and type `ex: What is a good name for a company that makes colorful socks`. You should see something similar to:
+Now go to `http://127.0.0.1:8000/docs` you will see the automatic interactive API documentation (provided by [Swagger UI](https://swagger.io/)). 
+
+<Img src="./images/APIPreview.png" alt="Swagger UI" caption="Swagger UI"/>
+
+Click "Try it out" and type `ex: What is a good name for a company that makes colorful socks`. You should see something similar to:
 
 ```json
 {"prompt": "What is a good name for a company that makes colorful socks", "response": "Colorful Socks"}
@@ -137,7 +139,7 @@ Now go to `http://127.0.0.1:8000/docs` you will see the automatic interactive AP
 Amazing! Now we have a custom API. Let's move on to the next step.
 
 
-### Create React App
+## Create React App
 
 First, make sure you have [Node.js](https://nodejs.org/en/) installed on your machine.
 
@@ -149,7 +151,7 @@ npx create-react-app claude-app
 
 ### Dependencies
 
-Install tailwindcss via npm, and create your tailwind.config.js file.
+Install `tailwindcss` via npm, and create your `tailwind.config.js` file.
 
 ```bash
 cd claude-app
@@ -164,7 +166,7 @@ Install Axios:
 npm install axios
 ```
 
-Add the paths to all of your template files in your tailwind.config.js file.
+Add the paths to all of your template files in your `tailwind.config.js` file.
     
 ```js
 module.exports = {
@@ -180,7 +182,7 @@ module.exports = {
 }
 ```
 
-Add the @tailwind directives for each of Tailwind’s layers to your main CSS file.
+Add the `@tailwind` directives for each of Tailwind’s layers to your main CSS file.
     
 ```css
 @tailwind base;
@@ -189,7 +191,7 @@ Add the @tailwind directives for each of Tailwind’s layers to your main CSS fi
 ```
 
 
-### App.jsx
+### Design the UI
 
 Go to `src' folder and open `App.jsx` file. Replace the code with the following:
 
@@ -202,13 +204,11 @@ const App = () => {
   const [input, setInput] = useState("");
   const [chatItems, setChatItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [userInput, setUserInput] = useState('');
 
 
   const completion = async () => {
 
     setLoading(true);
-    setUserInput(input);
   
     // Send request to our just cooked API
     axios.defaults.headers.post['Content-Type'] ='application/json; charset=utf-8';
@@ -337,7 +337,7 @@ export default App;
 
 Cool!
 
-Now, create new file 'icons.jsx' in 'src' folder and paste this code:
+Now, create new file `icons.jsx` in `src` folder and paste this code:
 
 ```jsx
 const icons = {
@@ -369,6 +369,16 @@ const icons = {
 export default icons;
 ```
 
+Go to `css` folder and copy/paste `styles.css` into your `styles.css` file:
+
+Then, import `styles.css` into `index.js` file:
+
+```jsx
+import './styles.css';
+```
+
+Perfect! You are done with the frontend part!
+
 Now, Run the following command to start the app:
 
 ```bash
@@ -379,16 +389,13 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 <Img src="./images/appPreview.png" alt="App Preview" caption="App Preview"/>
 
-Let's try to chat with the AI!
+##Conclusion
 
-<Img src="./images/chatWithAIPreview.png" alt="Chat with AI" caption="Chat with AI"/>
-
-
-Perfect!
+In this tutorial, we've learned how to build FullStak AI Assistant website with Anthropic's Claude + LangChain using React, Tailwind CSS, and Axios. The process involved creating a custom API using FastAPI to interact with Anthropic's Claude LangChain library, and implementing a chat interface to enable users to have conversations with the powerful AI assistant.
 
 What’s next?
 
-<Img src="./images/" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
+<Img src="./images/conclusion.jpg" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
 
 Participate in the [lablab.ai hackathons](https://lablab.ai/event) and win cool prizes!
 
