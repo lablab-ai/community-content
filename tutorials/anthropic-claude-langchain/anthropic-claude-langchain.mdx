@@ -31,13 +31,13 @@ Cool!
 Now create python vertual environment and activate it:
 
 ```code 
-python -m venv env
+python -m venv .venv
 
 # Linux/MacOS
-source venv/bin/activate
+source .venv/bin/activate
 
 # Windows
-venv\Scripts\activate.bat
+.venv\Scripts\activate.bat
 ```
 
 ## Custom API with FastAPI
@@ -74,20 +74,24 @@ def index():
 def completion(prompt: str):
     load_dotenv()
 
-    # client = anthropic.Client(os.getenv("ANTHROPIC_API_KEY"))
-
     promptTemplate = PromptTemplate(
         input_variables=["prompt"],
-        template="What is a good name for a company that makes {prompt}",
+        template="You are a helpfull assistant. {prompt}",
     )
 
-    anthropic = ChatAnthropic(client=f"{os.getenv('ANTHROPIC_API_KEY')}")
+    anthropic = ChatAnthropic(anthropic_api_key=f"{os.getenv('ANTHROPIC_API_KEY')}")
 
     chain = LLMChain(llm=anthropic, prompt=promptTemplate)
 
     response = chain.run(prompt)
 
     return {"prompt": prompt, "response": response}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 ```
 
@@ -98,6 +102,7 @@ pip install fastapi
 pip install "uvicorn[standard]"
 pip install python-dotenv
 pip install langchain
+pip install anthropic
 ```
 
 Now create a new file called `.env` and add your API key:
@@ -117,7 +122,7 @@ Ctrl + X
 Run the following command to start the server:
 
 ```bash
-uvicorn api:app --reload
+python3 api.py
 ```
 
 Open a browser and go to `http://127.0.0.1:8000/`. You should see the following:
@@ -133,7 +138,7 @@ Now go to `http://127.0.0.1:8000/docs` you will see the automatic interactive AP
 Click "Try it out" and type `ex: What is a good name for a company that makes colorful socks`. You should see something similar to:
 
 ```json
-{"prompt": "What is a good name for a company that makes colorful socks", "response": "Colorful Socks"}
+{"prompt": "What is a good name for a company that makes colorful socks", "response": "Here are some suggestions for names for a company that makes colorful socks:\n\n• BrightSocks\n\n• Colorful Toes \n\n• Rainbow Socks\n\n• Happy Feet Socks\n\n• Sock It To Me \n\n• Joy of Socks\n\n• Sock Pop \n\n• FunSocks\n\n• Lively Legwear\n\n• ChromaSocks   (Chroma meaning color in Greek)\n\nThese names convey brightness, color, fun and whimsy which seems well suited for a colorful sock company.  You can of course adapt these by combining words or coming up with your own variations that capture the essence of a colorful, fun sock brand."}
 ```
 
 Amazing! Now we have a custom API. Let's move on to the next step.
@@ -213,7 +218,7 @@ const App = () => {
     // Send request to our just cooked API
     axios.defaults.headers.post['Content-Type'] ='application/json; charset=utf-8';
     axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-    axios.get(`http://127.0.0.1:8000/api/chat/${input}`)
+    axios.get(`http://0.0.0.1:8000/api/chat/${input}`)
       .then(res => {
           console.log(res.data);
           if (res.data) {
@@ -388,6 +393,15 @@ npm start
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 <Img src="./images/appPreview.png" alt="App Preview" caption="App Preview"/>
+
+Let's try to chat with the AI assistant!
+
+<Img src="./images/chat1.png" alt="Chat Preview" caption="Chat Preview"/>
+
+<Img src="./images/chat2.png" alt="Chat Preview" caption="Chat Preview"/>
+
+Amazing! isn't it?
+
 
 ##Conclusion
 
