@@ -1,0 +1,211 @@
+---
+title: "Building an App with Chroma + Cohere API: Personal Finance Advisor"
+description: "in this tutorial, we will build a personal fiance advisor app using the Chroma + Cohere API"
+authorUseername: "feliciien"
+---
+
+Cohere provides natural language processing models that help companies improve human-machine interactions. It offers a clear way of understanding the world around us by providing dynamic and contextual information.
+
+In this tutorial, we build the app with cohere . You can see different tutorial (https://lablab.ai/t/cohere-in-depth-sentiment-analysis-of-reviews)
+first you need to create an account on (https://cohere.ai/) to get the API key.
+also install chroma https://github.com/chroma-core/chroma#readme or follow theses steps https://colab.research.google.com/drive/1QEzFyqnoFxq7LUGyP1vzR4iLt9PpCDXv?usp=sharing
+
+
+
+
+## Cohere
+
+To use cohere we need to install it
+```Python
+pip install cohere
+```
+
+Then we can use cohere in our code. In this tutorial, we use generate method. Entire docs for it you can found [here](https://docs.cohere.ai/).
+First, we have to initialize the client, I will also create a class `CoHere`.
+
+In arguments of Client should be API key, which you have generated before, and version `2021-11-08`.
+
+```Python
+class CoHere:
+    def __init__(self, api_key):
+        self.co = cohere.Client(f'{api_key}', '2021-11-08')
+```
+
+Now, we should create a method to generate a text. We have to select a few arguments of cohere method. 
+
+`model` size of the model
+
+`prompt` "instructions" for model, we use `jarvis` function for it. 
+
+`max_tokens` is the max length of output
+
+`temperature` is the degree of randomness
+
+More avaiable arguments are [here](https://docs.cohere.ai/generate-reference)
+
+```Python
+    def cohere(self, question):
+        return self.co.generate(
+              model='medium',
+              prompt=jarvis(question),
+              max_tokens=50,
+              temperature=1).generations[0].text
+```
+
+### Prompt
+
+After that, we have to write a prompt for our model. The prompt is instructions and some examples. In brackets `{question}` will be new question. 
+
+```Python
+def jarvis(question):
+    return f'''jarvis is a Personal Finance Advisor that answers questions:
+
+You: i'm looking for some advice on managing my expenses and saving for the future.
+jarvis: Could you please provide me with some details about your income and monthly expenses?
+You: Sure! My monthly income is $5,000, and my expenses include rent ($1,200), 
+jarvis: Based on your income and expenses, we can create a budget to help you allocate your money wisely. Let's work on that together. Are there any specific financial goals you would like to achieve?
+You: Yes, I want to start saving for a down payment on a house within the next five years.
+jarvis: Excellent! Saving for a down payment is a great goal. We'll prioritize that in your budget.
+jarvis:'''
+```
+
+## chroma
+
+Chroma - the open-source embedding database.
+The core API is only 4 functions (run  💡 Google Colab or Replit template):
+The fastest way to build Python or JavaScript LLM apps with memory!
+
+Installation clone this : https://github.com/chroma-core/chroma#readme
+```Python
+pip install chromadb # python client
+# for javascript, npm install chromadb!
+# for client-server mode, docker-compose up -d --build
+```
+
+Create a new Python file, finance_advisor.py, in your project directory.
+```Python
+from chroma import ChromaClient
+from cohere import CohereClient
+
+# Initialize Chroma and Cohere clients with your API keys
+chroma_client = ChromaClient(api_key='YOUR_CHROMA_API_KEY')
+cohere_client = CohereClient(api_key='YOUR_COHERE_API_KEY')
+
+# Expense tracking
+def track_expenses(expense_data):
+    # Implement your code here to track expenses using Chroma
+    chroma_client.track_expenses(expense_data)
+
+# Budgeting
+def create_budget():
+    # Implement your code here to create a budget based on user inputs and historical financial data from Chroma
+    budget = chroma_client.get_historical_data()
+    return budget
+
+# Financial goal setting
+def set_financial_goal(goal):
+    # Implement your code here to set a financial goal using Chroma
+    chroma_client.set_financial_goal(goal)
+
+# Financial analysis
+def perform_analysis():
+    # Implement your code here to perform financial analysis using Chroma
+    analysis_result = chroma_client.perform_analysis()
+    return analysis_result
+
+# Provide personalized financial advice
+def provide_financial_advice(user_input):
+    # Implement your code here to provide personalized financial advice using Cohere's language models
+    advice = cohere_client.generate_text(user_input)
+    return advice
+
+# Sentiment analysis of user feedback
+def analyze_sentiment(feedback):
+    # Implement your code here to analyze sentiment of user feedback using Cohere's NLP tools
+    sentiment = cohere_client.analyze_sentiment(feedback)
+    return sentiment
+
+# Example usage of the functions
+expense_data = [...]  # User's expense data
+track_expenses(expense_data)
+
+budget = create_budget()
+print("Your budget for this month:")
+print(budget)
+
+goal = [...]  # User's financial goal
+set_financial_goal(goal)
+
+analysis_result = perform_analysis()
+print("Financial analysis result:")
+print(analysis_result)
+
+user_input = "I need advice on saving for retirement."
+advice = provide_financial_advice(user_input)
+print("Financial advice:")
+print(advice)
+
+feedback = "I'm really happy with the progress I've made in saving money."
+sentiment = analyze_sentiment(feedback)
+print("Sentiment analysis result:")
+print(sentiment)
+
+
+```
+Initialize the Chroma and Cohere clients with your respective API keys:
+```Python
+chroma_client = ChromaClient(api_key='YOUR_CHROMA_API_KEY')
+cohere_client = CohereClient(api_key='YOUR_COHERE_API_KEY')
+
+```
+
+
+From docs of [streamlit](https://docs.streamlit.io/) I will take four methods of streamlit
+
+`st.header()` to make a header on our app
+
+`st.test_input()` to send a text request
+
+`st.button()` to create button
+
+`st.write()` to display the results of cohere model.
+
+
+```Python
+import streamlit as st
+
+st.header("Co:here application")
+
+api_key = st.text_input("OpenAI API Key:", type="password")
+
+st.header("Your financal advisor - jarvis")
+
+question_for_jarvis = st.text_input("Question for jarvis:")
+
+cohere = CoHere(api_key)
+
+if st.button("Answer"):
+    st.write(cohere.cohere(question_for_jarvis))
+
+# Retrieve historical financial data
+def retrieve_historical_data():
+    # Implement your code here to retrieve historical financial data using Chroma
+    historical_data = chroma_client.get_historical_data()
+    return historical_data
+
+# Example usage of the function
+historical_data = retrieve_historical_data()
+print("Historical financial data:")
+print(historical_data)
+```
+
+we use Chroma to retrieve historical financial data for analysis.
+
+Testing and Running the App
+
+Create a test script, test_finance_advisor.py, to ensure the app functions correctly
+
+
+## Conclusion
+
+Congratulations! You have successfully built a personal finance advisor app using the Chroma + Cohere API.
