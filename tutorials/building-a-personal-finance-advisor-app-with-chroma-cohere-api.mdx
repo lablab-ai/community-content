@@ -4,7 +4,7 @@ description: "in this tutorial, we will build a personal fiance advisor app usin
 authorUseername: "feliciien"
 ---
 
-Cohere provides natural language processing models that help companies improve human-machine interactions. It offers a clear way of understanding the world around us by providing dynamic and contextual information.
+Cohere provides natural language processing models that help companies improve human-machine interactions. It offers a clear way of understanding the world around us by providing dynamic and contextual information. you can test it there. https://colab.research.google.com/drive/1Fiu68zNXX7mRYn5Ueo9TuY6yEqk4TRM_?userstoinvite=felicien.diouf%40ism.edu.sn&actionButton=1#scrollTo=2FcJg3zCMduW
 
 In this tutorial, we build the app with cohere . You can see different tutorial (https://lablab.ai/t/cohere-in-depth-sentiment-analysis-of-reviews)
 first you need to create an account on (https://cohere.ai/) to get the API key.
@@ -71,6 +71,8 @@ jarvis:'''
 
 ## chroma
 
+By integrating Chroma into your applications, you can unlock a wide range of possibilities. For example, in a text-based application, you can use embeddings to measure semantic similarity between documents, cluster similar documents together, or perform efficient search operations. In image-based applications, embeddings can be used for tasks such as image recognition, image search, or content-based recommendation systems. humanise it learn mor about it here https://docs.trychroma.com/embeddings
+
 Chroma - the open-source embedding database.
 The core API is only 4 functions (run  💡 Google Colab or Replit template):
 The fastest way to build Python or JavaScript LLM apps with memory!
@@ -84,12 +86,13 @@ pip install chromadb # python client
 
 Create a new Python file, finance_advisor.py, in your project directory.
 ```Python
-from chroma import ChromaClient
-from cohere import CohereClient
+import cohere
+import chroma
+cohere_api_key = "YOUR_COHERE_API_KEY_HERE"
+cohere_client = cohere.Client(api_key=cohere_api_key)
+chroma_api_key = "YOUR_CHROMA_API_KEY_HERE"
+chroma_client = chroma.Chroma(api_key=chroma_api_key)
 
-# Initialize Chroma and Cohere clients with your API keys
-chroma_client = ChromaClient(api_key='YOUR_CHROMA_API_KEY')
-cohere_client = CohereClient(api_key='YOUR_COHERE_API_KEY')
 
 # Expense tracking
 def track_expenses(expense_data):
