@@ -1,0 +1,56 @@
+---
+title: "PrivateGPT"
+description: "Ask questions to your documents without an internet connection, using the power of LLMs. 100% private, no data leaves your execution environment at any point."
+---
+
+## PrivateGPT
+
+PrivateGPT is a tool that enables you to ask questions to your documents without an internet connection, using the power of Language Models (LLMs). It is 100% private, and no data leaves your execution environment at any point. You can ingest documents and ask questions without an internet connection!
+
+PrivateGPT is built with [LangChain](https://github.com/hwchase17/langchain), [GPT4All](https://github.com/nomic-ai/gpt4all), [LlamaCpp](https://github.com/ggerganov/llama.cpp), [Chroma](https://www.trychroma.com/), and [SentenceTransformers](https://www.sbert.net/).
+
+![demo](https://user-images.githubusercontent.com/721666/236942256-985801c9-25b9-48ef-80be-3acbb4575164.png)
+
+## Setup and Usage
+
+1. Install all required packages by running `pip3 install -r requirements.txt`.
+2. Download an LLM model (e.g., [ggml-gpt4all-j-v1.3-groovy.bin](https://gpt4all.io/models/ggml-gpt4all-j-v1.3-groovy.bin)) and place it in a directory of your choice.
+3. Rename `example.env` to `.env` and edit the variables according to your setup.
+4. Run `python ingest.py` to ingest your documents.
+5. Run `python privateGPT.py` to ask questions to your documents locally.
+
+### Supported Document Formats
+
+PrivateGPT supports the following document formats:
+
+- `.csv`: CSV
+- `.docx`: Word Document
+- `.doc`: Word Document
+- `.enex`: EverNote
+- `.eml`: Email
+- `.epub`: EPub
+- `.html`: HTML File
+- `.md`: Markdown
+- `.msg`: Outlook Message
+- `.odt`: Open Document Text
+- `.pdf`: Portable Document Format (PDF)
+- `.pptx`: PowerPoint Document
+- `.ppt`: PowerPoint Document
+- `.txt`: Text file (UTF-8)
+
+## How It Works
+
+PrivateGPT leverages local models and the power of LangChain to run the entire pipeline locally, without any data leaving your environment, and with reasonable performance.
+
+- `ingest.py` uses LangChain tools to parse the document and create embeddings locally using `HuggingFaceEmbeddings` (`SentenceTransformers`). It then stores the result in a local vector database using `Chroma` vector store.
+- `privateGPT.py` uses a local LLM based on `GPT4All-J` or `LlamaCpp` to understand questions and create answers. The context for the answers is extracted from the local vector store using a similarity search to locate the right piece of context from the docs.
+
+## System Requirements
+
+### Python Version
+
+To use this software, you must have Python 3.10 or later installed. Earlier versions of Python will not compile.
+
+### C++ Compiler
+
+If you encounter an error while building a wheel during the `pip install` process, you may need to install a C++ compiler on your computer. Follow the instructions for your operating system to install the appropriate compiler.
