@@ -61,7 +61,7 @@ source chromaenv/bin/activate
 ```
 Our terminal should look like this after the env activation, with the virtual environment's name inside the parentheses.
 
-<Img src="https://iili.io/HggTuGp.png" alt="python env activation">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c2df3c17-e9b4-49a2-cea2-228cd368b200/full" alt="python env activation">
 
 ### Setting Up the Required Libraries
 
@@ -258,14 +258,14 @@ python3 main.py
 ```
 Our terminal, should things go well, will return the input prompt. Let's start talking to the wizard! notice how the sweet loading indicator show up while waiting for the response.
 
-<Img src="https://iili.io/HggjhLQ.png" alt="chat the bot!">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67437812-44d1-43e3-f242-adf412c4c600/full" alt="chat the bot!">
 
 After a short while, the response should show up. In this project, we also show the actual requests sent and the total tokens used for the conversation.
 
-<Img src="https://iili.io/HggwnZx.png" alt="the bot's response">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/25f64d4f-09ae-4fcd-4750-704ddbab5000/full" alt="the bot's response">
 
 Let's talk to the bot more..
-<Img src="https://iili.io/HggNiJt.png" alt="more conversations">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/da93060f-2c1d-4a90-87b6-211e3843a100/full" alt="more conversations">
 
 At this point, we notice how the request will add up each subsequent conversation. With more requests, the more tokens will be used. However, up until this point, this is one of the only way for the bot to retain some semblance of "memory", how the bot will remember aspects from the conversations, at least, up until it hit the context limit. At that point, we need to reset the bot and lose the previous chat history.
 
@@ -435,7 +435,7 @@ if __name__ == "__main__":
 
 ### Testing the Enhanced Chatbot
 Finally, the *real* moment of truth! Run the script again. This time, take note of the request printed on the stdout. On subsequent chats, we'd notice that the script no longer send the whole conversation history as input to the model, but only pick the system chat and two most relevant query results, as well as our most recent inpput. The query results, as they are queried based on their similarities, can serve as "memory" of the chatbot, which only show up when the user talk about it in their chat.
-<Img src="https://iili.io/HgrW9ae.png" alt="enhanced chatbot log">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ab1ac2fe-d1b8-4fed-a047-9b11be851800/full" alt="enhanced chatbot log">
 
 Note that I have the chatbot take a little quiz to test its memory, which worked just fine!
 
