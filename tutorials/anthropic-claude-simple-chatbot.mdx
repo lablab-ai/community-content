@@ -1,0 +1,127 @@
+---
+title: Anthropic tutorial: 'Simple chatbot'
+description: ''
+image: ''
+authorUsername: 'jakub.misilo'
+---
+
+## Is Claude good for chatbots?
+
+Yes! Anthropic Claude has beed designed to be a chatbot. It's big context window helps with long conversations and it's ability to generate long texts is perfect for chatbots. It will also allow us to provide additional context to model. Thanks to that it will be able to extract more information and be more accurate in it's responses. Let's check how to build a simple chatbot with Claude!
+
+_I described getting early access to Anthropic Claude in a previous tutorial._
+
+## Coding
+
+### Dependencies
+
+We can proceed to create the project! Let's start by creating the main folder.
+
+```bash
+mkdir chatbot-claude
+
+cd chatbot-claude
+```
+
+Now we can create a virtual environment and install the necessary libraries.
+
+```bash
+python3 -m venv venv
+
+# Linux/Mac OS
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate.bat
+
+pip install anthropic python-dotenv
+```
+
+The last step will be to create a `main.py` file and import the libraries.
+
+```python
+import os
+
+import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
+```
+
+### Chatbot
+
+to follow the template of [another project](https://github.com/lablab-ai/openai-chat-endpoint-boilerplate) that we once created. I would like, as there, to display the cost of generating a response after each message. This will be important so as not to overshoot the amount of money used to generate the response.
+
+First I will initialize the Anthropic client, the context, and prepare constants with prices for generating one token (in USD).
+
+```python
+anthropic_client = anthropic.Client(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+# you can put some context here, to specialize the Model
+context = ""
+
+# Anthropic Claude pricing: https://cdn2.assets-servd.host/anthropic-website/production/images/model_pricing_may2023.pdf
+PRICE_PROMPT = 1.102e-5
+PRICE_COMPLETION = 3.268e-5
+```
+
+Let the next step be to prepare a function to count the number of tokens in the prompt and response, and then return text with information about the means used.
+
+```python
+
+def count_used_tokens(prompt, completion):
+    prompt_token_count = anthropic.count_tokens(prompt)
+    completion_token_count = anthropic.count_tokens(completion)
+
+    prompt_cost = prompt_token_count * PRICE_PROMPT
+    completion_cost = completion_token_count * PRICE_COMPLETION
+
+    total_cost = prompt_cost + completion_cost
+
+    return (
+        "🟡 Used tokens this round: "
+        + f"Prompt: {prompt_token_count} tokens, "
+        + f"Completion: {completion_token_count} tokens - "
+        + f"{format(total_cost, '.5f')} USD)"
+    )
+```
+
+The final step is to run a chat loop, retrieve text from the user, collect context and generate a response.
+
+```python
+while True:
+    user_inp = input("You: ")
+
+    current_inp = anthropic.HUMAN_PROMPT + user_inp + anthropic.AI_PROMPT
+    context += current_inp
+
+    prompt = context
+
+    completion = anthropic_client.completion(
+        prompt=prompt, model="claude-v1.3-100k", max_tokens_to_sample=1000
+    )["completion"]
+
+    context += completion
+
+    print("Anthropic: " + completion)
+    print(count_used_tokens(prompt, completion))
+```
+
+There you go, our app is ready. Let's test the chatbot!
+
+```bash
+python main.py
+```
+
+## Results
+
+<Img
+  src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatbot-res.png"
+  alt="Result from chatbot"
+/>
+
+As you can see, our chatbot responds correctly! It's worth testing it with more examples, and most importantly, check the context! Here the field is quite large, as it amounts to 100k tokens!
+
+I encourage you to follow our [Anthropic AI Hackathon](https://lablab.ai/event/anthropic-ai-hackathon)!
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)
