@@ -1,18 +1,19 @@
 ---
-title: "Chroma Tutorial with OpenAI's GPT-3.5 Model for Context-Saving and Memory-like Feature in Chatbot"
-description: "How to utilize Chroma database to store previous chat history as embeddings and retrieve the embeddings on relevant input by user of Chatbot CLI built using Python"
+title: "Chroma Tutorial: How to give GPT-3.5 chatbot memory-like capability"
+description: "In this tutorial we will learn how to utilize Chroma database to store chat history as embeddings and retrieve them on relevant input by user of Chatbot CLI built using Python. We will OpenAI's GPT-3.5 model for creating chatbot. Enjoy!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/65b69d05-f79a-4450-764b-677b84d2e000/full"
 authorUsername: "septiannugraha"
 ---
 
-## Introduction
+## Why should my chatbot have memory-like capability?
 
-In this tutorial, we will walk through the steps to integrate a Chroma database with OpenAI's GPT-3.5 model, aiming to give a chatbot with a memory-like capability. This unique feature enables the chatbot to reference past exchanges while formulating its responses, essentially acting as the bot's "memory". This memory mechanism not only enhances the chatbot's ability to maintain context over an extended interaction, but it also provides an advantage to overcome limitations inherent in the context window size of certain OpenAI models, all the while conserving tokens for more efficient usage.
+In this tutorial, we will walk through the steps to integrate a Chroma database with OpenAI's [GPT-3.5](https://lablab.ai/tech/openai/gpt3-5) model, aiming to give a chatbot a memory-like capability. This unique feature enables the chatbot to reference past exchanges while formulating its responses, essentially acting as the bot's "memory". This memory mechanism not only enhances the chatbot's ability to maintain context over an extended interaction, but it also provides an advantage to overcome limitations inherent in the context window size of certain OpenAI models, all the while conserving tokens for more efficient usage. Really unique and amazing feature which can improve the quality of user experience with your [AI app](https://lablab.ai/apps).
 
-### What are Embeddings?
+## What are Embeddings?
 
 Embeddings are a type of vector representation where similar items are represented by close vectors and dissimilar items by distant vectors. In the context of natural language processing (NLP), embeddings are used to represent words, sentences, or even entire documents. Now, if you've dabbled in Computer Vision or have used Image Object Detection libraries like OpenCV, the concept of vector representation should ring a bell, as it's a go-to technique for pinpointing similarities in images. These embeddings capture the semantic meaning of the text, allowing us to perform mathematical operations on them, like finding the cosine similarity between two vectors to measure how similar two pieces of text are.
 
-In our use case, embeddings are crucial because they allow us to store and retrieve past conversations based on semantic similarity rather than exact text matching. This means our chatbot can understand the meaning of the conversations it's had, rather than just remembering the exact words. So, rather than searching for words or sentences that contains certain words, we can search certain items from the database using the vector representations.
+In this particular case, embeddings are vital because they allow us to store and retrieve past conversations based on semantic similarity rather than exact text matching. This means our chatbot can understand the meaning of the previous conversations, rather than just remembering the exact words. So, rather than searching for phrases that contain certain words, we can search for certain items from the database using vector representations.
 
 ### What is ChromaDB?
 
@@ -248,9 +249,9 @@ pip3 freeze > requirements.txt
 pip3 install -r requirements.txt
 ```
 
-### Testing the Basic Chatbot
+## Testing the Basic Chatbot
 
-Now, for the moment of truth! the first half of it, at least. Let's run the file on your favorite terminal with this command.
+Now the moment of truth! Or the first half of it, at least. Let's run the file on your favorite terminal with this command.
 
 ```bash
 python3 main.py
@@ -268,7 +269,7 @@ Let's talk to the bot more..
 
 At this point, we notice how the request will add up each subsequent conversation. With more requests, the more tokens will be used. However, up until this point, this is one of the only way for the bot to retain some semblance of "memory", how the bot will remember aspects from the conversations, at least, up until it hit the context limit. At that point, we need to reset the bot and lose the previous chat history.
 
-That's where the Chroma database comes in! with the power of embeddings storage and queries, storing conversations and recalling it will be a piece of cake.
+That's where the Chroma database comes in! With the power of embeddings storage and queries, storing conversations and recalling it will be a piece of cake.
 
 ### Setting Up Chroma Database
 
@@ -433,11 +434,12 @@ if __name__ == "__main__":
 ```
 
 ### Testing the Enhanced Chatbot
-Finally, for the moment of truth! Run the script again. This time, take note of the request printed on the stdout. On subsequent chats, we'd notice that the script no longer send the whole conversation history as input to the model, but only pick the system chat and two most relevant query results, as well as our most recent inpput. The query results, as they are queried based on their similarities, can serve as "memory" of the chatbot, which only show up when the user talk about it in their chat.
+Finally, the *real* moment of truth! Run the script again. This time, take note of the request printed on the stdout. On subsequent chats, we'd notice that the script no longer send the whole conversation history as input to the model, but only pick the system chat and two most relevant query results, as well as our most recent inpput. The query results, as they are queried based on their similarities, can serve as "memory" of the chatbot, which only show up when the user talk about it in their chat.
 <Img src="https://iili.io/HgrW9ae.png" alt="enhanced chatbot log">
 
 Note that I have the chatbot take a little quiz to test its memory, which worked just fine!
 
-## Conclusion
+## Wrap it up!
 
-As we have demonstrated with our little chatbot, we can do wonder by using ChromaDB as memory for our chatbot. The usage of memory, besides really beneficial to retain important informations from our chat histories, can also help saving our token usage, as it can help weed out irrelevant chat histories and entries. With a few lines of code, we can implement a kind of long-term memory for our bots!
+As we have demonstrated with our little chatbot, we can do wonder by using [ChromaDB](https://lablab.ai/tech/chroma) as memory for our chatbot. The usage of memory, besides really beneficial to retain important informations from our chat histories, can also help saving our token usage, as it can help weed out irrelevant chat histories and entries. With a few lines of code, we can implement a kind of long-term memory for our bots - doesn't matter if we're using [GPT-3.5](https://lablab.ai/tech/openai/gpt3-5) model or any other!
+And if you want to test your AI skills, join our [Artificial Intelligence Hackathons](https://lablab.ai/event) and create an amazing AI based apps in just 1,2 or 7 days!
