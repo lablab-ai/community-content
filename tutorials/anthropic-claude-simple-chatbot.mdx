@@ -1,13 +1,13 @@
 ---
-title: 'Anthropic tutorial: Simple chatbot'
-description: ''
-image: ''
+title: 'Anthropic tutorial: how to create a 100 000 token context AI chatbot'
+description: 'A step by step tutorial how to leverage Anthropic’s Claude 100 000 token context model to create an AI chatbot for your Anthropic application'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4ae6eb3f-8432-4a94-8c03-1e4da3f52e00/full'
 authorUsername: 'jakub.misilo'
 ---
 
 ## Is Claude good for chatbots?
 
-Yes! Anthropic Claude has beed designed to be a chatbot. It's big context window helps with long conversations and it's ability to generate long texts is perfect for chatbots. It will also allow us to provide additional context to model. Thanks to that it will be able to extract more information and be more accurate in it's responses. Let's check how to build a simple chatbot with Claude!
+Of course it is! [Anthropic’s Claude](https://lablab.ai/tech/anthropic/claude) has been designed to be a chatbot. First thing is the fact that as it was being built, safety was the priority which resulted in good reviews from users! The Second one is a fact, that its big, 100 000 tokens, context window helps with long conversations and its ability to generate long texts is perfect for chatbots. It will also allow us to provide additional context to model. Thanks to that it will be able to extract more information and be more accurate in its responses. Let's check how to build a simple chatbot with Claude! And with this knowledge you can build many more [Anthropic application](https://lablab.ai/tech/anthropic/claude)!
 
 _I described getting early access to Anthropic Claude in a previous tutorial._
 
@@ -50,7 +50,7 @@ load_dotenv()
 
 ### Chatbot
 
-to follow the template of [another project](https://github.com/lablab-ai/openai-chat-endpoint-boilerplate) that we once created. I would like, as there, to display the cost of generating a response after each message. This will be important so as not to overshoot the amount of money used to generate the response.
+We will follow the template of [another project](https://github.com/lablab-ai/openai-chat-endpoint-boilerplate) that we once created. I would like, as there, to display the cost of generating a response after each message. This will be important, because I don’t want to overshoot the amount of money used to generate the response.
 
 First I will initialize the Anthropic client, the context, and prepare constants with prices for generating one token (in USD).
 
@@ -65,7 +65,7 @@ PRICE_PROMPT = 1.102e-5
 PRICE_COMPLETION = 3.268e-5
 ```
 
-Let the next step be to prepare a function to count the number of tokens in the prompt and response, and then return text with information about the means used.
+Let the next step be preparation of a function to count the number of tokens in the prompt and response. Then the return text with information about the means used.
 
 ```python
 
@@ -107,13 +107,15 @@ while True:
     print(count_used_tokens(prompt, completion))
 ```
 
-There you go, our app is ready. Let's test the chatbot!
+### Let’s test it!
+
+There you go, our app is ready. Let's test it out!
 
 ```bash
 python main.py
 ```
 
-## Results
+## Quick and easy to set up, right?
 
 <Img
   src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatbot-res.png"
@@ -122,6 +124,8 @@ python main.py
 
 As you can see, our chatbot responds correctly! It's worth testing it with more examples, and most importantly, check the context! Here the field is quite large, as it amounts to 100k tokens!
 
-I encourage you to follow our [Anthropic AI Hackathon](https://lablab.ai/event/anthropic-ai-hackathon)!
+I encourage you to follow our [Artificial Intelligence Hackathon](https://lablab.ai/event), especially the upcoming [Anthropic Hackathon](https://lablab.ai/event/anthropic-ai-hackathon)!
+
+Why shouldn’t you build your own customized chatbot or any other [Anthropic apps](https://lablab.ai/apps/tech/anthropic/claude)? And where better to do so, then with other like-minded people in a short period of time and with assistance of mentors?
 
 **Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)
