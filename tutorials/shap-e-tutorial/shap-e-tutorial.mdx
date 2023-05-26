@@ -1,25 +1,24 @@
 ---
-title: "Shape-E Tutorial: Step-by-step guide setting up and using Shap-E model."
-description: "In this tutorial we will learn step-by-step guide how to set up and use Shape-E model to generate 3D models and customize them with Blender Studio."
-image: "./images/thumbnailShape.png"
+title: "Shape-E Tutorial: how to set up and use Shap-E model"
+description: "In this tutorial we will learn how to set up a Google Colab Notebook in order to use OpenAI's Shape-E model to generate 3D models and customize them with Blender Studio."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f354226d-6dfa-4109-4cfc-a714b3c9af00/full"
 authorUsername: "abdibrokhim"
 ---
 
 
 ## What is Shape-E?
-Shap-E is a conditional generative model for 3D assets. Learn more on [Github](https://github.com/openai/shap-e) or Read the [Paper](https://arxiv.org/abs/2305.02463).
+[Shap-E](https://lablab.ai/tech/openai/shap-e), a groundbreaking model developed by OpenAI, produces an array of 3D objects using text or images as input, transforming the realm of 3D applications with its innovative approach. This extraordinary technology is accessible for free on GitHub, allowing users to run it seamlessly on their computers without requiring an OpenAI API key or an internet connection. What makes Shap-E truly remarkable is its versatility: the generated 3D objects can be opened in software like Microsoft Paint 3D or even converted into STL files for 3D printing. With its unique capabilities, Shap-E is redefining the way we approach text-to-3D and image-to-3D generation and what creative possibilities for [AI applications](https://lablab.ai/apps) can arise from it.
 
 
 ## What we are going to do?
-In this tutorial we will learn step-by-step guide how to set up and use Shape-E model to generate 3D models and customize them with Blender Studio.
+In this tutorial we will learn how to create a Notebook in Google Colab, set up and use OpenAI's Shape-E model to generate 3D models and customize them with Blender Studio.
 
 
 ### Prerequisites
 Go to [Blender.org](https://www.blender.org/download/) and download Blender Studio compatible with your operating system.
 
-
-## Step 1: 
-### Setting up the project
+## Let's start!
+### Step 1 - Setting up the project
 
 Let's start by creating new Notebook in Google Colab.
 
@@ -28,8 +27,7 @@ Go to [Google Colab](https://colab.research.google.com/) and create new Notebook
 <Img src="./images/colabNewNotebook.png" alt="Creating new Notebook in Google Colab" caption="Creating new Notebook in Google Colab"/>
 
 
-## Step 2: 
-### Clone the repository
+### Step 2 - Clone the repository
 
 Now, we need to clone Shap-E repository to our Google Colab Notebook.
 
@@ -44,10 +42,7 @@ Enter the directory and install the requirements.
 !pip install -e .
 ```
 
-## Step 3:
-
-### Implementation and Cooking the 3D models.
-
+### Step 3 - Implementation and Cooking the 3D models.
 
 Add new `code cell`.
 
@@ -176,9 +171,7 @@ Toggle the tab to `Files` and tap the refresh. You will see the `example_mesh_0.
 Download the `.obj` file to your local machine.
 
 
-## Step 4:
-
-### Customizing the 3D models in Blender Studio.
+### Step 4 - Customizing the 3D models in Blender Studio.
 
 Open the Blender Studio and create new project.
 
@@ -208,17 +201,15 @@ For demonstration purposes, I simple colored topping with pink and the donut wit
 <Img src="./images/coloredDonut.png" alt="Customized 3D model" caption="Customized 3D model"/>
 
 
-## Conclusion
+## Shap-E is trurly amazin!
 
 <Img src="./images/sculptureManWithLaptop.png" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
 
-In this tutorial, we've learned how to to set up and use Shape-E model. Moreover, we've look into Blender Studio and tried to customize generated 3D model.
+In this tutorial, we've learned how to to set up and use Shape-E model using Google Colab. Moreover, we've look into Blender Studio and tried to customize generated 3D model. 
 
-Perfect!
+Now it's your turn to test out the skills you've learnt and create your own 3D art. And as you will play around with it more, maybe you will find some limitations and want to fix it in your own [Shap-e app](https://lablab.ai/apps/tech/openai/shap-e)?
 
-### What’s next?
-
-Participate in the [lablab.ai hackathons](https://lablab.ai/event) and win cool prizes! Be part of the AI enthusiasts community and learn more about AI and its applications.
+Why not do this during an [Artificial Intelligence Hackathons](https://lablab.ai/event)? And by the way win cool prizes! Be part of the AI enthusiasts community and learn more about AI and its potential!
 
 Thanks for reading this tutorial.
 
