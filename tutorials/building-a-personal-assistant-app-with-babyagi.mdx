@@ -1,0 +1,159 @@
+---
+title: 'Building a Personal Assistant App with BabyAGI'
+description: 'The app will utilize the capabilities of the BabyAGI model to perform various tasks and provide assistance to the user. We will integrate the app with an existing task management system to enhance its functionality. Let's get started!'
+authorUsername: 'youknowsthevibes'
+---
+
+## Prerequisites
+Basic knowledge of Python programming language.
+Familiarity with APIs
+
+[BabyAGI](https://github.com/yoheinakajima/babyagi) is AI-powered task management system. It uses OpenAI models (e.g. [GPT-4]() or [GPT-3.5]()) and Vector Database to create, prioritize and execute tasks. The system creates tasks based on previous results and user's objectives. Then it uses OpenAI models to to solve tasks and Vector Database to store and retrieve past results.
+
+## Setting up the Development Environment
+
+install Python on your machine. You can download the latest version of Python from the official website (https://www.python.org/downloads/).
+install a code editor of your choice. like Visual Studio Code, PyCharm, and Sublime Text.
+
+## Setting up the Development Environment
+let's create a Python virtual environment. Open a terminal or command prompt and execute the following commands:
+```# Create a new directory for your project
+mkdir personal_assistant_app
+cd personal_assistant_app
+
+# Create a virtual environment
+python3 -m venv env
+
+# Activate the virtual environment
+# For Windows:
+env\Scripts\activate.bat
+# For macOS/Linux:
+source env/bin/activate
+
+```
+
+## installing Necessary Dependencies
+Install Flask and other required dependencies by running the following command:
+
+
+```bash
+pip install flask
+
+```
+
+##  Creating a Flask Application
+Create a new file called app.py in the project directory and add the following code:
+```python
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Personal Assistant App'
+
+if __name__ == '__main__':
+    app.run()
+
+```
+
+Run the application using the following command:
+```bash
+python app.py
+
+```
+Open your web browser and visit http://localhost:5000
+
+##Integrating the BabyAGI Model
+we will use the OpenAI API. Make sure you have access to the OpenAI API and obtain an API key. Once you have the API key, store it securely and add the following code to your app.py
+
+```
+import openai
+
+openai.api_key = 'YOUR_API_KEY'
+
+def ask_babyagi(question):
+    response = openai.Completion.create(
+        engine='text-davinci-003',
+        prompt=question,
+        max_tokens=100,
+        n=1,
+        stop=None,
+        temperature=0.5
+    )
+    return response.choices[0].text.strip()
+
+@app.route('/ask', methods=['POST'])
+def ask():
+    question = request.form['question']
+    answer = ask_babyagi(question)
+    return answer
+
+
+```
+## Implementing Task Management Functionality
+```
+import requests
+
+TASK_API_URL = 'https://dummy-task-api.com/api/tasks'
+
+def create_task(title):
+    payload = {'title': title}
+    response = requests.post(TASK_API_URL, json=payload)
+    return response.json()
+
+@app.route('/create-task', methods=['POST'])
+def create_task_route():
+    title = request.form['title']
+    task = create_task(title)
+    return task
+
+
+
+```
+## Building the User Interface
+Create a new file called index.html in the project directory and add the following code:
+```
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personal Assistant App</title>
+</head>
+<body>
+    <h1>Personal Assistant App</h1>
+
+    <h2>Ask a Question</h2>
+    <form action="/ask" method="post">
+        <input type="text" name="question" placeholder="Enter your question" required>
+        <button type="submit">Ask</button>
+    </form>
+
+    <h2>Create a Task</h2>
+    <form action="/create-task" method="post">
+        <input type="text" name="title" placeholder="Enter task title" required>
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>
+
+
+```
+Update the home route in app.py to render the index.html template:
+```
+from flask import render_template
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+
+
+```
+##  Testing the Personal Assistant App
+
+```
+python app.py
+
+```
+Congratulations! You have successfully built a Personal Assistant App with BabyAGI integration.
+https://colab.research.google.com/drive/195dhRKYqsozCLQTafebMaxMYJHIits6x#scrollTo=JJ0KIBXsv_CU
