@@ -43,8 +43,6 @@ In my previous tutorial on Chroma + OpenAI models, I've covered these concepts i
 
 ### Initializing the Project
 
-Let's get coding! First thing first, let's initialize the project. We're going to call it `chroma-claude` this time around. Let's fire up your favorite terminal, change directory to your usual codes/projects directory, and make the `chroma-claude` directory inside it. As a best practice, let's also create a new virtual environment specific for this project, as the environment can help us keeping the project's dependencies isolated from our global environment, as well as making it easier to freeze the dependencies in our requirements.txt file. 
-
 Alright, let's roll up our sleeves and start coding! First things first, we need to initialize the project. We're going to name it chroma-claude this time. So, open up your favorite terminal, navigate to your preferred coding or project directory, and create a new directory for chroma-claude. Here's how you do it:
 
 ```bash
@@ -115,7 +113,7 @@ It's time to dive back into the coding part! Ensure we're still in our project d
 
 #### main.py 🐍
 
-**Step 1: Import Necessary Librarie1**
+**Step 1: Import Necessary Libraries**
 ```python
 # Import necessary modules
 from dotenv import load_dotenv
@@ -353,8 +351,6 @@ Now, try asking the bot a follow-up question based on its previous response. You
 <Img src="https://iili.io/Hrq7F4V.png" alt="Claude's second response">
 
 Remember that if you encounter any issues while running the script, check the error message in the terminal and try to troubleshoot accordingly.
-
-I would include the detail about what happens if the conversation exceeds the model's context window. Additionally, I'd correct the discrepancy in the `max_tokens_to_sample` comment. Here's my revised version:
 
 ### Making Use of Claude's Large Context Window
 
