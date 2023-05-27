@@ -1,29 +1,29 @@
 ---
-title: "ChatGPT Plugin Tutorial: How to build ChatGPT Plugin for image generation with Stable Diffusion"
-description: "In this tutorial I'm going to be walking you through step by step the super easy process of building a ChatGPT Plugin for image generation with Stable Diffusion. As a bonus, I'll also show you how to integrate your plugin to the ChatGPT."
+title: "ChatGPT Plugin Tutorial: How to build ChatGPT Plugin for image generation using Stable Diffusion"
+description: "In this tutorial, I'm going to be walking you through step by step the simple and straightforward process of building a ChatGPT Plugin for image generation using Stable Diffusion. As a bonus at the end of this tutorial, I'll also show you how to integrate your plugin to ChatGPT and test it out."
 image: ""
 authorUsername: "abdibrokhim"
 ---
 
 
 ## Introduction
-[ChatGPT Plugins](https://platform.openai.com/docs/plugins/introduction), are tools that connect ChatGPT to external applications. These plugins expand ChatGPT's abilities by allowing it to interact with specific APIs created by developers. With the help of these plugins, ChatGPT can perform various tasks such as fetching up-to-date information like sports scores, stock prices, or the latest news. It can also access knowledge bases like company documents or personal notes to retrieve specific information. Additionally, plugins enable ChatGPT to assist users with tasks such as booking a flight or ordering food, providing helpful guidance and support.
-[Stable Diffusion](https://stability.ai/stable-diffusion), is a new generative model that can generate high-resolution images with a single forward pass. It is based on the [Diffusion Models](https://arxiv.org/abs/2006.11239) and [StyleGAN2](https://arxiv.org/abs/1912.04958) architectures. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution. It is trained on the [ImageNet](https://image-net.org/) dataset and can generate images up to 1024x1024 resolution. It is also trained on the [Kinetics-700](https://deepmind.com/research/open-source/kinetics) dataset and can generate videos up to 256x256 resolution.
+[ChatGPT Plugins](https://platform.openai.com/docs/plugins/introduction), are tools that connect ChatGPT to external applications. These plugins expand ChatGPT's abilities by allowing it to interact with specific APIs created by developers. With the help of these plugins, ChatGPT can perform various tasks such as fetching up-to-date information like sports scores, stock prices, or the latest news, assist users with tasks such as booking a flight or ordering food, providing helpful guidance and support.
+[Stable Diffusion](https://stability.ai/stable-diffusion), is a new generative model that can generate high-resolution images with a single forward pass. It is based on the [Diffusion Models](https://arxiv.org/abs/2006.11239) and [StyleGAN2](https://arxiv.org/abs/1912.04958) architectures.
 
 
 ## What we are going to do?
-In this tutorial I'm going to be walking you through step by step the super easy process of building a ChatGPT Plugin for image generation with Stable Diffusion. As a bonus, I'll also show you how to integrate your plugin to the ChatGPT.
+I'm going to be walking you through step by step the simple and straightforward process of building a ChatGPT Plugin for image generation using Stable Diffusion. As a bonus at the end of this tutorial, I'll also show you how to integrate your plugin to ChatGPT and test it out. So sit back, relax, and let's get started!
 
 
 ### Prerequisites
-Download [Visual Studio Code](https://code.visualstudio.com/) compatible with your operating system.
+Download [Visual Studio Code](https://code.visualstudio.com/) compatible with your operating system, or use any other code editor like: [IntelliJ IDEA](https://www.jetbrains.com/idea/), [PyCharm](https://www.jetbrains.com/pycharm/), etc.
 To use ChatGPT Plugins API you need [join plugins waitlist](https://openai.com/waitlist/plugins).
-Go to [Dream Studio](https://dreamstudio.ai/account), create an account and grab you API key.
+To use Stable Diffusion we need API Key, go to [Dream Studio](https://dreamstudio.ai/account), create an account and grab your API key.
 
 <Img src="./images/stableDiffusionApiKey.png" alt="Stable Diffusion API Key" caption="Stable Diffusion API Key"/>
 
 
-### Let's get started
+### Getting started
 
 ## Step 1 - Create a new project
 
@@ -35,8 +35,8 @@ mkdir chatgpt-plugin-stable-diffusion
 cd chatgpt-plugin-stable-diffusion
 ```
 
+Quick Note: In order to plugin work properly, we need to go through following steps:
 
-In order to plugin work properly, we need to go through following steps:
 * Building an API (Flask, FastAPI, etc.) that implements the OpenAPI specification
 * Creating the JSON manifest file that will define relevant metadata for the plugin
 * Documenting the API in the OpenAPI yaml or JSON format
@@ -52,7 +52,7 @@ Let's create new file named `app.py`. Open the terminal and run the following co
 touch app.py
 ```
 
-It's time to install the required dependencies:
+It's time to install the required dependencies. Run the following command in the terminal:
 
 ```bash
 pip install flask 
@@ -82,7 +82,7 @@ stability_api = client.StabilityInference(
 )
 ```
 
-And last but not least, we need to define the API endpoint for generating images:
+And last but not least, we need to define the API endpoint for generating images and method that starts a development server locally:
 
 ```python
 # Define the API endpoint for generating images
@@ -112,26 +112,29 @@ def generate_image():
     )
 
     # Retrieve the generated image(s) from the response
+    # Extract and encode the generated image(s) so that they can be easily transmitted in the API response as a JSON object
     generated_images = []
     for resp in answers:
         for artifact in resp.artifacts:
             if artifact.type == generation.ARTIFACT_IMAGE:
-                encoded_image = base64.b64encode(artifact.binary).decode('utf-8')
+                encoded_image = base64.b64encode(artifact.binary).decode('utf-8')  # encodes the binary data of the image using Base64 encoding, then decoded to a UTF-8 string using 
                 generated_images.append(encoded_image)
 
     # Return the generated image(s) as the API response
     return jsonify(images=generated_images)
 
 
-# Run the Flask app
+# Run the Flask app locally
 if __name__ == '__main__':
     # Set debug=True to enable auto-reloading when you make changes to the code
     app.run(debug=True, host='127.0.0.1', port=5000)
 ```
 
-Prefect! Now we can run the Flask app and test the API endpoint:
+Quick Note: The `debug=True` argument enables automatic reloading of the server when changes are made to the code, which is useful during the development process. The `host='127.0.0.1'` argument sets the IP address for the server to localhost, and the `port=5000` argument sets the port number for the server to listen on.
 
-Create new `test.py` file and paste following code:
+Perfect! Now we can run the Flask app and test the API endpoint:
+
+Create new `test.py` file and copy/paste following code:
 
 ```python
 import requests
@@ -178,16 +181,14 @@ else:
 
 Don't forget to install `requests` library by running `pip install requests` in your terminal.
 
-Now, run the Flask app: `python app.py`. Make sure the Flask app is running correctly, then open new terminal and run the test script: `python test.py`. After, a couple of seconds you should see the generated image in your folder.
+Now, run the Flask app: `python app.py`, make sure the Flask app is running correctly. Then, open new terminal window and run the test script: `python test.py`, after a couple of seconds you should see the generated image in your folder.
 
 <Img src="./images/donut.png" alt="AI generated art by Stable Diffusion" caption="AI generated art by Stable Diffusion"/>
 
-
-Amazing! We've successfully built the API for image generation with Stable Diffusion. Now, we can use this API to build a ChatGPT Plugin for image generation.
-
+Congratulations! We've successfully built the API for image generation using Stable Diffusion. Feel free to explore further and experiment with different prompts and parameters to unleash the full potential of image generation using Stable Diffusion.
 
 ### Step 3 - Plugin manifest
-Every plugin requires a `ai-plugin.json` file, which will be hosted later, on the API’s domain. [Read more](https://platform.openai.com/docs/plugins/getting-started/plugin-manifest).
+Every plugin requires a `ai-plugin.json` file, which will be hosted later, on the API’s domain. [Read more here](https://platform.openai.com/docs/plugins/getting-started/plugin-manifest).
 
 Create new file named `ai-plugin.json` and paste following code:
 
@@ -199,13 +200,13 @@ Create new file named `ai-plugin.json` and paste following code:
     "description_for_human": "Plugin for generating high-quality images using Stable Diffusion.",
     "description_for_model": "Plugin for generating high-quality images using Stable Diffusion.",
     "auth": {
-        "type": "none"
+        "type": "none"  # No authentication required, but you can use "api_key" or "oauth2" instead
     },
     "api": {
         "type": "openapi",
-        "url": "http://127.0.0.1:5000/openapi.yaml"
+        "url": "http://127.0.0.1:5000/openapi.yaml"  # URL to the OpenAPI specification
     },
-    "logo_url": "http://127.0.0.1:5000/logo.png",
+    "logo_url": "http://127.0.0.1:5000/logo.png",  # URL to the plugin logo
     "contact_email": "support@example.com",
     "legal_info_url": "https://example.com/legal"
 }
@@ -214,9 +215,9 @@ Create new file named `ai-plugin.json` and paste following code:
 
 ### Step 4 - OpenAPI specification
 
-The OpenAPI specification is a standard for describing REST APIs. It is used to define the API that the plugin will use to communicate with the model. [Read more](https://platform.openai.com/docs/plugins/getting-started/openapi-definition).
+The OpenAPI specification is a standard for describing REST APIs. It is used to define the API that the plugin will use to communicate with the model. [Read more here](https://platform.openai.com/docs/plugins/getting-started/openapi-definition).
 
-Create new file named `openapi.yaml` and paste following code:
+Create new file named `openapi.yaml` and copy/paste following code:
 
 ```yaml
 openapi: 3.0.1
@@ -225,7 +226,7 @@ info:
   description: A plugin that generates high-quality images using Stable Diffusion.
   version: "v1"
 servers:
-  - url: http://127.0.0.1:5000
+  - url: http://127.0.0.1:5000  # URL to the Flask app
 paths:
   /generate-image:
     post:
@@ -270,7 +271,7 @@ components:
 ```
 
 
-Now, go back `app.py` file and add rest of the code:
+Now, go back `app.py` file and add endpoints for plugin's logo, manifest and OpenAPI specification:
 
 
 ```python
@@ -301,20 +302,107 @@ def openapi_spec():
 
 All done! Now that you have all of this done you've completed all of the four steps you have a server that's up and running with your functionality ready to be talked to now comes the step of actually integrating it with ChatGPT.
 
+Here is the full code of `app.py` file:
+
+
+```python
+from flask import Flask, request, jsonify, send_file, Response
+from stability_sdk import client
+import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
+import base64
+
+
+# Define the API endpoint for generating images
+@app.route('/generate-image', methods=['POST'])
+def generate_image():
+
+    # Get the prompt and other parameters from the request
+    data = request.json  # Get the request payload
+    prompt = data.get('prompt')  # Prompt to generate the image from
+    seed = data.get('seed', None)  # Set to None to use a random seed
+    steps = data.get('steps', 30)  # Number of steps to run the diffusion for
+    cfg_scale = data.get('cfg_scale', 8.0)  # Scale of the diffusion model
+    width = data.get('width', 512)  # Width of the generated image
+    height = data.get('height', 512)  # Height of the generated image
+    samples = data.get('samples', 1)  # Number of samples to generate
+
+    # Generate the image using Stable Diffusion
+    answers = stability_api.generate(  # Call the generate() method
+        prompt=prompt,
+        seed=seed,
+        steps=steps,
+        cfg_scale=cfg_scale,
+        width=width,
+        height=height,
+        samples=samples,
+        sampler=generation.SAMPLER_K_DPMPP_2M
+    )
+
+    # Retrieve the generated image(s) from the response
+    generated_images = []
+    for resp in answers:
+        for artifact in resp.artifacts:
+            if artifact.type == generation.ARTIFACT_IMAGE:
+                encoded_image = base64.b64encode(artifact.binary).decode('utf-8')
+                generated_images.append(encoded_image)
+
+    # Return the generated image(s) as the API response
+    return jsonify(images=generated_images)
+
+
+# Define the API endpoint for the plugin logo
+@app.route('/logo.png', methods=['GET'])
+def plugin_logo():
+    filename = 'logo.png'
+    return send_file(filename, mimetype='image/png')
+
+
+# Define the API endpoint for the plugin manifest
+@app.route('/ai-plugin.json', methods=['GET'])
+def plugin_manifest():
+    host = request.headers['Host']
+    with open('./ai-plugin.json') as f:
+        text = f.read()
+        return Response(text, mimetype='text/json')
+
+
+# Define the API endpoint for the OpenAPI specification
+@app.route('/openapi.yaml', methods=['GET'])
+def openapi_spec():
+    host = request.headers['Host']
+    with open('./openapi.yaml') as f:
+        text = f.read()
+        return Response(text, mimetype='text/yaml')
+
+
+# Run the Flask app locally
+if __name__ == '__main__':
+    # Set debug=True to enable auto-reloading when you make changes to the code
+    app.run(debug=True, host='127.0.0.1', port=5000)
+
+```
+
 Open [https://chat.openai.com/](https://chat.openai.com/)`, go over to the `plugin store` > `develop your own plugin` and then click `my manifest is ready`, copy/paste the base link to our app which is `https://127.0.0.1:5000` in our case. Then click `find manifest file` > `next` > `install for me` > `continue` and `install plugin`.
 
 <Img src="./images/installPlugin.png" alt="Install plugin" caption="Install plugin"/>
+
+<Img src="./images/pluginInstalled.png" alt="Plugin installed" caption="Plugin installed"/>
+
+
+WooW! Our plugin installed and ready to be used. Let's test it out!
+
+<Img src="./images/testPrompt.png" alt="Test Prompt" caption="Test Prompt"/>
 
 
 ## Conclusion!
 
 <Img src="./images/sculptureManWithLaptop.png" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
 
-In this tutorial, we've learned how to to build ChatGPT Plugin for image generation with Stable Diffusion. 
+In this tutorial, we have explored the process of building a ChatGPT Plugin for image generation using Stable Diffusion. By leveraging the power of Stable Diffusion, we can enhance ChatGPT's capabilities to generate realistic and diverse images based on single textual prompts.
 
-Be part of the AI enthusiasts community and learn more about AI and its potential!
+By the way, plugins play a crucial role in expanding the functionality of ChatGPT, allowing it to interact with external applications and APIs.
 
-Thanks for reading this tutorial.
+Thank you for following along with this tutorial, and I hope you found it valuable.
 
 made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
 
