@@ -1,0 +1,794 @@
+---
+title: "Chroma Tutorial with Anthropic's Claude Model for Enhancing the Chatbot Knowledge Base"
+description: "How to utilize Chroma database to store large knowledge base as embeddings and retrieve the embeddings on relevant input by user of Chatbot CLI built using Python"
+authorUsername: "septiannugraha"
+---
+
+## Introduction
+
+### What is Anthropic's Claude Model? And How Is Claude Different
+
+Anthropic, one of the most prominent AI companies globally, recently introduced its latest Large Language Model, Claude. Officially announced on March 14, 2023, Claude has already been put to use by big names in tech such as Notion, Quora, and DuckDuckGo. Almost immediately, Claude gained recognition for its versatility in a wide range of conversational and text processing tasks. Its common use cases span summarization, search, creative and collaborative writing, Q&A, and even coding! So, not only is Claude proficient at understanding and generating natural language, but it can also code! As a software developer and writer, I couldn't ask for a better tool.
+
+Recently, Anthropic upped the ante by announcing a version of Claude with a 100k context window! What does this mean? Well, think of a waiter who seems to remember everyone's orders at a restaurant without taking any notes. This feature significantly enhances Claude's understanding and its ability to provide high-quality responses. It can handle more complex conversations and sustain these interactions for longer periods.
+
+You might be asking, "That's cool, but what exactly sets Claude apart from other LLMs like, say, OpenAI's GPT?" That's an excellent question, and this tutorial aims to answer just that! We'll delve into the intricate world of Claude, highlight its unique features, and explore what sets it apart from its contemporaries.
+
+### Notes on ChromaDB and Embeddings
+
+In the world of natural language processing and machine learning, a concept known as 'embeddings' plays a crucial role. But what are these so-called 'embeddings'? Simply put, embeddings are a type of vector representation. They allow us to represent items—such as words or phrases—in a multi-dimensional space where 'close' vectors (ones with smaller angles between them) indicate similarity, and 'distant' vectors (with larger angles) denote difference.
+
+If you've worked with computer vision libraries like OpenAI, you might already be familiar with the concept of vectors. We use vectors to represent what a computer "sees," and the 'distances' between these vectors help us detect specific objects in an image. Embeddings, however, take this a step further. They capture the semantic meaning of a text, allowing us to find texts based on their similarities in meaning, not just by the characters they contain.
+
+Now that we understand embeddings, let's talk about ChromaDB. Chroma is an open-source embedding database, according to the [official documentation](https://docs.trychroma.com). ChromaDB stores embeddings, alongside their corresponding documents and metadata. It has built-in functionality to convert documents into their vector representations, enabling you to query embeddings using their document form. For example, a query for "meat" might return "beef" or "venison" based on the similarity of their embeddings.
+
+In my previous tutorial on Chroma + OpenAI models, I've covered these concepts in depth. However, revisiting them here will provide a fresh understanding for new readers and serve as a refresher for those who've read my previous work.
+
+### Prerequisites
+
+- Basic knowledge of Python
+- Access to Anthropic's Claude API
+- A Chroma database set up
+
+### Outline
+
+1. Initializing the Project
+2. Setting Up the Required Libraries
+3. Write the main File
+4. Testing the Basic Chatbot
+5. Setting Up Chroma Database
+6. Testing the Enhanced Chatbot
+
+## Discussion
+
+### Initializing the Project
+
+Let's get coding! First thing first, let's initialize the project. We're going to call it `chroma-claude` this time around. Let's fire up your favorite terminal, change directory to your usual codes/projects directory, and make the `chroma-claude` directory inside it. As a best practice, let's also create a new virtual environment specific for this project, as the environment can help us keeping the project's dependencies isolated from our global environment, as well as making it easier to freeze the dependencies in our requirements.txt file. 
+
+Alright, let's roll up our sleeves and start coding! First things first, we need to initialize the project. We're going to name it chroma-claude this time. So, open up your favorite terminal, navigate to your preferred coding or project directory, and create a new directory for chroma-claude. Here's how you do it:
+
+```bash
+# Let's make the directory
+mkdir chroma-claude
+
+# Get into the project directory
+cd chroma-claude
+```
+
+Next up, we'll create a new virtual environment for this project. If you're wondering why, well, a virtual environment helps us keep our project's dependencies separate from our global Python environment. This isolation is a lifesaver when you're juggling multiple projects with different dependencies.
+
+But that's not the only advantage of a virtual environment! It also makes it easier for us to keep track of the specific libraries and versions we're using. We do this by 'freezing' them into a requirements.txt file, which is a handy record of all the dependencies your project needs to run.
+
+Let's go ahead and set up that virtual environment!
+
+To create a new virtual environment, we'll use the following command in our terminal:
+
+```bash
+# create a new virtual environment
+python3 -m venv env
+```
+
+Once we've created the environment, we'll need to activate it. This step is slightly different depending on whether you're using Windows or a Unix-based system (like Linux or MacOS). Here's how to do it:
+
+- If you're on Windows, you'd use the following command in your terminal:
+```bash
+.\env\Scripts\activate
+```
+
+- If you're on Linux or MacOS, the command will look like this:
+```bash
+source env/bin/activate 
+```
+
+After running the appropriate command, you should see the name of your environment (`env`, in this case) appearing in parentheses at the start of your terminal prompt. This means the environment is activated and ready to go! Here's what it should look like:
+
+<Img src="https://iili.io/HrKgCcN.png" alt="Python environment activation. The terminal prompt starts with `(env)`, indicating that the virtual environment is activated.">
+
+Great job! You've set up and activated your virtual environment.
+
+### Setting Up the Required Libraries
+
+Next up, we need to install all the required libraries. If you've read my other tutorials about Chroma and OpenAI models, you'll find our installation process pretty familiar. This time, however, we'll also be installing the `anthropic` library.
+
+Here's a quick rundown of the libraries we'll be using:
+
+- `chromadb` library: We'll use this to store and query the embeddings.
+- `anthropic` library: This is necessary to interact with Anthropic's Claude model.
+
+We'll also be using the `halo` library, which provides cool loading indicators that show up while waiting for requests. 
+
+Let's start installing these libraries. I'll be using `pip3` for installation. If you're more comfortable with `pip`, feel free to switch to that.
+
+```bash
+# ChromaDB for storing and querying the embeddings
+pip3 install chromadb
+
+# Anthropic library
+pip3 install anthropic
+
+# Halo library for loading indicators
+pip3 install halo
+```
+### Write the Project Files
+
+It's time to dive back into the coding part! Ensure we're still in our project directory. Open your favorite IDE or code editor and create a new file, let's name it main.py. This will be the sole Python file we'll need for this project.
+
+#### main.py 🐍
+
+**Step 1: Import Necessary Librarie1**
+```python
+# Import necessary modules
+from dotenv import load_dotenv
+import os
+import anthropic
+import pprint
+from halo import Halo
+```
+Start by importing the necessary libraries. These include `dotenv` for loading environment variables, `os` for system-level operations, `anthropic` for interacting with the Claude model, `pprint` for pretty-printing, and `halo` for displaying a loading spinner.
+
+**Step 2: Load Environment Variables**
+
+```python
+# Load environment variables from .env file
+load_dotenv()
+```
+Load the environment variables from your `.env` file. This is where you store sensitive data like your Anthropic API key.
+
+**Step 3: Define Response Generation Function**
+
+```python
+def generate_response(messages):
+    # Initialize spinner to show while waiting for response
+    spinner = Halo(text='Loading...', spinner='dots')
+    spinner.start()
+    #...
+```
+Define a function called `generate_response()` that takes in messages as input and returns a model-generated response. Inside this function, you first initialize a loading spinner that will run while the model is generating a response.
+
+**Step 4: Create an Anthropic Client and Send Completion Request**
+
+```python
+    # Create an Anthropic client using the provided API key
+    client = anthropic.Client(api_key=os.getenv("CLAUDE_KEY"))
+
+    # Send a completion request to the Claude model
+    response = client.completion(
+        prompt=messages,
+        stop_sequences = [anthropic.HUMAN_PROMPT],
+        model=os.getenv("MODEL_NAME"),
+        max_tokens_to_sample=300,
+    )
+```
+Next, create an Anthropic client using your API key and use it to send a completion request to the Claude model. The request includes your input messages, the model name, and the stop sequences to signal the end of a conversation turn.
+
+**Step 5: Stop the Spinner and Print the Request and Response**
+
+```python
+    # Stop the spinner after getting response
+    spinner.stop()
+
+    # Print the request and response
+    print("Request:")
+    pp.pprint(messages)
+    print("Response:")
+    pp.pprint(response)
+
+    # Return the response
+    return response
+```
+Once the response is received, stop the loading spinner. Print both the request and response to the console for debugging purposes. Then, return the response.
+
+**Step 6: Define Main Function**
+
+```python
+def main():
+    # Start a loop to continuously get user input and generate responses
+    while True:
+        # Get user input
+        input_text = input("You: ")
+        #...
+```
+Define the main function. This is where you start a continuous loop to get user input and generate responses.
+
+**Step 7: Prepare the Prompt and Handle 'quit' Command**
+
+```python
+        # Prepare the prompt for the Claude model
+        messages=f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
+
+        # Break the loop if user types "quit"
+        if input_text.lower() == "quit":
+            break
+```
+Inside the loop, you first prepare the prompt for the Claude model by concatenating the user's input text with the necessary conversation markers. You also handle the "quit" command: if the user types "quit", you break the loop to stop the chat.
+
+**Step 8: Generate Response and Print It**
+
+```python
+        # Generate a response from the Claude model
+        response = generate_response(messages)
+
+        # Print the model's response
+        print(f"Claude
+
+: {response['completion']}")
+```
+Next, you call the `generate_response()` function with the prepared messages to generate a response from the Claude model. Once the response is received, you print it to the console, with the prefix "Claude:" to denote the chatbot's response.
+
+**Step 9: Run the Main Function**
+
+```python
+# Run the main function if the script is run directly
+if __name__ == "__main__":
+    main()
+```
+Lastly, you include a conditional statement to ensure the main function runs only if the script is run directly (not imported as a module).
+
+**Basic Chatbot (No Context Awareness)**
+
+If you've followed the steps correctly, your complete `main.py` script should look like this:
+
+```python
+# Import necessary modules
+from dotenv import load_dotenv
+import os
+import anthropic
+import pprint
+from halo import Halo
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize pretty printer for formatted printing
+pp = pprint.PrettyPrinter(indent=4)
+
+def generate_response(messages):
+    # Initialize spinner to show while waiting for response
+    spinner = Halo(text='Loading...', spinner='dots')
+    spinner.start()
+
+    # Create an Anthropic client using the provided API key
+    client = anthropic.Client(api_key=os.getenv("CLAUDE_KEY"))
+
+    # Send a completion request to the Claude model
+    response = client.completion(
+        prompt=messages,
+        stop_sequences = [anthropic.HUMAN_PROMPT],
+        model=os.getenv("MODEL_NAME"),
+        max_tokens_to_sample=300,
+    )
+
+    # Stop the spinner after getting response
+    spinner.stop()
+
+    # Print the request and response
+    print("Request:")
+    pp.pprint(messages)
+    print("Response:")
+    pp.pprint(response)
+
+    # Return the response
+    return response
+
+def main():
+    # Start a loop to continuously get user input and generate responses
+    while True:
+        # Get user input
+        input_text = input("You: ")
+
+        # Prepare the prompt for the Claude model
+        messages=f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
+
+        # Break the loop if user types "quit"
+        if input_text.lower() == "quit":
+            break
+
+        # Generate a response from the Claude model
+        response = generate_response(messages)
+
+        # Print the model's response
+        print(f"Claude: {response['completion']}")
+
+# Run the main function if the script is run directly
+if __name__ == "__main__":
+    main()
+```
+This script will enable a basic chatbot interaction with the Claude model, however, it does not maintain context between user inputs. This means that each input is treated as a separate conversation, and the model does not remember previous inputs.
+
+#### .env 🌍
+
+Remember the part when we load variables from the environment with `load_dotenv()` function? this is the file where the function take the variables and their values. Let's create the file and write the variables and their values as follows:
+
+```bash
+# Your Claude API key
+CLAUDE_KEY=sk-ant-xxxxxxxxx
+# Your OpenAI API key
+OPENAI_KEY=sk-xxxxxxxxx
+# We will be using the text-embedding-ada-002 model from OpenAI to convert our data into embeddings.
+EMBEDDING_MODEL = text-embedding-ada-002
+# We'll be using the claude-v1.3-100k model for this project. This is the most sophisticated Claude model currently available and features a large 100k context window. Impressive!
+MODEL_NAME=claude-v1.3-100k
+```
+Please do note that the `.env` file contains sensitive informations and therefore you should keep the file in safe place, never share these values, particularly the `CLAUDE_KEY`, which should be kept secret.
+
+#### requirements.txt 📄
+
+Finally, while this part is optional, it's considered a best practice to record our dependencies list into a file called `requirements.txt`. This allows other developers to easily install the required libraries with one simple command.
+
+To create the `requirements.txt` file, navigate to your project's virtual environment where all the necessary dependencies are installed, and run:
+
+```bash
+# "freeze" the dependencies, storing the list into a file
+pip3 freeze > requirements.txt
+```
+
+Then, anyone who wants to run your project will be able to install all the required dependencies using this command:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+This command is typically run by someone who wants to install or run your project. It's good practice to include it in your project's documentation, under a section about how to install or run your project.
+
+### Testing the Basic Chatbot without Context Awareness
+
+Now, let's test our first iteration of the Claude chatbot! While this basic version should work well, it lacks 'context awareness' - a term used to describe a chatbot's ability to remember and refer back to prior parts of the conversation. This means that after each response, our bot will forget what the user has previously said.
+
+To test the chatbot, run the `main.py` script with the `python` or `python3` command in your terminal:
+
+```bash
+python3 main.py
+```
+
+If everything has been set up correctly, the terminal should display an input prompt, inviting you to enter a message. Try typing something and hit enter. You will notice a loading indicator appear while the bot generates a response.
+
+<Img src="https://iili.io/HrqAzQ4.png" alt="The loading indicator shows up while waiting for the response.">
+
+After a few seconds, the terminal will display the bot's response.
+
+<Img src="https://iili.io/HrqRMDG.png" alt="Claude's first response">
+
+Now, try asking the bot a follow-up question based on its previous response. You will notice that Claude does not remember the context of the previous message.
+
+<Img src="https://iili.io/Hrq7F4V.png" alt="Claude's second response">
+
+Remember that if you encounter any issues while running the script, check the error message in the terminal and try to troubleshoot accordingly.
+
+I would include the detail about what happens if the conversation exceeds the model's context window. Additionally, I'd correct the discrepancy in the `max_tokens_to_sample` comment. Here's my revised version:
+
+### Making Use of Claude's Large Context Window
+
+So, we're using a model with a really large context window. It would be a tragic waste to only use it for a conversation that it forgets instantly. Let's change our code a little. This time, our code should capture both the earlier chat, as well as the current user input.
+
+```diff
++ def main():
++     # Initialize an empty string to hold the conversation history
++     messages = ""
+```
+This new block introduces a variable `messages` outside the main loop. This variable will hold the entire conversation history and will be updated continuously throughout the conversation.
+
+```diff
+- messages=f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
++ messages= messages + f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
+```
+Here, rather than just assigning the current user input to the `messages` variable, you're now appending it. This ensures that the `messages` variable maintains a record of all the user's inputs.
+
+```diff
++     # Generate a response from the Claude model
++     response = generate_response(messages)
++     # Add the model's response to the conversation history
++     messages = messages + response['completion']
+```
+In this block, after generating a response from Claude, you append Claude's response to the `messages` variable. This ensures that both the user's inputs and Claude's responses are retained in the `messages` variable, giving Claude access to the full conversation history.
+
+```diff
+-     max_tokens_to_sample=300,
++     max_tokens_to_sample=1200,
+```
+Finally, to accommodate the larger conversation histories that the `messages` variable might contain, you've increased `max_tokens_to_sample` from 300 to 1200. This instructs Claude to consider up to 1200 tokens when generating a response, which is especially important when dealing with longer conversations. However, do note that if a conversation exceeds the model's context window of 1200 tokens, the older parts of the conversation will be truncated or ignored, potentially leading to loss of context.
+
+Now, let's take a look at our updated code:
+
+```python
+# Import necessary modules
+from dotenv import load_dotenv
+import os
+import anthropic
+import pprint
+from halo import Halo
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize pretty printer for formatted printing
+pp = pprint.PrettyPrinter(indent=4)
+
+def generate_response(messages):
+    # Initialize spinner to show while waiting for response
+    spinner = Halo(text='Loading...', spinner='dots')
+    spinner.start()
+
+    # Create an Anthropic client using the provided API key
+    client = anthropic.Client(api_key=os.getenv("CLAUDE_KEY"))
+
+    # Send a completion request to the Claude model
+    # Note that the max_tokens_to_sample has been increased to 1200 to accommodate larger conversation histories
+    response = client.completion(
+        prompt=messages,
+        stop_sequences = [anthropic.HUMAN_PROMPT],
+        model=os.getenv("MODEL_NAME"),
+        max_tokens_to_sample=1200,
+    )
+
+    # Stop the spinner after getting response
+    spinner.stop()
+
+    # Print the request and response
+    print("Request:")
+    pp.pprint(messages)
+    print("Response:")
+    pp.pprint(response)
+
+    # Return the response
+    return response
+
+def main():
+    # The messages variable is initialized outside of the loop to store the
+
+ entire conversation history
+    messages = ""
+    # Start a loop to continuously get user input and generate responses
+    while True:
+        # Get user input
+        input_text = input("You: ")
+
+        # Prepare the prompt for the Claude model
+        # The user's input is appended to the messages string
+        messages = messages + f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
+
+        # Break the loop if user types "quit"
+        if input_text.lower() == "quit":
+            break
+
+        # Generate a response from the Claude model
+        response = generate_response(messages)
+        # The model's response is also appended to the messages string
+        messages = messages + response['completion']
+
+        # Print the model's response
+        print(f"Claude: {response['completion']}")
+
+# Run the main function if the script is run directly
+if __name__ == "__main__":
+    main()
+```
+
+### Testing the Chatbot with Context Awareness
+
+In this section, we'll put our context-aware chatbot to the test. Specifically, we'll ask Claude about the video game Dota2, and in particular about the latest patch, "New Frontier".
+
+<Img src="https://iili.io/HrqOVa9.png" alt="Claude's first response">
+
+So far, so good. Now let's pose a second question: "What do you know about the latest patch, New Frontier?"
+
+<Img src="https://iili.io/HrqeNHX.png" alt="Claude's second response">
+
+Claude, despite being an advanced chatbot, confesses it doesn't have specific knowledge about the latest patch. This is due to the model's training cut-off, which ended in late 2021. In a more optimal scenario, Claude would still offer relevant, though perhaps outdated, information. In a less desirable scenario, Claude might generate what appears to be accurate but is in fact incorrect information—a phenomenon known as "hallucination." It's crucial to be mindful of these limitations and exercise caution when prompting the model with queries about events or information postdating its training.
+
+So, how can we navigate around this limitation and equip Claude with more recent information? Well, for the purposes of this tutorial, we will provide Claude with supplementary learning materials manually, by copying and pasting the data into text files, which we can then read in using Python's built-in functionality. While we're not technically making Claude "learn" in the conventional sense, we are providing fresh data that it can use to generate more up-to-date responses. Let's delve into this further in the next section.
+
+### Providing Contextual Information to Claude
+
+In order to test Claude's full potential, we need to supply it with enough context-relevant data. For this tutorial, I have copied some text from wiki sites, like the one from [IGN](https://www.ign.com/wikis/dota-2/Dota_2_New_Frontiers_Patch) discussing the "New Frontiers" patch. This text is saved in a file named `patch_notes.txt`. Let's start by reading this file in our main function. 
+
+```diff
++    patch_notes = ""
++    # Open the file in 'read' mode
++    with open('patch_notes.txt', 'r') as file:
++        # Read the contents of the file into the patch_notes variable
++        patch_notes = file.read()
+
++    # Begin the conversation with Claude by providing it context about the Dota2 patch
++    messages = f"{anthropic.HUMAN_PROMPT} Please refer to this data on the Dota2 latest patch, New Frontiers, when I ask you about it: {patch_notes}. {anthropic.AI_PROMPT} Understood"
+```
+We read the text file and use its content to form the initial message for Claude. This message will supply Claude with context about the Dota2 patch, which it can refer to when responding to related queries. This method isn't technically making Claude "learn" new information, but it helps in generating accurate responses for this specific interaction. 
+
+```diff
++        # Print the total number of tokens used in the conversation
++        print(f"Token counts: {anthropic.count_tokens(messages)}")
+```
+We also add a token counter near the end of the `main()` function. This helps us monitor the total number of tokens used in the conversation, ensuring we do not exceed the model's maximum token limit. Here's how our updated code looks:
+
+```python
+# Import necessary modules
+from dotenv import load_dotenv
+import os
+import anthropic
+import pprint
+from halo import Halo
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Initialize pretty printer for formatted printing
+pp = pprint.PrettyPrinter(indent=4)
+
+def generate_response(messages):
+    """
+    This function sends a completion request to the Claude model, waits for the response,
+    and then returns it.
+
+    Parameters:
+        messages (str): The conversation history.
+
+    Returns:
+        response: The response from the Claude model.
+    """
+
+    # Initialize spinner to show while waiting for response
+    spinner = Halo(text='Loading...', spinner='dots')
+    spinner.start()
+
+    # Create an Anthropic client using the provided API key
+    client = anthropic.Client(api_key=os.getenv("CLAUDE_KEY"))
+
+    # Send a completion request to the Claude model
+    response = client.completion(
+        prompt=messages,
+        stop_sequences = [anthropic.HUMAN_PROMPT],
+        model=os.getenv("MODEL_NAME"),
+        max_tokens_to_sample=1200,
+    )
+
+    # Stop the spinner after getting response
+    spinner.stop()
+
+    # Print the request and response
+    print("Request:")
+    pp.pprint(messages)
+    print("Response:")
+    pp.pprint(response)
+
+    # Return the response
+    return response
+
+def main():
+    """
+    The main function to handle user input and interact with the Claude model.
+    """
+
+    patch_notes = ""
+    # Open the file in 'read' mode
+    with open('patch_notes.txt', 'r') as file:
+        # Read the contents of the file into the patch_notes variable
+        patch_notes = file.read()
+
+    # Begin the conversation with Claude by providing it context about the Dota2 patch
+    messages = f"{anthropic
+
+.HUMAN_PROMPT} Please refer to this data on the Dota2 latest patch, New Frontiers, when I ask you about it: {patch_notes}. {anthropic.AI_PROMPT} Understood"
+
+    # Start a loop to continuously get user input and generate responses
+    while True:
+        # Get user input
+        input_text = input("You: ")
+
+        # Append the user's input to the conversation history
+        messages = messages + f"{anthropic.HUMAN_PROMPT} {input_text} {anthropic.AI_PROMPT}"
+
+        # Break the loop if user types "quit"
+        if input_text.lower() == "quit":
+            break
+
+        # Generate a response from the Claude model
+        response = generate_response(messages)
+        # Append Claude's response to the conversation history
+        messages = messages + response['completion']
+
+        # Print the total number of tokens used in the conversation
+        print(f"Token counts: {anthropic.count_tokens(messages)}")
+
+        # Print Claude's response
+        print(f"Claude: {response['completion']}")
+
+# Run the main function if the script is run directly
+if __name__ == "__main__":
+    main()
+```
+
+### Evaluating the Enhanced Chatbot (Additional Context Provided)
+
+Let's put our augmented chatbot to the test! First, we'll inquire about general information concerning Dota2's latest patch, "New Frontiers".
+
+<Img src="https://iili.io/HrnKcxI.png" alt="Claude's response to a question about Dota2's latest patch">
+
+Impressively, Claude now enumerates all the major changes introduced by the patch with remarkable accuracy. However, it's noteworthy that the token count has already reached 5298. This reminds us that in-depth responses and extensive conversation history can rapidly consume tokens. 
+
+To further evaluate Claude's comprehension of the provided context, we'll ask it about the "Tormentors." This question can be seen as a litmus test of Claude's context awareness. To an uninformed listener, "Tormentors" might evoke images of cruel, menacing creatures, while in Dota2, they are actually benign, floating cubes. 
+
+<Img src="https://iili.io/HrnuG9t.png" alt="Claude answered the question about Tormentors correctly">
+
+Claude passed the test with flying colors! It's truly fascinating how appropriate prompts, coupled with additional context, can significantly enhance the accuracy of Claude's responses.
+
+So, what's next? What if we want to compare the abilities of two different heroes, or perhaps learn about new heroes that were introduced after late 2021, like Dawnbringer or Primal Beast? Theoretically, we could keep feeding Claude with more and more information until we hit the context window limit, even with the generous 100k limit.
+
+This is the juncture where we need to consider establishing a foundation for the bot's knowledge base. It's akin to how highly skilled professionals, like lawyers or doctors, often have to consult reference books. Similarly, Claude can greatly benefit from a knowledge base that it can refer to when answering relevant questions. This is the perfect segue to introduce Chroma, a tool that allows querying with similar and related words, enhancing Claude's capability to access and utilize a knowledge base.
+
+Overall, your entry is very well-written and clear. You have done an excellent job at explaining the code and the reasoning behind your choices. Here are a few minor points that could be improved:
+
+1. **Introduction:**
+
+    It might be beneficial to add a short introduction explaining what a knowledge base is and why we need one for Claude. This will give readers an overview of the purpose of this section.
+
+2. **Code Comments:**
+
+    In the `create_chunks` function, it seems that the docstring appears after some code has been written. This is nonstandard practice in Python, and the docstring usually appears immediately after the function definition line.
+
+3. **Environment Setup:**
+
+    While you've mentioned installing the `tiktoken` library, you have not mentioned installing the `chromadb` library. Make sure to add it to the `requirements.txt` file and explain its installation.
+
+4. **Explanation of the `while` loop:**
+
+    When explaining the `while` loop, it would be useful to describe how it interacts with the user and the Chroma database, especially for those who are not familiar with this type of application.
+
+Here is a suggested revision:
+
+---
+### Building a Knowledge Base for Claude
+
+The goal of building a knowledge base for Claude is to equip it with a vast array of data it can refer to when generating responses. This allows it to provide more accurate and context-aware responses, even when dealing with complex and diverse data, like the latest Dota2 patch notes.
+
+To achieve this, we'll use the Chroma database as our knowledge base. This way, we can break the data into smaller pieces and store them in the database. This is more efficient than feeding the entire data to Claude every time we communicate with it. To break the data into smaller pieces, we'll use the `tiktoken` library.
+
+First, let's install `tiktoken` and `chromadb`, and update our `requirements.txt` file:
+
+```bash
+pip3 install tiktoken chromadb
+pip3 freeze > requirements.txt
+```
+
+Next, we're going to introduce some changes to our script to enable Chroma database functionality:
+
+First, we import all the required libraries:
+
+```diff
++ import tiktoken
++ import chromadb
++ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+```
+
+Now, let's create a function `create_chunks` to split our large text into smaller chunks. This function will return the successive chunks of text:
+
+```diff
++ # Split a text into smaller chunks of size n, preferably ending at the end of a sentence
++ def create_chunks(text, n, tokenizer):
++     tokens = tokenizer.encode(text)
++     """Yield successive n-sized chunks from text."""
++     i = 0
++     while i < len(tokens):
++         # Find the nearest end of sentence within a range of 0.5 * n and 1.5 * n tokens
++         j = min(i + int(1.5 * n), len(tokens))
++         while j > i + int(0.5 * n):
++             # Decode the tokens and check for full stop or newline
++             chunk = tokenizer.decode(tokens[i:j])
++             if chunk.endswith(".") or chunk.endswith("\n"):
++                 break
++             j -= 1
++         # If no end of sentence found, use n tokens as the chunk size
++         if j == i + int(0.5 * n):
++             j = min(i + n, len(tokens))
++         yield tokens[i:j]
++         i = j
+```
+
+In the `main` function, we initialize the tokenizer, chunk the patch notes, and create a new Chrom
+
+a collection. Each chunk of text is then added to the collection as a separate document:
+
+```diff
+  def main():
+      ...
+      # Open the file with 'read' permission
+      with open('patch_notes.txt', 'r') as file:
+          # Read the contents of the file into the patch_notes variable
+          patch_notes = file.read()
+
++     # Initialise tokenizer
++     tokenizer = tiktoken.get_encoding("cl100k_base")
++ 
++     chunks = create_chunks(patch_notes,300,tokenizer)
++     text_chunks = [tokenizer.decode(chunk) for chunk in chunks]
++ 
++     chroma_client = chromadb.Client()
++     embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv("OPENAI_KEY"), model_name=os.getenv("EMBEDDING_MODEL"))
++     collection = chroma_client.create_collection(name="conversations", embedding_function=embedding_function)
++ 
++     index = 0
++     for text_chunk in text_chunks:
++         collection.add(
++             documents=[text_chunk],
++             ids=[f"text_{index}"]
++         )
++         index += 1
+```
+
+During the conversation with the user, we query the Chroma collection for the top 20 documents relevant to the user input. The results from this query are then added to the context for Claude, improving its responses:
+
+```diff
+  while True:
+      # Get user input
+      input_text = input("You: ")
+
++     results = collection.query(
++         query_texts=[input_text],
++         n_results=20
++     )
+
++     knowledge_base = []
++     for res in results['documents'][0]:
++         knowledge_base.append(res)
+
++     messages = f"{anthropic.HUMAN_PROMPT} Please take this data on Dota2 latest patch, New Frontiers. You will refer to this data when I ask you about the latest patch of Dota2: {knowledge_base}. {anthropic.AI_PROMPT} Understood"
+
+      ...
+```
+---
+
+With these changes, we now have a more efficient and scalable method of providing Claude with the necessary context. It also makes our application more flexible, as we can easily update the knowledge base with new data as it becomes available.
+
+Sure, thank you for providing the specifics. Here's the updated critique and revision:
+
+---
+
+Your entries are great at showing what the enhanced Claude model can do, but there's room for improvement in explaining the specifics of the test results. Here's how to do it:
+
+1. **Be more specific:** When you mention "Claude still responded accurately," be explicit about what exactly Claude got right. For instance, you can mention that Claude correctly identified the three most game-changing updates: the expanded map with 40% more terrain, the rework of black king bar, and the introduction of a new hero attribute type: Universal.
+
+2. **Explain inaccuracies in detail:** Specify exactly what Claude got wrong when describing the Tormentors. This would give readers a clear understanding of the model's limitations.
+
+3. **Conclude and look forward:** Wrap up your findings, and talk about potential improvements and plans for future tutorials.
+
+Here's a revised version of your entry:
+
+---
+
+### Testing Claude's Final Form (Enhanced by the Knowledge Base)
+
+We've finally arrived at the moment of truth! This tutorial may have been a bit longer than usual, but it's crucial for demonstrating Claude's large context window and the power of the Chroma database for enhancing Claude's knowledge base. So, let's put our enhanced Claude to the test!
+
+In the first test, I'll ask Claude to list the three most significant game-changing updates in the latest Dota 2 patch.
+
+![Claude answered with three most vital and game-changing updates](https://iili.io/HrzRaON.png)
+
+Claude impressively identified the three most game-changing updates: the expanded map with 40% more terrain, the rework of the black king bar, and the new hero attribute type: Universal. Remember, we didn't feed Claude the entire patch notes at once. Instead, it's leveraging the power of its enhanced knowledge base to retrieve this relevant information.
+
+For the next challenge, I'll ask Claude to explain what Tormentors are in the latest patch, as if I were about to enter a match completely blind.
+
+![Claude explained about tormentors with somewhat alright accuracy](https://iili.io/Hrz5hEg.png)
+
+Claude provides a general overview of Tormentors but misses some important details. For instance, it refers to "multiple Tormentors" when only two spawn at specific locations on the entire map. This highlights the need to continuously update the knowledge base with more accurate data to help Claude deliver more precise and helpful analysis.
+
+These tests demonstrate the potential of AI models like Claude when combined with a rich, continuously updated knowledge base. They also show the continuous nature of AI development - as we feed our models with more and better data, they can deliver increasingly accurate and nuanced responses.
+
+Your conclusion is excellent in summarizing the main points of your tutorial, and also in capturing the possibilities of the Claude + Chroma combination. There are, however, a few tweaks you can make to make it even better:
+
+1. **Highlight accomplishments:** Mention the specific accomplishments you have achieved throughout the tutorial, such as creating a chatbot that can provide detailed analysis about Dota 2 updates.
+
+2. **Stress on potential improvements:** It's great that you mentioned the potential to enhance Claude's accuracy by adding more data. Perhaps you could also touch on the scope of improvement in terms of dealing with model limitations and inaccuracies.
+
+3. **Promote next steps:** It would be good to let your readers know if there are future tutorials or updates they can look forward to.
+
+Here's the revised version of your conclusion:
+
+---
+
+## Conclusion
+
+In this tutorial, we demonstrated the immense power of Anthropic's Claude model coupled with Chroma database. We used Claude's large context window to develop a chatbot capable of reading and understanding extensive text data, providing detailed analysis on Dota 2 updates. Chroma database further enhanced this capability, enabling us to build a more efficient and scalable knowledge base that also conserves token usage.
+
+While we achieved a significant degree of success, this tutorial also shed light on potential areas for improvement. For instance, refining our model's understanding of specific game elements (like the Tormentors in Dota 2), and continuously updating and expanding the knowledge base to make the chatbot more accurate.
+
+The potential for what we can build next with the Claude + Chroma combination is staggering. Be it a chatbot for in-depth game strategy analysis, a virtual assistant with expertise in a wide range of topics, or a powerful tool to help researchers make sense of vast amounts of data - the possibilities are limited only by our imagination, and yes, our disk space!
+
+Thank you for your time and patience in going through this comprehensive tutorial. You can find the finished source code on my [github](https://github.com/septiannugraha/chroma-claude).
