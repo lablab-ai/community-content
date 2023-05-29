@@ -1,6 +1,6 @@
 ---
 title: "Chroma + Stable Diffusion Tutorial: How to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model."
-description: "In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model. Sit back, relax and enjoy the tutorial!"
+description: "In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion high-resolution image generation model. Sit back, relax and enjoy the tutorial!"
 image: ""
 authorUsername: "abdibrokhim"
 ---
@@ -21,14 +21,20 @@ To make it more clear and understandable, Lemme split the tutorial into two part
 - Part 1 - Getting prompt for Stable Diffusion. In this part, we will go through Chroma DB and Cohere LLM. We will load the document, split it into smaller chunks, embed them using Cohere and then we will use Chroma to query the database and get the prompt to use in Part 2.
 - Part 2 - Generating images using Stable Diffusion. In this part, we will go through Stable Diffusion SDK and implement the code to generate images based on the prompt we got from Chroma DB in Part 1.
 
+
 ### Prerequisites
-To use Cohere embeddings we need API key, go to [Cohere](https://cohere.ai/), on the top right corner click `TRY NOW`, login or create an account and `copy/save` your API key.
+To use Cohere embeddings we need API key. Go to [Cohere](https://cohere.ai/), on the top right corner click `TRY NOW`, login or create an account. Once you have created an account you will be redirected to the dashboard. Click `API Keys` on the left sidebar. Copy the API key and save it somewhere safe.
+
+<Img src="./images/cohereDashboard.png" alt="Cohere Dashboard" caption="Cohere Dashboard"/>
+
+<Img src="./images/cohereApiKey.png" alt="Cohere API Key" caption="Cohere API Key"/>
+
+To use Stable Diffusion we need API Key. Go to Dream Studio, [Sign up](https://dreamstudio.ai/) for an account to be taken to your API Key. [Click me](https://dreamstudio.ai/account) once you have created an account to be taken to your API Key. Copy the API key and save it somewhere safe.
 
 <Img src="./images/stableDiffusionApiKey.png" alt="Stable Diffusion API Key" caption="Stable Diffusion API Key"/>
 
-To use Stable Diffusion we need API Key, go to [Dream Studio](https://dreamstudio.ai/account), on the top right corner click `GET STARTED`, login or create an account and `copy/save` your API key.
 
-<Img src="./images/cohereApiKey.png" alt="Cohere API Key" caption="Cohere API Key"/>
+No, knowledge of using Google Colab is required. I will guide you through the whole process. 
 
 
 ## Getting started
@@ -102,10 +108,10 @@ Add new `code cell`.
 
 ```python
 
-os.environ["COHERE_API_KEY"]
+os.environ["COHERE_API_KEY"] = "key-goes-here"
 
-os.environ['STABILITY_HOST'] = 'grpc.stability.ai:443'
-os.environ["STABILITY_KEY"]
+os.environ['STABILITY_HOST'] = 'grpc.stability.ai:443'  # Host URL should not be prepended with "https" nor should it have a trailing slash.
+os.environ["STABILITY_KEY"] = "key-goes-here"
 
 ```
 
