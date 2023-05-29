@@ -1,6 +1,6 @@
 ---
-title: "Chroma + Stable Diffusion Tutorial: "
-description: "In this tutorial, "
+title: "Chroma + Stable Diffusion Tutorial: How to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model."
+description: "In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model. Sit back, relax and enjoy the tutorial!"
 image: ""
 authorUsername: "abdibrokhim"
 ---
@@ -13,17 +13,19 @@ authorUsername: "abdibrokhim"
 
 
 ## What we are going to do?
-In this tutorial, 
+In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model. Sit back, relax and enjoy the tutorial! Don't forget to make a cup of coffee, it may take a while to generate an image 😅.
 
-To make it more clear and understandable, we will split this tutorial into two parts:
-- Part 1 - Getting prompt for Stable Diffusion. In this part, we will go through Chroma and Cohere. We will load the document, split it into smaller chunks, embed them using Cohere and then we will use Chroma to query the database and get the prompt for Image Generation.
-- Part 2 - Generating images using Stable Diffusion. In this part, we will go through Stable Diffusion SDK and implement the code to generate images based on the prompt we got in Part 1.
+To make it more clear and understandable, Lemme split the tutorial into two parts:
+- Part 1 - Getting prompt for Stable Diffusion. In this part, we will go through Chroma DB and Cohere LLM. We will load the document, split it into smaller chunks, embed them using Cohere and then we will use Chroma to query the database and get the prompt for Image Generation.
+- Part 2 - Generating images using Stable Diffusion. In this part, we will go through Stable Diffusion SDK and implement the code to generate images based on the prompt we got from Chroma DB in Part 1.
 
 ### Prerequisites
-To use Cohere embeddings we need API key, go to [Cohere](https://cohere.ai/), on the top right corner click `TRY NOW`, login or create an account and copy/save your API key.
-To use Stable Diffusion we need API Key, go to [Dream Studio](https://dreamstudio.ai/account), on the top right corner click `GET STARTED`, login or create an account and copy/save your API key.
+To use Cohere embeddings we need API key, go to [Cohere](https://cohere.ai/), on the top right corner click `TRY NOW`, login or create an account and `copy/save` your API key.
 
 <Img src="./images/stableDiffusionApiKey.png" alt="Stable Diffusion API Key" caption="Stable Diffusion API Key"/>
+
+To use Stable Diffusion we need API Key, go to [Dream Studio](https://dreamstudio.ai/account), on the top right corner click `GET STARTED`, login or create an account and `copy/save` your API key.
+
 <Img src="./images/cohereApiKey.png" alt="Cohere API Key" caption="Cohere API Key"/>
 
 
@@ -31,29 +33,33 @@ To use Stable Diffusion we need API Key, go to [Dream Studio](https://dreamstudi
 
 ### Create a new project
 
-Let's start by creating new Notebook in Google Colab.
-
-Go to [Google Colab](https://colab.research.google.com/) and create new Notebook.
+Let's start by creating new Notebook in Google Colab. Go to [Google Colab](https://colab.research.google.com/) > `File` and click `New notebook`.
 
 <Img src="./images/colabNewNotebook.png" alt="Creating new Notebook in Google Colab" caption="Creating new Notebook in Google Colab"/>
+
+It will open a new Notebook in a new tab, give it a name by clicking on `Untitled0` and rename it to `Chroma Stable Diffusion Tutorial` or whatever you want.
+
+
+Great, we are ready to start CODING!.
 
 
 ### Install dependencies
 
 Add new `code cell`.
 
-To install the necessary libraries, we will use the `pip` package manager. We need to install the following libraries:
+To install the necessary libraries wich we gonna use throughout the tutorial:
 
-    
 ```python
+
 !pip install chromadb
 !pip install langchain
 !pip install pymupdf
 !pip install cohere
 !pip install stability-sdk
+
 ```
 
-Click `Run` button or `CMD/CTRL + Enter` to run the single `code cell`. It will take a few minutes to install all the necessary libraries.
+Click `Run` button or `CMD/CTRL + Enter`, it will run the active `code cell` and take a few minutes to install all the necessary libraries. Make sure that you have stable internet connection.
 
 Now, if everything is installed correctly, we can move on to the next step.
 
@@ -62,9 +68,10 @@ Now, if everything is installed correctly, we can move on to the next step.
 
 Add new `code cell`.
 
-Here we will import all the necessary libraries, `copy/paste` the following code into the `code cell`.
+Here we will import all the necessary libraries, `copy/paste` the following lines of code:
     
 ```python
+
 from langchain.vectorstores import Chroma  # Chroma vector store
 from langchain.embeddings import CohereEmbeddings  # Cohere embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter  # Recursive character text splitter
@@ -77,9 +84,14 @@ import warnings
 from PIL import Image
 from stability_sdk import client  # Stability SDK
 import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
+
 ```
 
-Click `Run` button or `CMD/CTRL + Enter` to run the single `code cell`.
+Click `Run` or `CMD/CTRL + Enter`. 
+
+When you run the cell, you may see a `warning message/messages`. Don't worry about it. We can ignore it.
+
+Note: You don't need to save the Notebook every time after running the `code cell`, Google Colab will automatically save it for you. But, if you want to save it manually, you can do it by clicking `File` > `Save` or by shortcut `CMD/CTRL + S`.
 
 
 ### Export environment variables:
@@ -101,18 +113,20 @@ Click `Run` or `CMD/CTRL + Enter`.
 ### Part 1 - Getting prompt for Stable Diffusion
 
 
-Let's quickly upload PDF file to Google Colab. In this tutorial, I go with `Harry Potter and the Sorcerer's Stone` book. You can download the PDF file [here](https://www.pdfdrive.com/the-complete-harry-potter-harry-potter-and-the-sorcerers-stone-harry-potter-and-the-chamber-of-secrets-harry-potter-and-the-prisoner-of-azkaban-harry-potter-and-the-goblet-of-fire-harry-potter-and-the-order-of-the-phoenix-h-d157198854.html). Go to `Files` tab on the left side of the screen, click `Upload to session storage` and upload the PDF file. Wait until the file is uploaded and then `copy` the path to the file.
+Firstly, let's quickly upload PDF file to Google Colab. In this tutorial, we will go with `Harry Potter and the Sorcerer's Stone` book. You can download the PDF file [here](https://www.pdfdrive.com/the-complete-harry-potter-harry-potter-and-the-sorcerers-stone-harry-potter-and-the-chamber-of-secrets-harry-potter-and-the-prisoner-of-azkaban-harry-potter-and-the-goblet-of-fire-harry-potter-and-the-order-of-the-phoenix-h-d157198854.html). 
+
+After, downloading back to Google Colab and go to `Files` tab on the left side of the screen, click `Upload to session storage` and upload the file. Wait until the file is uploaded and then `copy` the path to the file.
 
 <Img src="./images/pathToBook.png" alt="Path to uploaded document" caption="Path to uploaded document"/>
 
 
-Now, let's load the Book.
+Now, we can load the file.
 
 Add new `code cell`.
 
 ```python
 
-loader = PyMuPDFLoader('/content/harry-potter-book-1.pdf')  # Paste the path to the uploaded document
+loader = PyMuPDFLoader('/content/harry-potter-book-1.pdf')  # Replace with your file path
 documents = loader.load()
 
 ```
@@ -120,7 +134,9 @@ documents = loader.load()
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Let's split the document into smaller chunks. Why? We should to make sure that the LLM can process the document. If the document is too long, the LLM will not be able to process it. We will use `RecursiveCharacterTextSplitter` to split the document into smaller chunks. We will split the document into chunks of 1000 characters with 0 overlap.
+Let's split the document into smaller chunks. 
+
+Why? We should to make sure that the LLM can process the document. If the document is too long, the LLM will not be able to process it. We will use `RecursiveCharacterTextSplitter` to split the document into smaller chunks. We will split the document into chunks of 1000 characters with 0 overlap.
 
 Add new `code cell`.
 
@@ -134,7 +150,7 @@ texts = text_splitter.split_documents(documents)
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Next, we will create a `Chroma` vector store. 
+Next, we will create a vector store.
 
 Add new `code cell`.
 
@@ -148,7 +164,7 @@ vectordb = Chroma.from_documents(texts, embeddings)  # Create Chroma vector stor
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Now, we will create a `VectorDBQA` chain.
+Now, we should create chain. 
 
 Add new `code cell`.
 
@@ -161,9 +177,9 @@ qa = VectorDBQA.from_chain_type(llm=Cohere(cohere_api_key=os.environ["COHERE_API
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Perfect! We have done with `QA` chain. Now, we can query based on the Book. Let's try to ask a question about `Harry Potter`.
+Perfect! We have done with chain. Now, we can query based on the processed file. Let's try to ask a about `Harry Potter`.
 
-Add new `code cell`.
+Add new `code cell` and `copy/paste` the following lines of code:
 
 ```python   
 
@@ -173,6 +189,8 @@ qa.run(query)
 ```
 
 Click `Run` or `CMD/CTRL + Enter`.
+
+You should see something like below image, but don't worry if you see something different.
 
 <Img src="./images/aboutHarryPotter.png" alt="About Harry Potter" caption="About Harry Potter"/>
 
@@ -199,7 +217,7 @@ stability_api = client.StabilityInference(
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Next, paste the prompt you get from the `Chroma` chain.
+Next, paste the prompt you got from the `Chroma` chain in Part 1.
 
 Add new `code cell`.
 
@@ -220,14 +238,14 @@ who will not give up easily when faced with a challenge.  He is described as
 being a very intelligent and witty individual who is always willing to help
 out other people
 
-"""
+"""  # You may replace with your prompt or use the one provided here.
 
 ```
 
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-
+Now, we can generate an image, based on the prompt.
 
 Add new `code cell`.
 
@@ -251,15 +269,16 @@ answers = stability_api.generate(
                                                 # (Available Samplers: ddim, plms, k_euler, k_euler_ancestral, k_heun, k_dpm_2, k_dpm_2_ancestral, k_dpmpp_2s_ancestral, k_lms, k_dpmpp_2m, k_dpmpp_sde)
 )
 
-
 ```
 
 Click `Run` or `CMD/CTRL + Enter`.
 
+It will take a while to generate an image. Once it's done, we can save the image.
 
 
+Add new `code cell` and `copy/paste` the following lines of code:
 
-Add new `code cell`.
+It will save the image with the seed number as the filename in the same directory as this notebook.
 
 ```python   
 
@@ -275,13 +294,13 @@ for resp in answers:
             img = Image.open(io.BytesIO(artifact.binary))
             img_path = img.save(str(artifact.seed)+ ".png") # Save our generated images with their seed number as the filename.
 
-
 ```
 
 Click `Run` or `CMD/CTRL + Enter`.
 
+Now, you can download the image or see the image instantly.
 
-Let's see the result.
+<Img src="./images/downloadImage.png" alt="Harry Potter generated art by Stable Diffusion" caption="Harry Potter generated art by Stable Diffusion"/>
 
 Add new `code cell`.
 
@@ -297,11 +316,20 @@ Click `Run` or `CMD/CTRL + Enter`.
 <Img src="./images/harryPotterGeneratedImage.png" alt="Harry Potter generated art by Stable Diffusion" caption="Harry Potter generated art by Stable Diffusion"/>
 
 
-## Conclusion!
+Congratulations! You've successfully generated an image using Stable Diffusion with the prompt generated by Chroma based on the Cohere embeddings.
 
-<Img src="./images/sculptureManWithLaptop.png" alt="AI generated art by Midjourney" caption="AI generated art by Midjourney"/>
 
-Thank you for following along with this tutorial, and I hope you found it valuable.
+## Summary
+
+Throughout the tutorial, we used various tools and libraries, including Chroma, Cohere embeddings, PyMuPDFLoader, Stability SDK, and the PIL library for image manipulation. We also discussed the prerequisites, which include obtaining API keys for Cohere and Stable Diffusion.
+
+By following this tutorial, you should now have a better understanding of how to leverage Chroma DB and Cohere embeddings to generate images using Stable Diffusion. Feel free to explore further and experiment with different books and settings to generate unique and creative images.
+
+Remember to refer to the respective documentation for Chroma, Cohere, and Stable Diffusion for more in-depth information and advanced usage. You can find them above in the `Introduction`. 
+
+Happy generating!
+
+Thank you for following along with this tutorial, and I hope you learn something new today. If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
 
 made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
 
