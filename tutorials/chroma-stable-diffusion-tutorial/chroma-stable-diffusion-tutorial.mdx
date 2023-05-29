@@ -8,15 +8,17 @@ authorUsername: "abdibrokhim"
 
 ## Introduction
 [Chroma](https://www.trychroma.com/), is the AI-native open-source embedding database. Chroma makes it easy to build LLM apps by making knowledge, facts, and skills pluggable for LLMs [read more...](https://docs.trychroma.com/).
+
 [Cohere](https://cohere.ai/), is a platform that allows you to build AI-powered applications with just a few lines of code. Cohere's API allows you to build a wide range of applications, including chatbots, question answering systems, and summarization tools [read more...](https://cohere.com/embed).
+
 [Stable Diffusion](https://stability.ai/stable-diffusion), is a new generative model that can generate high-resolution images with a single forward pass.
 
 
 ## What we are going to do?
-In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model. Sit back, relax and enjoy the tutorial! Don't forget to make a cup of coffee, it may take a while to generate an image 😅.
+In this tutorial, I will show you guys how to use Chroma DB and Cohere embeddings to alive the personas from books using Stable Diffusion image generation model. Sit back, relax and enjoy the tutorial! Don't forget to make a cup of coffee, it may take a while to generate an image.
 
 To make it more clear and understandable, Lemme split the tutorial into two parts:
-- Part 1 - Getting prompt for Stable Diffusion. In this part, we will go through Chroma DB and Cohere LLM. We will load the document, split it into smaller chunks, embed them using Cohere and then we will use Chroma to query the database and get the prompt for Image Generation.
+- Part 1 - Getting prompt for Stable Diffusion. In this part, we will go through Chroma DB and Cohere LLM. We will load the document, split it into smaller chunks, embed them using Cohere and then we will use Chroma to query the database and get the prompt to use in Part 2.
 - Part 2 - Generating images using Stable Diffusion. In this part, we will go through Stable Diffusion SDK and implement the code to generate images based on the prompt we got from Chroma DB in Part 1.
 
 ### Prerequisites
@@ -45,9 +47,9 @@ Great, we are ready to start CODING!.
 
 ### Install dependencies
 
-Add new `code cell`.
+Add new `code cell`. You can do it by clicking `+ Code` button or by shortcut `CMD/CTRL + M B`.
 
-To install the necessary libraries wich we gonna use throughout the tutorial:
+Install the necessary libraries wich we gonna use throughout the tutorial:
 
 ```python
 
@@ -113,9 +115,9 @@ Click `Run` or `CMD/CTRL + Enter`.
 ### Part 1 - Getting prompt for Stable Diffusion
 
 
-Firstly, let's quickly upload PDF file to Google Colab. In this tutorial, we will go with `Harry Potter and the Sorcerer's Stone` book. You can download the PDF file [here](https://www.pdfdrive.com/the-complete-harry-potter-harry-potter-and-the-sorcerers-stone-harry-potter-and-the-chamber-of-secrets-harry-potter-and-the-prisoner-of-azkaban-harry-potter-and-the-goblet-of-fire-harry-potter-and-the-order-of-the-phoenix-h-d157198854.html). 
+Firstly, let's quickly upload the book to Google Colab. In this tutorial, we will go with `Harry Potter and the Sorcerer's Stone`. You can download the PDF version [here](https://www.pdfdrive.com/the-complete-harry-potter-harry-potter-and-the-sorcerers-stone-harry-potter-and-the-chamber-of-secrets-harry-potter-and-the-prisoner-of-azkaban-harry-potter-and-the-goblet-of-fire-harry-potter-and-the-order-of-the-phoenix-h-d157198854.html). 
 
-After, downloading back to Google Colab and go to `Files` tab on the left side of the screen, click `Upload to session storage` and upload the file. Wait until the file is uploaded and then `copy` the path to the file.
+After, downloading back to Google Colab, go to `Files` tab on the left side of the screen, click `Upload to session storage` and upload the file. Wait until the book is uploaded and then `copy` the path.
 
 <Img src="./images/pathToBook.png" alt="Path to uploaded document" caption="Path to uploaded document"/>
 
@@ -136,7 +138,7 @@ Click `Run` or `CMD/CTRL + Enter`.
 
 Let's split the document into smaller chunks. 
 
-Why? We should to make sure that the LLM can process the document. If the document is too long, the LLM will not be able to process it. We will use `RecursiveCharacterTextSplitter` to split the document into smaller chunks. We will split the document into chunks of 1000 characters with 0 overlap.
+Why? We should to make sure that the LLM can process the file. If the file is too long, the LLM will not be able to process it.
 
 Add new `code cell`.
 
@@ -177,7 +179,7 @@ qa = VectorDBQA.from_chain_type(llm=Cohere(cohere_api_key=os.environ["COHERE_API
 Click `Run` or `CMD/CTRL + Enter`.
 
 
-Perfect! We have done with chain. Now, we can query based on the processed file. Let's try to ask a about `Harry Potter`.
+Perfect! We have done with chain. Now, we can query based on the processed book. Let's try to ask a about `Harry Potter`.
 
 Add new `code cell` and `copy/paste` the following lines of code:
 
@@ -190,7 +192,7 @@ qa.run(query)
 
 Click `Run` or `CMD/CTRL + Enter`.
 
-You should see something like below image, but don't worry if you see something different.
+You should see something like in image below, but don't worry if you see something different.
 
 <Img src="./images/aboutHarryPotter.png" alt="About Harry Potter" caption="About Harry Potter"/>
 
@@ -278,7 +280,7 @@ It will take a while to generate an image. Once it's done, we can save the image
 
 Add new `code cell` and `copy/paste` the following lines of code:
 
-It will save the image with the seed number as the filename in the same directory as this notebook.
+It will save the image with the `seed number` as the filename in the same directory as this notebook.
 
 ```python   
 
@@ -298,7 +300,7 @@ for resp in answers:
 
 Click `Run` or `CMD/CTRL + Enter`.
 
-Now, you can download the image or see the image instantly.
+Now, you can download the image and see the image instantly.
 
 <Img src="./images/downloadImage.png" alt="Harry Potter generated art by Stable Diffusion" caption="Harry Potter generated art by Stable Diffusion"/>
 
@@ -316,7 +318,7 @@ Click `Run` or `CMD/CTRL + Enter`.
 <Img src="./images/harryPotterGeneratedImage.png" alt="Harry Potter generated art by Stable Diffusion" caption="Harry Potter generated art by Stable Diffusion"/>
 
 
-Congratulations! You've successfully generated an image using Stable Diffusion with the prompt generated by Chroma based on the Cohere embeddings.
+Congratulations! You've successfully alived persona using Stable Diffusion with the prompt generated by Chroma based on the Cohere embeddings.
 
 
 ## Summary
@@ -325,7 +327,7 @@ Throughout the tutorial, we used various tools and libraries, including Chroma, 
 
 By following this tutorial, you should now have a better understanding of how to leverage Chroma DB and Cohere embeddings to generate images using Stable Diffusion. Feel free to explore further and experiment with different books and settings to generate unique and creative images.
 
-Remember to refer to the respective documentation for Chroma, Cohere, and Stable Diffusion for more in-depth information and advanced usage. You can find them above in the `Introduction`. 
+Remember to refer to the respective documentation for Chroma, Cohere, and Stable Diffusion for more in-depth information and advanced usage. You can find them above in the Introduction. 
 
 Happy generating!
 
