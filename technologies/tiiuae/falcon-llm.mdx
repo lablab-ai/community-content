@@ -1,0 +1,71 @@
+---
+title: "Falcon"
+author: "tiiuae"
+description: "Falcon is a powerful and versatile large language model (LLM) developed by the Technology Innovation Institute (TII) in the United Arab Emirates."
+---
+
+Built on top of the RefinedWeb dataset and trained on several languages, Falcon is one of the best open-source models currently available. It features an architecture optimized for inference, incorporating FlashAttention and multiquery techniques.
+
+## Use Cases
+
+Falcon can be used for a wide range of NLP tasks, including:
+
+- Text generation
+- Summarization
+- Translation
+- Question-answering
+- Sentiment analysis
+- Named entity recognition
+
+You can fine-tune Falcon on your specific task and dataset to achieve better performance and adapt it to your needs.
+
+## Key Features
+
+- **High-performance**: Falcon LLMs are designed for efficient inference and provide state-of-the-art results on various NLP tasks.
+- **Multilingual**: Falcon models are trained on multiple languages, including English, German, Spanish, and French, with limited capabilities in other languages such as Italian, Portuguese, and Dutch.
+- **Flexible**: Falcon can be used for various tasks, such as text generation, summarization, translation, and question-answering, and can be fine-tuned for specific use cases.
+- **Open-source**: Falcon models are available under a license that allows commercial use, making them accessible for a wide range of applications.
+
+## Getting Started
+
+To use the Falcon model, you need to have the `transformers` library installed. You can install it using `pip`:
+
+```bash
+pip install transformers
+```
+
+You can then use the Falcon model in your Python code as follows:
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import transformers
+import torch
+
+model = "tiiuae/falcon-40b"
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",
+)
+sequences = pipeline(
+   "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Girafatron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",
+    max_length=200,
+    do_sample=True,
+    top_k=10,
+    num_return_sequences=1,
+    eos_token_id=tokenizer.eos_token_id,
+)
+for seq in sequences:
+    print(f"Result: {seq['generated_text']}")
+```
+
+## Resources
+
+- [Falcon-40B Model](https://huggingface.co/tiiuae/falcon-40b)
+- [Falcon-7B Model](https://huggingface.co/tiiuae/falcon-7b)
+- [RefinedWeb Dataset](https://huggingface.co/datasets/tiiuae/falcon-refinedweb)
