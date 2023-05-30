@@ -7,7 +7,6 @@ authorUsername: "alfredo_lhuissier73"
 
 ## Let's build with Stable Diffusion and GPT4ALL!
 
----
 
 Need some inspiration for new product ideas? Want to create an [AI app](https://lablab.ai/apps), but can't find a problem to solve? We got you covered - welcome to the another outstanding tutorial in which you will learn more about  how to create a [Stable-Diffusion applictaions](https://lablab.ai/apps/tech/stable-diffusion). In this tutorial, we will learn how to create an API that uses GPT-4-All alongside Stable Diffusion to generate new product ideas for free. For this purpose, we will create a Flask app that installs GPT-4-All locally. This will enable us to generate a name and description for the product. Additionally, we will utilize [Stable Diffusion API](https://lablab.ai/tech/stable-diffusion) to create a featured image to showcase the product. To enhance usability, we will also develop a simple UI that allows us to access the app through a browser. [Here's the repository with the final code](https://github.com/alhuissi/gpt4all-stable-diffusion-tutorial)
 
@@ -101,7 +100,7 @@ def generate():
     return jsonify(result)
 ```
 
-/generate" endpoint will accept any query string in the URL and respond with a JSON containing a name, a description, and the image path. For instance, when using the 
+`/generate` endpoint will accept any query string in the URL and respond with a JSON containing a name, a description, and the image path. For instance, when using the 
 URL "http://localhost:8000/generate?prompt=Cooking%20app", you will receive ideas for a "Cooking app".
 
 Next, we will define the "generate_image" function, which formats the prompt for Stable Diffusion and saves the generated image in the project's root directory. 
@@ -319,7 +318,7 @@ loading button that calls our API.
 </html>
 ```
 
-You can access your page by going to /<path_to_project_directory>/index.html in your browser.
+You can access your page by going to /path_to_project_directory/index.html in your browser.
 
 
 ## We've build with Stable Diffusion and GPT4ALL - 🤔 Final Thoughts
