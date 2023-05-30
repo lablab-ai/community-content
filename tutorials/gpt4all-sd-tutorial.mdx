@@ -1,0 +1,332 @@
+---
+title: "GPT4All tutorial: How to create a product idea maker with Stable Diffusion"
+description: "In this amazing tutorial, you will learn how to create an API that uses GPT4all alongside Stable Diffusion to generate new product ideas for free. Learn with lablab.ai"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6de20507-e9b2-4d5a-c233-2065f4286e00/full"
+authorUsername: "alfredo_lhuissier73"
+---
+
+## Let's build with Stable Diffusion and GPT4ALL!
+
+---
+
+Need some inspiration for new product ideas? Want to create an [AI app](https://lablab.ai/apps), but can't find a problem to solve? We got you covered - welcome to the another outstanding tutorial in which you will learn more about  how to create a [Stable-Diffusion applictaions](https://lablab.ai/apps/tech/stable-diffusion). In this tutorial, we will learn how to create an API that uses GPT-4-All alongside Stable Diffusion to generate new product ideas for free. For this purpose, we will create a Flask app that installs GPT-4-All locally. This will enable us to generate a name and description for the product. Additionally, we will utilize [Stable Diffusion API](https://lablab.ai/tech/stable-diffusion) to create a featured image to showcase the product. To enhance usability, we will also develop a simple UI that allows us to access the app through a browser. [Here's the repository with the final code](https://github.com/alhuissi/gpt4all-stable-diffusion-tutorial)
+
+<Img alt="AI product idea maker screenshot" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9ebbf5a6-b7ec-4269-e280-be63f0517900/full" />
+
+*What is GPT4All?*
+
+[GPT4All](https://lablab.ai/tech/nomicai/gpt4all) is an open source chatbot developed by [Nomic AI](https://home.nomic.ai/) and trained over a massive curated corpus of assistant interactions including word problems, multi-turn dialogue, code, poems, songs, and stories.
+
+## Setting up
+
+First, create a directory for your project:
+
+```bash
+mkdir gpt4all-sd-tutorial
+cd gpt4all-sd-tutorial
+```
+
+You will need an API Key from Stable Diffusion. You can get one for free after you register at https://dreamstudio.ai/
+
+Once you have your API Key, create a .env file and paste it there with the rest of the environment variables:
+
+```
+STABE_DIFFUSION_API_KEY=<YOUR_API_KEY_HERE>
+API_HOST=https://api.stability.ai
+ENGINE_ID=stable-diffusion-xl-beta-v2-2-2
+```
+
+And install the required libraries:
+
+```bash
+pip install flask flask-cors gpt4all python-dotenv
+```
+
+Now we can create a file named `app.py` and start coding.
+ 
+## 🤖 Let's go!
+
+First, we need to import all the necessary libraries and load environment variables:
+ 
+```python
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from dotenv import dotenv_values
+import gpt4all
+import requests
+import base64
+import os
+ 
+config = dotenv_values(".env")
+api_host = config["API_HOST"]
+api_key = config["STABE_DIFFUSION_API_KEY"]
+engine_id = config["ENGINE_ID"]
+```
+
+Then, we can initialize a Flask app with CORS enabled
+
+```python
+app = Flask(__name__)
+CORS(app)
+```
+
+Now, we can define an endpoint that listens to any idea and transforms it into a product. We will start by utilizing GPT-4-All to generate a description and a name 
+for the product. Please note that when running the app for the first time, you will likely need to download a model, which may take some time depending on your internet 
+connection. In this tutorial, we will use the 'gpt4all-j-v1.3-groovy' model. Next, we will utilize the product name to invoke the Stable Diffusion API and generate 
+an image for our new product.
+
+```python
+@app.route("/generate", methods=["GET"])
+def generate():
+
+    # This will download gpt4all-j v1.3 groovy model, which is ~3.7GB
+    gptj = gpt4all.GPT4All("ggml-gpt4all-j-v1.3-groovy")
+
+    # We create 2 prompts, one for the description and then another one for the name of the product
+    prompt_description = 'You are a business consultant. Please write a short description for a product idea for an online shop inspired by the following concept: "' + \
+        request.args.get(
+            "prompt") + '"'
+    messages_description = [{"role": "user", "content": prompt_description}]
+    description = gptj.chat_completion(messages_description)[
+        'choices'][0]['message']['content']
+
+    prompt_name = 'You are a business consultant. Please write a name of maximum 5 words for a product with the following description: "' + description + '"'
+    messages_name = [{"role": "user", "content": prompt_name}]
+    name = gptj.chat_completion(messages_name)[
+        'choices'][0]['message']['content']
+
+    image_path = generateImage(name)
+    result = {"name": name, "description": description, "image": image_path}
+
+    return jsonify(result)
+```
+
+/generate" endpoint will accept any query string in the URL and respond with a JSON containing a name, a description, and the image path. For instance, when using the 
+URL "http://localhost:8000/generate?prompt=Cooking%20app", you will receive ideas for a "Cooking app".
+
+Next, we will define the "generate_image" function, which formats the prompt for Stable Diffusion and saves the generated image in the project's root directory. 
+It will then return the image path so that we can include it in the final JSON response.
+
+```pythondef generate_image(product_name):
+    prompt = "Please generate a featured image for the following product idea: " + product_name + \
+        ". The product must be showcased in full size at the center of the image, with minimum distractive elements, and a simple monochromatic background."
+    url = f"{api_host}/v1/generation/{engine_id}/text-to-image"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+    payload = {}
+    payload['text_prompts'] = [{"text": f"{prompt}"}]
+    payload['cfg_scale'] = 7
+    payload['clip_guidance_preset'] = 'FAST_BLUE'
+    payload['height'] = 512
+    payload['width'] = 512
+    payload['samples'] = 1
+    payload['steps'] = 50
+
+    response = requests.post(url, headers=headers, json=payload)
+    filename = check_and_create_filename(product_name.replace(" ", "_")+".png")
+    image_path = ""
+
+    # Processing the response
+    if response.status_code == 200:
+        data = response.json()
+        for i, image in enumerate(data["artifacts"]):
+            with open(f"{filename}", "wb") as f:
+                f.write(base64.b64decode(image["base64"]))
+                image_path = os.path.realpath(filename)
+
+    return image_path
+```
+
+
+Then we define check_and_create_filename(filename), an auxiliary function that creates a new name for the image file in case it already exists. 
+Otherwise, we would overwrite the image everytime we make a call to the API. 
+
+```python
+def check_and_create_filename(filename):
+    base_name, extension = os.path.splitext(filename)
+    counter = 1
+    new_filename = filename
+
+    while os.path.exists(new_filename):
+        new_filename = f"{base_name}_{counter}{extension}"
+        counter += 1
+
+    return new_filename
+```
+
+Finally, we start an http server and expose the API endpoint.
+
+```python
+def main():
+    app.run(host="localhost", port=8000)
+    print("Server running on  port 8000")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+## 🚀 Running the app
+ 
+Now we can run our app:
+ 
+```bash
+python app.py
+```
+ 
+We can test our app by sending a request to the endpoint. Open your browser and change <prompt> for any text you want.
+ 
+```
+http://localhost:8000/generate?prompt=<prompt>
+```
+
+Remember to use "%20" instead of spaces for the prompt. For example:
+
+```
+http://localhost:8000/generate?prompt=Cooking%20app
+```
+
+<Img alt="AI product idea API" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a825d0b-27a2-4261-c62b-57ef3a775900/full" />
+
+Congratulations! You have just finished building your API. You can now run it locally or deploy it and to get a json with a product idea that you can later use with 
+your favorite frontend framework.
+
+
+## 🎁 Bonus: create a frontend for the API
+
+As a small bonus, we can create an html file named "index.html" that uses jquery and ajax with some styles to create a simple page with a text input and a 
+loading button that calls our API.
+
+```html
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <style>
+      body {
+        width: 960px;
+        padding: 2rem;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .button {
+        position: relative;
+        padding: 8px 16px;
+        background: #360d56;
+        border: none;
+        outline: none;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+
+      .button:active {
+        background: #360d56ba;
+      }
+
+      .button__text {
+        font: bold 20px "Quicksand", san-serif;
+        color: #ffffff;
+        transition: all 0.2s;
+      }
+
+      .button--loading .button__text {
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      .button--loading::after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 4px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: button-loading-spinner 1s ease infinite;
+      }
+
+      @keyframes button-loading-spinner {
+        from {
+          transform: rotate(0turn);
+        }
+
+        to {
+          transform: rotate(1turn);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <tr>
+      <td>
+        <h4>Please write an idea for a product:</h4>
+        <input
+          type="text"
+          name="prompt"
+          id="prompt"
+          maxlength="100"
+          size="100"
+        /><br /><br />
+        <button id="button" type="button" class="button">
+          <span class="button__text">Generate</span>
+        </button>
+        <div
+          style="display: flex; flex-direction: column; justify-content: center"
+          id="response"
+        ></div>
+      </td>
+    </tr>
+  </body>
+  <script>
+    $(document).ready(function () {
+      $("button").click(async function (event) {
+        this.classList.toggle("button--loading");
+        input = $('input[name="prompt"]').val();
+        var the_id = event.target.id;
+        await $.ajax({
+          url: "http://localhost:8000/generate",
+          type: "get",
+          data: { prompt: input },
+          success: function (response) {
+            $("#response").html(
+              "<h1>" +
+                response.name +
+                "</h1>" +
+                "<p>" +
+                response.description +
+                "</p>" +
+                '<image style="width: 512px; height: 512px; margin: 0 auto;" src=' +
+                response.image +
+                ">"
+            );
+          },
+          error: function (xhr) {
+            $("#response").html("<p> Something went wrong </p>");
+          },
+        });
+        this.classList.toggle("button--loading");
+      });
+    });
+  </script>
+</html>
+```
+
+You can access your page by going to /<path_to_project_directory>/index.html in your browser.
+
+
+## We've build with Stable Diffusion and GPT4ALL - 🤔 Final Thoughts
+
+This app works as a starting point for generating cool ideas for new products and get some inspiration. But it can easily be improved adding more styles and refining the prompts.
+You can also try other models like Mosaic's mpt and see which works best. I leave this up to you and hope that this tutorial will help you come up with some great 
+ideas. You can check the [final repository here](https://github.com/alhuissi/gpt4all-stable-diffusion-tutorial)
+                 
+And practice what you;ve learn here during our amazing [AI Hackathons](https://lablab.ai/event)!
+                 Join the AI revolution!
