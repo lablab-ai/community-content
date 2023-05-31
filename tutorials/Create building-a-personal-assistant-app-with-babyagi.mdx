@@ -1,0 +1,98 @@
+---
+title: 'Building a Personal Assistant App with BabyAGI'
+description: 'The app will utilize the capabilities of the BabyAGI model to perform various tasks and provide assistance to the user. We will integrate the app with an existing task management system to enhance its functionality. Let's get started!'
+authorUsername: 'youknowsthevibes'
+---
+## Introduction 
+In this tutorial, we will walk you through the process of building a Personal Assistant App using the BabyAGI model. This app will utilize the capabilities of the BabyAGI model to perform various tasks and provide assistance to the user. 
+We will integrate the app with an existing task management system to enhance its functionality. By the end of this tutorial, you will have a fully functional Personal Assistant App that can answer questions and manage tasks.
+## Prerequisites
+Before getting started, make sure you have the following prerequisites:
+Basic knowledge of Python programming language.
+Familiarity with APIs
+
+[BabyAGI](https://github.com/yoheinakajima/babyagi) is AI-powered task management system. It uses OpenAI models (e.g. [GPT-4]() or [GPT-3.5]()) and Vector Database to create, prioritize and execute tasks. The system creates tasks based on previous results and user's objectives. Then it uses OpenAI models to to solve tasks and Vector Database to store and retrieve past results.
+
+# objective 
+This Python script is an AI-powered task management system that leverages OpenAI and vector databases like Chroma or Weaviate. The system aims to create, prioritize, and execute tasks based on the outcomes of previous tasks and a predefined objective. It utilizes OpenAI's natural language processing (NLP) capabilities to generate new tasks according to the objective, while Chroma/Weaviate serves as a storage and retrieval mechanism for task results, providing contextual information.
+
+# How It Works<a name="how-it-works"></a>
+
+The script operates by running an infinite loop with the following steps:
+
+1.Retrieves the first task from the task list.
+2.Sends the task to the execution agent, which utilizes OpenAI's API to complete the task based on the given context.
+3.Enhances the result obtained and stores it in Chroma or Weaviate, which are platforms for data storage and retrieval.
+4.Generates new tasks and reprioritizes the task list based on the objective and the outcome of the previous task. 
+
+The execution_agent() function plays a crucial role in utilizing OpenAI's API. It accepts two parameters: the objective and the task. It sends a prompt to OpenAI's API, combining the objective, task description, and the task itself. Subsequently, the function retrieves the result from the API and returns it as a string.
+
+The task_creation_agent() function also employs OpenAI's API to generate new tasks based on the objective and the result of the previous task. It takes four parameters: the objective, the result of the previous task, the task description, and the current task list. By sending a prompt to OpenAI's API, the function receives a list of new tasks as strings. It returns the new tasks as a list of dictionaries, where each dictionary contains the name of the task.
+
+The prioritization_agent() function is responsible for task list reprioritization using OpenAI's API. It takes the ID of the current task as a parameter and sends a prompt to the API. The API responds with the reprioritized task list as a numbered list.
+
+The script also leverages Chroma or Weaviate to store and retrieve task results for context. It establishes a collection in Chroma or Weaviate based on the specified table name in the TABLE_NAME variable. The script utilizes Chroma or Weaviate to store the task results, along with the task name and any additional metadata.
+
+These steps and components together form the foundation of the script, enabling the functioning of the personal assistant system.
+# How to Use<a name="how-to-use"></a>
+
+To get started with the BabyAGI repository, please follow these steps:
+
+Clone the repository by running the command: git clone https://github.com/yoheinakajima/babyagi.git and navigate into the cloned repository using cd babyagi.
+
+Install the required packages by running: pip install -r requirements.txt.
+
+Copy the .env.example file to .env using the command: cp .env.example .env. This will create a new .env file where you can set the required variables.
+
+Set your OpenAI API key in the OPENAI_API_KEY and OPENAPI_API_MODEL variables in the .env file. If you plan to use Weaviate, you will also need to set additional variables as described in the documentation here.
+
+Set the name of the table where the task results will be stored by assigning a value to the TABLE_NAME variable in the .env file.
+
+On line 40 of the code, set the name of the BabyAGI instance by assigning a value to the Personnal_Assistant variable.
+
+By following these steps, you will have the BabyAGI repository set up and configured for your personal assistant use case. Please refer to the repository's documentation for more details on how to use and customize the system.
+```
+INSTANCE_NAME = os.getenv("INSTANCE_NAME", os.getenv("BABY_NAME", "personal_assistant"))
+```
+7. in line 45 Set the objective of the task management system in personnal assistant.
+like this 
+```
+OBJECTIVE = os.getenv("OBJECTIVE", "personal assistant")
+
+```
+8. Set the first task of the system in the INITIAL_TASK variable.
+```
+os.environ["INITIAL_TASK"] = "personal assistant"
+INITIAL_TASK = os.getenv("INITIAL_TASK", "")
+
+print(INITIAL_TASK)
+
+```
+9. Run the script: `python babyagi.py`
+# Running inside a docker container
+
+As a prerequisite, you will need docker and docker-compose installed. Docker desktop is the simplest option https://www.docker.com/products/docker-desktop/
+
+To run the system inside a Docker container, please ensure that you have Docker and Docker Compose installed. If you don't have them installed, you can download and install Docker Desktop, which provides an easy-to-use interface for managing Docker containers: https://www.docker.com/products/docker-desktop/
+Once you have Docker and Docker Compose installed, follow these steps:
+```
+docker-compose up
+```
+
+# Supported Models<a name="supported-models"></a>
+
+This script works with all OpenAI models, as well as Llama and its variations through Llama.cpp. Default model is **gpt-3.5-turbo**. To use a different model, specify it through LLM_MODEL or use the command line.
+
+## Llama
+
+Install the llama-cpp package, which is necessary for Llama integration. Ensure that the package is installed in your environment.
+
+Obtain the Llama model weights. Please note that it is strictly prohibited to share IPFS, magnet links, or any other links to model downloads in this repository, including in issues, discussions, or pull requests. Sharing such links will result in their immediate deletion.
+
+Set the LLAMA_MODEL_PATH variable to the path where you have stored the specific Llama model you wish to use. As a convenient option, you can create a symbolic link named models in the BabyAGI repository, pointing to the folder where you have saved the Llama model weights.
+
+Run the script with the -l or --llama argument to specify the usage of the Llama model. This will allow the script to utilize the Llama integration.
+
+# Warning<a name="continous-script-warning"></a>
+ Running this script continuously can result in high API usage, so please use it responsibly. Additionally, the script requires the OpenAI API to be set up correctly, so make sure you have set up the API before running the script.
+
