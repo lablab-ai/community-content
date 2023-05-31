@@ -28,22 +28,25 @@ In my previous tutorial on Chroma + OpenAI models, I've covered these concepts i
 
 - Basic knowledge of Python
 - Access to Anthropic's Claude API
+- Access to OpenAI's API (for embedding function)
 - A Chroma database set up
 
 ### Outline
 
 1. Initializing the Project
 2. Setting Up the Required Libraries
-3. Write the main File
-4. Testing the Basic Chatbot
-5. Setting Up Chroma Database
-6. Testing the Enhanced Chatbot
+3. Write the Project Files
+4. Testing the Basic Chatbot without Context Awareness
+5. Making Use of Claude's Large Context Window
+6. Testing the Chatbot with Context Awareness
+7. Providing Contextual Information to Claude
+8. Evaluation the Enhanced Chatbot (Additional Context Provided)
+9. Building a Knowledge Base for Claude
+10. Testing Claude's Final Form (Enhanced by the Knowledge Base)
 
 ## Discussion
 
 ### Initializing the Project
-
-Let's get coding! First thing first, let's initialize the project. We're going to call it `chroma-claude` this time around. Let's fire up your favorite terminal, change directory to your usual codes/projects directory, and make the `chroma-claude` directory inside it. As a best practice, let's also create a new virtual environment specific for this project, as the environment can help us keeping the project's dependencies isolated from our global environment, as well as making it easier to freeze the dependencies in our requirements.txt file. 
 
 Alright, let's roll up our sleeves and start coding! First things first, we need to initialize the project. We're going to name it chroma-claude this time. So, open up your favorite terminal, navigate to your preferred coding or project directory, and create a new directory for chroma-claude. Here's how you do it:
 
@@ -115,7 +118,7 @@ It's time to dive back into the coding part! Ensure we're still in our project d
 
 #### main.py 🐍
 
-**Step 1: Import Necessary Librarie1**
+**Step 1: Import Necessary Libraries**
 ```python
 # Import necessary modules
 from dotenv import load_dotenv
@@ -353,8 +356,6 @@ Now, try asking the bot a follow-up question based on its previous response. You
 <Img src="https://iili.io/Hrq7F4V.png" alt="Claude's second response">
 
 Remember that if you encounter any issues while running the script, check the error message in the terminal and try to troubleshoot accordingly.
-
-I would include the detail about what happens if the conversation exceeds the model's context window. Additionally, I'd correct the discrepancy in the `max_tokens_to_sample` comment. Here's my revised version:
 
 ### Making Use of Claude's Large Context Window
 
@@ -614,27 +615,6 @@ So, what's next? What if we want to compare the abilities of two different heroe
 
 This is the juncture where we need to consider establishing a foundation for the bot's knowledge base. It's akin to how highly skilled professionals, like lawyers or doctors, often have to consult reference books. Similarly, Claude can greatly benefit from a knowledge base that it can refer to when answering relevant questions. This is the perfect segue to introduce Chroma, a tool that allows querying with similar and related words, enhancing Claude's capability to access and utilize a knowledge base.
 
-Overall, your entry is very well-written and clear. You have done an excellent job at explaining the code and the reasoning behind your choices. Here are a few minor points that could be improved:
-
-1. **Introduction:**
-
-    It might be beneficial to add a short introduction explaining what a knowledge base is and why we need one for Claude. This will give readers an overview of the purpose of this section.
-
-2. **Code Comments:**
-
-    In the `create_chunks` function, it seems that the docstring appears after some code has been written. This is nonstandard practice in Python, and the docstring usually appears immediately after the function definition line.
-
-3. **Environment Setup:**
-
-    While you've mentioned installing the `tiktoken` library, you have not mentioned installing the `chromadb` library. Make sure to add it to the `requirements.txt` file and explain its installation.
-
-4. **Explanation of the `while` loop:**
-
-    When explaining the `while` loop, it would be useful to describe how it interacts with the user and the Chroma database, especially for those who are not familiar with this type of application.
-
-Here is a suggested revision:
-
----
 ### Building a Knowledge Base for Claude
 
 The goal of building a knowledge base for Claude is to equip it with a vast array of data it can refer to when generating responses. This allows it to provide more accurate and context-aware responses, even when dealing with complex and diverse data, like the latest Dota2 patch notes.
@@ -682,9 +662,7 @@ Now, let's create a function `create_chunks` to split our large text into smalle
 +         i = j
 ```
 
-In the `main` function, we initialize the tokenizer, chunk the patch notes, and create a new Chrom
-
-a collection. Each chunk of text is then added to the collection as a separate document:
+In the `main` function, we initialize the tokenizer, chunk the patch notes, and create a new Chroma collection. Each chunk of text is then added to the collection as a separate document:
 
 ```diff
   def main():
@@ -733,26 +711,6 @@ During the conversation with the user, we query the Chroma collection for the to
 
       ...
 ```
----
-
-With these changes, we now have a more efficient and scalable method of providing Claude with the necessary context. It also makes our application more flexible, as we can easily update the knowledge base with new data as it becomes available.
-
-Sure, thank you for providing the specifics. Here's the updated critique and revision:
-
----
-
-Your entries are great at showing what the enhanced Claude model can do, but there's room for improvement in explaining the specifics of the test results. Here's how to do it:
-
-1. **Be more specific:** When you mention "Claude still responded accurately," be explicit about what exactly Claude got right. For instance, you can mention that Claude correctly identified the three most game-changing updates: the expanded map with 40% more terrain, the rework of black king bar, and the introduction of a new hero attribute type: Universal.
-
-2. **Explain inaccuracies in detail:** Specify exactly what Claude got wrong when describing the Tormentors. This would give readers a clear understanding of the model's limitations.
-
-3. **Conclude and look forward:** Wrap up your findings, and talk about potential improvements and plans for future tutorials.
-
-Here's a revised version of your entry:
-
----
-
 ### Testing Claude's Final Form (Enhanced by the Knowledge Base)
 
 We've finally arrived at the moment of truth! This tutorial may have been a bit longer than usual, but it's crucial for demonstrating Claude's large context window and the power of the Chroma database for enhancing Claude's knowledge base. So, let's put our enhanced Claude to the test!
@@ -770,18 +728,6 @@ For the next challenge, I'll ask Claude to explain what Tormentors are in the la
 Claude provides a general overview of Tormentors but misses some important details. For instance, it refers to "multiple Tormentors" when only two spawn at specific locations on the entire map. This highlights the need to continuously update the knowledge base with more accurate data to help Claude deliver more precise and helpful analysis.
 
 These tests demonstrate the potential of AI models like Claude when combined with a rich, continuously updated knowledge base. They also show the continuous nature of AI development - as we feed our models with more and better data, they can deliver increasingly accurate and nuanced responses.
-
-Your conclusion is excellent in summarizing the main points of your tutorial, and also in capturing the possibilities of the Claude + Chroma combination. There are, however, a few tweaks you can make to make it even better:
-
-1. **Highlight accomplishments:** Mention the specific accomplishments you have achieved throughout the tutorial, such as creating a chatbot that can provide detailed analysis about Dota 2 updates.
-
-2. **Stress on potential improvements:** It's great that you mentioned the potential to enhance Claude's accuracy by adding more data. Perhaps you could also touch on the scope of improvement in terms of dealing with model limitations and inaccuracies.
-
-3. **Promote next steps:** It would be good to let your readers know if there are future tutorials or updates they can look forward to.
-
-Here's the revised version of your conclusion:
-
----
 
 ## Conclusion
 
