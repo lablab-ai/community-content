@@ -1,23 +1,27 @@
 ---
 title: "Cohere tutorial: Answering questions based on given data"
-description: "In this tutorial we will show you how to use Cohere AI to answer questions based on given data."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Cohere_Semantic_Search_1.png"
+description: "With this simple Cohere tutorial, you will learn how to easily set up a Cohere Chatbot which answers questions based on provided data."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0869a674-56a4-4f2b-4b34-0c4b44f2c100/full"
 authorUsername: "Flafi"
 ---
  
-# Why should I use Cohere to answer questions based on data?
+## Unleashing Cohere's Potential: A Voyage into AI-driven Q&A Wizardry
 
-To answer questions based on data is basically extracting information from text, which is a common task in language processing. And as Coheres large language models are an AI based technology, this can improve the understanding and further processing of the data.
+In the dynamic universe of language processing, gleaning insights from text is no small feat. Fortunately, AI breakthroughs like Cohere's prodigious language models have reshaped the way we decipher and process data.
+
+Cohere's remarkable abilities elevate our comprehension of data, transcending surface-level extraction and plunging into uncharted depths of knowledge. This holistic understanding distinguishes [Cohere](https://lablab.ai/tech/cohere) and crowns it an indispensable ally in the language processing domain.
+
+So, why opt for Cohere to answer data-driven questions? It's the unparalleled prowess of Cohere in enriching our grasp of information that makes it a truly exceptional resource on the path to AI mastery and how to build a [Cohere app](https://lablab.ai/apps/tech/cohere)!
  
 ## Let's get started
  
-Register to Cohere if you haven't done it already https://dashboard.cohere.ai/register
+Register to [Cohere](https://dashboard.cohere.ai/register) if you haven't done it already.
 
-Before I was creating the nextjs project I was trying out my concept on the Cohere playground. It is a great tool to test out your ideas and get a feeling for the API. You can find it here: https://os.cohere.ai/playground 
+Before I was creating the nextjs project I was trying out my concept on the [Cohere playground](https://os.cohere.ai/playground ). It is a great tool to test out your ideas and get a feeling for the API before you make changes in your app.
 
 ### Create a new project
 
-I was using our repository that is public on GitHub. You can find it here: https://github.com/lablab-ai/nextjs-cohere-boilerplate
+I was using our repository that is public on [GitHub](https://github.com/lablab-ai/nextjs-cohere-boilerplate).
 
 You can clone the repository and install all the dependencies with npm or yarn.
 
@@ -116,7 +120,7 @@ At the end I am slicing the last part of the response to get the correct answer.
        res.status(200).json({ summary: response.body.generations[0].text.slice(0,-3) });
   ```
 
-### We can start our application
+## We can start our application
 
 Let's start our application with yarn or npm run dev script.
 
@@ -135,15 +139,14 @@ Answer: mobility, consumer goods, industrial technology and energy and building 
 This is correct! The model was able to understand the question and answer it correctly.
 Of course the prompt can be always finetuned to get better results. Because the model will try to answer everything.
  
-### Conclusion
- 
-Cohere is a great tool for creating a chatbot. It is easy to use and it is free for a limited number of requests.
+## Unleashing the Power of Cohere: Building an AI Chatbot
+In the realm of language processing, Cohere stands as a formidable tool for creating chatbots. Its user-friendly interface and free access for a limited number of requests make it an ideal choice for developers and enthusiasts alike.
 
-Here you can find the code for this project: https://github.com/lablab-ai/cohere-nextjs-answerbot
+The code for this project is readily available on [GitHub](https://github.com/lablab-ai/cohere-nextjs-answerbot), allowing you to dive right into the world of AI chatbots. You can find the code here.
+
+But the journey doesn't stop there. Join our AI Hackathons to put your knowledge to the test and build AI-based tools that can change the world. With the guidance of our mentors, you can be part of the AI revolution. Check out our upcoming [AI hackathons](https://lablab.ai/event).
+
  
-Join our AI Hackathons to test your knowledge and build with assistance of our mentors AI based tools to change the world! Check the upcoming ones under the link [here paste the link to upcoming Hackathons page]
  
-**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t/) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
- 
-Check out our upcoming hackathons:
-[Upcoming hackathons](https://lablab.ai/event)
+**Thank you!** If you enjoyed this tutorial you can find more and continue learning with our [AI tutorial](https://lablab.ai/t/) tutorial page.
+Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
