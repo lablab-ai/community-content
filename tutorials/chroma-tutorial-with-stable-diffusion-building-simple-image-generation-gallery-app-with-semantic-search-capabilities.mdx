@@ -1,6 +1,7 @@
 ---
-title: "Chroma Tutorial with Stable Diffusion: Building Simple Image Generation Gallery App with Semantic Search Capabilities"
-description: "How to utilize Chroma database to store generated images as embeddings and retrieve the embeddings by similar terms, built using Python"
+title: "Stable Diffusion tutorial: How to build a Generation Gallery App with Chroma's Semantic Search Capabilities"
+description: "Unearth Chroma mastery with our spirited tutorial! Acquire Python-fueled image embedding prowess, conquer Stable Diffusion, & craft a Gallery App."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/14262b48-ac66-47b0-88b0-8554ba592300/full"
 authorUsername: "septiannugraha"
 ---
 
@@ -10,15 +11,15 @@ authorUsername: "septiannugraha"
 
 In recent years, a significant breakthrough in the realm of Artificial Intelligence has reshaped the landscape of digital art: AI-generated images. Since this development, various image generation technologies have emerged, captivating audiences and making headlines globally. Among these pioneering technologies, one open-source image generation model stands out - "Stable Diffusion."
 
-Stable Diffusion quickly gained traction due to its impressive capabilities and openness, inspiring a new generation of models. With its ability to generate a wide variety of styles from short, human-readable prompts, Stable Diffusion has significantly lowered the barriers to creating AI art.
+Stable Diffusion quickly gained traction due to its impressive capabilities and openness, inspiring a new generation of models. With its ability to generate a wide variety of styles from short, human-readable prompts, [Stable Diffusion](https://lablab.ai/tech/stable-diffusion) has significantly lowered the barriers to creating AI art.
 
 But what sets Stable Diffusion apart? It offers unique features like "inpainting" and "outpainting." Inpainting allows users to edit within the image, enabling precise alterations and adjustments. Outpainting, on the other hand, empowers users to extend the image beyond its original boundaries, perfect for creating panoramic views or expansive scenes. Stable Diffusion also supports "image-to-image prompting," a feature that lets users create a new image based on a sourced image. It’s like having a conversation with your AI, where the source image is your prompt, and the AI responds with a completely new image.
 
 ### What is Chroma and Embeddings
 
-Let's start with an exciting piece of technology called Chroma. Chroma is an open-source database designed specifically for handling embeddings - a type of data representation widely used in the realm of AI, and especially in the context of Large Language Models (LLMs). An LLM is an AI model that understands and generates human-like text based on the input it receives.
+Let's start with an exciting piece of technology called Chroma. [Chroma](https://lablab.ai/tech/chroma) is an open-source database designed specifically for handling embeddings - a type of data representation widely used in the realm of AI, and especially in the context of Large Language Models (LLMs). An LLM is an AI model that understands and generates human-like text based on the input it receives.
 
-Chroma is like a playground for these AI models. It facilitates the development of AI-powered applications by providing a platform for storing, querying, and analyzing media embeddings. Media could range from text to images, and in future releases, audio and video.
+Chroma is like a playground for these AI models. It facilitates the development of [AI applications](https://lablab.ai/apps) by providing a platform for storing, querying, and analyzing media embeddings. Media could range from text to images, and in future releases, audio and video.
 
 In Chroma, each piece of media (a text document, an image, etc.) is transformed into a mathematical representation known as an embedding. Chroma can store these embeddings along with their associated metadata, essentially turning media into a format that AI models can readily understand and interact with. By storing the embeddings, Chroma lets you easily find similar media items, analyze your media collection, and much more.
 
@@ -86,7 +87,7 @@ After running the appropriate command, the name of your environment (`env`) shou
 
 Here's an example of what an activated virtual environment looks like in the terminal:
 
-<Img src="https://iili.io/Hru07UP.png" alt="A terminal prompt showing `(env)` at the start of the line, indicating that the `env` virtual environment is active.">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/698c1f44-05a6-4f97-b73b-05107fdda700/full" alt="A terminal prompt showing `(env)` at the start of the line, indicating that the `env` virtual environment is active.">
 
 Congratulations, you've successfully set up and activated your virtual environment! Let's proceed to the next step.
 
@@ -124,7 +125,7 @@ However, remember that if your main application file is named differently or loc
 
 In the next sections, we'll be populating our `app.py` with the necessary code to set up our Flask server and define the routes for our web application.
 
-#### app.py 🐍
+### app.py 🐍
 
 1. **Importing necessary modules**:
 
@@ -193,7 +194,7 @@ Finally, we ensure the Flask app runs if the script is executed directly (not im
 
 In the next steps, we will delve deeper into the individual endpoint functions and explain how they handle their respective tasks.
 
-#### index.html 🏠
+### index.html 🏠
 
 Next, we create the user interface (UI) for our application. This involves writing a basic HTML file complemented by some JavaScript functionality. For styling, I decided to use Tailwind CSS, a utility-first CSS framework that provides highly customizable, low-level utility classes.
 
@@ -244,7 +245,7 @@ In this HTML file, I use the Flask `url_for()` function to generate URLs for sta
 
 Finally, please note that this example uses the CDN version of Tailwind CSS, loaded with a `<script>` tag. In a more complex production application, you might consider setting up Tailwind CSS as part of your build process to enable additional features and optimizations.
 
-#### script.js 🤖
+### script.js 🤖
 
 This JavaScript file adds interactivity to our Flask app and allows us to dynamically load generated images without refreshing the page. Save this script as `script.js` in the `static/` directory.
 
@@ -348,7 +349,8 @@ The `sendInput` function uses the Fetch API to send a GET request to the `/api/s
 The `generateImages` function does a similar job but sends the request to the `/api/generate` endpoint. The function fetches the list of images after a new one is generated and then iterates over the list, creating a new img element for each image and appending it to the `serverResponse` div.
 
 In both functions, if an error occurs, it is caught and logged to the console.
-#### .env 🌍
+    
+### .env 🌍
 
 Our `.env` file serves to store various API keys and other settings as environment variables. This approach allows us to keep sensitive information, like API keys, out of our source code, which is a best practice for security and allows us to manage and change this information easily and safely.
 
@@ -369,7 +371,8 @@ EMBEDDING_MODEL=text-embedding-ada-002
 This file contains four environment variables that hold the API keys for the Stability AI service and OpenAI's embedding function, the ID of the Stability AI engine being used, and the name of the OpenAI model used for text embeddings.
 
 Keep in mind that `.env` files should never be committed to public repositories because they often contain sensitive data. If you're using version control like git, make sure to add `.env` to your `.gitignore` file to prevent it from being tracked. Always remember that keeping your sensitive data secure is crucial when developing any software application.
-#### requirements.txt 📄
+
+### requirements.txt 📄
 
 One important aspect of software development, especially in Python, is managing dependencies. Dependencies are external Python libraries your project relies on. One popular way to manage these dependencies is by creating a `requirements.txt` file.
 
@@ -394,7 +397,7 @@ This command reads the `requirements.txt` file and installs each library listed 
 
 Including instructions for using the `requirements.txt` file in your project's README.md file, typically under a section titled "Installation" or "Getting Started", is a good practice. It helps new users or contributors get your project up and running more quickly and with less potential for confusion or errors.
 
-#### The Project's Structure
+### The Project's Structure
 
 After following the steps above, our project structure should look like this:
 
@@ -430,7 +433,7 @@ In the next steps, we will revisit our `app.py` file to complete the backend par
 
 Here's how the revised version of the "Completing the Endpoint Functions" section might look like with the improvements:
 
-#### Completing the Endpoints Functions
+### Completing the Endpoints Functions
 
 We will revisit our `app.py` file to finalize the endpoint functions. We wrote four functions to handle requests to four different endpoints. In this section, we will complete the `images()` and `generate()` functions. The `home()` function will render our `index.html` template.
 
@@ -524,7 +527,7 @@ def home():
     # Render the index.html template
     return render_template('index.html')
 ```
-#### Test Running the Image Generation App
+### Test Running the Image Generation App
 
 Now, let's test our web app. In your terminal, type the following command and press enter:
 
@@ -549,7 +552,8 @@ Hover over the generated image to see the text prompt used to create it:
 ![Figure 3: The Generated Image and Tooltip](https://iili.io/HrXMqPa.png)
 
 If you face any issues while running the application, try checking your .env configuration and ensure all dependencies are installed properly. If the problem persists, refer to Flask and Stability.ai's documentation for further troubleshooting.
-#### Adding Search By Similar Term Feature
+    
+### Adding Search By Similar Term Feature
 
 In this part of our tutorial, we're going to add a "Search" feature. Unlike traditional search functionality, which finds results based on exact matches, we're going to build a search feature that finds similar terms. For example, if we've generated images for "unicorn" and "mushroom", we could find the unicorn image by searching for "horse".
 
@@ -618,25 +622,25 @@ Please note, in a production-grade application, it would be important to add err
 
 Also, it's worth noting that while the approach used here for indexing is appropriate for a tutorial, in a production system, you'd want to implement a more scalable solution for indexing, as querying all entries for each insertion could become slow with a large number of entries.
 
-#### Testing the Search Capabilities of the Image Gallery App
+### Testing the Search Capabilities of the Image Gallery App
 
 To conclude this tutorial, let's test the search capabilities of our image gallery application. Assume we've generated three distinct images using some imaginative prompts: a unicorn, a mushroom, and butterflies, as shown below.
 
-<Img src="https://iili.io/HrviRDb.png" alt="Image gallery showing the images of a unicorn, a mushroom and butterflies">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="Image gallery showing the images of a unicorn, a mushroom and butterflies">
 
 Suppose a visitor, upon seeing our vibrant unicorn image, decides to search for more horse-related images in our growing gallery. They might enter "horse" into the search bar. What do you think will happen?
 
-<Img src="https://iili.io/HrvilfV.png" alt="User input 'horse' as search term and the gallery returns a picture of unicorn as first result">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="User input 'horse' as search term and the gallery returns a picture of unicorn as first result">
 
 Amazingly, the application returns the unicorn image as the top result! This happens even though the term "horse" wasn't in the original prompt, which was "an unicorn on a green field". It also returns images of butterflies and a glowing mushroom. These results might seem surprising at first. However, they demonstrate how embeddings capture the semantic meaning of words, leading to nuanced search results that take into account more than just exact matches.
 
-<Img src="https://iili.io/HrviVOg.png" alt="The backend's log showing the query results, ordered by cosine-similarity of the prompts with the search term">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e4cd7a76-a91c-407a-f0fe-319f8b980600/full" alt="The backend's log showing the query results, ordered by cosine-similarity of the prompts with the search term">
 
 From the application logs, you can see how the search operation works. The embeddings for the search term and the prompts are converted into vector representations. Then, the application calculates the cosine similarity between these vectors. This measure helps determine how close the vectors — and thus, the semantic meanings of the search term and the prompts — are to each other. By ordering results by cosine similarity, the application ensures that the most semantically relevant results are returned first.
 
 ## Conclusion
 
-We've reached the end of our tutorial on creating an image generation gallery app. This application leverages the power of Stable Diffusion AI for image generation and Chroma database for embedding storage. While our use case might seem simplistic, it serves to demonstrate the potency of embedding storage when combined with image generation. This combination allows us to create an image gallery capable of semantic searches, as opposed to searching by exact keyword match.
+We've reached the end of our tutorial on creating an image generation gallery app. This application leverages the power of [Stable Diffusion AI](https://lablab.ai/tech/stable-diffusion) for image generation and Chroma database for embedding storage. While our use case might seem simplistic, it serves to demonstrate the potency of embedding storage when combined with image generation. This combination allows us to create an image gallery capable of semantic searches, as opposed to searching by exact keyword match.
 
 In our current app, we've stuck to the basics with a text input, two buttons, and a container element for displaying images. However, the possibilities for expansion are vast. For instance, to further explore the capabilities of embedding storage and image generation, we could store the embeddings of the images themselves. This approach would allow for search functionality based on uploading similar images.
 
