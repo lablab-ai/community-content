@@ -1,28 +1,17 @@
 ---
-title: "Chroma Tutorial with Anthropic's Claude Model for Enhancing the Chatbot Knowledge Base"
-description: "How to utilize Chroma database to store large knowledge base as embeddings and retrieve the embeddings on relevant input by user of Chatbot CLI built using Python"
+title: "Chroma Tutorial: Anthropic Claude Model for Enhancing the Chatbot Knowledge Base"
+description: "Unlock chatbot intelligence with the Anthropic Tutorial. Enhance knowledge bases using the powerful Claude Model. Elevate with the Anthropic app."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ed8e0ca5-8e78-4ba1-8dba-188a5fcb8d00/full"
 authorUsername: "septiannugraha"
 ---
 
 ## Introduction
 
-### What is Anthropic's Claude Model? And How Is Claude Different
+### Anthropic's Claude Model Unveiled: Unlocking Unique Capabilities
+[Anthropic](https://lablab.ai/tech/anthropic), a leading global AI company, introduces the revolutionary [Claude](https://lablab.ai/tech/anthropic/claude) Model. From Notion to Quora, major tech players are harnessing its versatility in conversations, text processing, and even coding. But what sets [Claude](https://www.anthropic.com/index/introducing-claude) apart? Dive into this distinctive tutorial exploring the remarkable features that make Claude stand out.
 
-Anthropic, one of the most prominent AI companies globally, recently introduced its latest Large Language Model, Claude. Officially announced on March 14, 2023, Claude has already been put to use by big names in tech such as Notion, Quora, and DuckDuckGo. Almost immediately, Claude gained recognition for its versatility in a wide range of conversational and text processing tasks. Its common use cases span summarization, search, creative and collaborative writing, Q&A, and even coding! So, not only is Claude proficient at understanding and generating natural language, but it can also code! As a software developer and writer, I couldn't ask for a better tool.
-
-Recently, Anthropic upped the ante by announcing a version of Claude with a 100k context window! What does this mean? Well, think of a waiter who seems to remember everyone's orders at a restaurant without taking any notes. This feature significantly enhances Claude's understanding and its ability to provide high-quality responses. It can handle more complex conversations and sustain these interactions for longer periods.
-
-You might be asking, "That's cool, but what exactly sets Claude apart from other LLMs like, say, OpenAI's GPT?" That's an excellent question, and this tutorial aims to answer just that! We'll delve into the intricate world of Claude, highlight its unique features, and explore what sets it apart from its contemporaries.
-
-### Notes on ChromaDB and Embeddings
-
-In the world of natural language processing and machine learning, a concept known as 'embeddings' plays a crucial role. But what are these so-called 'embeddings'? Simply put, embeddings are a type of vector representation. They allow us to represent items—such as words or phrases—in a multi-dimensional space where 'close' vectors (ones with smaller angles between them) indicate similarity, and 'distant' vectors (with larger angles) denote difference.
-
-If you've worked with computer vision libraries like OpenAI, you might already be familiar with the concept of vectors. We use vectors to represent what a computer "sees," and the 'distances' between these vectors help us detect specific objects in an image. Embeddings, however, take this a step further. They capture the semantic meaning of a text, allowing us to find texts based on their similarities in meaning, not just by the characters they contain.
-
-Now that we understand embeddings, let's talk about ChromaDB. Chroma is an open-source embedding database, according to the [official documentation](https://docs.trychroma.com). ChromaDB stores embeddings, alongside their corresponding documents and metadata. It has built-in functionality to convert documents into their vector representations, enabling you to query embeddings using their document form. For example, a query for "meat" might return "beef" or "venison" based on the similarity of their embeddings.
-
-In my previous tutorial on Chroma + OpenAI models, I've covered these concepts in depth. However, revisiting them here will provide a fresh understanding for new readers and serve as a refresher for those who've read my previous work.
+### The Power of ChromaDB and Embeddings
+Discover the pivotal role of embeddings in natural language processing and machine learning. Learn how these vector representations capture semantic meaning, enabling similarity-based text searches. Explore [ChromaDB](https://www.trychroma.com/), an open-source embedding database, and its ability to store and query embeddings using document representations. Delve into this enlightening discussion on the dynamic world of embeddings and [ChromaDB](https://lablab.ai/tech/chroma).
 
 ### Prerequisites
 
@@ -85,7 +74,7 @@ source env/bin/activate
 
 After running the appropriate command, you should see the name of your environment (`env`, in this case) appearing in parentheses at the start of your terminal prompt. This means the environment is activated and ready to go! Here's what it should look like:
 
-<Img src="https://iili.io/HrKgCcN.png" alt="Python environment activation. The terminal prompt starts with `(env)`, indicating that the virtual environment is activated.">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9b3ce8a7-4bae-4217-9142-7b11a03eec00/full" alt="Python environment activation. The terminal prompt starts with `(env)`, indicating that the virtual environment is activated.">
 
 Great job! You've set up and activated your virtual environment.
 
@@ -298,7 +287,7 @@ if __name__ == "__main__":
 ```
 This script will enable a basic chatbot interaction with the Claude model, however, it does not maintain context between user inputs. This means that each input is treated as a separate conversation, and the model does not remember previous inputs.
 
-#### .env 🌍
+### .env 🌍
 
 Remember the part when we load variables from the environment with `load_dotenv()` function? this is the file where the function take the variables and their values. Let's create the file and write the variables and their values as follows:
 
@@ -314,7 +303,7 @@ MODEL_NAME=claude-v1.3-100k
 ```
 Please do note that the `.env` file contains sensitive informations and therefore you should keep the file in safe place, never share these values, particularly the `CLAUDE_KEY`, which should be kept secret.
 
-#### requirements.txt 📄
+### requirements.txt 📄
 
 Finally, while this part is optional, it's considered a best practice to record our dependencies list into a file called `requirements.txt`. This allows other developers to easily install the required libraries with one simple command.
 
@@ -345,15 +334,15 @@ python3 main.py
 
 If everything has been set up correctly, the terminal should display an input prompt, inviting you to enter a message. Try typing something and hit enter. You will notice a loading indicator appear while the bot generates a response.
 
-<Img src="https://iili.io/HrqAzQ4.png" alt="The loading indicator shows up while waiting for the response.">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/af60a6ff-d99c-48b5-b378-1775913edc00/full" alt="The loading indicator shows up while waiting for the response.">
 
 After a few seconds, the terminal will display the bot's response.
 
-<Img src="https://iili.io/HrqRMDG.png" alt="Claude's first response">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c6e464c5-aef3-4ef0-8c19-b28764de2500/full" alt="Claude's first response">
 
 Now, try asking the bot a follow-up question based on its previous response. You will notice that Claude does not remember the context of the previous message.
 
-<Img src="https://iili.io/Hrq7F4V.png" alt="Claude's second response">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fe435d54-de69-4362-9443-c18828e22100/full" alt="Claude's second response">
 
 Remember that if you encounter any issues while running the script, check the error message in the terminal and try to troubleshoot accordingly.
 
@@ -468,11 +457,11 @@ if __name__ == "__main__":
 
 In this section, we'll put our context-aware chatbot to the test. Specifically, we'll ask Claude about the video game Dota2, and in particular about the latest patch, "New Frontier".
 
-<Img src="https://iili.io/HrqOVa9.png" alt="Claude's first response">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/65355bf6-e6a8-44a0-5b75-11201cf60c00/full" alt="Claude's first response">
 
 So far, so good. Now let's pose a second question: "What do you know about the latest patch, New Frontier?"
 
-<Img src="https://iili.io/HrqeNHX.png" alt="Claude's second response">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7d8122ab-d923-4661-28e6-a579b5364400/full" alt="Claude's second response">
 
 Claude, despite being an advanced chatbot, confesses it doesn't have specific knowledge about the latest patch. This is due to the model's training cut-off, which ended in late 2021. In a more optimal scenario, Claude would still offer relevant, though perhaps outdated, information. In a less desirable scenario, Claude might generate what appears to be accurate but is in fact incorrect information—a phenomenon known as "hallucination." It's crucial to be mindful of these limitations and exercise caution when prompting the model with queries about events or information postdating its training.
 
@@ -601,13 +590,13 @@ if __name__ == "__main__":
 
 Let's put our augmented chatbot to the test! First, we'll inquire about general information concerning Dota2's latest patch, "New Frontiers".
 
-<Img src="https://iili.io/HrnKcxI.png" alt="Claude's response to a question about Dota2's latest patch">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/33338d88-7cf1-493d-5f47-8e278bf5f300/full" alt="Claude's response to a question about Dota2's latest patch">
 
 Impressively, Claude now enumerates all the major changes introduced by the patch with remarkable accuracy. However, it's noteworthy that the token count has already reached 5298. This reminds us that in-depth responses and extensive conversation history can rapidly consume tokens. 
 
 To further evaluate Claude's comprehension of the provided context, we'll ask it about the "Tormentors." This question can be seen as a litmus test of Claude's context awareness. To an uninformed listener, "Tormentors" might evoke images of cruel, menacing creatures, while in Dota2, they are actually benign, floating cubes. 
 
-<Img src="https://iili.io/HrnuG9t.png" alt="Claude answered the question about Tormentors correctly">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/938e278d-e957-4630-d499-a535774db500/full" alt="Claude answered the question about Tormentors correctly">
 
 Claude passed the test with flying colors! It's truly fascinating how appropriate prompts, coupled with additional context, can significantly enhance the accuracy of Claude's responses.
 
@@ -717,7 +706,7 @@ We've finally arrived at the moment of truth! This tutorial may have been a bit 
 
 In the first test, I'll ask Claude to list the three most significant game-changing updates in the latest Dota 2 patch.
 
-![Claude answered with three most vital and game-changing updates](https://iili.io/HrzRaON.png)
+![Claude answered with three most vital and game-changing updates](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b1822505-21d8-4e98-907f-ad4aa4f49800/full)
 
 Claude impressively identified the three most game-changing updates: the expanded map with 40% more terrain, the rework of the black king bar, and the new hero attribute type: Universal. Remember, we didn't feed Claude the entire patch notes at once. Instead, it's leveraging the power of its enhanced knowledge base to retrieve this relevant information.
 
@@ -729,12 +718,12 @@ Claude provides a general overview of Tormentors but misses some important detai
 
 These tests demonstrate the potential of AI models like Claude when combined with a rich, continuously updated knowledge base. They also show the continuous nature of AI development - as we feed our models with more and better data, they can deliver increasingly accurate and nuanced responses.
 
-## Conclusion
+## Conclusion: Unleashing the Power of Anthropic's Claude Model and Chroma Integration
+In this comprehensive anthropic tutorial, we've explored the extraordinary capabilities of the Anthropic's Claude model and the Chroma database. The Claude model, with its expansive context window, has been instrumental in developing a chatbot that can read and understand extensive text data, providing detailed analysis on Dota 2 updates. The Chroma database has further amplified this capability, enabling the creation of a more efficient and scalable knowledge base, conserving token usage in the process.
 
-In this tutorial, we demonstrated the immense power of Anthropic's Claude model coupled with Chroma database. We used Claude's large context window to develop a chatbot capable of reading and understanding extensive text data, providing detailed analysis on Dota 2 updates. Chroma database further enhanced this capability, enabling us to build a more efficient and scalable knowledge base that also conserves token usage.
+While we've achieved notable success, this anthropic application tutorial has also highlighted potential areas for improvement. For instance, refining our model's understanding of specific game elements, such as the Tormentors in Dota 2, and continuously updating and expanding the knowledge base to ensure the chatbot's accuracy.
 
-While we achieved a significant degree of success, this tutorial also shed light on potential areas for improvement. For instance, refining our model's understanding of specific game elements (like the Tormentors in Dota 2), and continuously updating and expanding the knowledge base to make the chatbot more accurate.
-
-The potential for what we can build next with the Claude + Chroma combination is staggering. Be it a chatbot for in-depth game strategy analysis, a virtual assistant with expertise in a wide range of topics, or a powerful tool to help researchers make sense of vast amounts of data - the possibilities are limited only by our imagination, and yes, our disk space!
+The potential for what we can build next with the Claude + Chroma combination is truly staggering. Whether it's a chatbot for in-depth game strategy analysis, a virtual assistant with expertise in a wide range of topics, or a powerful tool to help researchers make sense of vast amounts of data - the possibilities are limited only by our imagination, and yes, our disk space!
 
 Thank you for your time and patience in going through this comprehensive tutorial. You can find the finished source code on my [github](https://github.com/septiannugraha/chroma-claude).
+And if you want to build an [Anthropic app](https://lablab.ai/apps/tech/anthropic/claude) you can join our upcoming [AI Hackathons](https://lablab.ai/event)!
