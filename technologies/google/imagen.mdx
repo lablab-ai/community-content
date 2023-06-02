@@ -1,0 +1,31 @@
+---
+title: "Imagen"
+author: "google"
+description: "Imagen is a groundbreaking text-to-image diffusion model"
+---
+
+# Imagen
+
+Imagen is a groundbreaking text-to-image diffusion model that combines unparalleled photorealism with a profound level of language understanding. Developed by Google Research's Brain Team, Imagen leverages the power of large transformer language models for text comprehension and the strength of diffusion models for high-fidelity image generation.
+
+## Key Discoveries and Features
+
+- Imagen demonstrates that generic large language models (e.g., T5) pretrained on text-only corpora are incredibly effective at encoding text for image synthesis.
+- Scaling the size of the language model in Imagen improves both sample fidelity and image-text alignment more than increasing the size of the image diffusion model.
+- Imagen achieves a state-of-the-art Fréchet Inception Distance (FID) score of 7.27 on the COCO dataset without ever training on COCO.
+- Human raters find Imagen samples to be on par with the COCO data in terms of image-text alignment.
+
+## Imagen Family: Imagen Video and [Imagen Editor](https://imagen.research.google/editor/)
+
+In addition to the core Imagen model, the Imagen family also includes Imagen Video and [Imagen Editor](https://imagen.research.google/editor/), further expanding its capabilities in the realm of image and video generation and editing.
+
+## Imagen's Architecture and Research Highlights
+
+- Imagen uses a large frozen T5-XXL encoder to encode input text into embeddings.
+- A conditional diffusion model maps the text embedding into a 64x64 image.
+- Text-conditional super-resolution diffusion models are used to upscale the image from 64x64 to 256x256 and 256x256 to 1024x1024.
+- Imagen demonstrates the effectiveness of large pretrained frozen text encoders for the text-to-image task.
+- Scaling the pretrained text encoder size is more important than scaling the diffusion model size.
+- The model introduces a new thresholding diffusion sampler, enabling the use of very large classifier-free guidance weights.
+- Imagen features a new Efficient U-Net architecture, providing greater compute efficiency, memory efficiency, and faster convergence.
+- Imagen attains a new state-of-the-art COCO FID, outperforming previous models and setting a new benchmark for text-to-image synthesis.

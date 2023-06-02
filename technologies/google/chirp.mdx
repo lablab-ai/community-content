@@ -1,0 +1,40 @@
+---
+title: "Chirp"
+author: "google"
+description: "Chirp is the next-generation speech-to-text model developed by Google"
+---
+
+Chirp is the next-generation speech-to-text model developed by Google Cloud, bringing the power of large models to Google Cloud's Speech API. Chirp is a 2-billion-parameter speech model trained through self-supervised learning on millions of hours of audio and 28 billion sentences of text spanning over 100 languages. This advanced model delivers 98% speech recognition accuracy in English and a 300% relative improvement in several languages with less than 10 million speakers.
+
+## Key Features
+
+- **Multilingual Support:** Chirp is designed to handle over 100 languages, achieving high-quality speech recognition for more languages and accents.
+- **High Accuracy:** Chirp delivers 98% speech recognition accuracy in English and significant improvements in other languages.
+- **Large Model Size:** With 2 billion parameters, Chirp is larger than previous speech models, enabling better performance.
+- **Self-Supervised Training:** Chirp's encoder is first trained with millions of hours of unsupervised (unlabeled) audio data from 100+ languages and then fine-tuned for transcription in each specific language with small amounts of supervised data.
+
+## Use Cases
+
+Companies are using Chirp to power next-generation products and customer experiences, such as:
+
+- **HubSpot:** Uses Chirp for their Conversational Intelligence tools.
+- **MRV:** Leverages the API to reduce customer service time by one-third.
+- **Spotify:** Employs Chirp for their voice interface, Car Thing.
+- **GDELT Project:** Applies Google Cloud's Speech-to-Text and Translation APIs to transcribe and translate global television news, making it searchable and accessible for researchers and journalists.
+
+## Feature Support and Limitations
+
+Chirp does not support some of the Speech-to-Text API features, including:
+
+- Confidence scores (API returns a value, but it isn't a true confidence score)
+- Speech adaptation
+- Diarization (automatic diarization and channel separation not supported)
+- Forced normalization
+- Word-level confidence
+- Language detection
+
+Chirp supports the following features:
+
+- Automatic punctuation (predicted by the model and can be disabled)
+
+Chirp is currently available in Preview in the Speech-to-Text API. Google plans to improve and expand Chirp to more languages and domains in the future.
