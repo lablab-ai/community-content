@@ -21,15 +21,15 @@ In this guide you will learn how to publish tutorial pages on lablab.
 2. Please keep in mind we might change the filename and title of the tutorial to make it more SEO friendly.
 
 3. For each tutorial page, include the following information:
-    - **title**: Title of the tutorial
-    - **description**: Description of the tutorial
-    - **authorUsername**: Your username on lablab.ai
+   - **title**: Title of the tutorial
+   - **description**: Description of the tutorial
+   - **authorUsername**: Your username on lablab.ai
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full" alt="tutorial title, description, and author"/>
 
 4. You can use one of our tutorial page as a template or the [template](https://github.com/lablab-ai/community-content/tree/main/tutorials/template.mdx) file in this repo to create your own tutorial page.
 5. To add image use the `<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}/>` component.
- 
+
 6. After you create a PR we will check the tutorial content and merge it if everything is fine.
 
 Finally, visit our GitHub repo and add AI tutorials here, get inspiration from the existing pages when creating your own: [https://github.com/lablab-ai/community-content/tree/main/tutorials](https://github.com/lablab-ai/community-content/tree/main/tutorials).
@@ -38,5 +38,5 @@ Finally, visit our GitHub repo and add AI tutorials here, get inspiration from t
 
 1. Write it!
 2. Create two pull requests:
-    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
-    - to `main` branch
+   - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
+   - to `main` branch
