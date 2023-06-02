@@ -1,40 +1,32 @@
 ---
 title: "OpenAI Whisper tutorial: Updating our Whisper API with GPT-3"
-description: "In this tutorial we will update our previously created Flask Whisper API to use GPT-3 to generate summary text."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/whisper-api-flask-gpt3-docker.png"
+description: "Dive into the mesmerizing world of AI with our hands-on Whisper API tutorial. Unleash the power of GPT-3 and transform your Flask Whisper API. Learn, create, and innovate with AI!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b4911010-66b9-4bef-54f0-cef0d4413000/full"
 authorUsername: Flafi
 ---
 
-## What is Whisper?
+## Mastering Whisper: OpenAI's Speech Recognition Powerhouse
 
-Whisper is an automatic State-of-the-Art speech recognition system from OpenAI that has been trained on 680,000 hours 
-of multilingual and multitask supervised data collected from the web. This large and diverse 
-dataset leads to improved robustness to accents, background noise and technical language. In 
-addition, it enables transcription in multiple languages, as well as translation from those 
-languages into English. OpenAI released the models and code to serve as a foundation for building useful
-applications that leverage speech recognition.
+Unveiling [Whisper](https://lablab.ai/tech/openai/whisper), OpenAI's trailblazing speech recognition system. Trained on an extensive multilingual dataset, it excels in deciphering accents, reducing background noise, and understanding technical language. It's your key to unlocking powerful applications in speech recognition. Dive into our [Whisper tutorial](https://lablab.ai/t/tech/openai/whisper) and harness the power of [GPT-3](https://lablab.ai/tech/openai/gpt3), transforming the way you interact with language and sound.
 
-## What is GPT-3?
+### Whisper API Mastery: Tame the Text-Generating Giant, GPT-3
 
-GPT-3 is a language model from OpenAI that can generate text. It is trained on a large dataset of text from the web.
+Dive into GPT-3, OpenAI's colossal Language Model, as you journey through our enlightening Whisper tutorial. Witness the incredible text generation and comprehension of this brilliant API, empowering you to craft outstanding AI applications and elevate your projects to unprecedented heights.
 
-## How to start?
+## "Embarking on the Whisper API Journey: A Step-Up Tutorial"
 
-This tutorial is an upgrade of the previous tutorial [Whisper API with Flask and Docker](https://lablab.ai/t/whisper-api-flask-docker). 
+Ready to elevate your Whisper API skills? This tutorial is a step-up from our previous [Whisper API with Flask and Docker guide](https://lablab.ai/t/whisper-api-flask-docker). If you're already familiar with that, let's dive deeper into the world of [Whisper apps](https://lablab.ai/apps/tech/openai/whisper) and [GPT-3 applications](https://lablab.ai/apps/tech/openai/gpt3)!
 
-So please first check that out :) If you already did that you can continue here.
-
-
-## OpenAI API key
+### OpenAI API key
 
 If you don't have it already please go to [OpenAI](https://openai.com/api/) and create an account. And create your API key.
 Never share your API key in public repository!
 
-## Updates to requirement.txt
+### Updates to requirement.txt
 
 We are adding openai package to our file
 
-## Creating file for gpt3 function
+### Creating file for gpt3 function
 
 We will create a new file called gpt3.py and add the following code to it. In the prompt I was using the summary option to summarize the text,
  but you can use anything you want. And you can tweak the parameters as well.
@@ -59,7 +51,7 @@ def gpt3complete(speech):
 
 ```
 
-## Update app.py
+### Update app.py
 
 On the top we will update our imports. Instead of "MY_API_KEY" please insert the API key you created earlier.
 
@@ -70,7 +62,7 @@ import gpt3
 openai.api_key = "MY_API_KEY"
 ```
 
-## Update the /whisper route
+### Update the /whisper route
 We will integrate our new GPT3 function into the route. So when we are getting the result from whisper we will pass it to the gpt3 function and return the result.
 
 ```python
@@ -121,7 +113,7 @@ docker build -t whisper-api .
 docker run -p 5000:5000 whisper-api
 ```
 
-## How to test the API?
+### How to test the API?
 1. You can test the API by sending a POST request to the route `http://localhost:5000/whisper` with a file in it. Body should be form-data.
 2. You can use the following curl command to test the API:
 
@@ -130,12 +122,15 @@ curl -F "file=@/path/to/file" http://localhost:5000/whisper
 ```
 3. In result you should get a JSON object with the transcript and summary in it.
 
-## How to deploy the API?
+### How to deploy the API?
 This API can be deployed anywhere where Docker can be used. Just keep in mind that this setup currently using CPU for processing the audio files.
 If you want to use GPU you need to change Dockerfile and share the GPU. I won't go into this deeper as this is an introduction.
 [Docker GPU](https://docs.docker.com/config/containers/resource_constraints/)
 
-You can find the whole code [here](https://github.com/lablab-ai/whisper-api-flask/tree/gpt3-summarizer)
+You can find the whole code on [github](https://github.com/lablab-ai/whisper-api-flask/tree/gpt3-summarizer)
 
-**Thank you** for reading! If you enjoyed this tutorial you can find more and continue reading 
-[on our tutorial page](https://lablab.ai/t/)
+## "Put Your Whisper and GPT-3 Skills into Action: Join the AI Revolution"
+
+You've mastered the [Whisper API](https://lablab.ai/tech/openai/whisper) and [GPT-3](https://lablab.ai/tech/openai/gpt3), now it's time to put those skills to the test! Join lablab.ai's [AI hackathons](https://lablab.ai/event) and collaborate with a community of over 52,000 AI enthusiasts. Together, we can create AI solutions that will make a real difference in the world!
+
+**Thank you** for reading! If you enjoyed this tutorial you can find more [AI tutorials](https://lablab.ai/t/)
