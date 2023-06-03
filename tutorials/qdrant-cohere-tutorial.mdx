@@ -1,21 +1,27 @@
 ---
-title: "Qdrant Tutorial: Text Similarity Search"
-description: "In this tutorial we will utilize Qdrant Vector Database to store Embeddings from Cohere's model and search using cosine similarity."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/qdrant-tutorial.png"
+title: "Cohere and Qdrant Tutorial: Text Similarity Search"
+description: "Dive into the world of AI applications with our comprehensive tutorial on using Cohere and Qdrant. Learn how to store Cohere's model embeddings in Qdrant Vector Database and perform searches using cosine similarity."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/111fee5b-f83d-447c-bd6e-1615b22eb300/full"
 authorUsername: "jakub.misilo"
 ---
 
-## What is Qdrant?
+## Mastering Qdrant: The Go-To Solution for Vector Similarity Applications
 
-Qdrant is a high-performance search engine and database built in Rust, designed for vector similarity. It provides fast and reliable performance, even under high load, making it an ideal choice for applications that require speed and scalability. Qdrant can turn your embeddings or neural network encoders into powerful applications for various use cases, such as matching, searching, recommending, or performing other complex operations on large datasets. With its extended filtering support, it is well-suited for faceted search and semantic-based matching. The user-friendly API simplifies the process of working with Qdrant. Qdrant Cloud offers a managed solution that requires minimal setup and maintenance, making it easy to deploy and manage applications.
+As a remarkable innovation in modern technology, [Qdrant](https://qdrant.tech/) is a high-performance search engine and database tailored for vector similarity. Developed using Rust, Qdrant delivers fast, dependable performance even under rigorous workloads, making it a top choice for applications demanding speed and scalability.
 
-For more information about Qdrant chceck our dedicated AI [tech page](https://lablab.ai/tech/qdrant).
+Qdrant is more than just a database—it's a robust solution that can transform embeddings or neural network encoders into powerful, versatile applications. Whether you need to execute matching, searching, recommending, or other intricate operations on sizeable datasets, Qdrant is your one-stop solution.
+
+One of Qdrant's distinguishing attributes is its comprehensive filtering support, which makes it ideally suited for faceted searches and semantic-based matching. When combined with its intuitive API, working with Qdrant has never been simpler.
+
+Qdrant's convenience extends even further with Qdrant Cloud, a managed solution requiring minimal setup and maintenance. This enables seamless deployment and management of applications, reducing the burden on developers and administrators.
+
+For an in-depth exploration don't miss our dedicated [Qdrant](https://lablab.ai/tech/qdrant) AI tech page. Discover how Qdrant empowers developers to harness the potential of vector similarity in AI apps, leveling up your projects and setting them apart from the competition.
 
 ## What will we do?
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ship.png" />
 
-In this tutorial we will utilize Qdrant Vector Database to store Embeddings from Cohere's model and search using cosine similarity. We will use Cohere SDK to access the model. So, without any further ado, let’s jump in!
+In this tutorial we will utilize Qdrant Vector Database to store Embeddings from Cohere's model and search using cosine similarity. We will use [Cohere](https://lablab.ai/tech/cohere) SDK to access the model. So, without any further ado, let’s jump in!
 
 ### Prerequisites
 
@@ -237,14 +243,14 @@ operation_id=0 status=<UpdateStatus.COMPLETED: 'completed'>
 As you can see in 1st row: index operation went well. We got 3 results, as we defined.
 The 1st one is (as expected) a Giraffe. We also got Hippopotamus and Rhino. They are also huge, but I think Giraffe is the tallest 😆.
 
-## I got it, and…what’s next?
+## The Next Steps: Harnessing Qdrant and Cohere for Your AI Applications
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/landscape.png" />
 
-To practice your Qdrant skills, I recommend building an API that will allow your application to index data, add new records and search. I think you can utilize FastAPI for that! 
+So, right now you've got the basics of Qdrant under your belt. What's next on your AI journey? It's time to put your newfound skills to the test. Consider building an API that allows your application to index data, add new records, and search. FastAPI is a fantastic tool for this task, offering a high-performance, easy-to-use framework for building APIs.
 
-And if you want to go wild with the new skills, I would recommend you to use them to build an AI based application during the Cohere x Qdrant AI Hackathon this weekend! 
+But don't stop there. If you're ready to take your skills to the next level, why not use them to build an [AI application](https://lablab.ai/apps) during upcoming [AI Hackathons](https://lablab.ai/event). Those events bring together a community of innovators and creators, all eager to shape the future with AI. It's a chance to learn, grow, and maybe even create something groundbreaking. During a couple of days, you align with people from all around the world and create a solution to an existing problem!
 
-Join our community of innovators, creators and innovators and shape the future with AI! And check out our different events!
+Don't forget to check out our other events too. We're always hosting exciting opportunities for our community to learn, innovate, and push the boundaries of what's possible with AI.
 
 **Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/)  [@newnative](https://newnative.ai/)

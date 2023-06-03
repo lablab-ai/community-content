@@ -1,30 +1,29 @@
 ---
-title: "How to use GPT-3 tutorial: Build your own GPT-3 Powered application using NextJS and Replit in 20 minutes"
-description: "In this tutorial you will build your own GPT-3 Powered application in 20 minutes"
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/gpt-3-replit-tutorial.jpg"
+title: "GPT-3 tutorial: How to build your own GPT-3 powered application using NextJS and Replit in 20 minutes"
+description: "Master GPT-3 in a riveting tutorial! Watch your AI app come to life in only 20 minutes. All you need is curiosity - advanced coding can stay on the sidelines. Begin your journey now!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ddbf5901-add7-482a-a513-632338312300/full"
 ---
 
-By the end of this GPT-3 tutorial, you will have built and deployed your very own web application that is powered by GPT-3. You will be able to use the GPT-3 library to build your own applications. The tutorial is suitable for everyone who will assume that you have some basic knowledge of React and NextJS. If you are not familiar with these technologies, you may want to check out the following resources before getting started
-
-We will be using **GPT-3** from OpenAI, a 175 Billion parameter text transformer. Additonally we will be using **NextJS** and **Replit** to build and host our application. The purpose of this tutorial is to cover the basics in getting a web application powered by GPT-3 up and running.
+## Why should I build a GPT-3 powered app?
+Dive into the world of AI with this [GPT-3 tutorial](https://lablab.ai/t/tech/openai/gpt3). Within 20 minutes, you'll be wielding the power of a 175 billion parameter text transformer, GPT-3 from OpenAI. 
+This guide, suitable for those with a basic understanding of [React](https://react.dev/) and [NextJS](https://nextjs.org/), will walk you through the effortless steps of creating and deploying your own web application. If you're new to these technologies, don't worry, we've got resources to get you up to speed. We'll be using NextJS and Replit to build and host our application, covering all the basics to get your [GPT-3 application](https://lablab.ai/apps/tech/openai/gpt3) up and running.
 
 ## Setting up Replit and importing our project from Github
 
 We start with creating an account at Replit where we will import and initializing our project This will allow us to get a working build so that we can see our updates in realtime.
 
-### 1. Getting Started with Replit
+### Getting Started with Replit
 
-The first thing you will need to do is create a new Replit project. To do this,
-head over to [Replit](https://repl.it/) and sign up for an account if you do not
+The first thing you will need to do is create a new Replit project. To do this, head over to [Replit](https://repl.it/) and sign up for an account if you do not
 already have one.
 
-### 2. Create a new project
+### Create a new project
 
 Once you logged into replit click the + sign in the top right corner
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/SCR-20220706-pwi.png" alt="new project" />
 
-### 3. Import GPT-3 boilerplate from Github
+### Import GPT-3 boilerplate from Github
 
 In this tutorial we will be using the GPT-3 boilerplate that will make our lives easier and allow you to build your own GPT-3 powered application in 20 minutes.
 
@@ -42,7 +41,7 @@ In this tutorial we will be using the GPT-3 boilerplate that will make our lives
 
 First thing we need to do is to add our GPT-3 API key from OpenAI. If you do not have one, you can get one by signing up at from [beta.openai.com](https://beta.openai.com). Once your account is created, you can go to your profile and click the "API Keys" tab or simply click this link [OpenAI API Keys](https://beta.openai.com/account/api-keys).
 
-### 1. Add our GPT-3 API key to .env file
+### Add our GPT-3 API key to .env file
 
 1. Click the lock 🔒 icon on the right side
 2. In the key field write `OPENAI_API_KEY`
@@ -60,7 +59,7 @@ First thing we need to do is to add our GPT-3 API key from OpenAI. If you do not
   caption="  In the key field write OPENAI_API_KEY In the value field write your GPT-3 API key"
 />
 
-### 2. Update the run command
+### Update the run command
 
 To start our application we need to update the run command.
 
@@ -73,7 +72,7 @@ To start our application we need to update the run command.
   src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/SCR-20220706-t9s.png"
 />
 
-### 3. Install dependencies and start development environment
+### Install dependencies and start development environment
 
 Now it's time to install all the dependencies and start the development environment. Click the big green
 
@@ -83,7 +82,7 @@ Now it's time to install all the dependencies and start the development environm
   src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/SCR-20220719-gss.png"
 />
 
-#### Wait for the development environment to install and start
+### Wait for the development environment to install and start
 
 Once you clicked the RUN button you will see a output in the concolse window where it first will install packages and then start out development server
 
@@ -145,7 +144,7 @@ The distance to the moon from earth is about 384,400 kilometers.
 
 At this stage you should have a GPT-3 powered application that you can use to generate text and now it's time to configure the application to our needs. In my case I will create a GPT-3 powered application that help to summarize a article that we can use as our copy for a social media post.
 
-### 1. Configuring the API endpoint
+### Configuring the API endpoint
 
 Start with open up `/pages/api/openai.js`
 The file should look something like this
@@ -204,11 +203,11 @@ const beforePrompt = `Summarize this into a engaging social media post:`;
 const afterPrompt = `Engaging social media post:`;
 ```
 
-### 2. Lets update our frontend to reflect our applications fuctions
+### Lets update our frontend to reflect our applications fuctions
 
 Open `/pages/index.js` and edit the `<title>`, `H1` and `<p>` tags to reflect our applications functionalities
 
-### 3. Time to test our application and the result
+### Time to test our application and the result
 
 I have choosen [following article](https:/techcrunch.com/2022/07/20/instagrams-boost-option-lets-businesses-turn-reels-ads/) that I found on Techcrunch to try the application with.
 
@@ -221,5 +220,7 @@ I have choosen [following article](https:/techcrunch.com/2022/07/20/instagrams-b
 Instagram has just announced a new feature that allows businesses to boost their Reels to turn them into ads! This is a great way to reach new audiences and get your brand story out there. Remember to check your Insights to see which ads performed the best.
 
 ## Final words
+Congratulations on completing this [GPT-3 tutorial](https://lablab.ai/t/tech/openai/gpt3)! In just 20 minutes, you've laid the groundwork to build diverse applications. But why stop here? 
+Join our AI Hackathons, where in just seven hours, you can collaborate with a global community of over 52,000 enthusiasts to create a working [AI app](https://lablab.ai/apps) prototype. 
 
-Hope you enjoyed this simple tutorial. Hopefully you now have a simple fundation that will allow you to build other type of applications.
+Let's shape the future with AI!

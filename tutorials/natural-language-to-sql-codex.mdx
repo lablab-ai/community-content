@@ -1,29 +1,27 @@
 ---
 title: "OpenAI Codex tutorial: Natural language to SQL query with OpenAI Codex"
-description: "How to create a custom SQL QUERY from a natural language using Openai Codex"
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/natural_language_to_sql_query_codex_1.png"
+description: "Unleash the power of GPT-3 models with our tailored tutorial. Learn how to use OpenAI Codex to craft custom SQL queries from natural language. Embark on your GPT online journey now!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fae7aded-a212-4557-cd2a-02095fd16800/full"
 authorUsername: "ezzcodeezzlife"
 ---
+## Unraveling the OpenAI Codex
 
-## What is OpenAI Codex?
+OpenAI Codex, a marvel in the realm of artificial intelligence, is a brainchild of OpenAI. This AI model is a wizard at interpreting natural language and responding with generated code. It's the powerhouse behind GitHub Copilot, your virtual programming assistant. Codex is an offshoot of the renowned [GPT-3](https://lablab.ai/tech/openai/gpt3) model by OpenAI, specifically fine-tuned for coding applications. OpenAI has unveiled an API for [Codex](https://lablab.ai/tech/openai/codex), currently in closed beta.
 
-OpenAI Codex is an artificial intelligence model developed by OpenAI. It parses natural language and generates code in response. It is used to power GitHub Copilot, a programming autocompletion tool. Codex is a descendant of OpenAI's GPT-3 model, fine-tuned for use in programming applications. OpenAI has released an API for Codex in closed beta.
+Dive into the world of [Codex](https://platform.openai.com/docs/guides/code) via the [OpenAI playground](https://platform.openai.com/playground), your sandbox for AI exploration.
 
-You can get access to the Codex waitlist here: https://openai.com/blog/openai-codex/ and getting accepted usually is within a few days.
+## Embracing the GPT-3 Tutorial Concept
+Imagine transforming natural language into a SQL query. That's the magic of GPT-3. Let's say you need to fetch all users above 25 years old. You simply state:
 
-## The idea
+>Fetch all users above 25 years old
 
-The idea is to generate a SQL query from a natural language. For example, if we want to get all the users that are older than 25 years old, we can write the following sentence:
+And voila! The model generates the corresponding SQL query:
 
-> Get all the users that are older than 25 years old
+>SELECT * FROM users WHERE age > 25
 
-And the model will generate the following SQL query:
+This capability allows SQL query generation without any SQL syntax knowledge. It's a game-changer for non-technical individuals needing to query a database. Dive into our GPT-3 tutorial and start your GPT online journey today!
 
-> SELECT * FROM users WHERE age > 25
-
-This enables us to write SQL queries without knowing SQL syntax. This is very useful for non-technical people that want to query a database.
-
-## Let's get started
+## Let's get started!
 
 Make sure you got access to Codex. If you don't have access, you can get access to the Codex waitlist here: https://openai.com/blog/openai-codex/ and getting accepted usually is within a few days.
 Before we write any code, you can do some testing first on the OpenAI playground: https://beta.openai.com/playground. 
@@ -110,17 +108,20 @@ print(generate_sql_query(prompt))
 
 Now run the file and enter your prompt and get back the SQL query.
 
-## Conclusion
+## Wrapping Up the GPT-3 Tutorial Journey
+In this enlightening journey, we've mastered the art of generating SQL queries from natural language using OpenAI [Codex](https://lablab.ai/tech/openai/codex). We've also delved into the practical use of the OpenAI Codex library.
 
-In this tutorial, we learned how to generate a SQL query from a natural language using OpenAI Codex. We also learned how to use the OpenAI Codex library.
-You can continue improving this project by adding a database and a web interface. You can also add more prompts to the request to guide the model into the right direction and make it more accurate.
-You could also add your database schema in the prompt to make it more accurate. For example like this:
+The road to improvement is endless. You can enhance this project by integrating a database and a user-friendly web interface. To guide the model more accurately, consider adding more prompts to the request.
+
+For precision, you could include your database schema in the prompt. For instance:
 
 ```
 USER: ID (INT), NAME (VARCHAR), AGE (DATE)
 POST: ID (INT), TITLE (VARCHAR), BODY (VARCHAR), USER_ID (INT)
 COMMENT: ID (INT), BODY (VARCHAR), POST_ID (INT), USER_ID (INT)
 ```
+
+And why not give a spin to what you;ve learned during our [AI Hackathons] and [build GPT-3 app](https://lablab.ai/apps/tech/openai/gpt3) in 1, 2, or just 7 days!
 
 **Thank you** for reading. If you enjoyed this tutorial you can find more and continue reading 
 [on our tutorial page](https://lablab.ai/t/) - [Fabian Stehle](https://github.com/ezzcodeezzlife), 
