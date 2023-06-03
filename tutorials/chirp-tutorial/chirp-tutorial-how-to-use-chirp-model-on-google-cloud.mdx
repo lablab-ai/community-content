@@ -58,7 +58,7 @@ Give your project a name and click `Create`.
 
 ### Step 3: Enable API
 
-Go to [Speech](https://console.cloud.google.com/speech) in Google Cloud console. Click `Enable API`.
+Go to [Speech](https://console.cloud.google.com/speech) in Google Cloud console. Click `ENABLE API`.
 
 <Img src="./images/enableAPI.png" alt="Google Cloud console enable API" caption="Google Cloud console enableAPI"/>
 
@@ -88,7 +88,6 @@ Click `Create` and you should see a new bucket is created as shown below.
 
 Then, click `Select` > `Continue` > `Create` to finish creating your workspace for the speech-to-text UI.
 
-<Img src="./images/chirpWorkspace.png" alt="Google Cloud console Chirp Workspace" caption="Google Cloud console Chirp Workspace"/>
 
 
 Perfet! Now, we have a workspace for our speech-to-text UI. Let's move on to the next step.
@@ -97,6 +96,8 @@ Perfet! Now, we have a workspace for our speech-to-text UI. Let's move on to the
 ### Step 6: Create a new Transcription
 
 Let's perform a transcription on our actual audio file. 
+
+<Img src="./images/chirpWorkspace.png" alt="Google Cloud console Chirp Workspace" caption="Google Cloud console Chirp Workspace"/>
 
 Go over left sidebar navigation and click `Transcription` > `New Transcription`. From the `New Transcription` page, select your audio file through either uploading audio files `Local upload` or specifying an existing Cloud Storage file `Cloud storage`. 
 
@@ -108,7 +109,9 @@ Note: The UI will assess your audio file parameters automatically, and you can a
 
 Click `Continue`. 
 
-By default API version is set to `V1`, change it to `V2`, specify the language `English - United States` in our case spoken in the audio file from the `dropdown menu`, then choose `Chirp` as transcription model and our newly created `chirp-recognizer` as the recognizer.
+By default API version is set to `V1`, change it to `V2`, specify the language `English (United States) - en-US` in our case spoken in the audio file from the `dropdown menu`, then choose `Chirp` as transcription model and our newly created `chirp-recognizer` as the recognizer.
+
+<Img src="./images/transcriptionOptions.png" alt="Google Cloud console transcription options" caption="Google Cloud console transcription options"/>
 
 Click `Submit` and wait for a few seconds.
 
@@ -118,8 +121,6 @@ Click `Submit` and wait for a few seconds.
 To see the transcription results, click `the name of your transcription`.
 
 <Img src="./images/transcriptionResults.png" alt="Google Cloud console transcription results" caption="Google Cloud console transcription results"/>
-
-<Img src="./images/transcribedText.png" alt="Google Cloud console transcription text" caption="Google Cloud console transcription text"/>
 
 You may also download the transcription results in 4 different formats: `JSON`, `TXT`, `SRT`, and `CSV`. Let's download the transcription results in `TXT` format. Click `Download` > `TXT` > `Download.
 
