@@ -1,0 +1,74 @@
+---
+title: "image-by-vertex-ai"
+description: "Image by Vertex AI is a new service that allows you to create and edit images using artificial intelligence. It's a powerful tool that can be used for a variety of tasks"
+authorUsername: "youknowsthevibes"
+---
+## Image by Vertex AI
+
+Image by Vertex AI is a new service that allows you to create and edit images using artificial intelligence. It's a powerful tool that can be used for a variety of tasks, such as:
+
+* Creating realistic images of people, animals, and objects
+* Editing photos to remove blemishes, add effects, or change the background
+* Generating new images based on your own sketches or descriptions
+
+Image by Vertex AI is easy to use and can be integrated with other Google Cloud services, such as Google Drive and Google Cloud Storage.
+
+## Getting Started
+
+To get started with Image by Vertex AI, you'll need to create a project in the Google Cloud Console https://console.cloud.google.com/. Once you have a project, you can install the Image by Vertex AI client library.
+
+The client library provides a number of functions that you can use to create and edit images. For example, you can use the `create_image()` function to create a new image from a URL, and the `edit_image()` function to edit an existing image.
+
+## Creating Images
+
+To create an image, you can use the `create_image()` function. This function takes a number of parameters, including the image size, the image format, and the image content.
+
+The image size is specified in pixels. The image format can be either `JPEG` or `PNG`. The image content can be a URL, a file path, or a base64-encoded string.
+
+Here is an example of how to create an image using the `create_image()` function:
+
+```
+import VertexAI
+
+image = VertexAI.create_image(
+    size=256,
+    format='JPEG',
+    content='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mona_Lisa.jpg/220px-Mona_Lisa.jpg'
+)
+```
+
+This code will create a new image that is 256 pixels wide and 256 pixels high. The image will be saved in JPEG format and will contain the content of the URL specified in the `content` parameter.
+
+## Editing Images
+
+You can use the `edit_image()` function to edit an existing image. This function takes a number of parameters, including the image to edit, the editing operations to perform, and the output image format.
+
+The editing operations can be used to change the size of the image, the format of the image, or the content of the image. For example, you can use the `resize()` operation to change the size of the image, the `convert()` operation to change the format of the image, and the `edit()` operation to change the content of the image.
+
+Here is an example of how to edit an image using the `edit_image()` function:
+
+```
+import VertexAI
+
+image = VertexAI.edit_image(
+    image='gs://my-bucket/my-image.jpg',
+    operations=[
+        VertexAI.resize(size=128),
+        VertexAI.convert(format='PNG'),
+        VertexAI.edit(content='This is a new image.')
+    ],
+    output_format='JPEG'
+)
+```
+
+This code will edit the image located at `gs://my-bucket/my-image.jpg`. The image will be resized to 128 pixels wide and 128 pixels high. The image will be converted to PNG format. The content of the image will be changed to the string `This is a new image.` The edited image will be saved in JPEG format.
+
+## Conclusion
+
+Image by Vertex AI is a powerful tool that can be used to create and edit images using artificial intelligence. It's easy to use and can be integrated with other Google Cloud services.
+
+Here are some additional resources that you may find helpful:
+
+* [Image by Vertex AI documentation](https://cloud.google.com/vertex-ai/docs?hl=fr#code-samples)
+* [Image by Vertex AI tutorials](https://cloud.google.com/vertex-ai/docs/tutorials/image-recognition-automl?hl=fr)
+* [Image by Vertex AI API reference](https://console.cloud.google.com/)
