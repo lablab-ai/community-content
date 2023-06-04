@@ -82,7 +82,7 @@ pip install streamlit
 
 ### Step 4 - Implementing podcast generation
 
-In this step, we will use `Langchain` and `OpenAI's ChatGPT-3.5-turbo` to generate podcast based on the specific topic, podcaster and guest. 
+In this step, we will use [Langchain OpenAI's ChatGPT-3.5-turbo](https://python.langchain.com/en/latest/modules/models/chat/integrations/openai.html) to generate podcast based on the specific topic, podcaster and guest. 
 
 Let's create a new file named `_langchain.py` and add the following code:
 
@@ -129,7 +129,7 @@ conversation = ConversationChain(memory=memory, prompt=prompt, llm=llm)
 def get_response(prompt, podcaster, guest):
     _prompt = f"""
 
-    Generate a podcast with {podcaster} and {guest}. They are discussing about {prompt}.
+    Generate a podcast between {podcaster} and {guest}. They are discussing about {prompt}.
     
     """
 
@@ -142,7 +142,7 @@ def get_response(prompt, podcaster, guest):
 
 ### Step 5 - Implementing audio podcast generation
 
-In this step, we will use `ElevenLabs` to generate audio for podcast that we already generated in Step 4. 
+In this step, we will use [ElevenLabs Python API](https://github.com/elevenlabs/elevenlabs-python) to generate audio for podcast that we already generated in Step 4. 
 
 Let's create a new file named `_elevenlabs.py` and add the following code:
 
@@ -187,7 +187,7 @@ def with_custom_voice(podcaster, guest, description, prompt, file_path):
         return ""
 
 
-# Here we are creating a function to generate audio for podcast with premade voice. This voices are already trained and default in ElevenLabs.
+# Here we are creating a function to generate audio for podcast with premade voices. This voices are already trained and default in ElevenLabs.
 def with_premade_voice(prompt, voice):
     audio_path = f'{voice}.mp3'
 
@@ -257,7 +257,7 @@ Configure Streamlit page like: giving a title, favicon, etc.
 st.set_page_config(page_title="iPodcast", page_icon="🎧")
 ```
 
-Initialize Streamlit session state. This is similar to React Hooks. It allows us to store the state of the app and use it in different parts of the app.
+Initialize Streamlit session state. This is similar to [React Hooks](https://react.dev/reference/react). It allows us to store the state of the app and use it in different parts of the app.
 
 ```python
 
