@@ -1,60 +1,126 @@
 ---
 title: 'create-an-app-using-palm-2'
-description: 'One way to create an app using PaLM 2 is to use it as a natural language processing (NLP) engine. NLP engines are used to understand and generate human language. You can use PaLM 2 to create an app that can answer your questions, translate languages, write different kinds of creative content, and more.'
+description: 'This post shows a frontend in Gradio, deployed in Cloud Run, that exposes one of the PaLM-2 foundational models text-bison@001.'
 authorUsername: 'youknowsthevibes'
 ---
 <Img src="https://beebom.com/wp-content/uploads/2023/05/a-4.jpg?quality=75&strip=all"/>
 
-To create an app using PaLM 2 model by Google, you will need to first install the PaLM 2 model https://blog.google/technology/ai/google-palm-2-ai-large-language-model/. You can do this by following the instructions on the PaLM 2 website. Once you have installed the model, you can start creating your app.
+The text-bison@001 model is a prominent foundational model built on PaLM-2 and is accessible through Vertex AI. This tutorial demonstrates a professional frontend implementation, leveraging a Gradio app, to expose the model's key parameters, including temperature, output tokens, top-P, and top-K. By following this guide, you can gain insights into integrating and interacting with the text-bison@001 model using a user-friendly interface.
+The text-bison@001 model has been meticulously fine-tuned to excel in various language-related tasks, including classification, summarization, and entity extraction.
 
-One way to create an app using PaLM 2 is to use it as a natural language processing (NLP) engine. NLP engines are used to understand and generate human language. You can use PaLM 2 to create an app that can answer your questions, translate languages, write different kinds of creative content, and more.
+To showcase the model's capabilities, a sophisticated frontend has been implemented using a Gradio app deployed on Cloud Run. The app offers a user-friendly interface that enables users to interact with the text-bison@001 model effectively. Below is a screenshot of the deployed Gradio app:
 
-Another way to create an app using PaLM 2 is to use it as a machine learning (ML) model. ML models are used to learn from data and make predictions. You can use PaLM 2 to create an app that can detect objects in images, classify text, generate text, and more.
+<Img src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*sVgzE2oglTjiHGd6gKeRLA.png"/>
 
-Here are some code samples that you can use to get started with creating an app using PaLM 2:
+PaLM-2, available in Vertex AI, encompasses a collection of foundational models, including the highly capable text-bison@001. These models are built upon the advanced PaLM-2 architecture and have undergone fine-tuning specifically for various language tasks. For comprehensive insights into PaLM-2, please refer to the technical report.
 
-```
-import palm2
-
-# Create a PaLM 2 model
-model = palm2.Palm2Model()
-
-# Ask the model a question
-question = "What is the capital of France?"
-answer = model.generate_text(question)
-
-# Print the answer
-print(answer)
-```
+With the Vertex AI SDK, harnessing the power of the text-bison@001 model is straightforward. You can effortlessly make use of the publisher endpoints to invoke the model and leverage its capabilities for your language-related requirements.
 
 ```
-import palm2
-
-# Create a PaLM 2 model
-model = palm2.Palm2Model()
-
-# Load an image of a cat
-image = cv2.imread("cat.jpg")
-
-# Detect objects in the image
-objects = model.detect_objects(image)
-
-# Print the objects
-for object in objects:
-    print(object)
+vertexai.init(project=PROJECT_ID, location=LOCATION)
+model = TextGenerationModel.from_pretrained("text-bison@001")
+model.predict(
+    prompt,
+    max_output_tokens=max_output_tokens, # default 128
+    temperature=temperature, # default 0
+    top_p=top_p, # default 1
+    top_k=top_k) # default 40
 ```
 
+When deploying an application in Cloud Run, it typically inherits the permissions of the compute service account by default for making calls to the model. However, for enhanced security and control, it is advisable to utilize a dedicated service account with minimal permissions.
+
+To achieve this, you can create a separate service account that includes impersonation capabilities, along with two additional roles:
+
+The "roles/aiplatform.user" role grants the service account the necessary permissions to call predictions from the model.
+The "roles/logging.logWriter" role enables the service account to write logs.
+By configuring this user-managed service account, you establish a clear separation of privileges and minimize potential security risks associated with broader access.
+
+To implement this, follow these steps:
+1.Create the service account by executing the following command:
+shell
+
 ```
-import palm2
+gcloud iam service-accounts create cloud-run-llm \
+    --description="Service account to call LLM models from Cloud Run" \
+    --display-name="cloud-run-llm"
 
-# Create a PaLM 2 model
-model = palm2.Palm2Model()
+```
+2. Assign the "roles/aiplatform.user" role to the service account:
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:cloud-run-llm@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/aiplatform.user"
 
-# Generate text
-text = model.generate_text("This is a story about a cat.")
+```
+3.Add the "roles/logging.logWriter" role to the service account:
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:cloud-run-llm@PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+```
+4. Grant permission to impersonate the service account by executing the following command:
+```
+gcloud iam service-accounts add-iam-policy-binding \
+    cloud-run-llm@PROJECT_ID.iam.gserviceaccount.com \
+    --member="user:YOUR_USER_ACCOUNT" \
+    --role="roles/iam.serviceAccountUser"
+```
+Ensure that you replace the placeholders "PROJECT_ID" with your actual Google Cloud project ID and "YOUR_USER_ACCOUNT" with the appropriate user account, which will have the ability to impersonate the service account.
 
-# Print the text
-print(text)
+By following these steps, you establish a dedicated service account with the necessary permissions, strengthening the security and manageability of your Cloud Run deployment.
+
+exemple :
+```
+# Create service account
+gcloud iam service-accounts create cloud-run-llm \
+    --description="Service account to call LLM models from Cloud Run" \
+    --display-name="cloud-run-llm"
+
+# add aiplatform.user role
+gcloud projects add-iam-policy-binding argolis-rafaelsanchez-ml-dev \
+    --member="serviceAccount:cloud-run-llm@argolis-rafaelsanchez-ml-dev.iam.gserviceaccount.com" \
+    --role="roles/aiplatform.user"
+
+# add logging.logWriter role
+gcloud projects add-iam-policy-binding argolis-rafaelsanchez-ml-dev \
+    --member="serviceAccount:cloud-run-llm@argolis-rafaelsanchez-ml-dev.iam.gserviceaccount.com" \
+    --role="roles/logging.logWriter"
+
+# add permission to impersonate the sa (iam.serviceAccounts.actAs), since this is a user-namaged sa
+gcloud iam service-accounts add-iam-policy-binding \
+    cloud-run-llm@argolis-rafaelsanchez-ml-dev.iam.gserviceaccount.com \
+    --member="user:<REPLACE_WITH_YOUR_USER_ACCOUNT>" \
+    --role="roles/iam.serviceAccountUser"
+```
+# Build and deploy in Cloud Run
+To build and deploy your Gradio app in Cloud Run, follow the steps below. Please note the additional details provided for each command:
+1.Authenticate Docker with Artifact Registry:
+```
+gcloud auth configure-docker europe-west4-docker.pkg.dev
+
+```
+2. Build the Docker image and push it to Artifact Registry:
+```
+gcloud builds submit --tag europe-west4-docker.pkg.dev/PROJECT_ID/ml-pipelines-repo/genai-text-demo
+
+```
+3. Deploy the Gradio app to Cloud Run:
+```
+gcloud run deploy genai-text-demo \
+  --port 7860 \
+  --image europe-west4-docker.pkg.dev/PROJECT_ID/ml-pipelines-repo/genai-text-demo \
+  --service-account=cloud-run-llm@PROJECT_ID.iam.gserviceaccount.com \
+  --allow-unauthenticated \
+  --region europe-west4 \
+  --platform managed \
+  --project PROJECT_ID
+
+```
+Note the --allow-unauthenticated parameter (no authentication required to access the app) and the --service-account parameter pointed to the one configured earlier:
+```
+gcloud auth configure-docker europe-west4-docker.pkg.dev
+gcloud builds submit --tag europe-west4-docker.pkg.dev/argolis-rafaelsanchez-ml-dev/ml-pipelines-repo/genai-text-demo
+gcloud run deploy genai-text-demo --port 7860 --image europe-west4-docker.pkg.dev/argolis-rafaelsanchez-ml-dev/ml-pipelines-repo/genai-text-demo --service-account=cloud-run-llm@argolis-rafaelsanchez-ml-dev.iam.gserviceaccount.com --allow-unauthenticated --region=europe-west4 --platform=managed  --project=argolis-rafaelsanchez-ml-dev
 ```
 
 These are just a few examples of how you can use PaLM 2 to create apps. The possibilities are endless.
