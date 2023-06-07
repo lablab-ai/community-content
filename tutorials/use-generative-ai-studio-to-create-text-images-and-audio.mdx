@@ -3,123 +3,187 @@ title: 'use-generative-ai-studio-to-create-text-images-and-audio'
 description: 'Generative AI Studio is a tool that allows you to create and edit text, images, and audio using artificial intelligence. It's a powerful tool that can be used for a variety of creative and business purposes.'
 authorUsername: 'youknowsthevibes'
 ---
-# Generative AI Studio Tutorial
 
-## Description
+# An Introduction to Using the User Interface of Vertex AI Generative AI Studio
+This guide offers step-by-step instructions for utilizing the User Interface (UI) of Vertex AI Generative AI Studio, directly accessible through the Google Cloud console. By following these instructions, you can effectively leverage Generative AI Studio without the need for the API or Python SDK.
 
-Generative AI Studio is a powerful tool developed by Google AI that utilizes artificial intelligence to create and edit text, images, and audio. This tutorial provides a step-by-step guide on how to use Generative AI Studio effectively for creative and business purposes.
-
-## Table of Contents
-
-- [Getting Started](#getting-started)
-  - [Account Creation](#account-creation)
-  - [Dashboard Overview](#dashboard-overview)
-- [Creating Text](#creating-text)
-  - [Generating Text](#generating-text)
-  - [Editing Text](#editing-text)
-- [Creating Images](#creating-images)
-  - [Generating Images](#generating-images)
-  - [Editing Images](#editing-images)
-- [Creating Audio](#creating-audio)
-  - [Generating Audio](#generating-audio)
-  - [Editing Audio](#editing-audio)
-- [Tips for Using Generative AI Studio](#tips-for-using-generative-ai-studio)
-
-## Getting Started
-
-### Account Creation
-
-To begin using Generative AI Studio, follow these steps:
-
-1. Visit the Generative AI Studio website (https://cloud.google.com/generative-ai-studio?hl=fr).
-2. Sign up for a free account by clicking on the "Sign up" button.
-3. Fill in the required information to create your account.
-
-### Dashboard Overview
-
-Once you have created an account and logged in, you will be directed to the main dashboard of Generative AI Studio. The dashboard is divided into the following sections:
-
-- **Explore**: This section allows you to familiarize yourself with the different features and capabilities of Generative AI Studio.
-- **Create**: Here, you can create new text, images, and audio using the AI-powered generation capabilities.
-- **My Projects**: This section displays your existing projects and allows you to manage and organize them effectively.
-
-## Creating Text
-
-### Generating Text
-
-To generate text using Generative AI Studio, follow these steps:
-
-1. Go to the "Text" tab in the main dashboard.
-2. In the "Generate" section:
-   - Enter a prompt that clearly describes the type of text you want to generate.
-   - Click the "Generate" button to initiate the text generation process.
-3. Explore the generated text options presented to you.
-   - Evaluate the various outputs and select the one that suits your requirements.
-4.exemple
-<Img src="https://cloud.google.com/static/vertex-ai/docs/generative-ai/images/prompt.png"/>
+## Vertex AI Generative AI Studio on Google Cloud
 
 
-### Editing Text
+Vertex AI Generative AI Studio is a cloud-based platform that allows users to create and experiment with generative AI models. The platform provides a variety of tools and resources that make it easy to get started with generative AI, even if you don't have a background in machine learning. You can learn more about Vertex AI Generative AI Studio here. [Vertex AI Generative AI Studio](https://cloud.google.com/generative-ai-studio)
 
-To edit the generated text or add new content, follow these steps:
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/overview.jpg)
 
-1. In the "Edit" section of the "Text" tab:
-   - Make changes to the existing text as needed.
-   - Add new text or delete text sections using the provided editing tools.
-2. Experiment with different modifications until you achieve the desired result.
+---
 
-## Creating Images
+## Language
+There are two methods to access the Language features within Generative AI Studio on Google Cloud:
 
-### Generating Images
+1. By selecting the **OPEN** button located at the bottom of the **Language** section on the Generative AI Studio Overview page.
+2. By navigating to the Generative AI Studio tab on the left-hand menu and choosing **Language** from the available options.
 
-To generate images using Generative AI Studio, follow these steps:
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/open-language.jpg)
 
-1. Access the "Images" tab in the main dashboard.
-2. In the "Generate" section:
-   - Enter a prompt that clearly describes the type of image you want to generate.
-   - Click the "Generate" button to start the image generation process.
-3. Explore the generated image options presented to you.
-   - Review the different outputs and select the image that aligns with your requirements.
+Upon clicking, the following page will be presented.
 
-### Editing Images
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/landing.jpg)
 
-To edit the generated images or make modifications, follow these steps:
+---
 
-1. In the "Edit" section of the "Images" tab:
-   - Modify the existing images according to your preferences.
-   - Add new images or remove unwanted ones using the available editing tools.
-2. Experiment with different adjustments until you achieve the desired image composition.
+## Get Started
 
-## Creating Audio
+### Create Prompt
+To create prompts tailored to your business use case, including code generation, the "Create Prompt" feature is available. To begin, simply click on the + CREATE PROMPT button, as illustrated in the image below.
 
-### Generating Audio
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/click-create-prompt.jpg)
 
-To generate audio using Generative AI Studio, follow these steps:
+After clicking the **+ CREATE PROMPT** button, you will be directed to a new page. On this page, you will find various fields and parameters that can be explored further by hovering over or clicking on the **?** buttons. Additionally, the interface is accompanied by an annotated image below, offering a concise overview of its features.
 
-1. Go to the "Audio" tab in the main dashboard.
-2. In the "Generate" section:
-   - Enter a prompt that clearly defines the desired audio output.
-   - Click the "Generate" button to initiate the audio generation process.
-3. Explore the generated audio options presented to you.
-   - Review the different audio samples and select the one that suits your needs.
-https://cloud.google.com/vertex-ai/docs/generative-ai/learn/generative-ai-studio?_ga=2.246286660.1322556838.1685913118-391751306.1685913118
-### Editing Audio
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-annotated.jpg)
 
-To edit the generated audio or make customizations, follow these steps:
+You can feed your desired input text, e.g. a question, to the model. The model will then provide a response based on how you structured your prompt. The process of figuring out and designing the best input text (prompt) to get the desired response back from the model is called **Prompt Design**.
 
-1. In the "Edit" section of the "Audio" tab:
-   - Adjust the generated audio as per your preferences.
-   - Add new audio sections or remove unwanted parts using the provided editing tools.
-2. Experiment with different modifications until you achieve the desired audio composition.
+Prompt Design Methods
+When designing prompts in Generative AI Studio, there are three primary methods to shape the model's response according to your desired task:
 
-## Tips for Using Generative AI Studio
+Zero-shot prompting: In this method, the Language Model (LM) is given a prompt that describes the task without any additional data specific to the task. For example, if you want the LM to answer a question, you would simply provide the prompt "What is prompt design?".
 
-Here are some helpful tips to enhance your experience with Generative AI Studio:
+One-shot prompting: With this method, the LM is provided with a single example of the task it needs to perform. For instance, if you want the LM to write a poem, you can provide it with a single example poem.
 
-- **Be specific with prompts**: Clearly define your prompts to generate more accurate and relevant results.
-- **Experiment with different prompts**: Explore various prompts to discover unexpected and unique outputs.
-- **Utilize the editing tools**: Take advantage of the editing capabilities to fine-tune and customize the generated content according to your requirements.
+Few-shot prompting: This method involves providing the LM with a small number of examples related to the task it needs to perform. For example, if you want the LM to write a news article, you might provide it with a few news articles to read.
 
-By following this comprehensive tutorial, you can harness the power of Generative AI Studio to create captivating and personalized text, images, and audio for a wide range of creative and business applications.
+Prompt Design Modes
+In the Generative AI Studio interface, you will notice two tabs for prompt design modes:
 
+FREE-FORM: This mode allows for a flexible and unrestricted approach to prompt design. It is suitable for small and experimental prompts without additional examples. This mode is particularly useful for exploring zero-shot prompting.
 
+STRUCTURED: In this mode, a template-based approach is provided for prompt design. It enables the addition of context and multiple examples to the prompt. This mode is especially useful for one-shot and few-shot prompting methods.
+
+Utilizing these prompt design methods and modes empowers you to tailor the generated model responses to precisely meet your unique needs and specifications.
+---
+
+### FREE-FORM mode
+
+To initiate the zero-shot prompting process in the **FREE-FORM** mode, follow these steps:
+
+1. Copy the text "What is a prompt gallery?" and paste it into the prompt input field.
+2. On the right side of the page, locate and click on the **SUBMIT** button.
+
+Upon submitting, the model will generate a detailed definition of the term "prompt gallery" in its response.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-freeform.jpg)
+
+Here are a few exploratory exercises for you to explore.
+- adjust the `Token limit` parameter to `1` and click the **SUBMIT** button
+- adjust the `Token limit` parameter to `1024` and click the **SUBMIT** button
+- adjust the `Temperature` parameter to `0.5` and click the **SUBMIT** button
+- adjust the `Temperature` parameter to `1.0` and click the **SUBMIT** button
+
+Inspect if how the responses change as to change the parameters?
+
+---
+
+### STRUCTURED mode
+By utilizing the **STRUCTURED** mode, you can design prompts in a more organized manner, allowing you to provide context and examples for effective prompt creation. This presents an excellent opportunity to explore one-shot and few-shot prompting techniques.
+
+To proceed with this section and request the model to complete a sentence, please follow these steps:
+
+1. If you haven't already, navigate to the **Create Prompt** window and select the To proceed with the one-shot and few-shot prompting using the **STRUCTURED** mode, follow these steps:
+
+1. Ensure you are on the **STRUCTURED** tab within the Create Prompt window.
+2. Copy the phrase "the colour of the sky is" and paste it into the **INPUT** field.
+3. On the right side of the page, locate the **SUBMIT** button and click on it.
+
+After submitting the prompt, you will receive a response similar to the one illustrated in the accompanying image.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-structured-zero-shot.jpg)
+
+Instead of providing a complete sentence as a response, the model generated a full sentence, which was not the intended outcome. To influence the model's response and achieve the desired completion, you can utilize the one-shot prompting technique.
+
+To modify the prompt and incorporate an example for the model to base its output on, follow these steps:
+
+In the Examples field, copy the phrase "the colour of the grass is" and paste it into the INPUT field.
+Copy the word "green" and paste it into the OUTPUT field.
+Locate the SUBMIT button on the right side of the page and click on it.
+By making this adjustment, the model will now respond with the completion of the sentence as desired. The generated response should resemble something similar to the following.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-structured-one-shot.jpg)
+
+Congrats! You have successfully influenced the way the model produces response. 
+
+---
+
+For the next task, you will utilize the model to conduct sentiment analysis on a sentence, such as determining whether a movie review expresses a positive or negative sentiment. To proceed, please follow these steps:
+
+1. Return to the **Create Prompt** window.
+2. Copy the prompt "It was a time well spent!" and paste it into the **INPUT** field.
+3. On the right side of the page, locate the **SUBMIT** button and click on it.
+
+Upon submitting the prompt, the model will perform sentiment analysis on the sentence and provide a response indicating the sentiment expressed.
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-structured-sentiment-zero-shot.jpg)
+
+As observed, the model lacked sufficient information to accurately discern that sentiment analysis was the intended task. This can be improved by presenting the model with a few examples that clarify the desired outcome.
+
+To address this, follow the steps outlined in the image below, which demonstrates how to add examples for better prompt formulation:
+
+1. Access the **Create Prompt** window.
+2. Incorporate the provided examples, as illustrated in the image.
+
+By including these examples, the model will be better equipped to understand and fulfill the objective of performing sentiment analysis.
+
+| **INPUT**                         | **OUTPUT** |
+|-----------------------------------|------------|
+| A well-made and entertaining film | positive   |
+| I fell asleep after 10 minutes    | negative   |
+| The movie was ok                  | neutral    |
+
+and click on the **SUBMIT** button on the right side of the page
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-structured-sentiment-few-shot.jpg)
+
+With the modifications made, the model will now respond as desired, indicating a **positive** sentiment.
+
+To preserve the newly crafted prompt for future use, simply follow these steps:
+
+1. Locate and click on the **SAVE** button.
+2. Provide a name of your choice for the prompt.
+3. Save the prompt for future reference and utilization.
+
+By saving the prompt, you can conveniently access and reuse it whenever required.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-prompt-save-prompt.jpg)
+
+The saved prompt will appear at the **MY PROMPTS** tab.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/my-prompts-saved.jpg)
+
+---
+
+### Create Chat Prompt
+To create a new chat prompt, navigate back to the **Language** page and locate the **+ CREATE CHAT PROMPT** button. Click on this button to initiate the process of designing a chat-based prompt..
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/click-create-chat-prompt.jpg)
+
+You will see the new chat prompt page. It's relatively similar to the [new prompt page](#new-prompt) that you went through earlier.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-chat-prompt.jpg)
+
+For this section, you will add context to the chat and let the model respond based on the context provided. Let's add these contexts to the **Context** field.
+
+- copy these context to **Context** field
+>> Your name is Roy. <br/>
+>> You are a support technician for an IT department. <br/>
+>> You only respond with "Have you tried turning it off and on again?" to any queries.
+
+- copy "my computer is so slow" to the chatbox and 
+- press **Enter** key or click the send message button (the right arrow-head button)
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/prompt-gallery/new-chat-prompt-with-context.jpg)
+
+The model would consider the provided additional context and answer the questions within the constraints.
+
+## Prompt Gallery
+
+The Prompt Gallery within Generative AI Studio offers an opportunity to delve into diverse use cases and witness how generative AI models can be employed effectively. With a wide range of topics available, such as Summarization, Classification, Extraction, Writing, and Ideation, you can embark on an exploration of these areas at your preferred pace. Return to the **Get Started** page and delve into the Prompt Gallery to uncover the potential of generative AI in various domains.
+
+![image](https://storage.googleapis.com/github-repo/img/gen-ai-studio/language/landing.jpg)
