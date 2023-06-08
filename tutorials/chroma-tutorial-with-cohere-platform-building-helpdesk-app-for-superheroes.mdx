@@ -1,6 +1,7 @@
 ---
-title: "Chroma Tutorial with Cohere: Building a Simple Help Desk app For Superheroes"
-description: "How to utilize Chroma database to store past questions as embeddings and retrieve them to serve as training data for classification purpose, built using Python"
+title: "Cohere tutorial: Building a Simple Help Desk app For Superheroes"
+description: "Master the art of AI help desk creation with this Cohere & Chroma tutorial, empowering you to craft a superhero-worthy app using Python for seamless assistance."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d58e95fe-0a2f-4f41-12fb-169679558300/full"
 authorUsername: "septiannugraha"
 ---
 
@@ -8,7 +9,7 @@ authorUsername: "septiannugraha"
 
 ### Introducing the Cohere Platform
 
-Cohere is a robust platform that provides access to state-of-the-art natural language processing models via a user-friendly API. This platform enables developers to seamlessly integrate a variety of natural language processing tasks into their applications, such as text classification, embeddings, and even text generation.
+[Cohere](https://lablab.ai/tech/cohere) is a robust platform that provides access to state-of-the-art natural language processing models via a user-friendly API. This platform enables developers to seamlessly integrate a variety of natural language processing tasks into their applications, such as text classification, embeddings, and even text generation.
 
 Beyond its standard offerings, Cohere also provides the ability to create custom models tailored to specific use cases. You can leverage your own training data and strategically dictate how this data should be utilized during the training process.
 
@@ -18,11 +19,11 @@ Cohere's capabilities make it an ideal tool for a wide array of applications. If
 
 ### Introduction to Chroma and Embeddings
 
-Chroma is an open-source database specifically designed for the efficient storage and retrieval of embeddings, a crucial component in the development of AI-powered applications and services, particularly those utilizing Large Language Models (LLMs). Chroma's design is centered around simplicity and developer productivity, providing tools for storing and querying embeddings, as well as for embedding documents.
+[Chroma](https://lablab.ai/tech/chroma) is an open-source database specifically designed for the efficient storage and retrieval of embeddings, a crucial component in the development of AI-powered applications and services, particularly those utilizing Large Language Models (LLMs). Chroma's design is centered around simplicity and developer productivity, providing tools for storing and querying embeddings, as well as for embedding documents.
 
 Developers can interact with Chroma through its Python client SDK, Javascript/Typescript client SDK, or a server application. The database can operate in-memory or in client/server mode, with additional support for notebook environments.
 
-But what are embeddings?
+### But what are embeddings?
 
 In the realm of AI, and more specifically within machine learning and natural language processing, an 'embedding' is a representation of data in a vector space. Word embeddings, for example, represent words as high-dimensional vectors, with similar words occupying close proximity in this vector space. Embeddings are highly favored in machine learning models because they allow these models to understand the semantic content of data. In natural language processing, embeddings empower models to comprehend the meaning of words based on their context within a sentence or a document.
 
@@ -102,7 +103,7 @@ pip3 install halo
 
 Time to get back to the code! Ensure that you are in the correct project directory and the virtual environment is active. Now, open up your preferred IDE or code editor and create a new file. Let's name it `main.py`. As the name suggests, this will be the only Python file we'll be using throughout this tutorial.
 
-#### main.py 🐍
+### main.py 🐍
 
 **Step 1. Import Necessary Libraries**
 
@@ -310,7 +311,7 @@ In this file, we have stored the API key (`COHERE_KEY`) we use to make requests 
 
 Remember, it's important not to share the `.env` file as it contains sensitive information such as your API key. You should add this file to your `.gitignore` file if you're using Git for version control to ensure it isn't uploaded to your repository.
 
-#### requirements.txt 📄
+### requirements.txt 📄
 
 Finally, while this step might seem optional, it's good practice to create a `requirements.txt` file as early as possible, especially during the initial phase of your project's development. This is crucial when you push your project to remote repositories such as Github, where others might discover and want to use or contribute to your project. The `requirements.txt` file ensures that they can effortlessly replicate your development environment!
 
@@ -326,6 +327,7 @@ With this command, we effectively list all the Python dependencies required for 
 pip install -r requirements.txt
 ```
 This ensures that they have all the necessary Python packages installed. Consequently, it's a good practice to include this installation step in the README.md file of your project repository. This makes it easy for users to set up their environment correctly.
+    
 ### Testing the Help Desk App
 
 It's time to put our Superhero Help Desk App to the test! You may have inferred the context of our help desk app from the `department_examples` and `mood_examples`. This app is designed to field inquiries from superheroes across the nation, classify the mood associated with the inquiries, and allocate them to the appropriate department for further handling. So, without further ado, let's launch our app with the following command:
