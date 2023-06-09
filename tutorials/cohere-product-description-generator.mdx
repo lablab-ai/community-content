@@ -1,36 +1,37 @@
 ---
 title: "Cohere tutorial: Build a product description generator API with Cohere"
-description: "In this tutorial you will build your own product description generator API with cohere."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Product%20description%20generator-.jpg"
+description: "Unleash the power of Cohere with ouroutstanding tutorial. Learn how to use Cohere for generating compelling product descriptions. Start now!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/974e520f-aeb9-4068-1af2-57d799821f00/full"
 ---
 
-By the end of this tutorial, you will have a working product description generator API with cohere. You can use this API to generate product descriptions for your own products. This tutorial is suitable for everyone who have some basic knowledge of Javascript/NodeJS. If you are not familiar with this language, you may want to check out the following resources before getting started.
+## 🎯 Journey's End: Mastering Cohere for Product Descriptions
+By the time you've reached this point, you've successfully built a product description generator API using [Cohere](https://lablab.ai/tech/cohere). This API is a powerful tool for generating descriptions for your own products. This tutorial is designed for those with a basic understanding of Javascript/NodeJS. If you're new to this language, consider exploring some resources before diving in. The journey doesn't end here, so stay tuned for more [Cohere tutorials](https://lablab.ai/t/tech/cohere)!
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Product%20description%20generator-.jpg" />
 
 We will be using **xlarge** model from Cohere.
 
-### 1. Getting Cohere API Key
+### Getting Cohere API Key
 
 You can get one by signing up [https://app.cohere.io/dashboard](https://app.cohere.io/dashboard). Visit the Cohere dashboard to retrieve your API key. If you haven't previously connected a session, you should see it in the main screen. Otherwise, you can find it in the settings page.
 
-### 2. Clone the Express boilerplate from Github
+### Clone the Express boilerplate from Github
 
 In this tutorial we will be using an express boilerplate that will make our lives easier.
 
 Copy this repository [Express Boilerplate](https://github.com/nextgrid/product-description-generator-cohere-api/tree/starter) onto your computer and add to your own repositories
 
-### 2. Running the project locally
+### Running the project locally
 
 1.  Install the dependencies with yarn or npm
 2.  Run the server with `yarn dev` or `npm dev`
 
-### 3. Add the Cohere API key to the .env file
+### Add the Cohere API key to the .env file
 
 Create a .env file in the root of the project and add your API key to it. Remember never share your API key with anyone.
 `COHERE_API_KEY={YOUR_API_KEY}`
 
-### 4. Create Routing for the API
+### Create Routing for the API
 
 1.  Create routes folder in the root of the project
 2.  Create `description.js` file in the routes folder
@@ -51,7 +52,7 @@ module.exports = router;
 5. Add the import to the top of the file `const description = require("./routes/description.js");
 6. Add the route under the app.get route `app.use("/", description);`
 
-### 5. Create generator function
+### Create generator function
 
 1. Create a folder in the root of the project called `lib`
 2. Create a file name called `description-generator.js` in the lib folder
@@ -80,7 +81,7 @@ const generator = async ({ product, keywords }) => {
 module.exports = generator;
 ```
 
-### 6. Use the generator function in the POST route
+### Use the generator function in the POST route
 
 Update the `description.js` file with the following code to use the generator function in the POST route
 
@@ -98,7 +99,7 @@ router.post("/", async (req, res) => {
 module.exports = router;
 ```
 
-### 7. Run the project locally and test it with Postman or Insomnia or whatever you prefer :)
+### Run the project locally and test it with Postman or Insomnia or whatever you prefer :)
 
   Send a Post request to [localhost:3000/description](localhost:3000/description) with these keys, `product` and `keywords`
 
@@ -109,8 +110,7 @@ module.exports = router;
   }
   ```
 
+## 🌟 Parting Thoughts: Changing the World with AI
+We trust you found value in this straightforward tutorial. Feel free to tweak the prompt and have some fun with it! Don't miss our upcoming [AI Hackathons](https://lablab.ai/event) and seize the opportunity to supercharge your application through our AI slingshot program. 
 
-
-## Final words
-
-Hope you enjoyed this simple tutorial. Feel free to change to prompt and play with it :)
+Let's change the world with AI, one application at a time!
