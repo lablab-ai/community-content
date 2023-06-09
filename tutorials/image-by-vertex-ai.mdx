@@ -3,20 +3,161 @@ title: "image-by-vertex-ai"
 description: "Image by Vertex AI is a new service that allows you to create and edit images using artificial intelligence. It's a powerful tool that can be used for a variety of tasks"
 authorUsername: "youknowsthevibes"
 ---
-<h1>Hello Custom Training: Serve Predictions from a Custom Image Classification Model</h1><p>This document is part of the "Hello custom training" tutorial, which guides you through training an image classification model and serving predictions using Vertex AI. In this tutorial, you use Vertex AI's custom training feature to run a TensorFlow Keras training application in a prebuilt container environment. The trained model classifies images of flowers by their type, and you learn how to create an endpoint to serve predictions from that model in a web app.</p><p><strong>Note</strong>: This tutorial assumes that you have already completed the instructions from the previous pages. If you haven't, please refer to the previous pages for the complete tutorial.</p><h2>Create an Endpoint</h2><p>To obtain online predictions from your trained ML model, you need to create a Vertex AI endpoint. Endpoints serve predictions from one or more models.</p><ol><li>Go to the Vertex AI section in the Google Cloud console and navigate to the Models page.</li><li>Find the row of the model you trained in the previous step, named "hello_custom," and click its name to open the model detail page.</li><li>On the Deploy &amp; test tab, click "Deploy to endpoint" to open the Deploy to endpoint pane.</li><li>On the "Define your endpoint" step, provide basic information for your endpoint:<ul><li>Select "Create new endpoint."</li><li>In the "Endpoint name" field, enter "hello_custom."</li><li>In the Model settings section, ensure that your model (hello_custom) is selected.</li><li>Specify the following model settings:<ul><li>In the "Traffic split" field, enter 100. Vertex AI supports splitting traffic for an endpoint among multiple models, but this tutorial doesn't use that feature.</li><li>In the "Minimum number of compute nodes" field, enter 1.</li><li>In the "Machine type" drop-down list, select "n1-standard-2" from the "Standard" section.</li></ul></li><li>Click "Done."</li></ul></li><li>In the "Logging" section, make sure both types of prediction logging are enabled.</li><li>Click "Continue."</li><li>On the "Endpoint details" step, confirm that your endpoint will be deployed to "us-central1" (Iowa).</li><li>Do not select the "Use a customer-managed encryption key (CMEK)" checkbox. This tutorial does not use CMEK.</li><li>Click "Deploy" to create the endpoint and deploy your model to it.</li><li>After a few minutes, a checkmark icon will appear next to the new endpoint in the Endpoints table. You will also receive an email confirming the successful creation of the endpoint and deployment of your model to it.</li></ol><h2>Deploy a Cloud Function</h2><p>To obtain predictions from the Vertex AI endpoint, you can send requests to the Vertex AI API's REST interface. However, only principals with the <code>aiplatform.endpoints.predict</code> permission can send online prediction requests. You cannot make the endpoint public for anyone to send requests to, such as via a web app.</p><p>In this section, you will deploy code to Cloud Functions to handle unauthenticated requests. The sample code provided in the tutorial's downloaded files contains code for this Cloud Function in the <code>function/</code> directory.</p><p>To deploy the Cloud Function:</p><ol><li><p>Go to the Vertex AI section in the Google Cloud console and navigate to the Endpoints page.</p></li><li><p>Find the row of the endpoint you created earlier, named "hello_custom." In this row, click "Sample request" to open the Sample request pane.</p></li><li><p>In the Sample request pane, locate the line of shell code that matches the following pattern:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>makefile</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-makefile">ENDPOINT_ID=<span class="hljs-string">"ENDPOINT_ID"</span>
-</code></div></div></pre><p>The <code>ENDPOINT_ID</code> is a number that identifies this specific endpoint.</p></li><li><p>Copy this line of code and run it in your Cloud Shell session to set the <code>ENDPOINT_ID</code> variable.</p></li><li><p>Run the following command in your Cloud Shell session to deploy the Cloud Function:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">gcloud functions deploy classify_flower \
-  --region=us-central1 \
-  --source=function \
-  --runtime=python37 \
-  --memory=2048MB \
-  --trigger-http \
-  --allow-unauthenticated \
-  --set-env-vars=ENDPOINT_ID=${ENDPOINT_ID}
-</code></div></div></pre><p>This command deploys the Cloud Function, allowing it to receive unauthenticated requests. Functions run using a service account with the Editor role by default, which includes the <code>aiplatform.endpoints.predict</code> permission necessary to obtain predictions from your Vertex AI endpoint.</p><p>The deployed function also performs useful preprocessing on requests. The Vertex AI endpoint expects prediction requests in the format of the trained TensorFlow Keras graph's first layer, which is a tensor of normalized floats with fixed dimensions. The function takes the URL of an image as input, preprocesses the image into this format, and then requests a prediction from the Vertex AI endpoint.</p></li></ol><h2>Deploy a Web App to Send Prediction Requests</h2><p>Finally, you will host a static web app on Cloud Storage to obtain predictions from your trained ML model. The web app sends requests to your Cloud Function, which preprocesses them and obtains predictions from the Vertex AI endpoint.</p><p>The <code>webapp</code> directory of the downloaded sample code contains a sample web app. Follow these steps to prepare and deploy the web app:</p><ol><li><p>Set a couple of shell variables to use in the following commands:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">PROJECT_ID=PROJECT_ID
-BUCKET_NAME=BUCKET_NAME
-</code></div></div></pre><p>Replace the following:</p><ul><li><code>PROJECT_ID</code>: Your Google Cloud project ID.</li><li><code>BUCKET_NAME</code>: The name of the Cloud Storage bucket you created when following the first page of this tutorial.</li></ul></li><li><p>Edit the app to provide it with the trigger URL of your Cloud Function:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">echo "export const CLOUD_FUNCTION_URL = 'https://us-central1-${PROJECT_ID}.cloudfunctions.net/classify_flower';" \
-<span class="hljs-meta prompt_">  &gt; </span><span class="bash">webapp/function-url.js</span>
-</code></div></div></pre></li><li><p>Upload the <code>webapp</code> directory to your Cloud Storage bucket:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">gsutil -m cp -r webapp gs://${BUCKET_NAME}/
-</code></div></div></pre></li><li><p>Make the web app files you just uploaded publicly readable:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">gsutil -m acl ch -u AllUsers:R gs://${BUCKET_NAME}/webapp/**
-</code></div></div></pre><p><strong>Note</strong>: Shells (like bash, zsh) sometimes attempt to expand wildcards in ways that can be surprising. For more details, see URI wildcards.</p></li></ol><p>Now, you can navigate to the following URL to open the web app and obtain predictions:</p><pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>bash</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-bash">https://storage.googleapis.com/BUCKET_NAME/webapp/index.html
-</code></div></div></pre><p>Open the web app and click on an image of a flower to see the classification of the flower type by your ML model. The web app presents the prediction as a list of flower types and the probability that the image contains each type of flower.</p><p><strong>Note</strong>: This web app obtains predictions for images that were also included in the training dataset for the model. Therefore, the model might appear more accurate than it actually is due to overfitting.</p><p>In the web app, you will see labeled images of flowers, and underneath one image, there will be probabilities of predicted labels. Another image will have a loading bar underneath it.</p><p><img src="https://cloud.google.com/static/vertex-ai/docs/tutorials/image-recognition-custom/webapp-screenshot_2x.png" alt="Web app with four labeled images of flowers. One has probabilities of predicted labels underneath it. Another has a loading bar underneath it."></p><p>Congratulations! You have successfully completed the steps to serve predictions from your custom image classification model and view them in a web app.</p></div>
+# Tutorial: Serving Predictions from a Custom Image Classification Model using Vertex AI
+
+This tutorial will guide you through the process of training an image classification model and serving predictions using Vertex AI. With Vertex AI's custom training feature, you will run a TensorFlow Keras training application in a prebuilt container environment. The trained model will classify images of flowers by their types, and you will learn how to create an endpoint to serve predictions from this model in a web app.
+
+Please note that this tutorial assumes you have already completed the previous steps. If you haven't, please refer to the previous pages for the complete tutorial.
+
+## Create an Endpoint
+
+To obtain online predictions from your trained ML model, you need to create a Vertex AI endpoint. Endpoints serve predictions from one or more models.
+
+1. Go to the Vertex AI section in the Google Cloud console and navigate to the Models page.
+2. Locate the row of the model you trained in the previous step, named "hello_custom," and click its name to open the model detail page.
+3. On the Deploy & test tab, click "Deploy to endpoint" to open the Deploy to endpoint pane.
+4. On the "Define your endpoint" step, provide basic information for your endpoint:
+   - Select "Create new endpoint."
+   - In the "Endpoint name" field, enter "hello_custom."
+   - In the Model settings section, ensure that your model (hello_custom) is selected.
+   - Specify the following model settings:
+     - In the "Traffic split" field, enter 100. Vertex AI supports splitting traffic for an endpoint among multiple models, but this tutorial doesn't use that feature.
+     - In the "Minimum number of compute nodes" field, enter 1.
+     - In the "Machine type" drop-down list, select "n1-standard-2" from the "Standard" section.
+   - Click "Done."
+5. In the "Logging" section, make sure both types of prediction logging are enabled.
+6. Click "Continue."
+7. On the "Endpoint details" step, confirm that your endpoint will be deployed to "us-central1" (Iowa).
+8. Do not select the "Use a customer-managed encryption key (CMEK)" checkbox. This tutorial does not use CMEK.
+9. Click "Deploy" to create the endpoint and deploy your model to it.
+10. After a few minutes, a checkmark icon will appear next to the new endpoint in the Endpoints table. You will also receive an email confirming the successful creation of the endpoint and deployment of your model to it.
+
+## Deploy a Cloud Function
+
+To obtain predictions from the Vertex AI endpoint, you can send requests to the Vertex AI API's REST interface. However, only principals with the `aiplatform.endpoints.predict` permission can send online prediction requests. You cannot make the endpoint public for anyone to send requests to, such as via a web app.
+
+In this section, you will deploy code to Cloud Functions to handle unauthenticated requests. The sample code provided in the tutorial's downloaded files contains code for this Cloud Function in the `function/` directory.
+
+To deploy the Cloud Function:
+
+1. Go to the Vertex AI section in the Google Cloud console and navigate to the Endpoints page.
+2. Locate the row of the endpoint you created earlier, named "hello_custom." In this row, click "Sample request" to open the Sample request pane.
+3. In the Sample request pane, locate the line of shell code that matches the following pattern:
+
+```
+ENDPOINT_ID="ENDPOINT_ID"
+```
+
+The `ENDPOINT_ID` is a number that identifies this specific endpoint.
+
+4. Copy this line of code and run it in Cloud Shell.
+5. After the code runs successfully, Cloud
+
+ Shell returns your endpoint's ID.
+6. Go to the Cloud Storage section in the Google Cloud console and navigate to your project's bucket.
+7. Upload the files in the `function/` directory of the tutorial's downloaded files to your Cloud Storage bucket.
+8. In Cloud Shell, set the following shell variables using the values provided:
+
+```
+BUCKET_NAME="BUCKET_NAME"
+REGION="REGION"
+ENDPOINT_ID="ENDPOINT_ID"
+```
+
+Replace "BUCKET_NAME" with the name of your Cloud Storage bucket, "REGION" with the Google Cloud region where your bucket is located, and "ENDPOINT_ID" with your endpoint's ID.
+
+9. Open the `main.py` file located in the `function/` directory of the tutorial's downloaded files.
+10. Update the value of the `PROJECT` constant with your project ID. For example:
+
+```python
+PROJECT = "your-project-id"
+```
+
+11. Update the value of the `REGION` constant with your region. For example:
+
+```python
+REGION = "us-central1"
+```
+
+12. Update the value of the `ENDPOINT` constant with your endpoint ID. For example:
+
+```python
+ENDPOINT = f"projects/{PROJECT}/locations/{REGION}/endpoints/{ENDPOINT_ID}"
+```
+
+13. Save the changes to the `main.py` file.
+14. In Cloud Shell, navigate to the `function/` directory of the tutorial's downloaded files.
+15. Deploy the Cloud Function using the following command:
+
+```
+gcloud functions deploy hello_custom --runtime python310 --trigger-http --allow-unauthenticated --region REGION
+```
+
+Replace "REGION" with the region where you want to deploy the Cloud Function, such as "us-central1."
+
+16. After the deployment completes, Cloud Shell will return a URL for the deployed Cloud Function.
+
+## Deploy a Web App to Send Prediction Requests
+
+In this section, you will host a static web app on Cloud Storage to obtain predictions from your trained ML model. The web app sends requests to the Cloud Function you deployed earlier, which preprocesses the requests and obtains predictions from the Vertex AI endpoint.
+
+To deploy the web app:
+
+1. In Cloud Shell, navigate to the `app/` directory of the tutorial's downloaded files.
+2. Open the `app.js` file located in the `app/` directory.
+3. Update the value of the `url` variable with the URL of your Cloud Function. For example:
+
+```javascript
+const url = "https://REGION-PROJECT_ID.cloudfunctions.net/hello_custom";
+```
+
+Replace "REGION" with the region where your Cloud Function is deployed, and "PROJECT_ID" with your project ID.
+
+4. Save the changes to the `app.js` file.
+5. Upload the files in the `app/` directory to your Cloud Storage bucket.
+6. In Cloud Shell, set the following shell variable using the value provided:
+
+```
+BUCKET_NAME="BUCKET_NAME"
+```
+
+Replace "BUCKET_NAME" with the name of your Cloud Storage bucket.
+
+7. Make the web app files publicly readable using the following command:
+
+```
+gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME
+```
+
+8. Open the `index.html` file located in the `app/` directory.
+9. Update the value of the `CLOUD_STORAGE_BUCKET` constant with your bucket name. For example:
+
+```javascript
+const CLOUD_STORAGE_BUCKET = "your-bucket-name";
+```
+
+10. Save the changes to the `index.html` file.
+11. Open the `app.yaml` file located in the `app/` directory.
+12. Update the value of the `BUCKET_NAME` field with your bucket name. For example:
+
+```yaml
+
+
+env_variables:
+  BUCKET_NAME: your-bucket-name
+```
+
+13. Save the changes to the `app.yaml` file.
+14. Deploy the web app using the following command:
+
+```
+gcloud app deploy --quiet
+```
+
+15. After the deployment completes, Cloud Shell will return a URL for the deployed web app.
+16. Open the URL in your web browser to view the web app.
+17. Use the web app to select an image file and click the "Predict" button. The web app sends a request to the Cloud Function, which preprocesses the request and sends it to the Vertex AI endpoint for prediction.
+18. The web app displays the predicted flower type returned by the ML model.
+</p><p><img src="https://cloud.google.com/static/vertex-ai/docs/tutorials/image-recognition-custom/webapp-screenshot_2x.png" alt="Web app with four labeled images of flowers. One has probabilities of predicted labels underneath it. Another has a loading bar underneath it."></p><p>
+
+Congratulations! You have successfully created an endpoint in Vertex AI and deployed a web app to obtain predictions from your custom image classification model. You can now explore further customization and optimization options for your ML model and deployment.
