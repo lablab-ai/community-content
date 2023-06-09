@@ -1,6 +1,7 @@
 ---
 title: "Anthropic Claude Tutorial: Building a Simple and Safe Collaborative Writing App"
-description: "How to build a simple collaborative writing app which focuses on safety, with Flask, React, Typescript and TailwindCSS"
+description: "Discover an anthropic tutorial to craft an anthropic app ensuring safe collaboration, using Flask, React, Typescript & TailwindCSS! Unique guide, non-AI style!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/06940c62-3b7d-4371-0197-4829b42bbd00/full"
 authorUsername: "septiannugraha"
 ---
  
@@ -45,8 +46,8 @@ We will be employing Flask as our backend for this application. Flask is a Pytho
 
 We're now prepared to dive into the code! First, we need to ensure our development environment is primed. This tutorial will start from the assumption of a fresh installation, so we'll begin by installing Node.js (a JavaScript runtime that allows us to run JavaScript on our server) and npm (a package manager bundled with Node.js).
 
-#### Front-End
-##### Installing Node.js and NPM
+## Front-End
+### Installing Node.js and NPM
 
 1. Download the Node.js installer for your OS from the [official site](https://nodejs.org).
 2. Follow the installation prompts to install Node.js and npm. The LTS (Long Term Support) version is recommended for most users.
@@ -58,7 +59,7 @@ node -v
 # Verify npm installation
 npm -v
 ```
-##### Installing Create React App
+### Installing Create React App
 
 Create React App (CRA) is a command-line utility that assists us in creating a new React.js application. We'll install it globally via npm:
 
@@ -66,7 +67,7 @@ Create React App (CRA) is a command-line utility that assists us in creating a n
 npm install -g create-react-app
 ```
 
-##### Creating a New React Project with Typescript
+### Creating a New React Project with Typescript
 
 We'll use CRA with the Typescript template to create a new project named `write-with-claude`.
 
@@ -76,7 +77,7 @@ npx create-react-app write-with-claude --template typescript
 
 This command creates a new directory called `write-with-claude` in our current directory, housing a new React application with Typescript support.
 
-##### Installing TailwindCSS
+### Installing TailwindCSS
 
 The steps followed in this tutorial are based on the [official Tailwind CSS documentation](https://tailwindcss.com/docs/guides/create-react-app). Refer to these docs for more up-to-date instructions.
 
@@ -114,7 +115,7 @@ Lastly, we'll add the `@tailwind` directives for each of Tailwind's layers to ou
 ```
 And voila! Tailwind CSS is now integrated into our project.
 
-##### Installing Various Libraries
+### Installing Various Libraries
 
 Before we proceed to the coding section, let's finalize our preparations by installing the necessary libraries such as `fontawesome` and `react-markdown` for the icons and rendering purposes.
 
@@ -128,8 +129,8 @@ npm install --save @fortawesome/react-fontawesome
 npm install react-markdown
 ```
 
-#### Back-End
-##### Setting Up Flask Framework
+## Back-End
+### Setting Up Flask Framework
 
 At this point, let's return to our main project directory. We'll create a new subdirectory for the backend, which we'll name `write-with-claude-backend`.
 
@@ -169,10 +170,10 @@ Great! With these installations complete, our project is now set for further dev
 
 Let's delve back into our coding section. As we will write for both our front-end and back-end codes, let's begin with the front-end first.
 
-#### Front-End
+### Front-End
 
 Let's change directory to our front-end project again. If the setup process from earlier using `create-react-app` is done successfully, we should have `App.tsx` file ready to edit. This is the only file we will edit to build our user interface, thanks to TailwindCSS which already took care of our styling, all in one place.
-##### App.tsx ⚛️
+### App.tsx ⚛️
 
 Let's begin with the most important statements in a React component, the import statements themselves! To be fair, if you use an IDE with autocomplete and auto-import features such as [Visual Studio Code](https://code.visualstudio.com) or [Webstorm by Jetbrains](https://www.jetbrains.com/webstorm/), this import statement will be automatically solved and generated. Still, it's important to make sure that we covered all grounds! We also load an animated GIF image which we will refer to as `loadingIndicator`.
 
@@ -477,7 +478,7 @@ Our `package.json` file serves as a manifest for our project, housing metadata a
   "dependencies": {
     "@anthropic-ai/sdk": "^0.4.4",
 ```
-#### index.html 🏠
+### index.html 🏠
 
 Lastly, while it's not required, updating the title of your app can serve as a charming final touch before we run it. This change updates the title displayed on the browser tab. Let's adjust the title to "Write with Claude".
 
@@ -614,7 +615,7 @@ def completion():
     return resp
 ```
 
-##### .env 🌏
+### .env 🌏
 
 Our `.env` file for the backend project only contains one variable, which is `CLAUDE_KEY`, which contains API key to access Anthropic API.
 
@@ -691,8 +692,8 @@ The AI, as expected, quotes our harmful idea about warmongering and immediately 
 
 By including this test, we highlight the importance of AI safety and showcase how our app implements measures to ensure ethical AI usage. If your AI application doesn't respect these safety guidelines, it could potentially spread or endorse harmful ideas, which is why we've prioritized this aspect in "Write with Claude."
 
-## Conclusion
+## Wrapping Up
 
-And there you have it! Through this in-depth tutorial, we've explored both the backend and frontend aspects of app development, delving into the use of AI models for collaborative writing. We've examined crucial AI safety features, showcasing Anthropic as a leading pioneer in this field. By implementing clear and strict safety guidelines, we can effectively safeguard our app from misuse, such as generating harmful content. As an added benefit, Anthropic's Claude model demonstrates impressive, human-like language proficiency, seamlessly transitioning from rejecting harmful ideas to continuing with the main topic.
+Voilà! This comprehensive anthropic tutorial navigated through both backend and frontend aspects of app development, illuminating AI-powered collaborative writing. Emphasizing crucial AI safety elements, we spotlighted Anthropic as a trailblazer in this domain. By adhering to stringent safety protocols, the anthropic app is protected against misuse, such as harmful content generation. Furthermore, Anthropic's Claude model boasts remarkable, human-like linguistic prowess, skillfully transitioning from negating harmful ideas to resuming the core topic.
 
-I want to thank you for reading this tutorial! I hope you've enjoyed it and found the coding steps as engaging as I did while developing the app and writing this guide. You can access the finished project, including both the [backend](https://github.com/septiannugraha/write-with-claude-backend) and [frontend](https://github.com/septiannugraha/write-with-claude), on my Github. See you in the next tutorial!
+Sincere thanks for joining this journey! May you find the coding steps as captivating as the experience of crafting this anthropic application! Explore the completed project on Github, featuring both the [backend](https://github.com/septiannugraha/write-with-claude-backend) and [frontend](https://github.com/septiannugraha/write-with-claude). Until the next adventure!
