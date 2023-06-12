@@ -36,7 +36,7 @@ pip install langchain openai
 
 Next, import the required components for this tutorial.
 
-```
+```python
 from langchain import LLMMathChain, SerpAPIWrapper
 from langchain.agents import AgentType, initialize_agent
 from langchain.chat_models import ChatOpenAI
@@ -51,7 +51,7 @@ Now, set up a `ChatOpenAI` object to train our AI agent using the GPT-3.5 model 
 
 Replace `your_openai_api_key` with your actual OpenAI API key:
 
-```
+```python
 llm = ChatOpenAI(temperature=0, openai_api_key="your_openai_api_key")
 ```
 
@@ -61,7 +61,7 @@ In this step, we will create a function called `add_Item` that uses the Monday.c
 
 Make sure to replace `your_monday_com_api_key` with your actual Monday.com API key:
 
-```
+```python
 url = "https://api.monday.com/v2"
 
 headers = {
@@ -87,7 +87,7 @@ def add_Item(query: str) -> str:
 
 Now, define a Tool that uses the `add_Item` function to add items to Monday.com. This Tool can be used by the AI agent we will create later:
 
-```
+```python
 tools = [
     Tool.from_function(
         func=add_Item,
@@ -101,15 +101,15 @@ tools = [
 
 It's time to initialize the AI agent with the tools we prepared earlier. We'll use the `initialize_agent` function to create an AI agent capable of performing our desired action:
 
-```
+```python
 agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
 ```
 
 ### 8. Testing the Agent with Adding Items to Monday.com 
 
-Finally, to test our AI agent, we'll run the following command that instructs the agent to add a new item with the name "buy peanut butter (api test)" to Monday.com:
+Finally, to test our AI agent, we'll run the following command that instructs the agent to add a new item with the name "buy peanut butter" to Monday.com:
 
-```
+```python
 agent.run("add buy peanutbutter to monday.com")
 ```
 
@@ -127,7 +127,7 @@ With this, you have successfully created a conversational AI agent that can add 
 
 Remember to replace `your_openai_api_key` and `your_monday_com_api_key` with your corresponding API keys, and update the `board_id` and `group_id` in the `add_Item` function as necessary to match your specific Monday.com configuration.
 
-You could now add more tools to create boards, delete items or much much more! Check out the [Monday API docs](https://developer.monday.com/apps/docs/mondayapi) for fore functionalities. The [API Playground](https://monday.com/developers/v2/try-it-yourself) is also great to test out your ideas.
+You could now add more tools to create boards, delete items or much much more! Check out the [monday API docs](https://developer.monday.com/apps/docs/mondayapi) for fore functionalities. The [API Playground](https://monday.com/developers/v2/try-it-yourself) is also great to test out your ideas.
 
 ## Ready to flex your skills?
 
