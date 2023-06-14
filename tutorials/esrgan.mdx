@@ -1,8 +1,10 @@
 ---
-title: "AI art prompt guide: How to improve the resolution of images with AI"
-description: "This tutorial is showing step by step how to use ESRGAN to improve the resolution of your images."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-title.png"
+title: "Esrgan tutoroial: how to improve the resolution of AI images"
+description: "Unearth the secrets of ESRGAN in our captivating tutorial, guiding you step by step to upscale AI images, enhancing resolution and refining visual quality effortlessly."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f549db0-5cad-4ecc-cbf5-69a429406900/full"
 ---
+
+## What is ESRGAN?
 
 Enhanced Super-Resolution Generative Adversarial Networks (ESRGAN) is a kind of the GAN model. The main idea of the GANs models is to prepare two neural networks, which are playing a game together. Players are the generator and the discriminator. The first of them is generating data, the second has to check if a photo is real or fake. 
 
@@ -25,7 +27,7 @@ Nevertheless, you can use whatever you want!
 ### Notebook
 ESRGAN needs GPU with a large memory capacity, so in the tutorial, I use [Google Colab](https://research.google.com./colaboratory/). In which you can change **Runtime type**, click **Runtime**  and choose **GPU** in **Hardware accelerator**. 
  
- ### Repository 
+### Repository 
  
 Now we need to clone the repository with implemented ESRGAN 
 
@@ -153,27 +155,19 @@ If you want to copy the image to your google cloud write
 ```python
 !sudo cp -r /content/PyTorch-GAN/implementations/esrgan/images/outputs/sr-name_of_image.jpg /content/drive/MyDrive/
 ```
-## Conclusion
 
-The idea of GAN models is amazing, two neural networks play together to be better in every epoch -`Use a neural network to teach a neural network`. 
-The GAN models have more and more types, one of them is used in the tutorial ESRGAN. These neural networks are prepared to work with images and make them better.
-This is a powerful model, but it also needs a lot of computing power. Below you can see the results after 5 epochs and 10 000 training data. They are not ideal, but if you run your training process for much more epochs the results will be awesome! Just try it!
+## Wrapping Up
 
-I hope you like my tutorial!
+GAN models astoundingly employ neural networks to teach each other for continuous improvement. Among these, ESRGAN, showcased in this tutorial, focuses on image enhancement. Despite its power, it does require substantial computing resources. As demonstrated, the results after 5 epochs and 10,000 training data might not be perfect, but with more epochs, you'll witness incredible outcomes!
 
-Stay tuned for future tutorials!
+Explore the fascinating world of [AI apps](https://lablab.ai/apps) developed during AI hackathons for inspiration, and enjoy this captivating ESRGAN journey!
+
+Stay tuned for more exciting [AI tutorials](https://lablab.ai/t)!
 
 **Thank you!** - [Adrian Banachowicz](https://www.linkedin.com/in/adrian-banachowicz/), Data Science Intern in [New Native](https://newnative.ai/)
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/GAN-results-5-epoch.png" />
 
-
-
-
 esrgan is released under a CC-BY-NC-ND-4.0 [license](https://github.com/leverxgroup/esrgan/blob/master/LICENSE). 
 ESRGAN - https://arxiv.org/abs/1809.00219   
 author - Xintao Wang, Ke Yu, Shixiang Wu, Jinjin Gu, Yihao Liu, Chao Dong, Chen Change Loy, Yu Qiao, and Xiaoou Tang.
-
-
-
-
