@@ -1,25 +1,17 @@
 ---
-title: "OpenAI Whisper tutorial: Whisper - Transcription and diarization (speaker identification)"
-description: "How to use OpenAIs Whisper to transcribe and diarize audio files."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/whisper%20transcription%20and%20diarization.png"
+title: "OpenAI Whisper tutorial: how to create speaker identification app"
+description: "Master speaker identification with our OpenAI Whisper tutorial, showcasing the art of transcribing and diarizing audio files effortlessly – uniquely designed for you!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/94e57a13-e401-4996-19eb-d30ad5d64300/full"
 authorUsername: "ezzcodeezzlife"
 ---
 
-## What is Whisper?
+## Discovering OpenAI Whisper
 
-Whisper is an State-of-the-Art speech recognition system from OpenAI that has been trained on 680,000 hours 
-of multilingual and multitask supervised data collected from the web. This large and diverse 
-dataset leads to improved robustness to accents, background noise and technical language. In 
-addition, it enables transcription in multiple languages, as well as translation from those 
-languages into English. OpenAI released the models and code to serve as a foundation for building useful
-applications that leverage speech recognition.
+[Whisper](https://lablab.ai/tech/openai/whisper), a revolutionary speech recognition system by OpenAI, has been fine-tuned with 680,000 hours of multilingual, multitask supervised data gathered from the web. This extensive dataset enhances resilience to accents, background noise, and specialized language. Whisper transcribes in numerous languages and even translates into English. OpenAI offers models and codes to form the backbone for valuable, speech recognition-based applications.
 
-One big downside of Whisper is though, that it can not tell you who is speaking in a conversation.
-That's a problem when analyzing conversations. This is where diarization comes in. Diarization is 
-the process of identifying who is speaking in a conversation.
+However, Whisper has difficulty identifying speakers in a conversation. Diarization, the process of determining speaker identity, is crucial for conversation analysis. In this [OpenAI Whisper tutorial](https://lablab.ai/t/tech/openai/whisper), learn to recognize speakers and align them with Whisper transcriptions using `pyannote-audio`. Let's dive in!
 
-In this tutorial you will learn how to identify the speakers, and then match them with the transcriptions of Whisper.
-We will use `pyannote-audio` to accomplish this. Let's get started!
+## Let's dive in!
 
 ### Preparing the audio
 
@@ -30,7 +22,7 @@ To download the video and extract the audio, we will use `yt-dlp` package.
 !pip install -U yt-dlp
 ```
 
-We will also need [ffmpeg](https://www.wikihow.com/Install-FFmpeg-on-Windows) installed
+We will also need [ffmpeg](https://www.wikihow.com/Install-FFmpeg-on-Windows) installed.
 
 ```bash
 !wget -O - -q  https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | xz -qdc| tar -x
@@ -285,6 +277,14 @@ print(s)
 
 You can take a look at the results [here](https://majdoddin.github.io/lexicap.html) or view the complete [code as notebook](https://github.com/lablab-ai/Whisper-transcription_and_diarization-speaker-identification-/blob/main/transcribtion_diarization.ipynb)
 
-**Thank you** for reading. If you enjoyed this tutorial you can find more and continue reading 
-[on our tutorial page](https://lablab.ai/t/) - [Fabian Stehle](https://github.com/ezzcodeezzlife), 
+## Where can I use this knowledge?
+
+Well, the first thing which comes to my mind would be an [Whisper app](https://lablab.ai/apps/tech/openai/whisper) you could build during [AI hackathon](https://lablab.ai/event) with other like-minded people from all around the world. Then apply to [New Native's slingshot program](https://nextgrid.ai/ai-startup-accelerator/) to accelerate your project to a new level. And then... put it on the market and solve one of the world's problems with AI.
+
+The second one would be to keep the skills you learned to yourself and put the project on the shelf and let others change the world and fix its problems. This one I don't recommend, but there is such an option.
+
+During lablab.ai's AI Hackathons over 54 000 people from all around the world and with different fields of expertise created over 900 prototypes and this number grows with every week's AI hackathon. Join the biggest community of AI builders and make a difference!
+
+**Thank you** for reading. If you enjoyed this tutorial you can find more dedicated  
+[AI tutorials](https://lablab.ai/t/) to help you grow in a field of AI- [Fabian Stehle](https://github.com/ezzcodeezzlife), 
 Junior Data Scientist at [New Native](https://newnative.ai/)
