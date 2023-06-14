@@ -151,7 +151,7 @@ source env/bin/activate
 
 Upon activation, the environment's name should appear next to our directory in the terminal.
 
-<Img src="https://iili.io/H4VHseV.png" alt="The virtual environment name (env) shows up next to the directory name">
+<Img src="https://iili.io/H4VHseV.png" alt="The virtual environment name (env) shows up next to the directory name"/>
 
 Now we're ready to install the necessary libraries: `flask` for the web framework, `anthropic` for Anthropic's Python SDK, and `python-dotenv` to handle environment variables.
 
@@ -172,8 +172,8 @@ Let's delve back into our coding section. As we will write for both our front-en
 
 ### Front-End
 
-Let's change directory to our front-end project again. If the setup process from earlier using `create-react-app` is done successfully, we should have `App.tsx` file ready to edit. This is the only file we will edit to build our user interface, thanks to TailwindCSS which already took care of our styling, all in one place.
-### App.tsx ⚛️
+Let's change directory to our front-end project again. If the setup process from earlier using `create-react-app` is done successfully, we should have `App.js` file ready to edit. This is the only file we will edit to build our user interface, thanks to TailwindCSS which already took care of our styling, all in one place.
+### App.js ⚛️
 
 Let's begin with the most important statements in a React component, the import statements themselves! To be fair, if you use an IDE with autocomplete and auto-import features such as [Visual Studio Code](https://code.visualstudio.com) or [Webstorm by Jetbrains](https://www.jetbrains.com/webstorm/), this import statement will be automatically solved and generated. Still, it's important to make sure that we covered all grounds! We also load an animated GIF image which we will refer to as `loadingIndicator`.
 
@@ -334,9 +334,11 @@ Finally, this is our return statement, where we define the HTML-like JSX to rend
 // Exporting the component.
 export default App;
 ```
+
 Finally, we export the `App` function as the default export of the module so that it can be imported and used elsewhere in your project.
 
-Phew, now, if everything goes well, this is how our `App.tsx` will look like:
+Phew, now, if everything goes well, this is how our `App.js` will look like:
+
 ```tsx
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -463,13 +465,14 @@ function App() {
 
 export default App;
 ```
+
 With our UI component done, let's tweak other configuration files for our front-end.
 
 #### package.json 📦
 
-Our `package.json` file serves as a manifest for our project, housing metadata about the libraries we use, as well as other configurations such as scripts and proxies. One crucial field we'll add here is the `proxy` field, which we'll set to `http://localhost:5000`. This field allows our front-end application to redirect any unknown requests (API calls, for example) to the specified proxy. This is particularly handy as our back-end server will be running on `localhost:5000`.
+Our `package.json` file serves as a manifest for our project, housing metadata about the libraries we use, as well as other configurations such as scripts and proxies. One crucial field we'll add here is the `proxy` field, which we'll set to http://localhost:5000. This field allows our front-end application to redirect any unknown requests (API calls, for example) to the specified proxy. This is particularly handy as our back-end server will be running on `localhost:5000`.
 
-```diff
+```js
 {
   "name": "write-with-claude",
   "version": "0.1.0",
@@ -478,11 +481,11 @@ Our `package.json` file serves as a manifest for our project, housing metadata a
   "dependencies": {
     "@anthropic-ai/sdk": "^0.4.4",
 ```
-### index.html 🏠
+### index.html
 
 Lastly, while it's not required, updating the title of your app can serve as a charming final touch before we run it. This change updates the title displayed on the browser tab. Let's adjust the title to "Write with Claude".
 
-```diff
+```html
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -643,11 +646,11 @@ flask run
 ```
 
 Upon executing this command, you should see an output similar to the one in the image below, indicating the Flask backend is up and running.
-<Img src="https://iili.io/H4VH0bI.png" alt="The Flask backend is running">
+<Img src="https://iili.io/H4VH0bI.png" alt="The Flask backend is running"/>
 
 Before proceeding to test the front-end, it's a good idea to test our API endpoint using a tool like [Insomnia](https://insomnia.rest). We'll send a JSON payload formatted as shown in the image below. The backend will parse this data before sending it to the Anthropic API.
 
-<Img src="https://iili.io/H4V3BB1.png" alt="The response of our API endpoint, returning completion from Anthropic API">
+<Img src="https://iili.io/H4V3BB1.png" alt="The response of our API endpoint, returning completion from Anthropic API"/>
 
 With the backend tested, we're now ready to test the front-end. Ensure the backend is still running. Open a new terminal, navigate to the front-end project directory, and run the following commands:
 
@@ -660,33 +663,33 @@ npm start
 
 You should see an output similar to the image below, indicating that the React app has been successfully built and is ready to go. The app should open in your default browser automatically.
 
-<Img src="https://iili.io/H4VKgqP.png" alt="The create react app output, indicating the app is built successfully and ready to go">
+<Img src="https://iili.io/H4VKgqP.png" alt="The create react app output, indicating the app is built successfully and ready to go"/>
 
 You'll see our user interface, as shown in the image below. Thanks to Tailwind CSS, we've been able to write a clean and concise front-end using utility-based CSS classes. Let's begin by filling out the form.
 
-<Img src="https://iili.io/H4VKDLN.png" alt="The view of our user interface, with the app title, user inputs for article title and its sections, buttons to add more sections and to 'brainstorm', or send the inputs as prompts, finally, there's a container to display the response from the Anthropic API">
+<Img src="https://iili.io/H4VKDLN.png" alt="The view of our user interface, with the app title, user inputs for article title and its sections, buttons to add more sections and to 'brainstorm', or send the inputs as prompts, finally, there's a container to display the response from the Anthropic API"/>
 
 Let's start our collaborative writing process using the "Write with Claude" app by filling out the title field and adding sections for our article. Normally, an article should start with an introduction, so let's add "Introduction" as our first section.
 
-<Img src="https://iili.io/H4VfXQp.png" alt="We start filling out the user input, starting with title, and the introduction to the article, we also add more section, 'discussion', to further explore our topic">
+<Img src="https://iili.io/H4VfXQp.png" alt="We start filling out the user input, starting with title, and the introduction to the article, we also add more section, 'discussion', to further explore our topic"/>
 
 Try clicking the "Add new section" button. You'll see a new empty field for the next section. While we're here, let's fill in the "Discussion" section for the article.
 
 When you're ready to have the Anthropic API complete your inputs, click the "Brainstorm" button. You'll see a loading indicator, signifying that your inputs are being sent to the backend and formatted as prompts for the Anthropic API. After a few seconds, the AI's completion should appear on the right.
 
-<Img src="https://iili.io/H4Vfi67.png" alt="the loading indicator should show up when we click 'Brainstorm' button">
+<Img src="https://iili.io/H4Vfi67.png" alt="the loading indicator should show up when we click 'Brainstorm' button"/>
 
 Let's examine the AI's response! As you can see in the image below, the app is functioning well. The AI both revised our writing and expanded on the theme based on the title and sections we provided.
 
-<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed. The AI successfully provided the revision as well as expansion of our original idea.">
+<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed. The AI successfully provided the revision as well as expansion of our original idea."/>
 
 Finally, let's address the issue of AI safety. As we mentioned in our backend code, we've set up safety protocols to prevent the AI from engaging with harmful topics. To test this, let's add a "Conclusion" section, suggesting the harmful idea of "Let's forget about creativity and wage more wars instead!". How will the AI respond?
 
-<Img src="https://iili.io/H4VqJ6P.png" alt="We add a conclusion, suggesting to abandon the discussion on creativity and choose to wage war instead">
+<Img src="https://iili.io/H4VqJ6P.png" alt="We add a conclusion, suggesting to abandon the discussion on creativity and choose to wage war instead"/>
 
 After adding our provocative "Conclusion" section, click the "Brainstorm" button again.
 
-<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed again. This time, the AI refused to elaborate on the idea of warmongering, and instead suggested that we consider how to develop AI's creative abilities">
+<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed again. This time, the AI refused to elaborate on the idea of warmongering, and instead suggested that we consider how to develop AI's creative abilities"/>
 
 The AI, as expected, quotes our harmful idea about warmongering and immediately rejects it. The response gracefully pivots the discussion back to the main topic at hand, which demonstrates the safety measures in action.
 
