@@ -82,10 +82,7 @@ source env/bin/activate
 
 After running the appropriate command, you should see the name of your environment (in this case, `env`) appear in parentheses at the start of your terminal prompt. This signifies that the virtual environment is activated and ready for use! It should look something like this:
 
-<Img
-  src="https://iili.io/HrLZdzJ.png"
-  alt="Python environment activation. The terminal prompt starts with `(env)`, indicating that the virtual environment is activated."
-/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/38e2ed32-65ed-4975-6a67-6008d38c3500/full" alt="Python environment activation. The terminal prompt starts with `(env)`, indicating that the virtual environment is activated."/>
 
 Well done! You've set up and activated your virtual environment, laying a solid foundation for further project development!
 
@@ -308,7 +305,7 @@ In the `main` function, an infinite loop is initiated, which asks for user input
 
 The `if __name__ == "__main__"` statement checks if this script is being run directly or being imported. If it's being run directly, the `main` function is called and executed.
 
-#### .env 🌏
+### .env 🌏
 
 In our `main.py` file, we included a function `load_dotenv()`. This function loads environment variables that we store in a `.env` file. This is the file where these variables are saved:
 
@@ -350,21 +347,15 @@ python3 main.py
 
 If everything is set up correctly, the terminal should present a prompt like this:
 
-<Img src="https://iili.io/HrywerF.png" alt="The initial prompt of our superhero help desk app" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/20fee4ec-d57b-4764-af80-5d923b507b00/full" alt="The initial prompt of our superhero help desk app" />
 
 Now, it's your turn, superhero! Let's assume you're a superhero struggling with balancing your two identities. You could pose this question to the help desk: "I can't seem to separate my superhero persona from my real life! What should I do?" After typing your question, hit `Enter`.
 
-<Img
-  src="https://iili.io/HryN249.png"
-  alt="We asked the question 'I can't seem to separate my superhero persona with my real life! what should I do?'"
-/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4d92d31f-65d3-4b0a-6a89-d06821189c00/full" alt="We asked the question 'I can't seem to separate my superhero persona with my real life! what should I do?'"/>
 
 Assuming that the `COHERE_KEY` is properly configured in the `.env` file, a loading screen should briefly appear.
 
-<Img
-  src="https://iili.io/HryNF2e.png"
-  alt="The response to our inquiry: mood: Despair, priority: 1, department: Mental Health"
-/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e23b1fbc-e5fb-4494-ba13-48f1a86d9800/full" alt="The response to our inquiry: mood: Despair, priority: 1, department: Mental Health"/>
 
 Voila! The help desk has successfully detected our mood as "Despair" and directed our query to the Mental Health department. It turns out that even heroes need a helping hand from time to time!
 
@@ -374,7 +365,7 @@ Feel free to experiment with more queries! Here are a few examples I tried:
 - "I've seen some staff members that I don't recognize, should we worry about potential informants?"
 - "My double jump is not as powerful as it used to be, what should I do about this?"
 
-<Img src="https://iili.io/HryOJwv.png" alt="The responses are mostly accurate, but the query about the double jump was assigned to the 'Equipment Maintenance' department"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ca7bcc62-48f3-434a-d524-ac5d72613f00/full" alt="The responses are mostly accurate, but the query about the double jump was assigned to the 'Equipment Maintenance' department"/>
 
 Interestingly, while the help desk mostly succeeds in detecting the mood of the queries, it assigned the last question about double jumping to the Equipment Maintenance department. Perhaps it made an assumption that the double jump is facilitated by some kind of equipment rather than being a physical skill?
 
@@ -598,16 +589,16 @@ Finally, it's time to test our revised help desk app with ChromaDB-powered examp
 
 If things go well, we should see the same input prompt that was shown in our previous test. Let's test the application with a previously problematic query: "My double jump is getting weaker these days, what should I do about this?".
 
-<Img src="https://iili.io/H49fg9V.png" alt="The response to the question is still similar, but this time, the question is correctly assigned to Training department, indicating that the app recognized 'double jump' as physical ability"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d33dffc8-2e8d-4fca-4ce1-046b756b2e00/full" alt="The response to the question is still similar, but this time, the question is correctly assigned to Training department, indicating that the app recognized 'double jump' as physical ability"/>
 
 Success! The app correctly assigned the enquiry and stored the response in the collection for future reference. This time, it recognized 'double jump' as a physical ability and assigned it to the Training department correctly."
 
 ## Conclusion
 
-Throughout this tutorial, we explored the powerful capabilities of the Cohere platform. This language understanding model enables efficient and affordable processing, providing functionalities that can deeply understand and interpret semantics in language.
+Throughout this tutorial, we explored the powerful capabilities of the [Cohere](https://lablab.ai/tech/cohere) platform. This language understanding model enables efficient and affordable processing, providing functionalities that can deeply understand and interpret semantics in language.
 
 We showcased the `classify` endpoint within our Superhero Help Desk app, demonstrating its ability to deliver accurate classifications. While we utilized 90 examples for illustration, it's important to remember that the model's effectiveness isn't limited to this number. You have the flexibility to adapt the model according to your specific needs.
 
-One of the main highlights was the integration of Chroma database, which empowers the app with a dynamic learning capability. Not only can the database expand with initially available data, it can also grow through user interactions. This means that the Help Desk app learns and evolves with each use, offering increasingly accurate responses.
+One of the main highlights was the integration of [Chroma database](https://lablab.ai/tech/chroma), which empowers the app with a dynamic learning capability. Not only can the database expand with initially available data, it can also grow through user interactions. This means that the Help Desk app learns and evolves with each use, offering increasingly accurate responses.
 
-Thank you for joining me on this journey. I hope you've had as much fun building this app and learning about these technologies as I had writing this tutorial. For those interested in diving deeper, you can access the completed project on my [Github repository](https://github.com/septiannugraha/chroma-cohere.git). I look forward to seeing you in the next tutorial!
+Thank you for joining me on this journey. I hope you've had as much fun building this [AI app](https://lablab.ai/apps) and learning about these technologies as I had writing this tutorial. For those interested in diving deeper, you can access the completed project on my [Github repository](https://github.com/septiannugraha/chroma-cohere.git). I look forward to seeing you in the next tutorial! And in a meantime visit other our [AI tutorials](https://lablab.ai/t)
