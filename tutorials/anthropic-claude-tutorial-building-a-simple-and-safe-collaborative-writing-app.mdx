@@ -11,7 +11,7 @@ authorUsername: "septian_adi_nugraha408"
 
 In the burgeoning era where AI not only gains more power but also becomes more prevalent, prioritizing safety and ethical considerations in building and operating our AI-powered applications is of utmost importance.
 
-Anthropic, a leading research organization in the field of AI, has developed a model named Claude, focusing specifically on safety. Recognizing the significant influence AI will have in the coming decade, they argue for the necessity of understanding how to render such systems safe and aligned with human values.
+[Anthropic](https://lablab.ai/tech/anthropic), a leading research organization in the field of AI, has developed a model named Claude, focusing specifically on safety. Recognizing the significant influence AI will have in the coming decade, they argue for the necessity of understanding how to render such systems safe and aligned with human values.
 
 ### Introducing React and TailwindCSS
 
@@ -151,7 +151,7 @@ source env/bin/activate
 
 Upon activation, the environment's name should appear next to our directory in the terminal.
 
-<Img src="https://iili.io/H4VHseV.png" alt="The virtual environment name (env) shows up next to the directory name"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cb5d59e6-b97f-4287-db71-1e146d10bf00/full" alt="The virtual environment name (env) shows up next to the directory name"/>
 
 Now we're ready to install the necessary libraries: `flask` for the web framework, `anthropic` for Anthropic's Python SDK, and `python-dotenv` to handle environment variables.
 
@@ -468,7 +468,7 @@ export default App;
 
 With our UI component done, let's tweak other configuration files for our front-end.
 
-#### package.json 📦
+### package.json 📦
 
 Our `package.json` file serves as a manifest for our project, housing metadata about the libraries we use, as well as other configurations such as scripts and proxies. One crucial field we'll add here is the `proxy` field, which we'll set to http://localhost:5000. This field allows our front-end application to redirect any unknown requests (API calls, for example) to the specified proxy. This is particularly handy as our back-end server will be running on `localhost:5000`.
 
@@ -517,11 +517,11 @@ Lastly, while it's not required, updating the title of your app can serve as a c
 
 Note: In the diff blocks above, `++` denotes additions while `--` represents deletions.
 
-#### Back-End
+### Back-End
 
 Let's change directory to our backend project, and start creating a Python file called `app.py`, which is our backend file run by Flask later on, an `.env` file to store our Anthropic API key, and finally, generate our `requirements.txt`.
 
-##### app.py
+### app.py
 
 Let's begin by importing all the necessary libraries.
 
@@ -626,7 +626,7 @@ Our `.env` file for the backend project only contains one variable, which is `CL
 CLAUDE_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxx
 ```
 
-##### requirements.txt 📄
+### requirements.txt 📄
 
 The last step of our coding involves recording the list of libraries we use into a file called `requirements.txt`. Thankfully, this process can be done by the `pip` command. Make sure we have our virtual environment activated, and then run this command:
 ```bash
@@ -637,7 +637,7 @@ pip install -r requirements.txt
 ```
 That's it! Now other users will be able get started quickly with running our project by installing the libraries listed in our file, using a simple command too!
 
-### Testing the App
+## Testing the App
 
 Now, let's move on to the exciting part, testing our application! We'll start by running our Flask backend with the following command:
 
@@ -646,11 +646,11 @@ flask run
 ```
 
 Upon executing this command, you should see an output similar to the one in the image below, indicating the Flask backend is up and running.
-<Img src="https://iili.io/H4VH0bI.png" alt="The Flask backend is running"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/200ba55d-62d7-4799-9a67-ba35c02d1200/full" alt="The Flask backend is running"/>
 
 Before proceeding to test the front-end, it's a good idea to test our API endpoint using a tool like [Insomnia](https://insomnia.rest). We'll send a JSON payload formatted as shown in the image below. The backend will parse this data before sending it to the Anthropic API.
 
-<Img src="https://iili.io/H4V3BB1.png" alt="The response of our API endpoint, returning completion from Anthropic API"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fab83ed2-b588-4546-8ecb-2a9f47499800/full" alt="The response of our API endpoint, returning completion from Anthropic API"/>
 
 With the backend tested, we're now ready to test the front-end. Ensure the backend is still running. Open a new terminal, navigate to the front-end project directory, and run the following commands:
 
@@ -663,33 +663,33 @@ npm start
 
 You should see an output similar to the image below, indicating that the React app has been successfully built and is ready to go. The app should open in your default browser automatically.
 
-<Img src="https://iili.io/H4VKgqP.png" alt="The create react app output, indicating the app is built successfully and ready to go"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8de8f166-8268-4ab5-b889-1aee78d2ab00/full" alt="The create react app output, indicating the app is built successfully and ready to go"/>
 
 You'll see our user interface, as shown in the image below. Thanks to Tailwind CSS, we've been able to write a clean and concise front-end using utility-based CSS classes. Let's begin by filling out the form.
 
-<Img src="https://iili.io/H4VKDLN.png" alt="The view of our user interface, with the app title, user inputs for article title and its sections, buttons to add more sections and to 'brainstorm', or send the inputs as prompts, finally, there's a container to display the response from the Anthropic API"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/17920522-991b-4b63-0714-50ac384e4200/full" alt="The view of our user interface, with the app title, user inputs for article title and its sections, buttons to add more sections and to 'brainstorm', or send the inputs as prompts, finally, there's a container to display the response from the Anthropic API"/>
 
 Let's start our collaborative writing process using the "Write with Claude" app by filling out the title field and adding sections for our article. Normally, an article should start with an introduction, so let's add "Introduction" as our first section.
 
-<Img src="https://iili.io/H4VfXQp.png" alt="We start filling out the user input, starting with title, and the introduction to the article, we also add more section, 'discussion', to further explore our topic"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/87a9e8d8-2f8d-436f-0de3-5443a720a800/full" alt="We start filling out the user input, starting with title, and the introduction to the article, we also add more section, 'discussion', to further explore our topic"/>
 
 Try clicking the "Add new section" button. You'll see a new empty field for the next section. While we're here, let's fill in the "Discussion" section for the article.
 
 When you're ready to have the Anthropic API complete your inputs, click the "Brainstorm" button. You'll see a loading indicator, signifying that your inputs are being sent to the backend and formatted as prompts for the Anthropic API. After a few seconds, the AI's completion should appear on the right.
 
-<Img src="https://iili.io/H4Vfi67.png" alt="the loading indicator should show up when we click 'Brainstorm' button"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7571cc57-e380-49b8-adb2-a231cfac2500/full" alt="the loading indicator should show up when we click 'Brainstorm' button"/>
 
 Let's examine the AI's response! As you can see in the image below, the app is functioning well. The AI both revised our writing and expanded on the theme based on the title and sections we provided.
 
-<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed. The AI successfully provided the revision as well as expansion of our original idea."/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a947dc48-e6d2-411e-3fac-b4396ad42100/full" alt="the response from Anthropic Claude API is displayed. The AI successfully provided the revision as well as expansion of our original idea."/>
 
 Finally, let's address the issue of AI safety. As we mentioned in our backend code, we've set up safety protocols to prevent the AI from engaging with harmful topics. To test this, let's add a "Conclusion" section, suggesting the harmful idea of "Let's forget about creativity and wage more wars instead!". How will the AI respond?
 
-<Img src="https://iili.io/H4VqJ6P.png" alt="We add a conclusion, suggesting to abandon the discussion on creativity and choose to wage war instead"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0aa220cd-b20e-4e20-f724-55687c534f00/full" alt="We add a conclusion, suggesting to abandon the discussion on creativity and choose to wage war instead"/>
 
 After adding our provocative "Conclusion" section, click the "Brainstorm" button again.
 
-<Img src="https://iili.io/H4Vftyb.png" alt="the response from Anthropic Claude API is displayed again. This time, the AI refused to elaborate on the idea of warmongering, and instead suggested that we consider how to develop AI's creative abilities"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d195c9ad-10d5-4558-624d-60524d1c3f00/full" alt="the response from Anthropic Claude API is displayed again. This time, the AI refused to elaborate on the idea of warmongering, and instead suggested that we consider how to develop AI's creative abilities"/>
 
 The AI, as expected, quotes our harmful idea about warmongering and immediately rejects it. The response gracefully pivots the discussion back to the main topic at hand, which demonstrates the safety measures in action.
 
@@ -697,6 +697,6 @@ By including this test, we highlight the importance of AI safety and showcase ho
 
 ## Wrapping Up
 
-Voilà! This comprehensive anthropic tutorial navigated through both backend and frontend aspects of app development, illuminating AI-powered collaborative writing. Emphasizing crucial AI safety elements, we spotlighted Anthropic as a trailblazer in this domain. By adhering to stringent safety protocols, the anthropic app is protected against misuse, such as harmful content generation. Furthermore, Anthropic's Claude model boasts remarkable, human-like linguistic prowess, skillfully transitioning from negating harmful ideas to resuming the core topic.
+Voilà! This comprehensive [anthropic tutorial](https://lablab.ai/t/tech/anthropic/claude) navigated through both backend and frontend aspects of app development, illuminating AI-powered collaborative writing. Emphasizing crucial AI safety elements, we spotlighted Anthropic as a trailblazer in this domain. By adhering to stringent safety protocols, the [anthropic app](https://lablab.ai/apps/topic/anthropic) is protected against misuse, such as harmful content generation. Furthermore, Anthropic's Claude model boasts remarkable, human-like linguistic prowess, skillfully transitioning from negating harmful ideas to resuming the core topic.
 
 Sincere thanks for joining this journey! May you find the coding steps as captivating as the experience of crafting this anthropic application! Explore the completed project on Github, featuring both the [backend](https://github.com/septiannugraha/write-with-claude-backend) and [frontend](https://github.com/septiannugraha/write-with-claude). Until the next adventure!
