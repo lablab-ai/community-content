@@ -87,7 +87,7 @@ After running the appropriate command, the name of your environment (`env`) shou
 
 Here's an example of what an activated virtual environment looks like in the terminal:
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/698c1f44-05a6-4f97-b73b-05107fdda700/full" alt="A terminal prompt showing `(env)` at the start of the line, indicating that the `env` virtual environment is active.">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/698c1f44-05a6-4f97-b73b-05107fdda700/full" alt="A terminal prompt showing `(env)` at the start of the line, indicating that the `env` virtual environment is active."/>
 
 Congratulations, you've successfully set up and activated your virtual environment! Let's proceed to the next step.
 
@@ -626,15 +626,15 @@ Also, it's worth noting that while the approach used here for indexing is approp
 
 To conclude this tutorial, let's test the search capabilities of our image gallery application. Assume we've generated three distinct images using some imaginative prompts: a unicorn, a mushroom, and butterflies, as shown below.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="Image gallery showing the images of a unicorn, a mushroom and butterflies">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="Image gallery showing the images of a unicorn, a mushroom and butterflies"/>
 
 Suppose a visitor, upon seeing our vibrant unicorn image, decides to search for more horse-related images in our growing gallery. They might enter "horse" into the search bar. What do you think will happen?
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="User input 'horse' as search term and the gallery returns a picture of unicorn as first result">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/105b5a42-4511-4e5d-58ff-f69fe1bf8500/full" alt="User input 'horse' as search term and the gallery returns a picture of unicorn as first result"/>
 
 Amazingly, the application returns the unicorn image as the top result! This happens even though the term "horse" wasn't in the original prompt, which was "an unicorn on a green field". It also returns images of butterflies and a glowing mushroom. These results might seem surprising at first. However, they demonstrate how embeddings capture the semantic meaning of words, leading to nuanced search results that take into account more than just exact matches.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e4cd7a76-a91c-407a-f0fe-319f8b980600/full" alt="The backend's log showing the query results, ordered by cosine-similarity of the prompts with the search term">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e4cd7a76-a91c-407a-f0fe-319f8b980600/full" alt="The backend's log showing the query results, ordered by cosine-similarity of the prompts with the search term"/>
 
 From the application logs, you can see how the search operation works. The embeddings for the search term and the prompts are converted into vector representations. Then, the application calculates the cosine similarity between these vectors. This measure helps determine how close the vectors — and thus, the semantic meanings of the search term and the prompts — are to each other. By ordering results by cosine similarity, the application ensures that the most semantically relevant results are returned first.
 
