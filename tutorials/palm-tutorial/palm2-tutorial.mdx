@@ -1,0 +1,154 @@
+---
+title: "PaLM2 Tutorial: Create your own AI-powered Virtual Assistant"
+description: "In this tutorial, we will learn how to build AI-powered Virtual Assistant using Google's PaLM2 model. Sit back relax, and let the AI do the work for you."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+
+[PaLM2](https://lablab.ai/tech/google/palm) is next generation large language model that builds on Google’s legacy of breakthrough research in machine learning and responsible AI. It outperforms previous models, including PaLM, in various reasoning tasks such as code and math, classification, question answering, translation, and natural language generation.
+
+
+## Prerequisites
+To use Google’s PaLM2 API you should [join the waitlist](https://developers.generativeai.google/products/palm)
+To deploy our app on Streamlit, we need create an account. Go to [Streamlit](https://streamlit.io/) and create an account. It's also free! 🎉. I recommend, to use your GitHub account to create an account on Streamlit, so later you can deploy your app on Streamlit Sharing Cloud.
+
+
+## Getting Started
+
+### 0. Create a new project directory
+
+Create a new project directory and navigate to it in your terminal:
+
+```bash
+mkdir palm2-tutorial
+cd palm2-tutorial
+```
+
+Create and activate virtual environment:
+
+```bash
+MacOS/Linux:
+python3 -m venv .venv
+source venv/bin/activate
+
+Windows:
+py -3 -m venv .venv
+.venv\Scripts\activate
+```
+
+Install Streamlit and Google's PaLM API dependencies:
+
+```python
+pip install streamlit
+pip install streamlit_chat
+pip install google-generativeai
+```
+
+### 1. Create a new Streamlit app
+
+Create a new file called `app.py`. Import Streamlit and Google's PaLM API packages:
+
+
+```python
+import streamlit as st
+from streamlit_chat import message
+import google.generativeai as palm
+```
+
+Add a title to the app:
+
+```python
+st.title("PaLM Tutorial")
+```
+
+Initialize the messages state:
+
+```python
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "Say something to get started!"}]
+```
+
+Now, let's create a form to get user input and sent it to the Google’s PaLM API. We will use Streamlit's `st.form()` to create a form and `st.columns()` to create two columns. The first column will be used for user input, and the second column `Send` button.
+
+```python
+with st.form("chat_input", clear_on_submit=True):
+    a, b = st.columns([4, 1])
+
+    user_prompt = a.text_input(
+        label="Your message:",
+        placeholder="Type something...",
+        label_visibility="collapsed",
+    )
+
+    b.form_submit_button("Send", use_container_width=True)
+```
+
+Make user input at the left side of the screen, so it looks like a chat app:
+
+```python
+for msg in st.session_state.messages:
+    message(msg["content"], is_user=msg["role"] == "user")  # display message on the screen
+```
+
+Configure Google's PaLM API with your API key and get response from the API:
+
+
+```python
+if user_prompt and palm_api_key:
+
+    palm.configure(api_key=palm_api_key)  # set API key
+
+    st.session_state.messages.append({"role": "user", "content": user_prompt})
+    
+    message(user_prompt, is_user=True)
+
+    response = palm.chat(messages=[user_prompt])  # get response from Google's PaLM API
+
+    msg = {"role": "assistant", "content": response.last}  # we are using dictionary to store message and its role. It will be useful later when we want to display chat history on the screen, to show user input at the left and AI's right side of the screen.
+
+    st.session_state.messages.append(msg)  # add message to the chat history
+
+    message(msg["content"])  # display message on the screen
+```
+
+
+Optionally, implement function to clear the chat history:
+
+```python
+def clear_chat():
+    st.session_state.messages = [{"role": "assistant", "content": "Say something to get started!"}]
+
+if len(st.session_state.messages) > 1:
+    st.button('Clear Chat', on_click=clear_chat)
+```
+
+### 2. Run the app
+
+Run the app:
+
+```bash
+streamlit run app.py
+```
+
+You should see something like this:
+
+<Img src="./images/preview.png" alt="Streamlit preview" caption="Streamlit preview"/>
+
+Perfect! Now, let's deploy our app on Streamlit Sharing Cloud. Checkout [this tutorial](put link to elevenlabs and langchain tutorial that i created before it has detailed guide) for detailed guide to deploy your app on Streamlit Sharing Cloud.
+
+
+## Conclusion
+
+In this tutorial, we learned how to build AI-powered Virtual Assistant using Google's PaLM2 model. We used Streamlit to build the app, it is a great tool to build any kind of apps in seconds using pure Python.
+
+View full implementation [here](https://github.com/abdibrokhim/PaLM2-Tutorial).
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
