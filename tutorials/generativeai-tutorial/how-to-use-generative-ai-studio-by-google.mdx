@@ -1,0 +1,112 @@
+---
+title: "Generative AI Studio Tutorial: How to use Generative AI Studio by Google."
+description: "Beginner friendly tutorial on how to use Generative AI Studio by Google. Sit back, relax, and let the AI do the work for you."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+
+[Generative AI Studio](https://cloud.google.com/vertex-ai/docs/generative-ai/learn/generative-ai-studio) is a Google Cloud console tool that lets you quickly test and customize generative AI models so you can leverage their capabilities in your applications.
+
+
+## What we'll learn
+
+In this tutorial, we'll learn how to perform different tasks using Generative AI Studio, including:
+
+* Test models using prompt samples.
+* Design and save our own prompts.
+* Convert text-to-speech and speech-to-text.
+
+
+## Prerequisites
+
+* A Google Cloud account with billing enabled.
+* A Google Cloud project with the Vertex AI API enabled.
+
+If you don't have a Google Cloud account, you can [create one for free](https://cloud.google.com/free). You may also follow [this tutorial](replace with link to the lablab.ai chirp tutorial i made before, it has a complete guide for creating account and project) step-by-step guide to create a Google Cloud account and project.
+
+
+## Let's get started
+
+Go to [Generative AI Studio](https://console.cloud.google.com/vertex-ai/generative). You should see two sections in the below: `Language` and `Speech`.
+
+<Img src="./images/dashboard.png" alt="Generative AI Studio dashboard" caption="Generative AI Studio dashboard"/>
+
+
+## Language
+
+
+Let's start with the `Language` section. Click on the `Open` button to open the section.
+
+
+<Img src="./images/language.png" alt="Generative AI Studio dashboard language section" caption="Generative AI Studio dashboard language section"/>
+
+
+Here is two main sections: `Get started` and `Prompt examples`. If you want to test the model, you can use the `Prompt examples` section. If you want to design your own prompt, you can use the `Get started` section.
+
+
+Let's start with the `Get started` section. Click on the `+ Text prompt`, try to type `Generate a couple of names for my dog` and hit the `Submit` button. You should see something like this:
+
+<Img src="./images/prompt1.png" alt="Generative AI Studio dashboard first prompt" caption="Generative AI Studio dashboard first prompt"/>
+
+
+NOTE: You may also save your prompt by clicking on the `Save` button. It will be saved in the `My prompts` tab.
+
+<Img src="./images/myprompts.png" alt="Generative AI Studio dashboard my prompt" caption="Generative AI Studio dashboard my prompt"/>
+
+
+Now, let's try to use the `Prompt examples`, scroll down the page and find `Kindergarten Science Teacher` card. Click on the `Open` button to open the section.
+
+<Img src="./images/kindergarten.png" alt="Generative AI Studio dashboard ideation" caption="Generative AI Studio dashboard ideation"/>
+
+Here you can see three more windows: `Context`, `Examples` and `Responses`. 
+
+<Img src="./images/dashboard1.png" alt="Generative AI Studio dashboard ideation" caption="Generative AI Studio dashboard ideation"/>
+
+
+`Context` instructs how the model should respond. For example, “Explain this code,” specifying words the model can or cannot use, topics to focus on or avoid, or response format. Context applies each time you send a request to the model. 
+`Examples` help the model understand what an appropriate model response looks like. You can write your own example input and output or use the Test section to save a real response as an example. You can also add a prefix which will be appended to every example (for instance, “question” and “answer”).
+`Responses` shows chat between you and the model. Feel free to continue the conversation with the model. Let's ask: `Why they specifically choice these names?`. You should see something like this:
+
+
+<Img src="./images/response.png" alt="Generative AI Studio response" caption="Generative AI Studio response"/>
+
+Great! Isn't it? Feel free to try to expirement with other `Prompt examples`.
+
+
+## Speech
+
+Let's move to the `Speech` section. Click on the `Open` button to open the section.
+
+<Img src="./images/textToSpeech.png" alt="Generative AI Studio dashboard speech section" caption="Generative AI Studio dashboard speech section"/>
+
+Here you should see two tabs: `Text-to-speech` and `Speech-to-text`. 
+
+Let's start with the `Text-to-speech` tab. Enter `Beginner friendly tutorial on how to use Generative AI Studio by Google. Sit back, relax, and let the AI do the work for you.` to convert to speech and hit the `Submit` button. 
+Wait for a few seconds while the model is processing request. Then, hit the `Play` button to listen to the result. Don't foget to download it by clicking on the `Download` button we will use it right after this.
+
+<Img src="./images/downlaod.png" alt="Generative AI Studio dashboard speech downlaod result" caption="Generative AI Studio dashboard speech downlaod result"/>
+
+
+Let's move to the `Speech-to-text` tab. Click on the `Browse` button to upload the audio file we just downloaded. Wait for a few seconds while the model is processing request. Then, hit the `Submit` button to see the result. You should see something like this:
+
+<Img src="./images/speechToText.png" alt="Generative AI Studio dashboard speechToText" caption="Generative AI Studio dashboard speechToText"/>
+
+For more advanced features like support for longer audio, you can use Speech Studio, just checkout out [Chirp Tutorial](put link to chirp tutorial).
+
+
+## Conclusion
+
+Generative AI Studio by Google is a powerful tool that allows you to test and customize generative AI models for various tasks. In this tutorial, we covered how to use Generative AI Studio for language tasks, such as generating responses to prompts and designing our own prompts. Moreover, we also explored the speech capabilities, including converting text-to-speech and speech-to-text. 
+
+By following this tutorial, I hope you now have a good understanding of how to utilize Generative AI Studio models in your applications.
+
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
