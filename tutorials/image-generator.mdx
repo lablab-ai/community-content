@@ -1,23 +1,27 @@
 ---
-title: "Google Colab AI art prompt guide tutorial: How to create an image generator in a few steps"
-description: "Nowadays there are more and more image generators. I will show you how to deploy one of them."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/image-generator/title.jpg"
+title: "Google Colab tutorial: How to create your own AI image generator"
+description: "Delve into this dynamic Google Colab tutorial, mastering the art of crafting your personalized AI image generator using Stable Diffusion in a few simple steps!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d755fc9c-901e-4538-4b1a-eaf0b1854200/full"
 authorUsername: AdiAdi
 ---
 
-An image generator is an algorithm that creates images from scratch. The most common type of image generator is a graphics program, which can create images from scratch or existing images. Other types of image generators include fractal generators and random number generators.
+## Image Generators Uncovered: Crafting Visuals with AI
 
-Image generators are used in a variety of fields, including art, science, and engineering. In art, image generators can be used to create digital art, such as computer-generated 3D models or 2D images. In science, image generators can be used to create simulations or models of real-world phenomena, such as the behavior of particles in a plasma. In engineering, image generators can be used to create designs for products or structures.
+Image generators are sophisticated algorithms designed to produce visuals from a blank canvas. The most prevalent type of image generator is a graphics program that can create or modify images. Others include fractal and random number generators.
 
-Image generators are not limited to creating images from scratch. They can also be used to modify existing images. For example, an image generator can be used to add color to a black-and-white image or to remove blemishes from a digital photo.
+These innovative tools have broad applications across art, science, and engineering. Artists employ them to craft digital art like 3D models or 2D visuals, while scientists use them for simulating real-world phenomena, such as particle behavior. Engineers leverage image generators for designing products or structures.
 
-Image generators can be used for both personal and commercial purposes. Many image generators are available for free on the Internet, while others are available for purchase.
+In addition to generating new images, these tools can manipulate existing ones, like adding color to monochrome pictures or refining digital photos.
 
-# Diffusers
+Numerous image generators cater to both personal and commercial use, with some available for free online or for purchase, making it easy to harness their power and versatility.
+
+### Diffusers
 
 [Suraj Patil](https://huggingface.co/valhalla), [Pedro Cuenca](https://huggingface.co/pcuenq), [Nathan Lambert](https://huggingface.co/natolambert), and [Patric von Platen](https://huggingface.co/patrickvonplaten) create great image generator. You can find the paper [here](https://arxiv.org/abs/2112.10752). In this tutorial, I will show you how you can use it. Please read about license [here](https://bigscience.huggingface.co/blog/the-bigscience-rail-license).
 
 In this tutorial, we will use [Google Colab](https://colab.research.google.com). This platform allows using good GPU. To do it you have to click Runtime, then change Runtime type, and choose GPU.
+
+### Let's go!
 
 In the beginning we are going to connect our [Google Colab](https://colab.research.google.com) with our Google Drive, to do that use
 ```python
@@ -88,7 +92,6 @@ More information you can find [here](https://huggingface.co/CompVis/stable-diffu
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/image-generator/koty.png" />
 
-
 If your purpose is to create images with the shape 300x300px you can generate images with bigger resolution and then resize them.
 
 ```python
@@ -107,8 +110,12 @@ In the end, you can copy your folder to your Google Drive.
 !sudo cp -r '/content/Saved data' /content/drive/MyDrive/
 ```
 
-Stay tuned for future tutorials!
+## The AI journey doesn't end here!
+
+Why would you stop here? Why not build an [AI app](https://lablab.ai/apps) using image generations and many other models? Why not an app that will change the audio into an image? And many more!
+
+With AI potential is limitless! Let's explore it together! And stay tuned for future [AI tutorials](https://lablab.ai/t)!
+
 The Colab of this code can check [here](https://colab.research.google.com/drive/16gjNv67X0V_7qTB_doQJkir4gBi2BJWa?usp=sharing).
 
 **Thank you!** - [Adrian Banachowicz](https://www.linkedin.com/in/adrian-banachowicz/), Data Science Intern in [New Native](https://newnative.ai/)
-

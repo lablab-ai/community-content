@@ -1,18 +1,13 @@
 ---
 title: "OpenAI Whisper tutorial: Creating OpenAI Whisper API in a Docker Container"
-description: "In this tutorial you will learn how to create an API for OpenAI's Whisper in a Docker container."
-image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/whisper-api-flask-docker.png"
+description: "Dive into our engaging OpenAI Whisper tutorial and master crafting Whisper APIs within Docker containers for cutting-edge voice applications!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a8cce19-2b49-4f10-97b1-bbf630bb2800/full"
 authorUsername: Flafi
 ---
 
-## What is Whisper?
+## Discover Whisper: OpenAI's Premier Speech Recognition System
 
-Whisper is an automatic State-of-the-Art speech recognition system from OpenAI that has been trained on 680,000 hours 
-of multilingual and multitask supervised data collected from the web. This large and diverse 
-dataset leads to improved robustness to accents, background noise and technical language. In 
-addition, it enables transcription in multiple languages, as well as translation from those 
-languages into English. OpenAI released the models and code to serve as a foundation for building useful
-applications that leverage speech recognition. 
+[Whisper](https://lablab.ai/tech/openai/whisper) is a groundbreaking speech recognition system by [OpenAI](https://lablab.ai/tech/openai), expertly crafted from 680,000 hours of web-sourced multilingual and multitask data. This expansive dataset empowers Whisper with unparalleled resilience to accents, background noise, and technical jargon. It also supports transcription in numerous languages, facilitating seamless translations into English. OpenAI provides access to Whisper models and codes, serving as a solid foundation for ingenious developers to build ingenious OpenAI Whisper applications and propel the speech recognition domain to new heights.
 
 ## How to start with Docker
 1. First of all if you are planning to run the container on your local machine you need to have Docker installed.
@@ -41,6 +36,7 @@ EXPOSE 5000
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 ```  
 ### So what is happening exactly in the Dockerfile?
+
 1. Choosing a python 3.10 slim image as our base image.
 2. Creating a working directory called `python-docker`
 3. Copying our requirements.txt file to the working directory
@@ -107,7 +103,7 @@ def handler():
     return {'results': results}
 ```
 
-## How to run the container?
+### How to run the container?
 1. Open a terminal and navigate to the folder where you created the files.
 2. Run the following command to build the container:
 
@@ -120,7 +116,7 @@ docker build -t whisper-api .
 docker run -p 5000:5000 whisper-api
 ```
 
-## How to test the API?
+### How to test the API?
 1. You can test the API by sending a POST request to the route `http://localhost:5000/whisper` with a file in it. Body should be form-data.
 2. You can use the following curl command to test the API:
 
@@ -134,7 +130,9 @@ This API can be deployed anywhere where Docker can be used. Just keep in mind th
 If you want to use GPU you need to change Dockerfile and share the GPU. I won't go into this deeper as this is an introduction.
 [Docker GPU](https://docs.docker.com/config/containers/resource_constraints/)
 
+And why not give spin to what you;ve learned during our upcoming [AI Hackathons](https://lablab.ai/event)?
+
 You can find the whole code [here](https://github.com/lablab-ai/whisper-api-flask)
 
 **Thank you** for reading! If you enjoyed this tutorial you can find more and continue reading 
-[on our tutorial page](https://lablab.ai/t/)
+our [AI tutorials](https://lablab.ai/t/).
