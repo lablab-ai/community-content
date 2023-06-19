@@ -46,11 +46,9 @@ These capabilities make LangChain a powerful and user-friendly platform for harn
 ### Outline
 
 1. Initializing the Project
-2. Setting Up the Required Libraries
+2. Building the Front-End for an AI Assistant App with Claude and LangCHain
 3. Writing the Project Files
-4. Testing the Help Desk App
-5. Setting Up Chroma Database
-6. Testing the Help Desk App
+4. Testing the AI Assistant App
 
 ## Discussion
 
@@ -129,13 +127,10 @@ And that's it! You've successfully initialized a Flask project and created a sim
 
 3. **Add environment variables**: Open the `.env` file in your favorite code editor and add your environment variables. Each variable should be on a new line, in the format KEY=VALUE:
 
-   ```text
-   # API KEY for your Anthropic API service
+   ```
    ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxx
-   # API KEY for SerpAPI service
    SERPAPI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
-   As the .env file suggest, you need to have both API key for [Anthropic Claude](https://console.anthropic.com/chat) model and [SerpAPI service](https://serpapi.com), which we'll use for making web search.
 
 4. **Load environment variables**: Modify your `main.py` file to load the environment variables from the `.env` file using `python-dotenv`. Update your `main.py` as follows:
 
@@ -165,11 +160,11 @@ And that's it! You've successfully initialized a Flask project and created a sim
 Now, your Flask project is set up to use environment variables from the `.env` file. You can add more variables as needed and access them using `os.environ.get('KEY')`. Remember to keep the `.env` file private and never commit it to version control.
 
 
-#### Building the Front-End for an AI Assistant App with Claude and LangChain
+### Building the Front-End for an AI Assistant App with Claude and LangChain
 
 This tutorial is designed for intermediate users who have a basic understanding of Node.js, npm, React, and Typescript. We'll be using a stack that includes these technologies, along with Tailwind CSS for styling. This stack was chosen for its robustness, versatility, and the strong community support for these technologies. In addition, we'll be integrating Anthropic's Claude model and LangChain, two powerful AI technologies that will allow our app to generate accurate, human-like text responses.
 
-##### Installing Node.js and NPM
+#### Installing Node.js and NPM
 
 1. Download the Node.js installer for your OS from the [official site](https://nodejs.org).
 2. Follow the installation prompts to install Node.js and npm. The LTS (Long Term Support) version is recommended for most users.
@@ -180,9 +175,9 @@ node -v
 npm -v
 ```
 
-##### Setting Up the Project Environment
+#### Setting Up the Project Environment
 
-###### Installing Create React App
+##### Installing Create React App
 
 [Create React App (CRA)](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) is a command-line utility that assists us in creating a new React.js application. We'll install it globally via npm:
 
@@ -190,7 +185,7 @@ npm -v
 npm install -g create-react-app
 ```
 
-###### Creating a New React Project with Typescript
+##### Creating a New React Project with Typescript
 
 We'll use CRA with the Typescript template to create a new project named `ai-assistant-claude`.
 
@@ -200,9 +195,9 @@ npx create-react-app ai-assistant-claude --template typescript
 
 This command creates a new directory called `ai-assistant-claude` in our current directory, housing a new React application with Typescript support.
 
-##### Integrating TailwindCSS
+#### Integrating TailwindCSS
 
-###### Installing TailwindCSS
+##### Installing TailwindCSS
 
 The steps followed in this tutorial are based on the [official Tailwind CSS documentation](https://tailwindcss.com/docs/guides/create-react-app). Refer to these docs for more up-to-date instructions.
 
@@ -213,7 +208,7 @@ npm install -D tailwindcss
 npx tailwindcss init
 ```
 
-###### Configuring Template Paths
+##### Configuring Template Paths
 
 Next, we configure our template paths by adding them to the `tailwind.config.js` file. The `++` signifies the lines you'll be adding:
 
@@ -231,7 +226,7 @@ module.exports = {
 }
 ```
 
-###### Adding Tailwind Directives
+##### Adding Tailwind Directives
 
 Lastly, we'll add the `@tailwind` directives for each of Tailwind's layers to our `./src/index.css` file:
 
@@ -243,11 +238,11 @@ Lastly, we'll add the `@tailwind` directives for each of Tailwind's layers to ou
 
 And voila! Tailwind CSS is now integrated into our project.
 
-##### Installing Required Libraries
+#### Installing Required Libraries
 
 Before we proceed to the coding section, let's finalize our preparations by installing the necessary libraries such as `fontawesome`, `react-markdown`, `axios`, and `react-hook-form`.
 
-###### Installing FontAwesome for Icons
+##### Installing FontAwesome for Icons
 
 ```bash
 npm i --save @fortawesome/fontawesome-svg-core
@@ -255,7 +250,7 @@ npm install --save @fortawesome/free-solid-svg-icons
 npm install --save @fortawesome/react-fontawesome
 ```
 
-###### Installing React Markdown for Rendering Markdown Content
+##### Installing React Markdown for Rendering Markdown Content
 
 ```bash
 npm install --save react-markdown
@@ -275,7 +270,7 @@ If you run into any issues during installation or setup, here are a few common s
 
 For any other issues, consult the documentation of the respective libraries or post your issues on StackOverflow or relevant GitHub repositories.
 
-#### Writing the Project Files
+### Writing the Project Files
 
 In this section, we'll go back to the Flask app we initialized earlier and add new endpoints, such as `/ask` and `/search`. These will serve as the endpoints for our simple chat and advanced chat features (the latter being powered by Google search results).
 
@@ -306,9 +301,9 @@ app = Flask(__name__)
 
 The above section imports all the necessary packages and initializes our Flask application.
 
-##### Developing the Backend
+#### Developing the Backend
 
-###### Creating the Basic Endpoints
+##### Creating the Basic Endpoints
 
 We will start by creating a basic endpoint (`/`) to test if our server is running correctly:
 
@@ -320,7 +315,7 @@ def hello_world():
 
 By visiting the root URL, we should receive the response "Hello, World!", indicating that our server is running as expected.
 
-###### Creating the `/ask` Endpoint
+##### Creating the `/ask` Endpoint
 
 This endpoint processes messages for the basic chat feature of our application. It reads JSON data from the request, processes the messages, and generates a response using the Anthropic's Claude model and LangChain.
 
@@ -389,7 +384,7 @@ After generating the response, we replace newlines in the result and return it a
     return jsonify({"status": "success", "message": result})
 ```
 
-###### Creating the `/search` Endpoint
+##### Creating the `/search` Endpoint
 
 The `/search` endpoint is similar to `/ask` but includes search functionality to provide more detailed responses. We use the `SerpAPIWrapper` to add this feature.
 
@@ -451,7 +446,7 @@ if __name__ == '__main__':
     app.run()
 ```
 
-###### Testing the Backend
+##### Testing the Backend
 
 Should everything goes well, here's our final backend code.
 
@@ -620,9 +615,9 @@ Let's test our `/ask` endpoint to notice the difference.
 
 This time, it answered using our past conversations as added context! By now we realized that we need both of the endpoints to build our AI Assistant app. But how do we incorporate both the outdated but always remember `/ask` endpoint with the forgetful but thorough and up-to-date `/search` endpoint? By building the front-end, of course!
 
-##### Developing the Frontend
+#### Developing the Frontend
 
-###### App.tsx
+##### App.tsx
 
 Let's navigate back to the `ai-assistant-claude` project directory. In this project, we'll start modifying our React components, beginning with the entry point file, `App.tsx`.
 
@@ -645,7 +640,7 @@ export default App;
 
 In the above code snippet, we import the `ChatClient` component, which will be created in a subsequent step. We then include the `<ChatClient/>` component within a `<div>` element. This sets up the structure for our AI assistant app using React components.
 
-###### ChatClient.tsx
+##### ChatClient.tsx
 
 ```typescript
 import React, { useState } from 'react';
@@ -740,7 +735,7 @@ export const ChatClient: React.FC = () => {
 
 This component serves as the primary user interface for our AI assistant. As shown, it incorporates a `ChatHistory` component to display the conversation history and a `ChatInput` component for inputting text. The component processes input from the `ChatInput` component, sends requests to the backend using this input, and then displays a loading status. If the request is successfully processed, the component will also show the response received from the backend.
 
-###### ChatHistory.tsx
+##### ChatHistory.tsx
 
 ```typescript
 import React from 'react';
@@ -791,7 +786,7 @@ export const ChatHistory: React.FC<ChatHistoryProps> = ({ messages, isLoading })
 
 Fortunately, TailwindCSS offers built-in utility classes for simple animations, such as `animate-pulse`. This class elegantly helps indicate that a request is awaiting a response. In this component, we also differentiate the positioning of messages from the "user" and the "assistant."
 
-###### ChatInput.tsx
+##### ChatInput.tsx
 
 ```typescript
 import React, { useState } from 'react';
@@ -841,7 +836,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSimpleChat, onAdvancedCh
 ```
 Lastly, we added two buttons to our text input. The first button is used to send the input to the `/ask` endpoint, which processes the input using the AI model without any additional enhancements. This endpoint is context-aware. The second button, aptly named "Ask and Search," sends the input to the `/search` endpoint. In addition to processing the input via the AI model, this button also triggers an AI-driven web search if the situation requires it.
 
-###### index.html
+##### index.html
 
 ```diff
 <!DOCTYPE html>
@@ -891,7 +886,7 @@ Lastly, we added two buttons to our text input. The first button is used to send
 ```
 As a finishing touch, we update the title of our app in the `index.html` page by changing it from "React App" to "Claude AI Assistant."
 
-###### package.json
+##### package.json
 
 ```diff
 {
