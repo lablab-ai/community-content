@@ -16,7 +16,7 @@ Monday.com is a customizable web and mobile work management platform, designed t
 
 ## Setting up your Monday App
 
-First, [create a Monday.com developer account(https://auth.monday.com/users/sign_up_new?developer=true?utm_medium=affiliates&utm_source=lablabai&utm_campaign=ai_app_hackathon)] if you haven't already.
+First, [create a Monday.com developer account](https://auth.monday.com/users/sign_up_new?developer=true?utm_medium=affiliates&utm_source=lablabai&utm_campaign=ai_app_hackathon) if you haven't already.
 
 After finishing setting your account, log in to your Monday.com dashboard and press the blue button on the left panel to add a new item to your workspace. Click on "Choose from template" and then select the Product Development template. Click on "Use template".
 
@@ -48,7 +48,7 @@ cd monday-ai-prompt-template
 npm i
 ```
 
-Open your .env file and paste your [OPENAI_API_KEY(https://beta.openai.com/account/api-keys)] values.
+Open your .env file and paste your [OPENAI_API_KEY](https://beta.openai.com/account/api-keys) values.
 
 We can now start our development server running:
 
@@ -131,7 +131,7 @@ const DebugAssistant = ({ initialInput = "" }: Props): JSX.Element => {
 export default DebugAssistant;
 ```
 
-Now open the app's main page located at monday-ai-prompt-template/src/app/page.tsx [since NextJS v13(https://nextjs.org/blog/next-13)], comment out or remove <ContextExplorerExample />, and add the DebugAssistant component.
+Now open the app's main page located at monday-ai-prompt-template/src/app/page.tsx [since NextJS v13](https://nextjs.org/blog/next-13), comment out or remove <ContextExplorerExample />, and add the DebugAssistant component.
 
 ```javascript
 ...
@@ -307,7 +307,7 @@ const handleSend = useCallback(
 
 This will send the prompts to OpenAI and then make the GraphQL mutations to update the column we want.
 
-We are almost done. There is a bug on newer versions of NextJS (~13.4.x) related to [fetching requests on localhost(https://github.com/vercel/next.js/issues/44712)]. To circumvent this, open the app/api/openai/route.ts file, and add this at the end:
+We are almost done. There is a bug on newer versions of NextJS (~13.4.x) related to [fetching requests on localhost](https://github.com/vercel/next.js/issues/44712). To circumvent this, open the app/api/openai/route.ts file, and add this at the end:
 
 ```javascript
 ...
@@ -349,21 +349,8 @@ This template is using GPT3.5 (text-davinci-003 model) by default. If you want t
 
 ## 🤔 Final Thoughts
 
-We learned how to create a Monday app and connect it to an LLM through a local development server. Now, you are free to change the UI, refine the prompts and play with it as much as you want. The sky is the limit! Whenever your app is ready, you should deploy it to a production server and configure it accordingly. That is all for this tutorial, I hope it will help you navigate all the different parts of the Monday.com app framework. Feel free to reach out to me on [LinkedIn(https://www.linkedin.com/in/thedeval/)] or [Twitter(https://twitter.com/thedevalweb)] if you have any questions.
+We learned how to create a Monday app and connect it to an LLM through a local development server. Now, you are free to change the UI, refine the prompts and play with it as much as you want. The sky is the limit! Whenever your app is ready, you should deploy it to a production server and configure it accordingly. That is all for this tutorial, I hope it will help you navigate all the different parts of the Monday.com app framework. Feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/thedeval/) or [Twitter](https://twitter.com/thedevalweb) if you have any questions.
 
 And practice what you've learn here during our amazing [AI Hackathons](https://lablab.ai/event)!
 Join the AI revolution!
-Footer
-© 2023 GitHub, Inc.
-Footer navigation
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
+
