@@ -1,0 +1,639 @@
+---
+title: "AI21 Labs Tutorial: Building AI-Powered Blog Post Editor"
+description: "How to utilize various API offerings of AI21 Labs to build a AI-Powered Blog Editor App, built with ReactJS"
+authorUsername: "septiannugraha"
+---
+
+## Introduction
+
+### Introduction to AI21 Labs
+
+AI21 Labs is an AI lab and product company that is reimagining the way we read and write. Their mission is to make machines thought partners to humans, revolutionizing our interaction with technology. They focus on Natural Language Processing (NLP), a branch of artificial intelligence that enables machines to understand and generate human language. With AI21 Labs, you can integrate state-of-the-art AI capabilities into your applications, transforming both writing and reading into AI-first experiences.
+
+AI21 Labs offers a variety of tools and services, including a writing companion tool that helps users rephrase their writing, an AI reader that summarizes long documents, and AI21 Studio, a platform that provides an array of Large Language Model APIs. These APIs can be easily customized to suit the needs of your application, enabling you to add dynamic, AI-powered features to your website.
+
+### Introduction to ReactJS
+
+ReactJS, often simply called React, is a popular JavaScript library for building user interfaces, particularly for single-page applications. It's used for handling the view layer in web and mobile apps and allows you to design simple views for each state in your application.
+
+React allows developers to create large web applications that can change data, without reloading the page. The main purpose of React is to be fast, scalable, and simple. It works only on user interfaces in the application, which makes it easy to use with other programming libraries or frameworks.
+
+In this tutorial, we'll be using ReactJS to build our website's frontend, while integrating AI21 Labs' services to add AI-powered features. Whether you're a seasoned developer or just starting out, this tutorial will provide a step-by-step guide to building a website with AI21 Labs and ReactJS.
+
+### Prerequisites
+
+- Basic knowledge of Typescipt and/or React
+- Access to AI21 Labs API
+
+### Outline
+
+1. Initializing the Project
+2. Writing the Project Files
+3. Testing the AI-Powered Blog Post Editor App
+
+## Discussion
+
+### Initializing the Project
+
+##### Installing Create React App
+
+[Create React App (CRA)](https://reactjs.org/docs/create-a-new-react-app.html#create-react-app) is a command-line utility that assists us in creating a new React.js application. We'll install it globally via npm:
+
+```bash
+npm install -g create-react-app
+```
+
+##### Creating a New React Project with Typescript
+
+We'll use CRA with the Typescript template to create a new project named `ai21-blog-editor`.
+
+```bash
+npx create-react-app ai21-blog-editor --template typescript
+```
+
+This command creates a new directory called `ai21-blog-editor` in our current directory, housing a new React application with Typescript support.
+
+#### Integrating TailwindCSS
+
+##### Installing TailwindCSS
+
+The steps followed in this tutorial are based on the [official Tailwind CSS documentation](https://tailwindcss.com/docs/guides/create-react-app). Refer to these docs for more up-to-date instructions.
+
+We'll start by installing TailwindCSS and initializing the library in our project:
+
+```bash
+npm install -D tailwindcss
+npx tailwindcss init
+```
+
+##### Configuring Template Paths
+
+Next, we configure our template paths by adding them to the `tailwind.config.js` file. The `++` signifies the lines you'll be adding:
+
+```diff
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+--    content: [],
+++  content: [
+++    "./src/**/*.{js,jsx,ts,tsx}",
+++  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+##### Adding Tailwind Directives
+
+Lastly, we'll add the `@tailwind` directives for each of Tailwind's layers to our `./src/index.css` file:
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+And voila! Tailwind CSS is now integrated into our project.
+
+#### Installing Required Libraries
+
+Before we proceed to the coding section, let's finalize our preparations by installing the necessary libraries such as `dotenv`
+
+##### Installing dotenv to retrieve the environment variables
+
+```bash
+npm install dotenv
+```
+
+### Writing the Project Files
+
+#### App.tsx
+
+Great! Let's update the `App.tsx` file to set up the basic structure for our app. We'll also remove the unused logo import. Here's the updated content for `App.tsx`:
+
+```tsx
+import React from 'react';
+import './App.css';
+import BlogEditor from './BlogEditor';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>Blog Editor App</h1>
+      </header>
+      <main>
+        <BlogEditor />
+      </main>
+    </div>
+  );
+}
+
+export default App;
+```
+
+Next, let's create and update each required file one by one.
+
+#### BlogEditor.tsx
+
+Create a new file called `BlogEditor.tsx` inside the `src` folder with the following basic content:
+
+```tsx
+import React, { ChangeEvent, useEffect, useState } from "react";
+
+const BlogEditor = () => {
+    const [text, setText] = useState("");
+    const [link, setLink] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const API_KEY = process.env.REACT_APP_AI21_API_KEY;
+```
+
+##### State Variables and Constants
+
+- `text`: The current blog post text.
+- `link`: The URL for the link to summarize (if needed).
+- `loading`: A boolean indicating whether an API request is in progress or not.
+- `API_KEY`: The API key for the AI21 API.
+
+##### Event Handlers
+
+###### handleChangeText
+
+This function updates the `text` state variable when the user changes the content of the blog post textarea.
+
+```tsx
+    const handleChangeText = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        setText(e.target.value);
+    };
+```
+
+###### handleChangeLink
+
+This function updates the `link` state variable when the user changes the content of the link input field.
+
+```tsx
+    const handleChangeLink = (e: ChangeEvent<HTMLInputElement>) => {
+        setLink(e.target.value);
+    };
+```
+
+##### API Helper Functions
+
+###### handleGenerateCompletion
+
+This function sends a request to the AI21 API to generate a completion for the given prompt (`text`). It then appends the returned completion to the existing text.
+
+```tsx
+    const handleGenerateCompletion = () => {
+                setLoading(true)
+        fetch("https://api.ai21.com/studio/v1/j2-ultra/complete", {
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "prompt": text,
+                "numResults": 1,
+                "maxTokens": 200,
+                "temperature": 0.7,
+                "topKReturn": 0,
+                "topP": 1,
+                "countPenalty": {
+                    "scale": 0,
+                    "applyToNumbers": false,
+                    "applyToPunctuations": false,
+                    "applyToStopwords": false,
+                    "applyToWhitespaces": false,
+                    "applyToEmojis": false
+                },
+                "frequencyPenalty": {
+                    "scale": 0,
+                    "applyToNumbers": false,
+                    "applyToPunctuations": false,
+                    "applyToStopwords": false,
+                    "applyToWhitespaces": false,
+                    "applyToEmojis": false
+                },
+                "presencePenalty": {
+                    "scale": 0,
+                    "applyToNumbers": false,
+                    "applyToPunctuations": false,
+                    "applyToStopwords": false,
+                    "applyToWhitespaces": false,
+                    "applyToEmojis": false
+                },
+                "stopSequences": []
+            }),
+            method: "POST"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setLoading(false)
+                setText(text + data.completions[0].data.text)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error('Error:', error);
+            });
+    };
+```
+Notice that we use Jurassic2-Ultra model, the most powerful AI model AI21 Labs has to offer!
+
+###### handleFixGrammar
+
+This function sends a request to the AI21 API to correct grammatical mistakes in the text. It then updates the text with the corrected version.
+
+```tsx
+    const handleFixGrammar = () => {
+                setLoading(true)
+        fetch("https://api.ai21.com/studio/v1/gec", {
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "text": text,
+            }),
+            method: "POST"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setLoading(false)
+                let corrections = data.corrections
+                let correctedText = text;
+                corrections.forEach((curr_correction: any) => {
+                    correctedText =
+                        correctedText.slice(0, curr_correction.startIndex) +
+                        curr_correction.suggestion +
+                        correctedText.slice(curr_correction.endIndex);
+                });
+
+                setText(correctedText)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error('Error:', error);
+            });
+    };
+```
+
+###### handleParaphrase
+
+This function sends a request to the AI21 API to paraphrase the given text. It replaces the original text with the paraphrased version.
+
+```tsx
+    const handleParaphrase = () => {
+                setLoading(true)
+        fetch("https://api.ai21.com/studio/v1/paraphrase", {
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "text": text,
+            }),
+            method: "POST"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setLoading(false)
+                let suggestions = data.suggestions
+
+                setText(suggestions[0].text)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error('Error:', error);
+            });
+    };
+```
+
+###### handleImproveText
+
+This function sends a request to the AI21 API to suggest improvements to the text. It then applies the suggested improvements and updates the text accordingly.
+
+```tsx
+    const handleImproveText = () => {
+                setLoading(true)
+        fetch("https://api.ai21.com/studio/v1/improvements", {
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "text": text,
+                "types": ['fluency', 'vocabulary/specificity', 'vocabulary/variety', 'clarity/short-sentences', 'clarity/conciseness']
+            }),
+            method: "POST"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setLoading(false)
+                let improvements = data.improvements
+                improvements.sort((a: any, b: any) => b.startIndex - a.startIndex);
+
+                let improvedText = text;
+                improvements.forEach((curr_improvement: any) => {
+                    const firstSuggestion = curr_improvement.suggestions[0];
+                    improvedText =
+                        improvedText.slice(0, curr_improvement.startIndex) +
+                        firstSuggestion +
+                        improvedText.slice(curr_improvement.endIndex);
+                });
+
+                setText(improvedText)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error('Error:', error);
+            });
+    };
+```
+
+###### handleSummarizeLink
+
+This function sends a request to the AI21 API to summarize the content at the specified URL (`link`). It then sets the `text` state variable to the returned summary.
+
+```tsx
+    const handleSummarizeLink = () => {
+                setLoading(true)
+        fetch("https://api.ai21.com/studio/v1/summarize", {
+            headers: {
+                "Authorization": `Bearer ${API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "source": link,
+                "sourceType": "URL",
+            }),
+            method: "POST"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log('Success:', data);
+                setLoading(false)
+                // let suggestions = data.suggestions
+
+                setText(data.summary)
+            })
+            .catch((error) => {
+                setLoading(false)
+                console.error('Error:', error);
+            });
+    };
+```
+
+##### Render Function
+
+The render function displays the blog post editor interface, which includes a textarea for the blog post, buttons for various API actions, and an input field for the link to be summarized.
+
+```tsx
+    return (
+        <div className="flex flex-col">
+                    <p className="text-lg mt-6 self-center font-bold">Blog Post Editor, powered by AI21 API</p>
+            <div className="blog-editor p-8 bg-white rounded shadow-lg">
+                <textarea
+                    className={`blog-text-input w-full h-64 p-4 mb-4 border border-gray-300 rounded resize-none focus:outline-none focus:ring focus:border-blue-300 ${loading ? 'opacity-50' : ''}`}
+                    value={text}
+                    onChange={handleChangeText}
+                    placeholder="Write your blog post here..."
+                    disabled={loading}
+                />
+
+                {/* Loading indicator */}
+                {loading && (
+                    <div className="w-full h-64 flex items-center justify-center">
+                        <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                    </div>
+                )}
+
+                <div className="actions space-x-2 mb-4">
+                    <button
+                        className="px-3 py-1.5 bg-blue-500 text-white rounded focus:outline-none focus:ring focus:ring-blue-300"
+                        onClick={handleGenerateCompletion}
+                    >
+                        Generate Completion
+                    </button>
+                    <button
+                        className="px-3 py-1.5 bg-blue-500 text-white rounded focus:outline-none focus:ring focus:ring-blue-300"
+                        onClick={handleFixGrammar}
+                    >
+                        Fix Grammar
+                    </button>
+                    <button
+                        className="px-3 py-1.5 bg-blue-500 text-white rounded focus:outline-none focus:ring focus:ring-blue-300"
+                        onClick={handleParaphrase}
+                    >
+                        Paraphrase
+                    </button>
+                    <button
+                        className="px-3 py-1.5 bg-blue-500 text-white rounded focus:outline-none focus:ring focus:ring-blue-300"
+                        onClick={handleImproveText}
+                    >
+                        Improve Text
+                    </button>
+                </div>
+                <div className="link-section flex items-center space-x-2">
+                    <input
+                        type="text"
+                        className="link-input flex-grow p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:border-blue-300"
+                        value={link}
+                        onChange={handleChangeLink}
+                        placeholder="Insert link here..."
+                    />
+                    <button
+                        className="px-3 py-1.5 bg-blue-500 text-white rounded focus:outline-none focus:ring focus:ring-blue-300"
+                        onClick={handleSummarizeLink}
+                    >
+                        Summarize Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default BlogEditor;
+```
+
+#### .env
+
+The `.env` file is usually used to store environment variables that are necessary for your application. If you don't have any specific environment variables to include, you can leave this file empty. Otherwise, add the required variables in the following format:
+
+```
+REACT_APP_AI21_API_KEY=xxxxxxxxxxxxxx
+```
+
+#### index.css
+
+Next, we add the style necessary to animate our loading indicator.
+
+```diff
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+++@keyframes spin {
+++  0% {
+++    transform: rotate(0deg);
+++  }
+++  100% {
+++    transform: rotate(360deg);
+++  }
+++}
+++.loader {
+++  animation: spin 1s linear infinite;
+++}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+```
+
+#### index.html
+
+Update the `index.html` file located in the `public` folder to customize the title and any other meta information as needed. For example, change the title to "Blog Editor App":
+
+```diff
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+--    <title>React App</title>
+++    <title>Blog Post Editor: Powered By AI21 Labs</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
+```
+You've now updated the necessary files to get started with building your Blog Editor App. As you progress, you can add more components and functionality as needed. Don't forget to run `npm start` to test your app in the browser!
+
+### Testing the AI-Powered Blog Post Editor App
+
+Alright then! It's time to test our Blog Editor app. Let's run the app with this command:
+
+```bash
+npm start
+```
+
+Our app should run in the browser at localhost:3000, like so:
+
+<Img src="https://iili.io/HPHf1hQ.png" alt="The Blog Editor app" />
+
+
+#### Generate Completion
+
+Let's test it by writing a sentence. For example, we want to expand on the topic of "bug bounty hunting":
+
+<Img src="https://iili.io/HPHfcpj.png" alt="We type our sentence: 'The cutthroat business of bug bounty hunting'" />
+
+Type it down: "The cutthroat business of bug bounty hunting". After you're done, click the "Generate Completion" button. The loading indicator should appear while waiting for the response.
+
+<Img src="https://iili.io/HPHfEQV.png" alt="The generated completion which expands on the first sentence" />
+
+Voila! Our app generated the completion based on our initial sentence. We can further expand the topic by clicking "Generate Completion" again.
+
+#### Fix Grammar
+
+Next, let's try out the grammar fixing function. For this example, we'll intentionally enter a grammatically incorrect sentence. Let's input "I thinked about somethink but now I forgetted it".
+
+<Img src="https://iili.io/HPHfakb.png" alt="We input a grammatically incorrect sentence" />
+
+Now, click the "Fix Grammar" button!
+
+<Img src="https://iili.io/HPHf0Tx.png" alt='The "Fix Grammar" button click replaces the grammatically incorrect sentence with the correct one' />
+
+Perfect! Now we have a grammatically correct sentence that we can use further!
+
+#### Paraphrase
+
+This time, our task is slightly different. When we paraphrase, we essentially rewrite the same passage using different styles or word choices. Let's try it with another sentence. This time, we'll input "While being vegan has its upside, aversion to meat has another risk, which is deficiency of Vitamin B12".
+
+<Img src="https://iili.io/HPHfMCB.png" alt='We input our sentence "While being vegan has its upside, aversion to meat has another risk, which is deficiency of Vitamin B12"' />
+
+
+Now, click the "Paraphrase" button.
+
+<Img src="https://iili.io/HPHfW41.png" alt='The paraphrased text: "Although being vegan has its benefits, avoiding meat can lead to a risk of Vitamin B12 deficiency."' />
+
+Excellent. The AI rephrased the sentence and put emphasis on the risk associated with avoiding meat while still mentioning the benefits of being vegan.
+
+#### Improve Text
+
+Next, let's try the text improvement endpoint. This time, our goal is to create a vague or ineffective sentence which the AI will then enhance. Let's input "I think grapefruit is nice and awesome."
+
+<Img src="https://iili.io/HPHfVEP.png" alt="We input the text to be improved" />
+
+Admittedly, the current sentence isn't very well-constructed. To improve it, click the "Improve Text" button.
+
+<Img src="https://iili.io/HPHfh3F.png" alt='The improved text: "I think grapefruit is delicious and awesome."' />
+
+Notice how much better it sounds now! Indeed, using words related to taste like "refreshing" and "delicious" effectively describes the flavor of fruits, making it a more suitable choice for describing grapefruit.
+
+#### Summarize Link
+
+Finally, the last feature of our Blog Post Editor App is the link summarizer. This feature enables users to obtain summaries from webpages without resorting to text scraping or manual copying and pasting. Let's give it a try by entering the following link into the input field: https://www.hackerone.com.
+
+<Img src="https://iili.io/HPHfjYg.png" alt='We pasted the link to the HackerOne site' />
+
+Next, click the "Summarize Link" button.
+
+<Img src="https://iili.io/HPHfNyJ.png" alt='The result of the link summarization, displaying a description of HackerOne' />
+
+Impressive! We now have a summary derived directly from the linked webpage, giving us valuable information on topics we want to explore further. Utilizing these summaries as starting points, we can modify and expand upon them using other available features in the app, such as "Generate Completion".
+
+## Conclusion
+
+In this tutorial, we explored the various endpoints and APIs provided by AI21 Labs, such as "completion", "grammatical error correction (GEC)", "paraphrase", "improvement", and "summarize".
+
+What better way to utilize all these features than by building a Blog Post Editor App? Powered by AI, users of the app can enhance their writing in multiple ways: expanding upon main ideas, fixing grammatical errors, paraphrasing sentences, and improving overall phrasing.
+
+The link summarization feature serves as an excellent addition to the app. Users can leverage this feature to streamline their research, extracting summaries from links they find interesting and elaborating on them later.
+
+Thank you for reading this tutorial and following each step to build the app. I hope you enjoyed learning about what AI21 Labs has to offer and constructing the Blog Post Editor App as much as I enjoyed writing this guide. For those interested in examining the completed project further, you can access it through my [Github repository](https://github.com/septiannugraha/AI21-Blog-Editor). I look forward to sharing more tutorials with you in the future!
