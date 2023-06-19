@@ -129,10 +129,13 @@ And that's it! You've successfully initialized a Flask project and created a sim
 
 3. **Add environment variables**: Open the `.env` file in your favorite code editor and add your environment variables. Each variable should be on a new line, in the format KEY=VALUE:
 
-   ```
+   ```text
+   # API KEY for your Anthropic API service
    ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxx
+   # API KEY for SerpAPI service
    SERPAPI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
+   As the .env file suggest, you need to have both API key for [Anthropic Claude](https://console.anthropic.com/chat) model and [SerpAPI service](https://serpapi.com), which we'll use for making web search.
 
 4. **Load environment variables**: Modify your `main.py` file to load the environment variables from the `.env` file using `python-dotenv`. Update your `main.py` as follows:
 
