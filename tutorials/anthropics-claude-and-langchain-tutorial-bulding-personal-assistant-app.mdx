@@ -1,5 +1,5 @@
 ---
-title: "Anthropic's Claude and LangChain Tutorial: Bulding Personal Assistant App"
+title: "Anthropic's Claude and LangChain Tutorial: Bulding Search Powered Personal Assistant App"
 description: "How to utilize LangChain and using Anthropic's Claude model on top of it, to create Search Powered Personal Assistant AI App, built with Python and ReactJS"
 authorUsername: "septiannugraha"
 ---
@@ -42,6 +42,7 @@ These capabilities make LangChain a powerful and user-friendly platform for harn
 - Basic knowledge of Python
 - Basic knowledge of Typescipt and/or React
 - Access to Anthropic's Claude API
+- Access to SerpApi's Web Search API
 
 ### Outline
 
@@ -131,6 +132,8 @@ And that's it! You've successfully initialized a Flask project and created a sim
    ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxx
    SERPAPI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
+
+   Please note that you need to have both API key for [Anthropic's Claude](https://console.anthropic.com/chat) model and [SerpAPI](https://serpapi.com/dashboard)'s web search service.
 
 4. **Load environment variables**: Modify your `main.py` file to load the environment variables from the `.env` file using `python-dotenv`. Update your `main.py` as follows:
 
