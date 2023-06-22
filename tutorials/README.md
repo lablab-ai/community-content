@@ -25,7 +25,7 @@ In this guide you will learn how to publish tutorial pages on lablab.
    - **description**: Description of the tutorial
    - **authorUsername**: Your username on lablab.ai
 
-<Img src="https://iili.io/HPaF59p.png" alt="tutorial title, description, and author"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full" alt="tutorial title, description, and author"/>
 
 Upload images to [this service](https://freeimage.host/) and provide a like that looks like: `https://iili.io/HPaF59p.png`
 
