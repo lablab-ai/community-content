@@ -25,7 +25,9 @@ In this guide you will learn how to publish tutorial pages on lablab.
    - **description**: Description of the tutorial
    - **authorUsername**: Your username on lablab.ai
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full" alt="tutorial title, description, and author"/>
+<Img src="https://iili.io/HPaF59p.png" alt="tutorial title, description, and author"/>
+
+Upload images to [this service](https://freeimage.host/) and provide a like that looks like: `https://iili.io/HPaF59p.png`
 
 4. You can use one of our tutorial page as a template or the [template](https://github.com/lablab-ai/community-content/tree/main/tutorials/template.mdx) file in this repo to create your own tutorial page.
 5. To add image use the `<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}/>` component.
