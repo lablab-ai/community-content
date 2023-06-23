@@ -578,25 +578,25 @@ flask run
 ```
 We'll know everything is going to be fine if our terminal returns this output.
 
-<Img src="https://iili.io/H6pv0MJ.png" alt="the output of flask run command, showing the server running on localhost and port 5000" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/af469936-8225-4799-a7e2-f86fb7b0ba00/full" alt="the output of flask run command, showing the server running on localhost and port 5000" />
 
 
 Without further ado, let's test our two endpoints, `/ask` and `/search`. To distinguish between the two, let's send each of them similar payload. Open your REST API testing and documentation software, or just use cURL. But in this tutorial, I'll use [Insomnia](https://insomnia.rest).
 
 Let's first call the `/ask` endpoint with the following payload. Let's say I've asked about the sequel of the video game "The Legend of Zelda: Breath of the Wild". Which it will answer incorrectly. This is to be expected as the model has training cutoff as of the end of 2021, in which there were no announcements about the sequel yet.
 
-<Img src="https://iili.io/H6pv16v.png" alt="the result of the /ask endpoint. The answer is incorrect, which it answers with 'Breath of the Wild 2'" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/861dc543-2546-439c-c458-365707704100/full" alt="the result of the /ask endpoint. The answer is incorrect, which it answers with 'Breath of the Wild 2'" />
 
 How about the `/search` endpoint? If you notice our code from earlier, this endpoint is handled with a more sophisticated chain, which utilise Agent. By using Agent, we can give the AI more power in decision making, by providing it with more tools than just its own model, which as we already demonstrated, has its own flaws.
 
 To demonstrate how the `/search` endpoint work, let's call it with the same payload as before.
 
-<Img src="https://iili.io/H6pvGFR.png" alt="the result of the /search endpoint to our question, what is the sequel of Zelda: Breath of the Wild?" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ea7e483b-708b-4936-0777-1b06c008b000/full" alt="the result of the /search endpoint to our question, what is the sequel of Zelda: Breath of the Wild?" />
 
 
 This time, it worked nicely! How does it work under the hood? let's look at the output in our terminal.
 
-<Img src="https://iili.io/H6pvMap.png" alt="The AI agent at work, it started the 'chain' by forming a thought, considering using web search to support its answer. After that, it made the observation that the sequel of Breath of The Wild is indeed Tears of the Kingdom" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b07eda43-b406-401d-0a48-161e061ad600/full" alt="The AI agent at work, it started the 'chain' by forming a thought, considering using web search to support its answer. After that, it made the observation that the sequel of Breath of The Wild is indeed Tears of the Kingdom" />
 
 
 Interestingly enough, this time the AI model didn't answer right away, but seemed to 'ponder' about what to do to answer. It decided to answer after it made the observation from the web search result that "Based on the news search, it looks like a sequel called The Legend of Zelda: Tears of the Kingdom was announced".
@@ -605,7 +605,7 @@ So, by that logic, shouldn't we just use the `/search` endpoint then? as it is m
 
 Let's test if the `/search` endpoint can recall what we just asked it.
 
-<Img src="https://iili.io/H6pvV8N.png" alt="the /search endpoint responded incorrectly, it seemed that it didn't remember the context of the previous conversation" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/167318e1-a786-420a-c7e8-b94168a0f800/full" alt="the /search endpoint responded incorrectly, it seemed that it didn't remember the context of the previous conversation" />
 
 
 This happened because while the LangChain library has memory chain feature which can be used to retain past conversations, web server, and the REST API service built on it is inherently stateless. Which means, the web server will treat each request as a new request. 
@@ -614,7 +614,7 @@ But, haven't we included the previous conversations as payload? That's a good qu
 
 Let's test our `/ask` endpoint to notice the difference.
 
-<Img src="https://iili.io/H6pvjwX.png" alt="the /ask endpoint responded correctly, saying that we asked it about the sequel of Zelda: Breath of the Wild" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b9276abd-c3a3-4029-e40e-b2cc715f5a00/full" alt="the /ask endpoint responded correctly, saying that we asked it about the sequel of Zelda: Breath of the Wild" />
 
 This time, it answered using our past conversations as added context! By now we realized that we need both of the endpoints to build our AI Assistant app. But how do we incorporate both the outdated but always remember `/ask` endpoint with the forgetful but thorough and up-to-date `/search` endpoint? By building the front-end, of course!
 
@@ -912,23 +912,23 @@ npm start
 
 The app may take a moment to build. Once it's ready, it will automatically open in your browser at `localhost:3000`.
 
-<Img src="https://iili.io/H6pvX9I.png" alt="The UI of our assistant app" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/59ee0ad6-713e-4575-b050-47d4e5f98c00/full" alt="The UI of our assistant app" />
 
 Let's test both the context awareness and search feature! First, let's inquire about another video game whose release hasn't been announced yet in 2021 – the sequel to the latest Yakuza game by SEGA. Additionally, we'll ask if this game features the beloved character Kazuma Kiryu from previous games. To do this, click the "Ask" button.
 
-<Img src="https://iili.io/H6pvhut.png" alt="The assistant app is thinking..." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b718eb22-bd4d-43e7-b8c0-d33ca4e2f600/full" alt="The assistant app is thinking..." />
 
 Give it a few seconds to think...
 
-<Img src="https://iili.io/H6pvwtn.png" alt="The AI answered incorrectly, saying that it is Yakuza: Like A Dragon which doesn't feature Kiryu" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d9a20baa-69ed-4c55-927c-805f74d7f300/full" alt="The AI answered incorrectly, saying that it is Yakuza: Like A Dragon which doesn't feature Kiryu" />
 
 Surprisingly, the AI answered incorrectly. Yakuza: Like a Dragon is indeed the latest Yakuza game but stars a different protagonist, Ichiban Kasuga. Let's rephrase the question and use the "Ask and Search" button this time.
 
-<Img src="https://iili.io/H6pvOns.png" alt="The request took longer, but was answered correctly" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/22118a0d-25d1-4731-acef-669c115c3700/full" alt="The request took longer, but was answered correctly" />
 
 Now, the AI took longer to decide whether it needed to search the web. After determining that a web search was necessary and finding a satisfactory answer, it returned the information to the client/front-end.
 
-<Img src="https://iili.io/H6pveMG.png" alt="The thought process of the AI: it decided to make a web search using the term &quot;upcoming Yakuza games&quot; and observed the result" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b7da97cb-ef80-4ab6-22c9-502f9258bf00/full" alt="The thought process of the AI: it decided to make a web search using the term &quot;upcoming Yakuza games&quot; and observed the result" />
 
 This time, it returns the title "Like a Dragon Gaiden: The Man Who Erased His Name," which indeed features Kazuma Kiryu as the protagonist.
 
