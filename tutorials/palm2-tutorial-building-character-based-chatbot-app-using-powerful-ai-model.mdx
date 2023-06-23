@@ -1,6 +1,7 @@
 ---
 title: "PaLM2 Tutorial: Building Character-based Chatbot App using Powerful AI Model"
 description: "How to engineer prompts as building blocks for building character-based chatbot app"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/69e02346-9142-4793-c20d-e92bff93d300/full"
 authorUsername: "septiannugraha"
 ---
 
@@ -209,7 +210,7 @@ In this tutorial, we use MakerSuite to test our prompts and see the responses ge
 
 Please note that you might need to [join the waitlist](https://makersuite.google.com/app/home) if you haven't already gained access to MakerSuite. If everything's ready and you can access the home page of MakerSuite, let's get started!
 
-<Img src="https://iili.io/HPGQXwX.png" alt="the home page of MakerSuite" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d26809d3-c2dc-419f-6694-4e47a3db6900/full" alt="the home page of MakerSuite" />
 
 On the home page of MakerSuite, we'll see three main menus:
 1. Text Prompt
@@ -224,7 +225,7 @@ Let's get started composing our prompts to power our chatbot, which will take on
 
 In this section, we'll start by creating a prompt that instructs the AI to generate the details of our chatbot's character. To do this, click on the "Create" button in the "Text prompt" section on the MakerSuite home page.
 
-<Img src="https://iili.io/HPGQWut.png" alt="Text prompt input" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e8de55c7-8d5c-4571-975d-594c1cc4ee00/full" alt="Text prompt input" />
 
 In MakerSuite, a "Text Prompt" is a set of instructions that guides the AI in generating text. For our chatbot, we'll need the AI to:
 
@@ -247,17 +248,17 @@ Let's begin
 
 After typing or pasting this prompt into the input field, click the "Run" button or press CTRL + Enter.
 
-<Img src="https://iili.io/HPGQhtn.png" alt="the prompt pasted in, and the double curly brackets is processed as input variable!" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e96b07fa-1140-4789-e27c-da94ffefdb00/full" alt="the prompt pasted in, and the double curly brackets is processed as input variable!" />
 
 MakerSuite will automatically process the "character" word within the double curly brackets as an input variable. An additional table input will appear below our prompts, where we can input the character's name.
 
 For this tutorial, we'll use "Yoda" as our character. As we type the name into the "INPUT" column, the prompt will adjust accordingly.
 
-<Img src="https://iili.io/HPGQwns.png" alt="The input adjusted the overall prompt" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/43048945-ef62-4c8f-5f0f-4fb5ec176500/full" alt="The input adjusted the overall prompt" />
 
 Once we've input the character's name, we can run our prompt by clicking the "Run" button or pressing CTRL + Enter. The AI's response will appear in the "OUTPUT" column.
 
-<Img src="https://iili.io/HPGQkF4.png" alt="the AI responded by giving the examples and details surrounded by tags, as requested" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d3666ca5-2650-4c30-4d62-45555a94ff00/full" alt="the AI responded by giving the examples and details surrounded by tags, as requested" />
 
 As you can see, the AI has generated example dialogues and character details as requested, and formatted them using XML-like tags. This formatting allows us to use the AI's response programmatically, meaning we can use it as input for our code. In the next section, we'll show you how to process and extract the content of these tags, and return them in a format that's easy to use in the front-end, such as JSON.
 
@@ -435,7 +436,7 @@ Next, let's edit our `app.py` file! in this file, we will add two endpoints, whi
 
 Now, let's run our backend server. In your terminal, execute the command `flask run` (or `python app.py`, depending on your setup). If everything is configured correctly, your terminal should display an output similar to this:
 
-<Img src="https://iili.io/HPGQNMG.png" alt="the output of flask run" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/11395f96-8934-4dff-94fe-4f4d3e1f6300/full" alt="the output of flask run" />
 
 This output indicates that our server is up and running, ready to listen for incoming requests on localhost port 5000.
 
@@ -445,7 +446,7 @@ To test our endpoints, we'll use a tool called [Insomnia](https://insomnia.rest)
 
 Fire up your REST API tester, which in this case, I use Insomnia. Let's set up the JSON payload, URL, and HTTP method as shown below.
 
-<Img src="https://iili.io/HPGQOPf.png" alt="the request specification of our /detail endpoint" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e265e033-f9f1-4385-35b2-949e1e02b600/full" alt="the request specification of our /detail endpoint" />
 
 Alternatively, you can copy the following cURL command and paste it into the address bar of the endpoint in Insomnia. The software will automatically parse the payload for you.
 
@@ -457,13 +458,13 @@ curl --request POST \
 ```
 Let's try calling this endpoint! If you read our code earlier, you should probably guess that it will return the JSON of the character's bio, style, example chats, and name.
 
-<Img src="https://iili.io/HPGQvcl.png" alt="the response of our request for Yoda's character detail" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e162bee9-a614-4cb5-8c33-bd1ca85df900/full" alt="the response of our request for Yoda's character detail" />
 
 Sweet! Notice how the details are neatly arranged in the JSON response. This is impressive considering that the data is generated by an AI model, which is inherently open-ended. The power of the PaLM2 model, combined with our prompt engineering, enables us to build a service that leverages AI for creative tasks. We use standardized, predictable inputs to generate desired outputs, which are structured according to the format we declared in our JSON object.
 
 Next, let's try our `/chat` endpoint. To be fair, in a more ideal setting, we'll automatically populate the rest of the parameters in our front-end app, only requiring us to provide the character's name. For testing purposes, let's call the `/chat` endpoint using the parameters specified below.
 
-<Img src="https://iili.io/HPGQ8S2.png" alt="the parameter for our /chat endpoint" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ad85b00e-19c7-432a-d6f7-b6c051c8f200/full" alt="the parameter for our /chat endpoint" />
 
 Or, just like before, we can always use this cURL command and paste it in Insomnia.
 
@@ -475,7 +476,7 @@ curl --request POST \
 ```
 When you're ready, let's test this endpoint with the "Send" button.
 
-<Img src="https://iili.io/HPGQU9S.png" alt="the response of our /chat endpoint" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/da541943-3788-4602-96af-179ba1b44300/full" alt="the response of our /chat endpoint" />
 
 Sweet! The backend returned the chat response. However, at this point, the response doesn't quite sound like Yoda, does it? This is because the `chat` variant of the PaLM2 model heavily favors the example chats over its own training data. This is somewhat a good news, as we'll be able to complement the model with more example data to influence the output more.
 
@@ -996,27 +997,27 @@ npm start
 
 After a moment, the terminal will display an output indicating the app has successfully compiled and is ready to run. It will also automatically open the app's URL, `localhost:3000`, in your default browser.
 
-<Img src="https://iili.io/HPGQgA7.png" alt="The terminal output, indicating the app has successfully built and is ready to run" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/718e08b9-7d15-40b3-f51c-4eae04220f00/full" alt="The terminal output, indicating the app has successfully built and is ready to run" />
 
 Congratulations! Now, let's explore the user interface for our character chatbot app. It includes an input field for the character name, a display area for the chat conversation history, and an input field for the message.
 
-<Img src="https://iili.io/HPGQrN9.png" alt="The user interface for our CharBot app" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cded0db1-ade7-495c-d382-67b106489800/full" alt="The user interface for our CharBot app" />
 
 Let's input the name of our character! For this tutorial, we'll instill the character of Yoda from Star Wars into our chatbot. Type "Yoda" in the text input next to the "Set chatbot character:" label. When you're done, click the "Set" button.
 
-<Img src="https://iili.io/HPGQ4te.png" alt="Type in the name of Yoda in the input text, the bot should indicate loading" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5f9b008-2272-43ed-9bd1-f62c3d881700/full" alt="Type in the name of Yoda in the input text, the bot should indicate loading" />
 
 After a moment, the character description for Yoda will appear. Great! In this demonstration, we see how we can directly incorporate the output from an AI model into our production app, thanks to our purposefully designed prompts. We can also view the example dialogues by clicking on the "example dialogues" label.
 
-<Img src="https://iili.io/HPGQPou.png" alt="The character descriptions of Yoda, complete with the example dialogues" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5a1ccaba-9516-4a35-cb3b-1189f5e4d200/full" alt="The character descriptions of Yoda, complete with the example dialogues" />
 
 Finally, let's try chatting with the CharBot! Let's type in our greeting "Greetings, o master Yoda".
 
-<Img src="https://iili.io/HPGQiMb.png" alt="We send our greetings to our charbot" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1e69299f-9600-4188-afbc-0124bd2c8000/full" alt="We send our greetings to our charbot" />
 
 After a moment, the response from our chatbot will be returned. In my case, it responded by saying "Greetings, young one. What brings you to my humble abode?".
 
-<Img src="https://iili.io/HPGQsPj.png" alt="the response from the chatbot" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fbacdf26-f082-49b9-822f-cd8433d3d200/full" alt="the response from the chatbot" />
 
 Awesome! Even though the bot doesn't sound exactly like Yoda for now, we can later fine-tune the bot with more training data that better represents Yoda's personality. With the PaLM2 model, we're only a few training data points away from giving the bot the character according to our heart's desire.
 
