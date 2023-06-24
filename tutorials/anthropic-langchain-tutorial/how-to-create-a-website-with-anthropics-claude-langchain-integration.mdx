@@ -1,0 +1,181 @@
+---
+title: "Anthropic Claude + LangChain Tutorial: How to create a blog outline generator website with Anthropic's Claude + LangChain integration."
+description: "In this tutorial, we will learn how to create a blog outline generator website with Anthropic's Claude + LangChain integration in simple and straightforward steps."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[Anthropic's Claude](https://lablab.ai/tech/anthropic/claude) is a next-generation AI assistant based on Anthropic’s research into training helpful, honest, and harmless AI systems. Claude is capable of a wide variety of conversational and text processing tasks while maintaining a high degree of reliability and predictability. Claude can help with use cases including summarization, search, creative and collaborative writing, Q&A, coding, and more.
+Checkout [Anthropic's Claude LangChain integration](https://python.langchain.com/docs/modules/model_io/models/chat/integrations/anthropic).
+Checkout [Anthropic's Claude official documentation](https://docs.anthropic.com/claude/docs#-v1-complete).
+
+
+## What we are going to build?
+In this tutorial, we will learn how to create a blog outline generator website with Anthropic's Claude + LangChain integration in simple and straightforward steps. Sit back, relax, and let's get started!
+
+
+## Prerequisites
+To use Anthropic’s Claude API make sure you already applied for [early access](https://anthropic.com/earlyaccess), no? Let's apply now! It's free and easy.
+
+
+## Learning outcomes
+
+- How to properly use Anthropic's Claude API and integrate it with LangChain.
+- How to buld a website with Streamlit.
+- How to deploy a website to Streamlit Sharing Cloud and share it with the world.
+
+
+## Getting Started
+
+
+### Create a new project
+
+Open Visual Studio Code and create new folder named `blog-outline-generator`:
+
+
+```bash
+mkdir blog-outline-generator
+cd blog-outline-generator
+```
+
+### Create a python virtual environment and activate it
+
+Let's create a python virtual environment and activate it:
+
+```bash
+python3 -m venv venv
+
+# on MacOS and Linux:
+source venv/bin/activate
+
+# on Windows:
+venv\Scripts\activate
+```
+
+### Install dependencies
+
+Now, we need to install dependencies:
+
+```bash
+pip install langchain
+pip install streamlit
+```
+
+### 2. Create a new Streamlit app
+
+Now, we can create a new Streamlit app. Open your terminal and run the following command:
+
+```bash
+touch app.py
+```
+
+Open `app.py` file and at the top of the file, import the following packages:
+
+```python
+import streamlit as st 
+from langchain import PromptTemplate, LLMChain
+from langchain.chat_models import ChatAnthropic
+```
+
+Next, give the app a page `title` for display on the browser window and in-app:
+    
+```python
+# Configure logger
+logging.basicConfig(format="\n%(asctime)s\n%(message)s", level=logging.INFO, force=True)
+
+st.set_page_config(page_title="Anthropic's Claude + LangChain | Blog Outline Generator Website", page_icon="🦜🔗")
+
+st.title('Anthropic\'s Claude + LangChain | Blog Outline Generator Website')
+```
+
+Add custom CSS to the app:
+
+```python
+
+# Force responsive layout for columns also on mobile
+st.write(
+    """
+    <style>
+    [data-testid="column"] {
+        width: calc(50% - 1rem);
+        flex: 1 1 calc(50% - 1rem);
+        min-width: calc(50% - 1rem);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+```
+
+
+Let's add sidebar to the app for getting API Keys:
+    
+```python
+
+with st.sidebar:
+    st.session_state.anthropic_api_key = st.text_input('Anthropic API Key', )
+```
+
+We are already come to the most interesting part of this tutorial. Let's add a custom function that generates an LLM response based on the our provided "topic" of interest. As a instance of the LLM, we are using Anthropic's Claude.
+
+```python
+def blog_outline(topic):
+
+    # Initialize Anthropic's Claude LLM model
+    llm = ChatAnthropic(client=st.session_state.anthropic_api_key)
+    
+    # Prompt and query
+    template = 'As an experienced data scientist and technical writer, generate an outline for a blog about {topic}.'  # In the future, you may change prompt based on your task and requirements.
+    prompt = PromptTemplate(input_variables=['topic'], template=template)
+    query = prompt.format(topic=topic)
+    
+    # Run LLM model
+    response = llm(query)
+    return st.info(response)
+```
+
+And last but not least, `st.form()` is used as an app logic to generate the blog outline only after correctly entering the `Anthropic's Claude API Key`, filling the text box with the blog topic, and clicking the `Outline` button:
+
+
+```python
+with st.form('blogForm'):
+    prompt = st.text_input('Enter keyword:', '')
+    outline = st.form_submit_button('Outline')
+    
+    if not st.session_state.anthropic_api_key:
+        st.warning('Missed Api Key', icon='⚠')
+
+    if outline and st.session_state.anthropic_api_key:
+        blog_outline(prompt)
+```
+
+### 3. Run the app
+
+Now, we can run the app. Open your terminal and run the following command:
+
+```bash
+streamlit run app.py
+```
+
+### 4. Deploy the app to Streamlit Sharing Cloud
+
+It's time to deploy the app to Streamlit Sharing Cloud. Make sure you have created new `Github repository` and pushed your code to it.
+Once, you have pushed the changes to your Github repository, go to [Streamlit Sharing](https://streamlit.io/cloud) and sign in with your Github account. You will be redirected to the [Streamlit Sharing dashboard](https://share.streamlit.io/).
+Then, click on `New app` button, fill out the form and select your Github repository where you just pushed your changes, Click `Deploy` button and wait for a few minutes until the deployment is finished. Once, the deployment is finished, you shouls see the card with your app name, click on it and you will be redirected to your app URL. 
+That's it for today! You have successfully deployed your app to Streamlit Sharing Cloud. Congrats! 🎉 
+If you confused checkout [this tutorial](https://lablab.ai/t/elevenlabs-langchain-tutorial-how-to-create-custom-podcast-generator-streamlit-app) on how to deploy your app to Streamlit Sharing Cloud.
+
+
+## Conclusion
+
+Anthropic's Claude is one of the most powerful models, which excels at a wide range of tasks from sophisticated dialogue and creative content generation to detailed instruction. Moreover, with 100K tokens, corresponding to around 75,000 words! makes it possible to digest and analyze.
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
