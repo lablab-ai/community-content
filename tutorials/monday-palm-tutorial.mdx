@@ -1,0 +1,587 @@
+---
+title: "monday.com + PaLM2 Tutorial: Creating an AI-powered Assistant App on monday.com: A Step-by-Step Tutorial for Integrating Google Vertex PaLM API powered by PaLM2 model."
+description: "Creating an AI-powered Assistant App on monday.com: A Step-by-Step Tutorial for Integrating Google Vertex PaLM API powered by PaLM2 model."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+
+## Introduction
+[monday.com](https://monday.com/), is a cloud-based work operating system that allows users to create their own applications and project management software. Moreover, [monday.com](https://monday.com/p/about/) is an all-in-one work management platform that helps teams streamline their workflow, collaborate seamlessly, and manage complex projects effectively.
+[PaLM2](https://lablab.ai/tech/google/palm), is Google's advanced language model that excels in reasoning tasks, such as code understanding, classification, question answering, translation, and natural language generation. It improves upon previous models through optimized scaling, enhanced dataset mixture, and improved model architecture. PaLM2 is rigorously evaluated for responsible AI deployment, and it is used in various state-of-the-art models and generative AI features at Google.
+
+
+## Prerequisites
+To use Google Vertex PaLM API you should [join the waitlist](https://developers.generativeai.google/products/palm).
+
+
+## What you'll learn
+In this tutorial, you'll learn how to create an AI-powered Assistant App on monday.com using Google Vertex PaLM API powered by PaLM2 model..
+
+
+## Learning Objectives
+- How to create React App.
+- How to style App using Tailwind CSS.
+- How to create custom API using FastAPI.
+- How to work with GraphQL.
+- How to handle requests and responses.
+- How to work with pdf files.
+- How to create an App on monday.com.
+- How to integrate Google Vertex PaLM API with monday.com.
+- How to publish an App on monday.com.
+
+
+Yeah, that's a lot to cover! But don't worry, we'll go through each step together. Let's get started!
+
+
+## Time to Code and Learn!
+
+### Create a new project
+
+First thing first, let's create new folder for our project. 
+Open Visual Studio Code and create new folder named `monday-palm-tutorial` or whatever you want.
+
+
+```bash
+mkdir monday-palm-tutorial
+cd monday-palm-tutorial
+```
+
+### Create React App
+
+Now, let's create React App using `npx create-react-app` command. Open your terminal and run following command.
+
+
+```bash
+npx create-react-app monday-palm-tutorial-client
+```
+
+### Install Tailwind CSS
+
+Next, let's install Tailwind CSS using `npm install` command. Open your terminal and run following command.
+
+
+```bash
+npm install -D tailwindcss
+npx tailwindcss init
+```
+
+### Configure Tailwind CSS
+
+Next, let's configure Tailwind CSS. Open `tailwind.config.js` file and replace the old code with the following.
+
+
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{html,js}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+
+### Add Tailwind directives
+
+Next, let's add the Tailwind directives to your CSS.
+Open `src/index.css` file and replace the old code with the following.
+
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+
+## Create UI Interface
+
+Next, let's create UI Interface. Open `src/App.js` file and remove everything inside, instead copy/paste the following lines of code.
+
+```js
+import React, { useState, useEffect } from 'react';  // here we import useState and useEffect hooks from React
+
+function App() {
+  return (
+    <div className="center">
+      <header className="bg-gray-100 min-h-screen flex flex-col items-center justify-center text-white"> {/* if you see inside className is we add Tailwind CSS classes */}
+        <p className='mb-6 text-xl text-blue-600'>
+          <a 
+            href='https://monday.com'
+            className='text-blue-400 hover:text-blue-300'
+            target='_blank'
+            rel="noopener"
+            >monday.com</a>
+          {' '}
+          AI Assistant
+        </p>
+        <div className="flex flex-col gap-4">
+        </div>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+```
+
+We can say that we have finished first steps of UI Interface. Now, let's implement the logic of our App.
+
+Inside the App component, we will use `useState` hook to store the state of our App. We will use `useEffect` hook to fetch data from monday.com API. And create a function to handle the request and response from monday.com API.
+
+
+```js
+const [selectedBoard, setSelectedBoard] = useState('');
+const [boardOptions, setBoardOptions] = useState([]);
+
+
+    useEffect(() => {
+        handleBoards();
+    }, []);
+
+
+    const handleBoards = () => {
+        let query = 'query { boards { id name }}';  // GraphQL query to fetch boards
+
+        fetch("https://api.monday.com/v2", {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'your_api_key' // replace with your actual API key
+        },
+        body: JSON.stringify({
+            'query': query
+        })
+        })
+        .then(res => res.json())
+        .then(res => {
+            const options = res.data.boards.map(board => ({
+            value: board.id,
+            label: board.name
+            }));
+            setBoardOptions(options);  // set board options > [{value: 'board_id', label: 'board_name'}]
+        });
+    };
+
+    const handleBoardDropdownChange = (event) => {
+        setSelectedBoard(event.target.value);
+    };
+```
+
+Next, create dropdown menu to select specific board. `onChange` event handler will call `handleBoardDropdownChange` function to set the selected board and `value` attribute will set the selected board.
+
+
+```js
+            <select
+                value={selectedBoard}
+                onChange={handleBoardDropdownChange}
+                className="p-2 bg-white text-gray-800 rounded-md border-2 border-gray-400 outline-none text-sm"
+            >
+                <option value="">Select a board</option>
+                {boardOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                    {option.label}
+                </option>
+                ))}
+            </select>
+```
+
+Let's test our App. Open your terminal and run following command.
+
+```bash
+npm start
+```
+
+If everything is working fine, you should see the following result.
+
+<Img src="https://iili.io/HiJP2fe.png" alt="App preview" caption="App preview"/>
+
+
+Cool! Now, let's continue implementing other stuff.
+
+Now, create a function to handle files from selected `Board`. NOTE: If Bord are not selected, it will be empty as `useEffect` will not be triggered.
+
+```js
+const [selectedItem, setSelectedItem] = useState('');
+const [itemOptions, setItemOptions] = useState([]);
+
+    useEffect(() => {
+        handleItems();
+    }, [selectedBoard]);
+
+    const handleItems = () => {
+        if (selectedBoard) {
+        let query = `query {
+            boards (ids: ${selectedBoard}) {
+            items {
+                id
+                name
+            }
+            }
+        }`;
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'your_api_key'
+            },
+            body: JSON.stringify({
+            'query': query
+            })
+        })
+            .then(res => res.json())
+            .then(res => {
+            const options = res.data.boards[0].items.map(item => ({
+                value: item.id,
+                label: item.name
+            }));
+            setItemOptions(options);
+            });
+        }
+    };
+
+    const handleItemDropdownChange = (event) => {
+        setSelectedItem(event.target.value);
+    };
+
+```
+
+Next, we will create dropdown menu to select specific item. `onChange` event handler will call `handleItemDropdownChange` function to set the selected item and `value` attribute will set the selected item.
+
+```js
+            <select
+                value={selectedItem}
+                onChange={handleItemDropdownChange}
+                className="p-2 bg-white text-gray-800 rounded-md border-2 border-gray-400 outline-none text-sm"
+            >
+                <option value="">Select an item</option>
+                {itemOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                    {option.label}
+                </option>
+                ))}
+            </select>
+```
+
+Now, create a function to handle files from selected `Board` and `Item`. NOTE: If Bord and Item are not selected, it will be empty as `useEffect` will not be triggered.
+
+
+```js
+
+const [selectedFile, setSelectedFile] = useState('');
+const [fileOptions, setFileOptions] = useState([]);
+
+    useEffect(() => {
+        handleFiles();
+    }, [selectedBoard && selectedItem]);
+
+    const handleFiles = () => {
+        if (selectedBoard && selectedItem) {
+        let query = `query {
+            boards(ids: ${selectedBoard}) {
+            items(ids: ${selectedItem}) {
+                column_values {
+                id
+                title
+                text
+                }
+            }
+            }
+        }`;
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'your_api_key'
+            },
+            body: JSON.stringify({
+            'query': query
+            })
+        })
+            .then(res => res.json())
+            .then(res => {
+            const options = res.data.boards[0].items[0].column_values
+                .filter(column => column.id === 'files')
+                .map(column => ({
+                value: column.id,
+                label: column.title,
+                source: column.text
+                }));
+                setFileOptions(options);
+            });
+        }
+    };
+
+    const handleFileDropdownChange = (event) => {
+        setSelectedFile(event.target.value);
+    };
+
+```
+
+Create another dropdown menu to select specific file. `onChange` event handler will call `handleFileDropdownChange` function to set the selected file and `value` attribute will set the selected file's path.
+
+
+```js
+            <select
+                value={selectedFile}
+                onChange={handleFileDropdownChange}
+                className="p-2 bg-white text-gray-800 rounded-md border-2 border-gray-400 outline-none text-sm"
+            >
+                <option value="">Select a file</option>
+                {fileOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                    {option.source}
+                </option>
+                ))}
+            </select>
+```
+
+Create a function to handle text.
+
+```js
+const [prompt, setPrompt] = useState('');
+
+    const handlePromptChange = (event) => {
+        setPrompt(event.target.value);
+    };
+```
+
+Create a simple textarea to enter text.
+
+```js
+            <textarea
+                value={prompt}
+                onChange={handlePromptChange}
+                className="p-2 bg-white text-gray-800 rounded-md border-2 border-gray-400 outline-none text-sm"
+                placeholder="Enter your text..."
+            ></textarea>
+```
+
+As a next step, create a function to handle button click. This function will call our custom API endpoint that passes the user input data and selected file.
+
+```js
+    const handleButtonClick = () => {
+    
+        fetch("http://0.0.0.0:8000/get_response", {  // our custom API endpoint. Don't worry we will create it in the next step. You may also declare without host and port numbers for that you need to add proxy in package.json file. Open package.json file and add "proxy": "http://0.0.0.0:8000" after "private": true
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ prompt, selectedFile }),
+            })
+            .then((response) => {
+                if (response.ok) {
+                return response.json();
+                } else {
+                throw new Error("Request failed with status: " + response.status);
+                }
+            })
+            .then((data) => {
+                // Handle the API response
+                console.log("date:", data);
+                // Update the result state
+                setResult(data);
+            })
+            .catch((error) => {
+                // Handle any errors
+                console.error(error);
+        });
+    };
+```
+
+Create a button to trigger the function.
+
+```js
+            <button
+                onClick={handleButtonClick}
+                className="p-2 bg-blue-500 text-white rounded-md text-sm"
+            >
+                Get Result
+            </button>
+```
+
+Next, let's create another textarea to display the result from the API.
+
+```js
+const [result, setResult] = useState('');
+
+
+            <textarea
+                value={result}
+                readOnly
+                className="p-2 bg-gray-100 text-gray-800 rounded-md border-2 border-gray-400 outline-none text-sm"
+                placeholder="Result will appear here..."
+            ></textarea>
+
+```
+
+
+
+Let's test it again to make sure everything is working as expected.
+Open your terminal and run the following command to start the frontend server:
+
+```bash
+npm start
+```
+
+You should see the following screen:
+
+<Img src="https://iili.io/HiJP30u.png" alt="App preview 2" caption="App preview 2"/>
+
+
+Feel free to play around with the App and test it out. Try to select different boards, items, and files to see how the App behaves.
+
+
+Perfect! We have now completed the frontend of our App. Let's move on to the backend.
+
+
+## Create a Custom API Endpoint (FastAPI)
+
+In this section, we will create a custom API endpoint using `FastAPI`. This endpoint will be used to send the prompt and file to the `Google Vertex PaLM API` and return the response.
+
+First, let's create a new folder called `backend` inside the `monday-palm-tutorial` folder. Then, open the `backend` folder in your code editor.
+
+Next, let's create a new file called `api.py` inside the `backend` folder. This file will contain the code for our custom API endpoint.
+
+```bash
+touch api.py
+```
+
+Open the `api.py` file in your code editor and add the following code:
+
+```python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import palm  # our custom module that does all the heavy lifting
+
+app = FastAPI()
+
+origins = ['*']  # Configure CORS to allow all origins (only for development purposes)
+
+# Configure CORS to allow all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")  # just a simple endpoint to test if the API is working (we can say as a default endpoint)
+async def read_root():
+    return {"message": "Hello World"}
+
+
+@app.post("/get_response")  # decorator to tell FastAPI which endpoint to call when we send a POST request to /get_response
+def get_response(prompt: str, file_name: str):
+    return palm.get_response(prompt, file_name)  # we will implement this function right after this
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # you may change the host and port numbers if you want, but don't forget to change them in the frontend as well.
+
+```
+
+Let's create a new file called `palm.py` inside the `backend` folder. This file will contain the code that will send the prompt and file to the `Google Vertex PaLM API` and return the response.
+First, we need to donwload the file. Let's create a function:
+
+
+```python
+def download_pdf(url, file_name):
+    import requests
+
+    r = requests.get(url, stream=True)
+
+    with open(file_name, 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+
+    return file_name
+```
+
+Next, let's create a function that reads the file and returns the content:
+
+
+```python
+def read_pdf(file) -> str:
+    _data = ""
+
+    pdfReader = PyPDF2.PdfReader(file)
+
+    pages = len(pdfReader.pages)
+
+    for i in range(pages):
+
+        page = pdfReader.pages[i]
+
+        t = page.extract_text()
+
+        _data += t
+
+    return _data
+```
+
+And finally, let's create a function that sends the prompt and file to the `Google Vertex PaLM API` and returns the response:
+
+```python
+def get_response(query, file_path):
+
+    d_pdf = download_pdf(file_name="test.pdf", url=file_path)  # download the file
+
+    _pdf = read_pdf(d_pdf)  # read the file
+
+    vertexai.init(project="your_project_id", location="us-central1")  # replace with your project id
+
+    parameters = {
+        "temperature": 0.2,
+        "max_output_tokens": 256,
+        "top_p": 0.8,
+        "top_k": 40
+    }
+
+    model = TextGenerationModel.from_pretrained("text-bison@001")  # you may choose a different model
+
+    response = model.predict(
+        _pdf + '\n\n' + query,
+        **parameters
+    )
+
+    print(f"Response from Model: {response.text}")
+
+    return response.text
+```
+
+
+Now, let's test our API endpoint. Open your terminal and run the following command to start the backend server:
+
+```bash
+python3 api.py
+```
+
+You should see the following screen:
+
+<Img src="https://iili.io/HiJPFUb.png" alt="Api preview" caption="Api preview"/>
+
+
+We have now completed the backend of our App.
+
+Congratulations! We have now completed the full-stack App. Checkout [monday.com + Stable Diffusion Tutorial](paste link here) to learn in detail how to publish your App on monday.com.
+
+
+## Conclusion
+
+View full implementation [here is Source Code](https://github.com/abdibrokhim/monday.com-Palm_Tutorial).
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
+
