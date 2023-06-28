@@ -1,0 +1,314 @@
+---
+title: "AutoGPT Tutorial: How to create an app with AutoGPT."
+description: "A quick guide on how to create an app with AutoGPT."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[AutoGPT](https://news.agpt.co/) is a powerful and open source autonomous AI for `automating` almost everything. 
+
+
+## Prerequisites
+Go to [OpenAI](https://openai.com/) and create an account. If you already have an account, click top right corner on your `profile picture` > `View API Keys` > `Create new secret key` name it `OpenAI API Key` and copy/save it for later.
+
+
+## Let's Get started
+
+
+### Setting up the project
+
+Create new folder and environment for our project.
+
+```bash
+mkdir autogpt-tutorial
+cd autogpt-tutorial
+
+MacOS/Linux:
+python3 -m venv .venv
+
+Windows:
+py -3 -m venv .venv
+```
+
+Activate the environment.
+    
+```bash 
+
+MacOS/Linux:
+source .venv/bin/activate
+
+Windows:
+.venv\Scripts\activate
+```
+
+Install Flask
+
+Within the activated environment, install Flask by typing the following command:
+
+```bash
+pip install Flask
+```
+
+Now, create a file called `app.py` and add the following code. This is a minimal Flask application:
+
+```python
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+```
+
+Run the application with the following command:
+
+```bash
+python app.py
+```
+
+Tap `CTRL`/`CMD` and click `http://127.0.0.1:5000` in your terminal, wait a second while opens browser. Then, in your browser you should see the `Hello, World!` message. Congratulations, you’ve created your first Flask application!
+
+
+Now, let's install `autogpt` package. In this tutorial we will go with implementation of [AutoGPT](https://github.com/Significant-Gravitas/Auto-GPT) however with LangChain primitives like: LLMs, PromptTemplates, VectorStores, Embeddings, Tools, etc. 
+
+Firstly, install all the dependencies:
+
+
+```bash
+
+pip install langchain
+pip install google-search-results  # to use google search engine
+pip install faiss-cpu  # to use vector store as files
+pip install openai  # to use chat model
+pip install tiktoken
+pip install transformers
+
+```
+
+Now, we are good to go.
+
+### Setting up tools
+
+
+NOTE: You need to have [SerpAPI Key](https://serpapi.com/) account to use search tool.
+
+What is SerpAPI? SerpAPI is a service that allows you to search the web using Google's search engine. It's a great way to get started with web scraping and data mining.
+
+<Img src="https://iili.io/HiJ4mn1.png" alt="AI21 Studio dashboard" caption="AI21 Studio dashboard"/>
+
+
+```bash
+from langchain.utilities import SerpAPIWrapper
+from langchain.agents import Tool
+from langchain.tools.file_management.write import WriteFileTool
+from langchain.tools.file_management.read import ReadFileTool
+
+search = SerpAPIWrapper(serpapi_api_key=serpapi_api_key)  # replace with your SerpAPI key
+tools = [
+    Tool(
+        name = "search",
+        func=search.run,
+        description="useful for when you need to answer questions about current events. You should ask targeted questions"
+    ),
+    WriteFileTool(),
+    ReadFileTool(),
+]
+```
+
+### Setting up memory
+
+The memory here is used for the agents intermediate steps
+
+```bash
+
+# The memory here is used for the agents intermediate steps
+from langchain.vectorstores import FAISS
+from langchain.docstore import InMemoryDocstore
+from langchain.embeddings import OpenAIEmbeddings
+
+# Define your embedding model
+embeddings_model = OpenAIEmbeddings(openai_api_key=openai_api_key)  # replace with your OpenAI key
+
+embedding_size = 1536  # OpenAIEmbeddings has 1536 embedding size
+
+# Initialize the vectorstore as empty
+import faiss
+
+index = faiss.IndexFlatL2(embedding_size)
+vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+
+```
+
+### Setting up ChatOpenAI and AutoGPT
+
+Now, let's initialize our agent with the following code:
+
+
+```bash
+
+# Initialize everything! We will use ChatOpenAI model
+from langchain.experimental import AutoGPT
+from langchain.chat_models import ChatOpenAI
+
+agent = AutoGPT.from_llm_and_tools(
+    ai_name="Tom",
+    ai_role="Assistant",
+    tools=tools,
+    llm=ChatOpenAI(openai_api_key=openai_api_key, temperature=0),  # replace with your OpenAI key
+    memory=vectorstore.as_retriever()
+)
+
+# Set verbose to be true
+agent.chain.verbose = True
+
+```
+
+Try out to run the agent with the following command:
+
+```bash
+
+agent.run(["generate a couple names for my dog."])
+
+```
+
+After, running you can see a new created file in your folder called. Yeah, here is the result of our agent.
+
+Let's create a couple of functions to read this file and output it in our browser.
+
+```bash
+
+def get_text_files_in_folder(folder_path):
+    text_files = []
+    for file in os.listdir(folder_path):
+        if file.endswith(".txt"):
+            text_files.append(file)
+    return text_files
+
+
+def display_text_files():
+    folder_path = os.getcwd()  # Replace with the actual folder path
+    text_files = get_text_files_in_folder(folder_path)
+
+    file_list = ""
+    for file in text_files:
+        with open(file, "r") as f:
+            file_list += f.read()
+
+    html_output = f"<p>{file_list}</p>"
+    return html_output
+
+```
+
+
+Full code should be something similar to this:
+
+```bash
+
+# We’ll set up an AutoGPT with a search tool, and write-file tool, and a read-file tool
+from langchain.utilities import SerpAPIWrapper
+from langchain.agents import Tool
+from langchain.tools.file_management.write import WriteFileTool
+from langchain.tools.file_management.read import ReadFileTool
+
+
+# The memory here is used for the agents intermediate steps
+from langchain.vectorstores import FAISS
+from langchain.docstore import InMemoryDocstore
+from langchain.embeddings import OpenAIEmbeddings
+
+
+# Initialize everything! We will use ChatOpenAI model
+from langchain.experimental import AutoGPT
+from langchain.chat_models import ChatOpenAI
+
+
+# Initialize the vectorstore as empty
+import faiss
+
+
+# import flask
+from flask import Flask 
+
+app = Flask(__name__)  # create an app instance
+
+def get_text_files_in_folder(folder_path):
+    text_files = []
+    for file in os.listdir(folder_path):
+        if file.endswith(".txt"):
+            text_files.append(file)
+    return text_files
+
+
+def display_text_files():
+    folder_path = os.getcwd()  # Replace with the actual folder path
+    text_files = get_text_files_in_folder(folder_path)
+
+    file_list = ""
+    for file in text_files:
+        with open(file, "r") as f:
+            file_list += f.read()
+
+    html_output = f"<p>{file_list}</p>"
+    return html_output
+
+@app.route("/")
+def autogpt():
+    search = SerpAPIWrapper(serpapi_api_key=serpapi_api_key)  # replace with your SerpAPI key
+    tools = [
+        Tool(
+            name = "search",
+            func=search.run,
+            description="useful for when you need to answer questions about current events. You should ask targeted questions"
+        ),
+        WriteFileTool(),
+        ReadFileTool(),
+    ]
+
+    # Define your embedding model
+    embeddings_model = OpenAIEmbeddings(openai_api_key=openai_api_key)  # replace with your OpenAI key
+
+    embedding_size = 1536  # OpenAIEmbeddings has 1536 embedding size
+    index = faiss.IndexFlatL2(embedding_size)
+    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})  # initialize index as empty
+
+
+    agent = AutoGPT.from_llm_and_tools(
+        ai_name="Tom",
+        ai_role="Assistant",
+        tools=tools,
+        llm=ChatOpenAI(openai_api_key=openai_api_key, temperature=0), # replace with your OpenAI key
+        memory=vectorstore.as_retriever()
+    )
+
+    # Set verbose to be true
+    agent.chain.verbose = True
+
+    agent.run(["Generate a couple names for my dog."])  # feel free to change the input here
+
+    return display_text_files()
+
+
+if __name__ == '__main__':
+    app.run(debug=True)  # run the flask app
+
+```
+
+
+Learn more about [AutoGPT](https://lablab.ai/tech/autogpt).
+
+Fork this tutorial on [Github](https://github.com/abdibrokhim/AutoGPT-Flask-Tutorial).
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
