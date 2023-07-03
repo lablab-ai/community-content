@@ -16,14 +16,44 @@ authorUsername: "abdibrokhim"
 In this tutorial, we will build a simple and funny app, for creating engaging tweets, using AI21 Labs and cool cover images using Stable Diffusion. We will use [Streamlit](https://streamlit.io/) to build our app. Streamlit is an open-source Python library that makes it easy to build beautiful custom web-apps for machine learning and data science.
 
 
-
 ## Prerequisites
-Download [Visual Studio Code](https://code.visualstudio.com/) compatible with your operating system, or use any other code editor like: [IntelliJ IDEA](https://www.jetbrains.com/idea/), [PyCharm](https://www.jetbrains.com/pycharm/), etc.
+Go to [Visual Studio Code](https://code.visualstudio.com/) and choose that compatible with your operating system and download it, or feel free to use any other code editor like: [IntelliJ IDEA](https://www.jetbrains.com/idea/), [PyCharm](https://www.jetbrains.com/pycharm/), etc.
 
-To use AI21 Labs Studio we need API Key. Go to AI21 Labs Studio, [Sign up](https://studio.ai21.com/) for an account to be taken to your API Key. [Click me](https://studio.ai21.com/account) once you have created an account to be taken to your API Key. Click `API Key` on the left sidebar and copy/save it.
+<Img src="https://iili.io/HieXauR.png" alt="Visual Studio Code" caption="Visual Studio Code" />
 
-To use Stable Diffusion we need API Key. Go to Dream Studio, [Sign up](https://dreamstudio.ai/) for an account to be taken to your API Key. [Click me](https://dreamstudio.ai/account) once you have created an account to be taken to your API Key. Click to `Profile picture` on the top right corner and click `API Key` to copy/save it.
+<Img src="https://iili.io/HieXcjp.png" alt="Visual Studio Code" caption="Visual Studio Code" />
 
+
+To use AI21 Labs Studio we need API Key. Go to AI21 Labs Studio, [Sign up](https://studio.ai21.com/) for an account. 
+Go to [Dashboard](https://studio.ai21.com/account) once you have created an account. 
+Then, click to `Profile picture` on the top right corner.
+
+<Img src="https://iili.io/HieX58J.png" alt="AI21 Labs Studio" caption="AI21 Labs Studio" />
+
+Select `API Key` from the dropdown menu.
+
+<Img src="https://iili.io/HieX7yv.png" alt="AI21 Labs Studio" caption="AI21 Labs Studio" />
+
+Click `copy icon` to copy your API Key. Don't forget to save it somewhere safe.
+
+<Img src="https://iili.io/HieXRaa.png" alt="AI21 Labs Studio" caption="AI21 Labs Studio" />
+
+
+To use Stable Diffusion we need API Key. Go to Dream Studio, [Sign up](https://dreamstudio.ai/) for an account to be taken to your API Key. 
+Go to [Dashboard](https://dreamstudio.ai/account). Then, click `+` button to create new API Key.
+
+<Img src="https://iili.io/HieedGV.png" alt="Stable Diffusion" caption="Stable Diffusion" />
+
+Click `copy icon` to copy your API Key. Don't forget to save it somewhere safe.
+
+<Img src="https://iili.io/Hiee26B.png" alt="Stable Diffusion" caption="Stable Diffusion" />
+
+
+To deploy our app we need to create an account on [Streamlit](https://streamlit.io/). Go to [Streamlit](https://streamlit.io/) and click `Sign up` button.
+
+<Img src="https://iili.io/HieLLYJ.png" alt="Stable Diffusion" caption="Stable Diffusion" />
+
+I recommend you to use GitHub to sign up. Later it will be helpful to depploy our app in a seconds. Click `Sign up with GitHub` button.
 
 
 
@@ -68,7 +98,8 @@ pip install stability-sdk
 
 ### Implementing the app
 
-Firstly, let's create a file named `stable_diffusion.py` and implement function to generate image from text using Stable Diffusion model:
+Firstly, let's create a file named `stable_diffusion.py` and implement function to generate image from text using Stable Diffusion model. [Read more](https://platform.stability.ai/docs/features/text-to-image?tab=python) about Text-to-image gRPC API python client.
+
 
 ```python
 
@@ -211,8 +242,11 @@ def generate(prompt, ai21_api_key):
 
 Perfect! Now we have all the functions we need to generate `engaging` ideas and `cool` cover images.
 
-Finally, let's create a file named `app.py` and implement our Streamlit app. 
-Import all the necessary libraries and functions:
+Finally, Create a file named `app.py` here we will implement our logic for Streamlit app. It allows us to create really fast web apps in pure Python and share it with everyone.
+
+<Img src="https://iili.io/HieSL7I.png" alt="Stable Diffusion" caption="Stable Diffusion" />
+
+Let's import all the necessary libraries and functions:
 
 ```python
 
@@ -473,8 +507,9 @@ streamlit run app.py
 
 ## Deploy to Streamlit Sharing Cloud
 
-Checkout this tutorial on how to deploy your app to Streamlit Sharing Cloud: [Deploying Streamlit Apps to Streamlit Sharing](https://lablab.ai/t/elevenlabs-langchain-tutorial-how-to-create-custom-podcast-generator-streamlit-app)
+Checkout [ElevenLabs Tutorial](https://lablab.ai/t/elevenlabs-langchain-tutorial-how-to-create-custom-podcast-generator-streamlit-app) for detailed instructions on how to deploy your app to Streamlit Sharing Cloud.
 
+<Img src="https://iili.io/HietMIR.png" alt="Stable Diffusion" caption="Stable Diffusion" />
 
 
 ## Conclusion
