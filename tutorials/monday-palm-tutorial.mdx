@@ -446,7 +446,7 @@ In this section, we will create a custom API endpoint using `FastAPI`. This endp
 
 First, let's create a new folder called `backend` inside the `monday-palm-tutorial` folder. Then, open the `backend` folder in your code editor.
 
-Next, let's create a new file called `api.py` inside the `backend` folder. This file will contain the code for our custom API endpoint.
+Next, let's create a new file called `api.py` inside the `backend` folder. This file will contain the code for our custom API endpoint. Open the terminal and run the following command to create the file:
 
 ```bash
 touch api.py
@@ -457,7 +457,7 @@ Open the `api.py` file in your code editor and add the following code:
 ```python
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import palm  # our custom module that does all the heavy lifting
+import palm  # import the palm.py file. We will create this file in the next step
 
 app = FastAPI()
 
@@ -488,7 +488,7 @@ if __name__ == "__main__":
 ```
 
 Let's create a new file called `palm.py` inside the `backend` folder. This file will contain the code that will send the prompt and file to the `Google Vertex PaLM API` and return the response.
-First, we need to donwload the file. Let's create a function:
+First, we need to donwload the uploaded file. Let's create a function:
 
 
 ```python
@@ -505,7 +505,7 @@ def download_pdf(url, file_name):
     return file_name
 ```
 
-Next, let's create a function that reads the file and returns the content:
+Next, let's create a function that reads the file and returns the content inside the file:
 
 
 ```python
