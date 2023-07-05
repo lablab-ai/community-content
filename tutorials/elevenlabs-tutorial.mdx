@@ -1,0 +1,534 @@
+---
+title: "ElevenLabs Tutorial: Create stories with Voice AI from ElevenLabs"
+description: "Discover how to create a Story Generator app using ElevenLabs and OpenAI's ChatGPT."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[ElevenLabs](https://beta.elevenlabs.io/about) is voice technology research company, developing the most compelling AI speech software for publishers and creators. 
+
+[ChatGPT](https://openai.com/chatgpt) is an AI-based chatbot developed by OpenAI. It is powered by the GPT-3.5 architecture, which stands for "Generative Pre-trained Transformer 3.5." GPT-3.5 is an advanced language model that has been trained on a massive amount of text data from the internet and other sources. Check out [ChatGPT apps](https://lablab.ai/apps/tech/openai/chatgpt) to get inspired by what you can use it for.
+
+[React](https://react.dev/) is a JavaScript library for building user interfaces.
+
+[Material-UI](https://mui.com/material-ui/getting-started/) a comprehensive collection of prebuilt components that are ready for use in production right out of the box. 
+
+[FastAPI](https://fastapi.tiangolo.com/) is a modern, fast (high-performance), web framework for building APIs.
+
+
+## What are we going to build?
+In this tutorial, we will build a React app to generate brand new stories and add add voiceover to listen to story.
+Sit back, relax, enjoy the tutorial and don't forget to make a cup of coffee ☕️.
+
+### Learning outcomes
+- Getting familiar with ElevenLabs.
+- Getting familiar with OpenAI's ChatGPT-3.5-turbo (LLM).
+- Creating React app from scratch.
+- Getting familiar Material UI.
+
+### Prerequisites
+Go to [Visual Studio Code](https://code.visualstudio.com/) and donwload version, that compatible with your operating system, or use any other code editor like: [IntelliJ IDEA](https://www.jetbrains.com/idea/), [PyCharm](https://www.jetbrains.com/pycharm/), etc.
+
+To use ElevenLabs, we need API key. Go to [ElevenLabs](https://beta.elevenlabs.io/about) and create an account. It's free! 🎉. And in the upper right corner click on your `profile picture` > `profile`. Next click on the eye icon and `copy/save` your API key.
+
+To use OpenAI's ChatGPT-3.5-turbo, we need API key. Go to [OpenAI](https://beta.openai.com/) and create an account. It's free! 🎉. And in the upper right corner click on your `profile picture` > `View API Keys`. Next click on the `Create new secret key` and `copy/save` your API key.
+
+Nothing more! Just a cup of coffee ☕️ and a laptop 💻.
+
+## Getting started
+
+### Create a new project
+
+First thing first, open Visual Studio Code and create a new folder named `elevenlabs-tutorial`:
+
+```bash
+mkdir elevenlabs-tutorial
+cd elevenlabs-tutorial
+```
+
+## Backend
+
+### Create a folder for backend
+
+Let's create new folder for backend. Open your terminal and run the following commands:
+
+```bash
+mkdir backend
+cd backend
+```
+
+### Create a new python file
+
+Now, we need to create a new python file. Open your terminal and run the following commands:
+
+```bash
+touch api.py
+```
+
+### Create a virtual environment and activate it
+
+Next, we need to create python virtual environment and activate it. Open your terminal and run the following commands:
+
+```bash
+python3 -m venv venv
+
+# on MacOS and Linux:
+source venv/bin/activate
+
+# on Windows:
+venv\Scripts\activate
+```
+
+### Install all dependencies
+
+Now, we need to install all dependencies. Open your terminal and run the following commands:
+
+```bash
+pip install fastapi
+pip install elevenlabs
+pip install openai
+```
+
+### Import all dependencies
+
+Next, we need to import all dependencies. Go to `api.py` and add the following code:
+
+```python
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+import cohere
+from elevenlabs import generate, set_api_key
+import openai
+```
+
+Initialize FastAPI and add CORS middleware. Learn more about [CORS middleware](https://fastapi.tiangolo.com/tutorial/cors/).
+
+```python
+app = FastAPI()
+
+origins = ['http://localhost:3000/']  # put your frontend url here
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+Add global variables.
+
+```python
+AUDIOS_PATH = "frontend/src/audios/"
+AUDIO_PATH = "/audios/"
+```
+
+Implement the API endpoints for voice generation.
+
+```python
+@app.get("/voice/{query}")
+async def voice_over(query: str):
+    set_api_key("your-api-key")  # put your API key here
+
+    audio_path = f'{AUDIOS_PATH}{query[:4]}.mp3'
+    file_path = f'{AUDIO_PATH}{query[:4]}.mp3'
+    
+    audio = generate(
+        text=query,
+        voice='Bella',  # premade voice
+        model="eleven_monolingual_v1"
+    )
+
+    try:
+        with open(audio_path, 'wb') as f:
+            f.write(audio)
+
+        return file_path
+    
+    except Exception as e:
+        print(e)
+
+        return ""
+```
+
+Implement the API endpoints for story generation.
+
+```python
+@app.get("/chat/chatgpt/{query}")
+def chat_chatgpt(query: str):
+    openai.api_key = "your-api-key"  # put your API key here
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": query}
+            ]
+        )
+        
+        return response['choices'][0]['message']['content']
+    
+    except Exception as e:
+        print(e)
+
+        return ""
+``` 
+
+
+Run the backend
+
+```bash
+uvicorn api:app --reload
+```
+
+Now, open your browser and go to `http://localhost:8000/docs`. You should see the following:
+
+<Img src="https://iili.io/HiZh4fI.png" alt="FastAPI dashboard" caption="FastAPI dashboard"/>
+
+Try to play with the API and check it out whether everything we implemented correctly. For example, click on `dropdown` > `Try it out`:
+
+<Img src="https://iili.io/HiZhgiN.png" alt="FastAPI voice" caption="FastAPI voice"/>
+
+<Img src="https://iili.io/HiZhPUX.png" alt="FastAPI story" caption="FastAPI story"/>
+
+
+## Frontend
+
+### Create a new React app
+
+Now, we need to create a new React app. Open your terminal and run the following commands:
+
+```bash
+npx create-react-app frontend
+cd frontend
+```
+
+### Install all dependencies
+
+Now, we need to install all dependencies. Open your terminal and run the following commands:
+
+```bash
+npm install @mui/material @emotion/react @emotion/styled @mui/joy @mui/icons-material
+npm install use-sound
+```
+
+### Implement the UI
+
+Go to `src/App.js` and replace the code with the following:
+
+```javascript
+import React, { useState } from 'react';
+import Textarea from '@mui/joy/Textarea';
+import Button from '@mui/joy/Button';
+import Box from '@mui/joy/Box';
+import { Send, HeadphonesOutlined } from '@mui/icons-material/';
+import useSound from 'use-sound';
+// import s from './audios/hell.mp3';
+import Typography from '@mui/material/Typography';
+
+function App() {
+  const [loading, setLoading] = useState(false);
+  const [story, setStory] = useState('');
+  const [query, setQuery] = useState('');
+  const [audio, setAudio] = useState('');
+  const [play] = useSound(audio);
+
+
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  }
+
+  const generateStory = () => {
+    setLoading(true);
+    console.log('story about: ', query);
+
+    fetch(`http://127.0.0.1:8000/chat/chatgpt/${query}`, {
+      method: 'GET',  
+      headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed');
+        }
+      })
+      .then(data => {
+        console.log('story: ', data);
+        if (data) {
+          setStory(data);
+        }
+      })
+      .catch(err => {
+          console.log(err);
+      });
+      
+    setLoading(false);
+  }
+
+  const generateAudio = () => {
+    setLoading(true);
+    console.log('audio about: ', story);
+
+    fetch(`http://127.0.0.1:8000/voice/${story}`, {
+      method: 'GET',  
+      headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed');
+        }
+      })
+      .then(data => {
+        console.log('audio path: ', data);
+        if (data) {
+          setAudio(data);
+        }
+      })
+      .catch(err => {
+          console.log(err);
+      });
+
+    setLoading(false);
+    
+  }
+
+
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+    generateStory();
+
+  }
+
+
+  return (
+    <Box sx={{ marginTop: '32px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '100vh'}}>
+      <Typography variant="h5" component="h5">
+        ElevenLabs Tutorial: Create stories with Voice AI from ElevenLabs
+      </Typography>
+        <Box sx={{ marginTop: '32px', width: '600px' }}>
+          <form
+              onSubmit={handleSubmit}>
+              <Textarea 
+                sx={{ width: '100%' }}
+                onChange={handleQueryChange}
+                minRows={2} 
+                maxRows={4} 
+                placeholder="Type anything…" />
+              <Button 
+                disabled={loading || query === ''}
+                type='submit'
+                sx={{ marginTop: '16px' }}
+                loading={loading}>
+                  <Send />
+              </Button>
+          </form>
+        </Box>
+        {story && (
+          <Box sx={{ marginTop: '32px', width: '600px' }}>
+            <Textarea 
+              sx={{ width: '100%' }}
+              value={story}/>
+              <Button
+                loading={loading}
+                sx={{ marginTop: '16px' }}
+                onClick={audio ? play : generateAudio}>
+                <HeadphonesOutlined />
+              </Button>
+          </Box>
+        )}
+    </Box>
+  );
+}
+
+export default App;
+
+```
+
+Let's go through the code above. 
+First, we import all the necessary components from `@mui/material` and `@mui/icons-material`. Then, we import `useSound` from `use-sound` to play the generated audio. Next, we define the `App` component. Inside the `App` component, we define the states to store the story, query, and audio.
+Next, we implemented functions: `handleQueryChange`, `generateStory`, `generateAudio`, and `handleSubmit`.
+
+
+`handleQueryChange` will be called when the user types in the text area. It will update the `query` state with the value from the text area.
+
+
+```javascript
+  const handleQueryChange = (e) => {
+    setQuery(e.target.value);
+  }
+```
+
+`handleSubmit` will be called when the user clicks on the `Send` icon. It will call the `generateStory` function. then sends a GET request to the FastAPI `chat/chatgpt` endpoint to generate an story based on entered `query`. Then, it will update the `story` state with the generated story.
+
+```javascript
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+    generateStory();
+
+  }
+
+  const generateStory = () => {
+    setLoading(true);
+    console.log('story about: ', query);
+
+    fetch(`http://127.0.0.1:8000/chat/chatgpt/${query}`, {
+      method: 'GET',  
+      headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed');
+        }
+      })
+      .then(data => {
+        console.log('story: ', data); // output story in the console
+        if (data) {
+          setStory(data);
+        }
+      })
+      .catch(err => {
+          console.log(err);
+      });
+      
+    setLoading(false);
+  }
+
+```
+
+`generateAudio` will be called when the user clicks on the `HeadphonesOutlined` icon. It will send a GET request to the FastAPI `voice/` endpoint to generate an audio. Then, it will update the `audio` state with the generated audio path.
+
+```javascript
+  const generateAudio = () => {
+    setLoading(true);
+    console.log('audio about: ', story);
+
+    fetch(`http://127.0.0.1:8000/voice/${story}`, {
+      method: 'GET',  
+      headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request failed');
+        }
+      })
+      .then(data => {
+        console.log('audio path: ', data);
+        if (data) {
+          setAudio(data);
+        }
+      })
+      .catch(err => {
+          console.log(err);
+      });
+
+    setLoading(false);
+    
+  }
+```
+
+The return statement will render the UI. Here you can see components like: `Box`, `Typography`, `Textarea`, `Button`, `Send` and `HeadphonesOutlined` all of them are buil-in components from Material-UI. Learn more about Material-UI components [here](https://mui.com/material-ui/getting-started/).
+
+```javascript
+  return (
+    <Box sx={{ marginTop: '32px', marginBottom: '32px', display: 'flex', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', minHeight: '100vh'}}>
+      <Typography variant="h5" component="h5">
+        ElevenLabs Tutorial: Create stories with Voice AI from ElevenLabs
+      </Typography>
+        <Box sx={{ marginTop: '32px', width: '600px' }}>
+          <form
+              onSubmit={handleSubmit}>
+              <Textarea 
+                sx={{ width: '100%' }}
+                onChange={handleQueryChange}
+                minRows={2} 
+                maxRows={4} 
+                placeholder="Type anything…" />
+              <Button 
+                disabled={loading || query === ''}
+                type='submit'
+                sx={{ marginTop: '16px' }}
+                loading={loading}>
+                  <Send />
+              </Button>
+          </form>
+        </Box>
+        {story && (
+          <Box sx={{ marginTop: '32px', width: '600px' }}>
+            <Textarea 
+              sx={{ width: '100%' }}
+              value={story}/>
+              <Button
+                loading={loading}
+                sx={{ marginTop: '16px' }}
+                onClick={audio ? play : generateAudio}>
+                <HeadphonesOutlined />
+              </Button>
+          </Box>
+        )}
+    </Box>
+  );
+```
+
+Create new folder `audios` in `src` folder. We will save all the generated voiceovers in this folder.
+
+```bash
+mkdir src/audios
+```
+
+
+### Run the app
+
+Let's run the app and see how it works.
+
+```bash
+npm start
+```
+
+Open your browser and go to `http://localhost:3000/`. You will see the app running.
+
+<Img src="https://iili.io/HiZhOHg.png" alt="FastAPI voice" caption="FastAPI voice"/>
+
+Let's try to generate a story. `Generate a short story about cat and kittens.`.
+
+<Img src="https://iili.io/HiZhwUF.png" alt="FastAPI voice" caption="FastAPI voice"/>
+
+Cool! We got a story. Let's go through it.
+
+<Img src="https://iili.io/HiZhvDv.png" alt="FastAPI voice" caption="FastAPI voice"/>
+
+<Img src="https://iili.io/HiZhUVp.png" alt="FastAPI voice" caption="FastAPI voice"/>
+
+Perfect! Let's listen to the audio of this story by clicking on the `HeadphonesOutlined` icon.
+
+
+## Conclusion
+
+I hope this tutorial provided clear and detailed guidance, accompanied by few screenshots, to ensure a seamless setup process. 
+By the end of this tutorial, you should have a working app that can generate stories and voiceovers. This is amazing! Today, we learned a lot of cool technologies and tools.
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+
