@@ -6,25 +6,27 @@ authorUsername: "septiannugraha"
 
 ## Introduction
 
-In this tutorial, we will explore how to build a chatbot application using the ElevenLabs API, Anthropic's Claude, ReactJS, and Flask. We will walk through each step, from setting up the backend server to creating the frontend interface. By the end of this tutorial, you will have a fully functional, brainstorming partner chatbot that can interact with users and respond with synthesized speech.
+The emerging world of Generative AI has taken to a whole new level these days. With simple to use APIs from various services, we can make use of AI models for various creative endeavors, such as generating short stories, song lyrics, and even images. Not only that, with the arrival of voice generation services by ElevenLabs, we can also synthesis or generate artificial speeches using pre-made voices or even voices of our own making! It is done by cloning recorded voices or by "designing" the voices by selecting gender, age, and accent to generate unique voice.
+
+In this tutorial, we only use "Speech Synthesis", text-to-speech feature provided by ElevenLabs, which is available starting on Free plan. Given our use case, which is to build a brainstorming partner app, I think using the pre-made voice is good enough. We will also build the UI for the app using ReactJS to make requests and handle the response to and from the Flask-based backend.
 
 ### Introduction to ElevenLabs
 
-ElevenLabs is a cutting-edge technology company that specializes in machine learning and artificial intelligence. Their API provides a wide range of capabilities, including speech synthesis, voice cloning, and more. In this tutorial, we will use the ElevenLabs API to generate synthesized speech for our chatbot, giving it a unique and engaging voice.
+ElevenLabs is a voice technology research company which develops "the most compelling AI speech software for publishers and creators". Their goal is to instantly convert spoken audio between languages by making on-demand multilingual audio support a reality across education, streaming, audiobooks, gaming, movies, and even real-time conversation. They offer a suite of tools ranging for voice cloning, designing synthetic voices and their main offering, text-to-speech models which rely on high compression and context understanding.
 
 ### Introduction to Anthropic's Claude
 
-Anthropic is a research organization focused on making AI systems more understandable, controllable, and beneficial. One of their products, Claude, is a conversational AI model that can generate human-like text based on the input it receives. We will use Claude to power the conversational abilities of our chatbot, allowing it to respond to user inputs in a natural and engaging way.
+Anthropic is an AI safety and research company. Which means, alongside developing products such as AI models, they also put emphasis on the safety, interpretability and safety on their AI systems. They believe AI has the potential to fundamentally change how the world works. By promoting safety on AI at the industry-wide scale, they aim to build frontier AI systems that are reliable, interpretable, and steerable.
+
+Based on their research, they launched their product, an AI model called Claude. Claude is accessible via chat interface and free-to-use API and capable of wide variety of conversational and text processing tasks while maintaining a high degree of reliability and predictability. Users describe Claude's answers as "detailed and easily understood, feel like natural conversation". For that reason, we chose Anthropic's Claude to power our brainstorming partner chatbot app.
 
 ### Introduction to ReactJS
 
-ReactJS is a popular JavaScript library for building user interfaces, particularly for single-page applications. It allows developers to create large web applications that can update and render efficiently without requiring a page reload. In this tutorial, we will use ReactJS to build the frontend of our chatbot application, creating a dynamic and interactive user interface.
+ReactJS is a Javascript/Typescript library for developing user interfaces, which is particularly popular for single-page applications. It makes possible for developers to build both simple and complex apps from ground-up, by building components by components. One particularly popular features of React is its simple but powerful state management which only update and renders certain parts of the UI without requiring full page reloads. For that reason, we will use ReactJs to build the front-end of our brainstorming partner chatbot app.
 
 ### Introduction to Flask
 
-Flask is a lightweight web framework for Python. It's easy to use and perfect for building small to medium-sized web applications. In this tutorial, we will use Flask to build the backend of our chatbot application. The Flask server will handle requests from the frontend, process them using the ElevenLabs API and Anthropic's Claude, and send back responses to the frontend.
-
-By combining these technologies, we will create a chatbot that not only can carry on a conversation with users but also respond with synthesized speech, creating a more engaging and interactive user experience. Let's get started!
+Flask is a Python-based web framework which is lightweight, simple and easy to use. Developers can start small by adding a few routes and develop the app further by adding more functionalities along the way. This tutorial leverages Flask to build the backend of our chatbot app as some of the libraries, such as `anthropic` and `elevenlabs` are mostly available for Python.
 
 ### Prerequisites
 
@@ -43,17 +45,17 @@ By combining these technologies, we will create a chatbot that not only can carr
 
 ## Discussion
 
-In this section, we will delve into the process of building our chatbot application. We will start by initializing our projects, then move on to building and testing the backend and frontend. Finally, we will test the complete chatbot application.
-
 ### Initializing the Projects
 
-The first step in our journey is to initialize our projects. We will be creating two separate projects: one for the backend and one for the frontend. The backend will be a Flask application, and the frontend will be a ReactJS application. We will use the `create-react-app` command to initialize our ReactJS application and manually set up our Flask application. Once our projects are initialized, we can start building the backend.
+First thing first, let's initialize our projects for our chatbot app, which we will call "Brainstormy". In this tutorial, we will create two separate projects, one for the backend and one for the frontend.
 
-#### Backend
+#### Initializing the Backend
 
-The backend of our application will be built using Flask, a lightweight and flexible Python web framework. To initialize our Flask application, we'll first need to set up a new Python environment. This can be done using virtualenv, a tool for creating isolated Python environments. Here's how you can do it:
+The steps to initialize our backend project consists mainly of setting up a virtual environment to isolate our dependencies from outside world and installing Flask for the basis of our backend.
 
 1. **Create a new directory for your project:**
+
+We will name the backend of our project `brainstormy-backend`. Let's make the directory and enter it.
 
 ```bash
 mkdir brainstormy-backend
@@ -62,11 +64,15 @@ cd brainstormy-backend
 
 2. **Create a new virtual environment:**
 
+Next, we'll create our virtual environment, which we will call `env`.
+
 ```bash
 python3 -m venv env
 ```
 
 3. **Activate the virtual environment:**
+
+Let's activate the virtual environment, the command to use will vary depending on the operating system.
 
 On macOS and Linux:
 
@@ -80,17 +86,16 @@ On Windows:
 .\env\Scripts\activate
 ```
 
-4. **Install Flask:**
+1. **Install Flask:**
 
-With the virtual environment activated, you can now install Flask:
+Now that our virtual environment is activated, we can install our dependencies! in this initialization step, we start by installing `flask`.
 
 ```bash
 pip install flask
 ```
-
 5. **Create a new Flask application:**
 
-Create a new file named `app.py` in your project directory and open it in your text editor. Then, add the following code to create a new Flask application:
+Let's create a new file called `app.py` and edit it with our favorite IDE or code editor. In that file, we add the following code:
 
 ```python
 from flask import Flask
@@ -105,21 +110,12 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-This code creates a new Flask application and defines a single route that returns the text "Hello, World!".
+This step creates a Flask app with a route that returns the text "Hello, World!".
+#### Initializing the Frontend
 
-With these steps, your Flask application is now set up and ready to be developed. In the next sections, we will add more functionality to our Flask application to communicate with the ElevenLabs API and Anthropic's Claude.
+1. **Create a new ReactJS application:**
 
-#### Frontend
-
-The frontend of our application will be built using ReactJS, a popular JavaScript library for building user interfaces. We'll use `create-react-app`, a tool that sets up a modern web app by running one command. Here's how you can do it:
-
-1. **Install Node.js and npm:**
-
-Before you can use `create-react-app`, you need to have Node.js and npm (Node Package Manager) installed on your computer. You can download Node.js from the [official website](https://nodejs.org/). npm is included with Node.js.
-
-2. **Create a new ReactJS application:**
-
-Once Node.js and npm are installed, you can create a new ReactJS application using `create-react-app`. Open a new terminal window, navigate to the directory where you want to create your project, and run the following command:
+We can create a new ReactJS application using `create-react-app`. Just make sure we already have Node.js installed, the commands that we use, `npm` and `npx` are included with Node.js. Open a new terminal window, navigate to the directory where you want to create your project, and run the following command:
 
 ```bash
 npx create-react-app brainstormy-client --template typescript
@@ -127,39 +123,16 @@ npx create-react-app brainstormy-client --template typescript
 
 This command creates a new directory named `brainstormy-client` and sets up a new ReactJS application inside it.
 
-3. **Installing TailwindCSS for Styling**
+2. **Installing TailwindCSS for Styling**
 
-Next, let's change directory into our `brainstormy-client` project. Once our current working directory is inside the project directory, run this command to install `tailwindcss` via npm as well as initialize the library by generating `tailwind.config.js` file.
+Next, let's change directory into our `brainstormy-client` project. Once our current working directory is inside the project directory, run this command to install `tailwindcss` via npm as well as initialize the library by generating `tailwind.config.js` file. The next step will involves configuring the `tailwind.config.js` file and adding the `@tailwind` diretives. For the complete details, please refer to the [documentation](https://tailwindcss.com/docs/guides/create-react-app).
 
 ```bash
 npm install -D tailwindcss
 npx tailwindcss init
 ```
-After the `tailwind.config.js` is generated, we need to configure the template path according to the path used by `create-react-app` application.
 
-```diff
-# tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
---  content: [],
-++   content: [
-++     "./src/**/*.{js,jsx,ts,tsx}",
-++   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-```
-Finally, we add the `@tailwind` directives for each of Tailwind's layers to our `./src/index.css` file.
-
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-4. **Start the ReactJS application:**
+3. **Start the ReactJS application:**
 
 Navigate into your new project directory and start the application:
 
@@ -167,16 +140,11 @@ Navigate into your new project directory and start the application:
 cd brainstormy-client
 npm start
 ```
-
-This command starts the development server and opens the application in your web browser. You should see a default welcome page.
-
-With these steps, your ReactJS application is now set up and ready to be developed. In the next sections, we will add more functionality to our ReactJS application to communicate with our Flask backend and display the chat interface.
+The command above should run the app in development mode, which automatically opens in our default browsers.
 
 ### Building the Backend
 
-Our backend will be responsible for communicating with the ElevenLabs API and Anthropic's Claude. We will create a Flask route that accepts POST requests with a message from the user. This message will be sent to Claude, which will generate a response. The response will then be sent to the ElevenLabs API to generate synthesized speech. The audio file will be sent back to the frontend as the response to the POST request.
-
-Without further ado, let's install the necessary dependencies and begin editing our `app.py` file!
+Now, let's dive into the coding part! In this section, we will start by adding handlers for our backend's endpoints. But before we get into that, let's kick off our coding session by installing the remaining dependencies that our backend requires.
 
 #### Installing the Necessary Libraries
 
@@ -186,7 +154,7 @@ Let's run this command to install all the required libraries in a single command
 pip install flask-cors anthropic elevenlabs
 pip install "pydantic==1.*"
 ```
-This time, we also install `pydantic` library, but with the version locked to 1.*. This is necessary because the `elevenlabs` returned Pydantic-related error when using the default `pydantic` installation.
+This time, along with `flask-cors` for handling Cross Origin Resource Sharing (CORS) with our frontend, `anthropic` to use Anthropic's Claude model, and `elevenlabs` to use speech systhesis technology by ElevenLabs, we also install `pydantic` library, but with the version locked to 1.*. This is necessary because the `elevenlabs` returned Pydantic-related error when using the default `pydantic` installation.
 
 #### Editing the `app.py` file
 
@@ -200,7 +168,7 @@ import anthropic
 from flask_cors import CORS
 ```
 
-This section imports all the necessary modules and packages that your application will use. `os` is a standard Python library for interacting with the operating system. `flask` is the web framework you're using. `elevenlabs` and `anthropic` are the APIs for speech synthesis and conversational AI, respectively. `flask_cors` is a Flask extension for handling Cross Origin Resource Sharing (CORS), making cross-origin AJAX possible.
+We import all the necessary libraries for our backend. `os` is for retrieving environment variables which contains our sensitive API keys. `flask` is for building our endpoints' handlers, `elevenlabs` for speech synthesis, and `anthropic` is for powering our chatbot app with Large Language Model. We also import `CORS` from `flask_cors` library to handle cross-origin request from our front-end.
 
 2. **Initialize Flask application and set up CORS:**
 
@@ -208,16 +176,14 @@ This section imports all the necessary modules and packages that your applicatio
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000", "http://example.com"])
 ```
-
-Here, you're initializing your Flask application and setting up CORS. This allows your frontend application (running on `http://localhost:3000` or `http://example.com`) to make requests to your Flask backend.
+After the import statements, we start our Flask app by setting up CORS. The configuration allows requests from both `http://localhost:3000` and `http://example.com`. Although we only use `http://localhost:3000` for our frontend.
 
 3. **Set API key for ElevenLabs:**
 
 ```python
 set_api_key(os.getenv("XI_API_KEY"))
 ```
-
-This line sets the API key for ElevenLabs, which is retrieved from the environment variables.
+Next,we set the API key for our ElevenLabs library by invoking the `set_api_key` function. We pass the API key which is retrieved from environment variables, which we'll write in the `.env` file after this.
 
 4. **Define route for generating chat response:**
 
@@ -249,10 +215,9 @@ def generate_chat_response():
 
     return jsonify({"status": "success", "result": resp.completion})
 ```
+Next up, our handler for `/chat` endpoint! this endpoint accepts a list of conversation history from both "human" and "assistant" and will return the latest response from Claude model (the "assistant" role). We also use `claude-v1.3-100k` model, the most recent and sophisticated Claude model provided by Anthropic. Do note that in this handler function, we explicitly tell the AI model to be our brainstorming partner and we need it to collaboratively brainstorm some ideas and provide some suggestions, we also tell it to keep the response concise. We need to keep the response concise mainly because there is a certain limit of characters that can be processed in the Free plan of ElevenLabs API, as well as keeping the conversation natural and engaging.
 
-This section defines a route `/chat` that accepts POST requests. It gets the JSON data from the request, formats the prompts, and sends them to the Claude model to generate a response. The response is then returned as JSON.
-
-5. **Define route for generating speech:**
+1. **Define route for generating speech:**
 
 ```python
 @app.route('/talk', methods=['POST'])
@@ -268,9 +233,7 @@ def generate_speech():
 
     return Response(audio, mimetype='audio/mpeg')
 ```
-
-This section defines a route `/talk` that also accepts POST requests. It gets the message from the request data and sends it to the ElevenLabs API to generate speech. In this tutorial, we use "Bella" voice which is readily available, pre-made voice provided by ElevenLabs API. The speech (an audio file) is then returned as a response with the MIME type `audio/mpeg`.
-
+Our second endpoint is the `/talk` endpoint, which will generate speeches from the messages received. In the context of our chatbot, the message sent to the `/talk` endpoint is the response from the chatbot. We use `generate()` function from `elevenlabs` library to generate the speeches, with "Bella" voice, which is a pre-made female voice with a professional but youthful characteristic and `eleven_monolingual_v1` model, which is a voice model geared towards monolingual speech, or English only.
 
 6. **Run the Flask application:**
 
@@ -278,9 +241,16 @@ This section defines a route `/talk` that also accepts POST requests. It gets th
 if __name__ == '__main__':
     app.run(debug=True)
 ```
+We wrap up our `app.py` file with this conditional statement, which is the entrypoint of a python script. In the entrypoint, we run Flask's `app` with debug enabled. This allow us to observe and trace some logs related to the operational of our backend.
 
-Finally, this section runs the Flask application if the script is run directly (i.e., not imported as a module). The `debug=True` argument enables debug mode, providing more detailed error messages if something goes wrong.
+#### Editing the .env file
 
+Remember the API keys that we use for our various AI services? We will write it down in this special file called `.env` file.
+
+```text
+XI_API_KEY=xxxxxxxxxxxxxxxx
+CLAUDE_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 ### Testing the Backend
 
 Before moving on to the frontend, it's crucial to ensure our backend is functioning as expected. We will use tools like Postman or Insomnia to send POST requests to our Flask routes and verify the responses. We should receive an audio file that plays the synthesized speech of Claude's response. Once we're confident that our backend is operating correctly, we can proceed to build the frontend.
@@ -317,11 +287,11 @@ After a few seconds, our `/talk` endpoint should return an audio file that we ca
 
 ### Building the Frontend
 
-The frontend of our application will be a ReactJS application. We will create a chat interface where users can send messages and receive responses. When a user sends a message, a POST request will be sent to our Flask backend. The response, an audio file, will be played automatically. We will use the `useState` and `useEffect` hooks to manage state and side effects, and the Fetch API to send requests to our backend.
+After the backend is done and tested, let's move on to the front-end. Thankfully, in our front-end project, we will only build two components, the `App` component, which is the main component of our front-end, and `Chatbot` component, which contains most of the functionalities of our `Brainstormy` app.
 
 #### App.tsx
 
-Here's the content of the `App.tsx` file:
+This is the content of our `App` component.
 
 ```jsx
 import React from 'react';
@@ -339,89 +309,31 @@ function App() {
 
 export default App;
 ```
-
-This is the main component of your React application. Let's break it down:
-
-1. **Import necessary modules and components:**
-
-```jsx
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Chatbot from './components/Chatbot';
-```
-
-This section imports the necessary modules and components. `React` is the main library. `logo` is the logo of your application, `App.css` is the CSS file for styling your application, and `Chatbot` is the chatbot component that you will create.
-
-2. **Define the App component:**
-
-```jsx
-function App() {
-  return (
-    <div>
-      <Chatbot />
-    </div>
-  );
-}
-```
-
-This is the definition of the `App` component. It's a functional component that returns a JSX element. The JSX returned by the component is a `div` that contains the `Chatbot` component. This means that the `Chatbot` component will be rendered inside this `div`.
-
-3. **Export the App component:**
-
-```jsx
-export default App;
-```
-
-This line exports the `App` component as the default export of this module. This means that when this file is imported from another file, the `App` component will be the default import.
-
-In the next sections, you will create the `Chatbot` component and add more functionality to your frontend application.
+As we can see, not much happens here, only that we import the `Chatbot` component and include it inside the `<div>` element.
 
 #### Chatbot.tsx
 
-1. **Import necessary modules and hooks:**
+This component is where all the actions of our chatbot app go on! let's break it down part by part.
 
 ```jsx
 import React, { useState, useEffect, useRef } from 'react';
-```
 
-This line imports the `React` library and the `useState`, `useEffect`, and `useRef` hooks from React. `useState` is used to declare state variables, `useEffect` is used to perform side effects (like fetching data), and `useRef` is used to access DOM elements directly.
-
-2. **Define the Message interface:**
-
-```jsx
 interface Message {
     role: string;
     content: string;
 }
 ```
+We start by declaring import statements in the topmost part of our code. If we're using IDEs such as [Visual Studio Code](https://code.visualstudio.com/) or [Jetbrains' Webstorm](https://www.jetbrains.com/webstorm/), this part is mostly done automatically. Next, we also declare interface for `Message` object, which encapsulates our messages objects that are formed and then sent to the backend as conversation history.
 
-This TypeScript interface defines the shape of a `Message` object, which has a `role` and `content` property, both of which are strings.
-
-3. **Define the Chatbot component:**
 
 ```jsx
 const Chatbot: React.FC = () => {
-    // ...
-};
-```
 
-This line defines the `Chatbot` component as a functional component. The `React.FC` type annotation means that this component is a function component.
-
-4. **Declare state variables and refs:**
-
-```jsx
 const [messages, setMessages] = useState<Message[]>([]);
 const [input, setInput] = useState<string>('');
 const [isLoading, setIsLoading] = useState<boolean>(false);
 const audioRef = useRef<HTMLAudioElement>(null);
-```
 
-These lines declare state variables using the `useState` hook and a ref using the `useRef` hook. `messages` is an array of `Message` objects, `input` is a string, and `isLoading` is a boolean. `audioRef` is a ref to an `HTMLAudioElement`.
-
-5. **Define event handlers:**
-
-```jsx
 const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
 };
@@ -463,13 +375,7 @@ const handleSendMessage = async () => {
         setInput('');
         setIsLoading(false);
 };
-```
 
-These functions are event handlers for the input change event and the send message button click event. `handleInputChange` updates the `input` state variable with the current value of the input field. `handleSendMessage` sends a POST request to the `/chat` and `/talk` endpoints, updates the `messages` state variable, and plays the received audio.
-
-6. **Render the component:**
-
-```jsx
 return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <p className='text-2xl text-blue-600 font-bold'>Brainstormy</p>
@@ -489,18 +395,13 @@ return (
                 <audio ref={audioRef} controls className="w-full mt-4" />
             </div>
     </div>
-);
-```
-
-This is the JSX that the `Chatbot` component returns. It's a `div` that contains all the elements of the chat interface, including the input field, send button, and audio player.
-
-7. **Export the Chatbot component:**
-
-```jsx
+    );
+};
 export default Chatbot;
 ```
+This is the body of our Chatbot component. It handles states such as `messages` for storing the chat history, `input` to handle the user text input, `isLoading` to activate the loading indicator while the request is waiting for the response. We also declared `ref` for the audio player, which we can use to control the audio player once we get the response from the `/talk` endpoint in the form of audio file.
 
-This line exports the `Chatbot` component as the default export of this module. This means that when this file is imported from another file, the `Chatbot` component will be the default import.
+Next, we have two handler functions, the first one is a standard input change handler, which update the `input` state as the user enter some text to the input. The next one is the handler for the "Send" button click event. Once the "Send" button is clicked, the frontend will make a POST request to our `/chat` endpoint to generate response from the Claude model based on our questions or statements. The response from the `/chat` endpoint, once received, is further used as a payload for the next request to the `/talk` endpoint. This handler function makes as if our app "talks" once it receives the responses, by playing the audio speech file generated from the `/talk` endpoint.
 
 #### public/index.html
 
