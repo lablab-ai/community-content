@@ -1,0 +1,116 @@
+---
+title: "ElevenLabs Tutorial: Building Simple Word Spelling App"
+description: "How to utilize ElevenLabs API and Streamlit to build simple app which generates random words which are commonly misspelled and generate speech to spell them"
+authorUsername: "septiannugraha"
+---
+
+## Introduction
+
+### Introduction to ElevenLabs
+
+ElevenLabs is a cutting-edge platform that offers an advanced speech synthesis solution. It provides an API that allows developers to generate high-quality voiceovers using AI. The AI model used by ElevenLabs has been trained on a vast amount of audiobooks and, to a lesser extent, podcasts. This extensive training allows the AI to deliver predictable and high-quality results when generating audio. 
+
+The platform provides a feature called VoiceLab, where users can create or clone voices according to their preferences. Once the desired voices are set up, users can move on to the Speech Synthesis stage, where they can generate audio outputs using the pre-made voices or the ones they've created or cloned. 
+
+One of the key aspects of ElevenLabs is the ability to influence the AI's performance through prompting techniques. This includes the ability to adjust settings such as stability and similarity to achieve the desired tone and performance. The AI's settings are non-deterministic, meaning each generation can yield slightly different results, providing a range of outputs for users to choose from. 
+
+### Introduction to Anthropic's Claude Model
+
+Anthropic's Claude Model is a state-of-the-art language model developed by Anthropic, a research organization focused on improving the interpretability and robustness of artificial intelligence systems. The Claude Model is designed to generate human-like text, making it a powerful tool for a wide range of applications, from content creation to customer service. The model is trained on a diverse range of internet text, but unlike most AI models, it also has the ability to refuse outputs that it predicts the user will find harmful or untruthful. This makes it a safer and more reliable choice for developers looking to integrate AI into their applications.
+
+### Introduction to Streamlit
+
+Streamlit is an open-source Python library that allows developers to create and share beautiful, custom web apps for machine learning and data science. With Streamlit, you can build and deploy powerful data apps in just a few minutes. It provides a simple and intuitive API that lets you turn data scripts into shareable web apps. Streamlit includes a variety of features such as caching, theming, and components that make it easy to build interactive, data-driven applications. It also has a vibrant community where developers share their apps and ideas, helping each other improve their work.
+
+### Prerequisites
+
+- Basic knowledge of Python and UI development using Streamlit
+- Access to Anthropic API
+- Access to ElevenLabs API
+
+### Outline
+
+1. Initializing our Streamlit Project
+2. Adding Word Generation Feature using Claude Model
+3. Adding Speech Generation Feature using ElevenLabs API
+4. Testing the Word Generator App
+
+## Discussion
+
+### Initializing our Streamlit Project
+
+The first step in creating our language learning app is to initialize our Streamlit project. This involves setting up a new Python script and installing the necessary libraries.
+
+To begin, we need to install Streamlit if it's not already installed. This can be done using pip, a package installer for Python. Open your terminal and type the following command:
+
+```bash
+pip install streamlit
+```
+
+Next, create a new Python script. This will be the main file for our Streamlit app. You can name it `language_learning_app.py`. Open this file in your favorite text editor or integrated development environment (IDE).
+
+At the beginning of your script, import Streamlit and any other libraries you'll need. For our language learning app, we'll need to import a few additional libraries:
+
+```python
+import streamlit as st
+import pandas as pd
+import numpy as np
+```
+
+Now, you can add a title to your app using the `st.title()` function:
+
+```python
+st.title('Language Learning App')
+```
+
+At this point, you can run your Streamlit app from the command line using the following command:
+
+```bash
+streamlit run language_learning_app.py
+```
+
+The app should automatically open in a new tab in your browser. You now have a basic Streamlit app set up and ready to be developed further!
+
+### Adding Word Generation Feature using Claude Model
+
+With our basic Streamlit app set up, we can now start adding features. The first feature we'll add is the word generation feature. This will involve using the Claude Model to generate a list of commonly misspelled words.
+
+First, we'll need to import the Claude Model and set it up. This will involve initializing the model and loading any necessary data.
+
+Next, we'll create a function that uses the Claude Model to generate a word. This function will select a random word from the list of commonly misspelled words and return it.
+
+Finally, we'll add a button to our Streamlit app that calls this function when clicked. When the button is clicked, the generated word will be displayed to the user.
+
+### Adding Speech Generation Feature using ElevenLabs API
+
+The next feature we'll add to our app is the speech generation feature. This will involve using the ElevenLabs API to generate speech from the word generated by the Claude Model.
+
+First, we'll need to set up the ElevenLabs API. This will involve importing the necessary libraries and setting up any necessary authentication.
+
+Next, we'll create a function that uses the ElevenLabs API to generate speech from a given word. This function will take the word generated by the Claude Model, send it to the ElevenLabs API, and return the generated speech.
+
+Finally, we'll add a button to our Streamlit app that calls this function when clicked. When the button is clicked, the generated speech will be played to the user.
+
+### Testing the Word Generator App
+
+Once we have added all the features to our app, it's time to test it. This involves running the app and interacting with it as a user would.
+
+Try generating a few words and listening to the generated speech. Check that the words are displayed correctly and that the speech sounds as expected.
+
+Remember, testing is an iterative process. Each time you add a new feature or make a change to your app, you should test it again. This helps catch any bugs or issues early on, before they become more significant problems.
+
+In addition to manual testing, you might also consider writing automated tests for your app. This can help catch issues that might be missed during manual testing and can make the testing process more efficient.
+
+Finally, don't forget to test your app in different environments (e.g., different browsers, screen sizes,
+
+etc.) to ensure it works well for all potential users. This includes testing on both desktop and mobile devices, as well as different operating systems. 
+
+Also, consider testing with different input data. For instance, try generating words of varying lengths and complexity to ensure that the app can handle all types of input.
+
+As you test, take notes of any issues or bugs you encounter. These notes will be invaluable when it comes time to debug and improve your app. Remember, the goal of testing is not just to find problems, but to improve the overall user experience of your app.
+
+In conclusion, building a language learning app with Streamlit, Claude Model, and ElevenLabs API involves several steps, from initializing the project to adding features and testing the app. By following these steps, you can create a powerful and interactive app that helps users improve their spelling through AI-generated words and speech.
+
+## Conclusion
+
+Thank you for joining me in this process of exploring what ElevenLabs has to offer! I hope this tutorial has sparked some inspirations on how we leverage voice generation model such as ElevenLabs in more interesting and varying use cases. Stay tuned for more tutorials in the future!
