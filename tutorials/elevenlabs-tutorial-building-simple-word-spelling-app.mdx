@@ -6,37 +6,19 @@ authorUsername: "septiannugraha"
 
 ## Introduction
 
-In the rapidly evolving world of software development, generative AI tools are making waves. From generating cover letters and emails to automatically commenting on code, these tools are revolutionizing the way we work. They're not just limited to text, either - with the latest image generation models, we can now generate images from text prompts, opening up a world of possibilities for incorporating generated assets into our products.
-
-But what about voices? With the rise of voice command as a key trend in user experience, it's clear that the software we build needs to incorporate voices as a feature. That's where speech synthesis comes in. As a form of generative AI, speech synthesis allows us to generate spoken language by machine, making it a powerful tool for enhancing user experience.
-
-In this tutorial, we'll explore the potential of speech synthesis by building a simple app that generates random words and spells them out. We'll be using the Speech Synthesis feature offered by ElevenLabs, a cutting-edge platform for building and deploying machine learning models. To build the user interface for our Python-based app, we'll use Streamlit, a new UI library that makes it easy to share data science projects.
-
-Whether you're a beginner looking to dip your toes into the world of AI and speech synthesis, or an experienced developer eager to incorporate new tools into your projects, this tutorial has something for you. Let's get started!
+Nowadays is one of the most exciting time for software development, what with the emergence of various "generative AI" tools in the market. Just name it, cover letter generation? check! e-mail generation? check! automatic code comment generation? check! Even outside coding and software development, the use case possibilities are enormous. Now we can generate images with text prompts with various image generation models. Thus makes it possible for us to incorporate generated assets in our various products. The next question is, how about voices? The trend of user experiences in the past few years mentioned "voice command" as one of the emerging trend. It is only natural that the software we build will incorporate voices as one of the features. Which is why, in this tutorial, we will showcase the "Speech Synthesis" feature offered by ElevenLabs in a simple app, which generates random words and have it spell it. To build the UI for this Python-based app, we will use Streamlit, a new UI library to share data science projects.
 
 ### Introduction to ElevenLabs
 
-ElevenLabs is a leading voice technology research company that offers a powerful speech synthesis solution. With an easy-to-use API, ElevenLabs allows developers to generate high-quality speeches using AI. This is made possible by an AI model that has been extensively trained on a vast amount of audiobooks and podcasts. This extensive training enables the AI to generate a wide range of voices and speech styles, ensuring high-quality and predictable results.
-
-ElevenLabs offers two main features. The first is VoiceLab, a tool that allows users to clone voices from recorded audio or existing pre-made voices. Users can also "design" voices based on gender, age, ethnicity, and race, allowing for a high degree of customization. Once users have created or selected their voices, they can move on to the second feature, Speech Synthesis. This tool allows users to generate speeches using their custom-designed voices or the pre-made ones.
-
-By offering these features, ElevenLabs makes it easy for developers to incorporate high-quality, customizable speech synthesis into their applications. Whether you're looking to enhance a language learning app, create a voice assistant, or add voice features to a game, ElevenLabs provides the tools you need to make it happen.
+ElevenLabs is a voice technology research company which offers speech synthesis solution. With easy to use API, it allows developers to generate high-quality speeches using AI. It is made possible by the AI model which has been trained on a vast amount of audiobooks and also podcasts. The training allows the AI to deliver predictable and high-quality results in speech generation. There are two main features that ElevenLabs has to offer, the first one is VoiceLab, where users can clone voices from recorded audio and/or existing pre-made voices, and also "design" voices based on gender, ages, ethnicities and races. Once users have the voices to work with, they can move on to the next feature, Speech Synthesis, where they can generate speeches using their designed voices or just using the pre-made ones.
 
 ### Introduction to Anthropic's Claude Model
 
-Claude is the latest AI model developed by Anthropic, a research organization focused on enhancing the ability of artificial intelligence systems to work together (interoperability), as well as their robustness and safety. The Claude model is designed to generate human-like responses, making it a powerful tool for a wide range of applications, from content creation to legal services and customer support.
-
-Like many AI models, Claude is trained on a diverse range of internet text, including books, articles, and websites. This extensive training allows it to generate a wide variety of responses, making it adaptable to many different contexts and uses.
-
-However, what sets Claude apart from most AI models is its focus on safety. The model has been designed to refuse to generate outputs that it predicts the user will find harmful or untruthful. This feature makes Claude a safer and more reliable choice for developers looking to integrate AI into their applications, as it helps to prevent the dissemination of harmful or misleading information.
+Claude is the latest AI model developed by Anthropic, an AI research organization which focuses on improving the interoperability, robustness and safety of artificial intelligence systems. The Claude model is designed to generate human-like responses, making it a powerful tool for a wide range of applications, from content creation, legal, to customer service. Just like any other AI models in the market, Claude is also trained on a diverse range of internet text. However, unlike most AI models, it has focus on "safety", which makes it possible to refuse outputs that it considers "harmful" or "untruthful" for the users.
 
 ### Introduction to Streamlit
 
-Streamlit is an open-source Python library that empowers developers and data scientists to create and share visually appealing, customized web apps for data science projects. With Streamlit, you can build and deploy fully-featured, data-driven web applications in just a few minutes.
-
-Streamlit's simple and intuitive API allows you to turn data scripts into interactive UI components. It supports a wide range of widgets for user input, including sliders, text inputs, and buttons, making it easy to create interactive, user-friendly applications.
-
-In addition to its ease of use, Streamlit also offers robust functionality. It includes features for caching, theming, and custom components, allowing you to create complex applications with minimal code. Whether you're creating a simple data visualization or a complex machine learning tool, Streamlit provides the tools you need to bring your project to life.
+Streamlit is an open-source Python library that makes it easy and possible for developers and data scientists to create and share visually appealing and customized web apps. Developers can use Streamlit to build and deploy fully featured data science apps in minutes. It is made possible by the simple and intuitive API that can be used to turn data scripts into UI components.
 
 ### Prerequisites
 
