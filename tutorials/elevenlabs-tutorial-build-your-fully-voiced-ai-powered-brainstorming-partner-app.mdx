@@ -144,8 +144,7 @@ The command above should run the app in development mode, which automatically op
 
 ### Building the Backend
 
-Now, let's dive into the coding part! In this section, we will start by adding handlers for our backend's endpoints. But before we get into that, let's kick off our coding session by installing the remaining dependencies that our backend requires.
-
+Now, let's get into the coding part! In this part, we will begin by adding some handlers for our backend's endpoints. However, let's start off our coding session by installing the remaining dependencies that our backend needs.
 #### Installing the Necessary Libraries
 
 Let's run this command to install all the required libraries in a single command
@@ -217,7 +216,7 @@ def generate_chat_response():
 ```
 Next up, our handler for `/chat` endpoint! this endpoint accepts a list of conversation history from both "human" and "assistant" and will return the latest response from Claude model (the "assistant" role). We also use `claude-v1.3-100k` model, the most recent and sophisticated Claude model provided by Anthropic. Do note that in this handler function, we explicitly tell the AI model to be our brainstorming partner and we need it to collaboratively brainstorm some ideas and provide some suggestions, we also tell it to keep the response concise. We need to keep the response concise mainly because there is a certain limit of characters that can be processed in the Free plan of ElevenLabs API, as well as keeping the conversation natural and engaging.
 
-1. **Define route for generating speech:**
+5. **Define route for generating speech:**
 
 ```python
 @app.route('/talk', methods=['POST'])
@@ -441,25 +440,24 @@ Finally, to complete the visual of our brainstorming partner app, let's change t
 
 Once our frontend is complete, it's time to test the entire application. We will interact with the chatbot, sending various messages and checking the responses. The responses should be relevant to our messages, and we should hear the synthesized speech of Claude's responses. If everything is working correctly, we have successfully built a chatbot application using the ElevenLabs API, Anthropic's Claude, ReactJS, and Flask.
 
-To begin, let's run our front-end by executing this command:
+Let's run our front-end by running this command:
 
 ```bash
 npm start
 ```
-
-Our browser should automatically open the app. At this point, it might look simple, but it has all the components that we need. It includes a component to display the chat history, a text input, and an audio player to play the generated speech from the backend.
+Our browser should automatically open the app. At this point, it was pretty simple, but it has all the components that we need. It has a component to display the chat history, a text input, and also an audio player to play the generated speech from the backend.
 
 <Img src="https://iili.io/HiQEVLX.png" alt="The view of our Brainstormy app, it has a title, text input, and an audio player" />
 
-Let's ask our app to brainstorm some ideas on how we can innovate the health care system. After we're done, click the "Send" button!
+Let's ask our app to brainstorm some idea on how we innovate the health care system. After we're done, click the "Send" button!
 
 <Img src="https://iili.io/HiQEjrG.png" alt="The app shows a loading indicator with the label 'Thinking'" />
 
-Look how our Brainstormy app is thinking! Hopefully, it won't take long for the answer to arrive. 
+Look how our Brainstormy app is thinking! hopefully, it won't take long for the answer to arrive. 
 
 <Img src="https://iili.io/HiQEO74.png" alt="The app shows the response and plays the generated speech immediately after it's received by the frontend" />
 
-See? Just as in our real brainstorming sessions, we throw around ideas and let our mind focus on the topics at hand. It might take a while before the next person speaks up. However, once the response, along with the generated speech, is received, it's immediately played! So, we don't have to worry about missing anything by, for instance, leaving the window minimized, as we shall soon hear the Brainstormy app "speak" its mind.
+See? just as in our real brainstorming sessions, we throw around ideas and let our mind focus on the topics at hand, it might take a while before the next person speaks up. However, once the response along with the generated speech is received, it's immediately played! So, we don't have to worry about missing anything by, for instance, leaving the window minimized, as we shall soon hear the Brainstormy app "speak" its mind.
 
 ## Conclusion
 
