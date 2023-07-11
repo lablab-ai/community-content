@@ -154,6 +154,190 @@ Make sure you have the required dependencies installed. In the project root dire
 npm install express node-fetch fs
 ```
 
+Let's add some more functionality to our app. 
+I highly recommend firstly try to use [monday.com API playground](https://monday.com/developers/v2/try-it-yourself) to test queries and mutations.
+Or sign to your [monday.com](https://monday.com/) account and go to [API playground](https://monday.com/developers/v2/try-it-yourself) for better experience.
+
+<Img src="https://iili.io/HsOLdXa.png" alt="Playground" caption="Playground"/>
+
+
+You can get `group_id` by the following query:
+
+```javascript
+
+const [groupId, setGroupId] = useState('');
+    
+    const getGroupId = () => {
+        let query = `query {
+                        boards (ids: 1175237853) {
+                            groups {
+                                title
+                                id
+                            }
+                        }
+                    }`;
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'your_api_key' // replace with your actual API key
+            },
+            body: JSON.stringify({
+                'query': query
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            const groupId = res.data.boards.groups[0].id;
+            setGroupId(groupId);  // set group id 
+        });
+    };
+```
+
+Now, let's create a new task (a new item).
+
+```javascript
+const [itemId, setItemId] = useState('');
+
+    const createNewTask = () => {
+        let query = `mutation { 
+                        create_item ( 
+                            board_id: 1175237853, 
+                            group_id: ${groupId},}, 
+                            item_name: "Enter your desired task details here", 
+                            column_values: "{\"date\":\"2023-07-11\"}") { 
+                                id 
+                        } 
+                    }`;  // GraphQL mutation to create a new task (a new item)
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'your_api_key' // replace with your actual API key
+            },
+            body: JSON.stringify({
+                'query': query
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            const itemId = res.data.create_item.id;
+            setItemId(itemId);  // set item id (we need it to add files to the specific item)
+            
+            // you may call fetchImage() to automatilcally generate an image when new task is created
+        });
+    };
+```
+
+Now, let'a add a new column of type file to our board. We will use it to save the generated images. 
+
+
+```javascript
+
+    const createColumnTypeFile = () => {
+        let query = `mutation{
+                        create_column(
+                            board_id: 1175237853, 
+                            title:"Images", 
+                            description: "This is for images column", 
+                            column_type:file) {
+                                id
+                                title
+                                description
+                        }
+                    }`;  // GraphQL mutation to create new column of type file in our board (in our case to save here all the generated images)
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'your_api_key' // replace with your actual API key
+            },
+            body: JSON.stringify({
+                'query': query
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            // implement your logic here
+            console.log(res);
+        });
+    };
+```
+
+Get column id to save generated images to the specific column. This is an example query to get column id. You can use it to get column id of any column in your board.
+
+
+```javascript
+
+const [columnId, setColumnId] = useState('');
+
+    const createColumnTypeFile = () => {
+        let query = `query { 
+                        boards(ids: 1175237853) { 
+                            items (ids: 1226918259){
+                                column_values { 
+                                    id
+                                } 
+                            } 
+                        } 
+                    }`;  // GraphQL query to get column id, to save generated images to the specific column
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'your_api_key' // replace with your actual API key
+            },
+            body: JSON.stringify({
+                'query': query
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            const columnId = res.data.boards.items[0].column_values[0].id;
+            setColumnId(columnId);  // set column id (we need it to add files to the specific column)
+        });
+    };
+```
+
+
+Next, we will add a new file to the column we just created. We will use the `itemId`, `columnId` and `image` we got from the previous steps.
+This is an example mutation to add a new files to the column.
+
+
+```javascript
+    const addImage = () => {
+        let query = `mutation {
+                        add_file_to_column (
+                            item_id: ${itemId}, 
+                            column_id: ${columnId}}, 
+                            file: ${image}) {
+                                id
+                        }
+                    }`;  // GraphQL mutation to add a new file to the column (in our case to save here generated images)
+
+        fetch("https://api.monday.com/v2", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'your_api_key' // replace with your actual API key
+            },
+            body: JSON.stringify({
+                'query': query
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            // implement your logic here
+            console.log(res);
+        });
+    };
+```
+
+
 Cool! Now, go to your github account, create `New repository` and push your project: 
 
 ```bash
