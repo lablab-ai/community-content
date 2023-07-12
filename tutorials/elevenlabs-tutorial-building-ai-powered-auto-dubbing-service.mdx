@@ -1,6 +1,7 @@
 ---
 title: "ElevenLabs Tutorial: Building AI-Powered Auto Dubbing Service"
 description: "How to utilize OpenAI's Whisper, ElevenLabs' API and Anthropic's Claude model to transcribe, translate and generate dubs for Youtube videos"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/elevenlabs-dubing.png"
 authorUsername: "septiannugraha"
 ---
 
@@ -95,7 +96,7 @@ source env/bin/activate
 ```
 Our terminal should show the name of the virtual environment once it's activated.
 
-<Img src="https://iili.io/Hs3rgj9.png" alt="the terminal show the name of the virtual environment once activated"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c400acc4-5ce1-4d4f-f137-ff99fe251100/full" alt="the terminal show the name of the virtual environment once activated"/>
 
 #### Installing the dependencies
 
@@ -195,7 +196,7 @@ streamlit run autodubs.py
 ```
 The app should open in our default browsers once the command is executed.
 
-<Img src="https://iili.io/Hs3rrQe.png" alt="the user interface of our AutoDubs app"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5ff0a6d9-c16d-4303-bea4-c96223fa6a00/full" alt="the user interface of our AutoDubs app"/>
 
 Great! This is the beginning of our app. We will add more UI elements as we progress through the tutorial and add more features. For now, if we enter Youtube link and click the button, it should print the link in our terminal output.
 
@@ -263,11 +264,11 @@ link = st.text_input("Link to Youtube Video", key="link")
 ```
 Now, let's run the app again. If we had the app running before, just click the upper right menu and click "Rerun". This time, try to insert the Youtube link and click the button! Let's ignore the language selection for now. For this tutorial, we'll use Fireship's video, "Machine Learning Explained in 100 Seconds" which can be accessed in this URL: `https://www.youtube.com/watch?v=PeMlggyqz0Y&t=1s`.
 
-<Img src="https://iili.io/Hs3ri4j.png" alt="The result of the 'Transcribe!' button click. The app shows the video title as well as the thumbnail."/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/59a7af2a-6b8e-40cd-2372-6fedddce4500/full" alt="The result of the 'Transcribe!' button click. The app shows the video title as well as the thumbnail."/>
 
 After a few minutes, our app should show the video title and its thumbnail! Not only that, the transcription process should begin immediately after that. Let's scroll down.
 
-<Img src="https://iili.io/Hs3r6Cu.png" alt="The app should show the downloaded audio stream file and the dataframe containing the transcription result"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/97efc1c9-e58f-42c9-dba1-a1815c586100/full" alt="The app should show the downloaded audio stream file and the dataframe containing the transcription result"/>
 
 Voila! after the transcription process is done. We should have the Pandas DataFrame with columns such as "start", "end", and "text". Those columns contains the result of the transcription process. We should also notice that the transcription took a little faster because we've cut the audio into one minute duration, as opposed to 100 seconds. Well done!
 
@@ -330,7 +331,7 @@ At the end of this function, we print the translation result into the terminal o
 ```
 After we're done with the translation, we're ready to move on to the next step, generating dubs for the video. Let's test the app before we move on. Rerun the app, and click the "Transcribe!" button.
 
-<Img src="https://iili.io/Hs3rPEb.png" alt="The translation result shown in the terminal output"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/34e8e1cc-0fea-48b9-47ba-32be9e6ccf00/full" alt="The translation result shown in the terminal output"/>
 
 This time, our terminal should show the translation from the original language (English), to the destination language that we selected earlier in the select box (Polish).
 
@@ -442,7 +443,7 @@ With all the processes and requirements covered, let's test run our app again! I
 
 When everything is ready, let's click our "Transcribe!" button again! This time, please wait until the whole process is finished, as it involves different requests to different API, with various files being written as well.
 
-<Img src="https://iili.io/Hs3rL3x.png" alt="The video combination process is finished, resulting in a video player which we can run"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0492756a-bd04-485b-4eab-27337f17c400/full" alt="The video combination process is finished, resulting in a video player which we can run"/>
 
 Amazing! our app should show a video player once the video combining process is finished, as well as updating the caption to "Video successfully combined, Enjoy! 😀". We can try playing the video, which should play the same video, but with our dubs in Polish.
 
