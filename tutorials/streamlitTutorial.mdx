@@ -1,0 +1,129 @@
+Title: "LabLab Streamlit Tutorial: How to use Streamlit to deploy your app for your hackathon project"
+Description: "How to use streamlit to deploy your app on their community cloud service for your hackathon project"
+Author's Username: Mohammad Noor Alkabbani
+What is Streamlit?
+https://streamlit.io is a free and open-source framework that you can use to rapidly build your own project using Python and Javascript, the framework has a comprehensive library that you can use.
+
+How to Build a Streamlit App
+You will need to install streamlit on your preferred code editor, it's simply a step
+
+Step 1
+-Open your terminal and type:
+pip install streamlit
+_Install any other library/os, that you want to use
+for example Langchain
+pip install langchain
+
+-In your terminal, and create a new folder named "Streamlit". then create a file inside there called "streamlit_app.py", also if you're using an AI create an "apikey.py" and add the api key in there, and then create a "requirements.txt" file
+
+-Add all the names of the libraries you're using to the requirments.txt file:
+for example:
+Streamlit==1.23.1
+Langchain==1.23.0
+
+-To check what version of streamlit you're using, enter in this command in the terminal:
+streamlit --version
+
+-Now import the libs you installed into streamlit_app.py:
+import streamlit as st
+-Also import any other os such as:
+from langchain.llms import OpenAI from langchain.prompts import PromptTemplate from langchain.chains import LLMChain, SequentialChain from langchain.memory import ConversationBufferMemory from langchain.utilities import WikipediaAPIWrapper
+
+-and if you have any api-key, import that as well:
+from apikey import apikey
+
+Now start building your app using Streamlit's framework:
+
+(I'll be using a project I built as an example):
+
+os.environ['OPENAI_API_KEY']= apikey     st.title('Marketing 3-In-1 Tool')
+prompt = st.text_input('Example')
+
+# template
+title_template = PromptTemplate(
+    input_variables = ['topic'],
+    template='Example {topic}'
+)
+
+script_template = PromptTemplate(
+    input_variables = ['title'],
+    template='Example {title}'
+)
+
+seo_template = PromptTemplate(
+    input_variables = ['title'],
+    template='Example {title}'
+)
+
+# Memory
+title_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
+script_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+seo_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+
+     
+# llms
+llm = OpenAI(temperature=0.9) 
+title_chain = LLMChain(llm=llm, prompt=title_template,  output_key='title', memory=title_memory)
+script_chain = LLMChain(llm=llm, prompt=script_template, output_key='script', memory=script_memory)
+seo_chain = LLMChain(llm=llm, prompt=seo_template, output_key='title', memory=seo_memory)
+
+# Output
+if prompt:
+    title = title_chain.run(prompt)
+    script = script_chain.run(title=title)
+    seo = seo_chain.run(title=title)
+    st.write(response['title'])
+    st.write(response['script'])
+    st.write(response['title'])
+    
+    with st.expander('Description History'):
+        st.info(title_memory.buffer)
+        
+    with st.expander('Title History'):
+        st.info(script_memory.buffer)
+        
+    with st.expander('Seo History'):
+        st.info(seo_memory.buffer)
+
+
+Side note: for the api key file, the format is this:
+apikey = 'sk-exampleforopenaiapikey123
+
+How to deploy your app/project after you've built it using streamlit's framework
+You will need to use Streamlit's community cloud service, which is free.
+All you need to do is:
+
+Step 2
+-Make a repository in github and upload all the files you finished up,
+for a detailed step-by-step tutorial on how to do that please refer to the previous tutorial by fabian called "How to set up a github repo"
+
+Go to the streamlit's community cloud service website, create an account and navigate to the "Get Started" button
+<Img src={https://iili.io/HPMXU2R.png}, alt={website}, caption={Community cloud service website}/>
+
+And you'll see a header called "Your Apps", and a button called "New app"
+
+<Img src={https://iili.io/HPMXhmP.png}, alt={App_URL}, caption={App URL}/>
+
+-Click on the button, and you'll see a header called "Deploy an app"
+and four sub-headers consecutively called "Repository" "Branch" "Main file path" and "App URL".
+
+<Img src={https://iili.io/HPMXkBa.png}, alt={Deploy}, caption={Deploy an app}/>
+
+-Go to your GitHub repo and copy the main file path/link address from it, go back to the Streamlit page, click on "Paste GitHub URL" paste the GitHub URL in the sub-header called "GitHub URL", and choose the name of your domain in "App URL"
+
+<Img src={https://iili.io/HPMX8rv.png}, alt={Github}, caption={Github Repo}/>
+
+<Img src={https://iili.io/HPMXvEJ.png}, alt={Deploy1}, caption={Deploy an app 1}/>
+
+-If you have any API-Key or any configuration file (Use TOML format) that you want to use, click on advanced settings, choose what version of Python you're using, and paste the secret key or any other action that requires configs, in there and click "Save"
+
+<Img src={https://iili.io/HPMXOLg.png}, alt={Advanced_settings}, caption={Advanced settings}/>
+
+<Img src={https://iili.io/HPMXwI1.png}, alt={Advanced_settings1}, caption={Advanced settings 1}/>
+
+<Img src={https://iili.io/HPMXNhF.png}, alt={Advanced_settings2}, caption={Advanced settings 2}/>
+
+-Now all you need to do is click "Deploy!", and your app will be up on the cloud in no time.
+
+Author's username: Mohammad Noor Alkabbani
+

@@ -1,0 +1,133 @@
+عنوان: "دليل LabLab Streamlit: كيفية استخدام Streamlit لنشر تطبيقك لمشروع الهاكاثون الخاص بك"
+
+الوصف: "كيفية استخدام Streamlit لنشر تطبيقك على خدمة سحابة المجتمع الخاصة بهم لمشروع الهاكاثون الخاص بك"
+
+Streamlit هو مجاني ومفتوح المصدر ويمكن استخدامه لبناء مشروعك بسرعة باستخدام Python و Javascript. يحتوي الإطار على مكتبة شاملة يمكنك استخدامها.
+
+كيفية بناء تطبيق Streamlit
+
+ستحتاج إلى تثبيت Streamlit على محرر الأكواد الخاص بك. إنه خطوة بسيطة.
+
+الخطوة 1
+-افتح الطرفية الخاصة بك واكتب:
+pip install streamlit
+
+_تثبيت أي مكتبة/نظام تريد استخدامه
+على سبيل المثال، Langchain
+pip install langchain
+
+-في الطرفية الخاصة بك، أنشئ مجلدًا جديدًا باسم "Streamlit". ثم أنشئ ملفًا بداخله يسمى "streamlit_app.py". إذا كنت تستخدم AI، فأنشئ "apikey.py" وأضف مفتاح الواجهة البرمجية فيه. ثم أنشئ ملفًا يسمى "requirements.txt".
+
+-أضف جميع أسماء المكتبات التي تستخدمها إلى ملف requirments.txt:
+على سبيل المثال:
+
+Streamlit==1.23.1
+Langchain==1.23.0
+
+-للتحقق من إصدار Streamlit الذي تستخدمه، أدخل هذا الأمر في الطرفية:
+streamlit --version
+
+-الآن استورد المكتبات التي قمت بتثبيتها في streamlit_app.py:
+import streamlit as st
+-استورد أيضًا أي نظام تشغيل آخر مثل:
+from langchain.llms import OpenAI from langchain.prompts import PromptTemplate from langchain.chains import LLMChain, SequentialChain from langchain.memory import ConversationBufferMemory from langchain.utilities import WikipediaAPIWrapper
+
+-وإذا كان لديك أي مفتاح واجهة برمجة تطبيقات، فاستورده أيضًا:
+from apikey import apikey
+
+الآن ابدأ في بناء تطبيقك باستخدام إطار Streamlit:
+
+(سأستخدم مشروعًا قمت بإنشائه كمثال):
+
+os.environ['OPENAI_API_KEY']= apikey     st.title('Marketing 3-In-1 Tool')
+prompt = st.text_input('Example')
+
+# template
+title_template = PromptTemplate(
+    input_variables = ['topic'],
+    template='Example {topic}'
+)
+
+script_template = PromptTemplate(
+    input_variables = ['title'],
+    template='Example {title}'
+)
+
+seo_template = PromptTemplate(
+    input_variables = ['title'],
+    template='Example {title}'
+)
+
+# Memory
+title_memory = ConversationBufferMemory(input_key='topic', memory_key='chat_history')
+script_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+seo_memory = ConversationBufferMemory(input_key='title', memory_key='chat_history')
+
+     
+# llms
+llm = OpenAI(temperature=0.9) 
+title_chain = LLMChain(llm=llm, prompt=title_template,  output_key='title', memory=title_memory)
+script_chain = LLMChain(llm=llm, prompt=script_template, output_key='script', memory=script_memory)
+seo_chain = LLMChain(llm=llm, prompt=seo_template, output_key='title', memory=seo_memory)
+
+# Output
+if prompt:
+    title = title_chain.run(prompt)
+    script = script_chain.run(title=title)
+    seo = seo_chain.run(title=title)
+    st.write(response['title'])
+    st.write(response['script'])
+    st.write(response['title'])
+    
+    with st.expander('Description History'):
+        st.info(title_memory.buffer)
+        
+    with st.expander('Title History'):
+        st.info(script_memory.buffer)
+        
+    with st.expander('Seo History'):
+        st.info(seo_memory.buffer)
+
+
+ملاحظة: بالنسبة لملف مفتاح واجهة برمجة التطبيقات، يكون الشكل كما يلي:
+apikey = 'sk-exampleforopenaiapikey123
+
+كيفية نشر تطبيقك/مشروعك بعد بنائه باستخدام إطار Streamlit
+
+ستحتاج إلى استخدام خدمة سحابة المجتمع الخاصة بـ Streamlit، والتي هي مجانية.
+كل ما عليك فعله هو:
+
+الخطوة 2
+-أنشئ مستودعًا في GitHub وقم بتحميل جميع الملفات التي انتهيت منها.
+للحصول على دليل تفصيلي خطوة بخطوة حول كيفية القيام بذلك، يرجى الرجوع إلى الدليل السابق بعنوان "كيفية إعداد مستودع GitHub"
+
+-انتقل إلى موقع خدمة سحابة المجتمع الخاصة بـ Streamlit، أنشئ حسابًا وانتقل إلى زر "ابدأ"
+<Img src={https://iili.io/HPMXU2R.png}, alt={website}, caption={موقع خدمة سحابة المجتمع}/>
+
+وسترى عنوانًا يسمى "تطبيقاتك"، وزرًا يسمى "تطبيق جديد"
+
+<Img src={https://iili.io/HPMXhmP.png}, alt={App_URL}, caption={رابط التطبيق}/>
+
+-انقر على الزر، وسترى عنوانًا يسمى "نشر تطبيق"
+وأربعة عناوين فرعية تسمى على التوالي "المستودع" و "الفرع" و "مسار الملف الرئيسي" و "رابط التطبيق".
+
+<Img src={https://iili.io/HPMXkBa.png}, alt={Deploy}, caption={نشر تطبيق}/>
+
+-انتقل إلى مستودع GitHub الخاص بك وانسخ مسار الملف الرئيسي/عنوان الرابط منه، انتقل إلى صفحة Streamlit، انقر على "لصق عنوان URL من GitHub"، الصق عنوان URL من GitHub في العنوان الفرعي المسمى "عنوان URL من GitHub"، واختر اسم النطاق الخاص بك في "رابط التطبيق"
+
+<Img src={https://iili.io/HPMX8rv.png}, alt={Github}, caption={مستودع GitHub}/>
+
+<Img src={https://iili.io/HPMXvEJ.png}, alt={Deploy1}, caption={نشر تطبيق 1}/>
+
+-إذا كان لديك أي مفتاح واجهة برمجة تطبيقات أو أي ملف تكوين (استخدم تنسيق TOML) تري
+
+الرجاء ترجمة هذا النص إلى العربية:
+
+<Img src={https://iili.io/HPMXOLg.png}, alt={Advanced_settings}, caption={Advanced settings}/>
+
+<Img src={https://iili.io/HPMXwI1.png}, alt={Advanced_settings1}, caption={Advanced settings 1}/>
+
+<Img src={https://iili.io/HPMXNhF.png}, alt={Advanced_settings2}, caption={Advanced settings 2}/>
+
+كل ما عليك فعله الآن هو النقر على "نشر!"، وسيكون تطبيقك على السحابة في أسرع وقت ممكن.
+اسم المؤلف: Mohammad Noor Alkabbani.
