@@ -1,7 +1,7 @@
 ---
 title: "ElevenLabs Tutorial: Create stories with Voice AI from ElevenLabs"
 description: "Discover how to create a Story Generator app using ElevenLabs and OpenAI's ChatGPT."
-image: ""
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/elevenlabs-stories.png"
 authorUsername: "abdibrokhim"
 ---
 
@@ -135,7 +135,7 @@ async def voice_over(query: str):
 
     audio_path = f'{AUDIOS_PATH}{query[:4]}.mp3'
     file_path = f'{AUDIO_PATH}{query[:4]}.mp3'
-    
+
     audio = generate(
         text=query,
         voice='Bella',  # premade voice
@@ -147,7 +147,7 @@ async def voice_over(query: str):
             f.write(audio)
 
         return file_path
-    
+
     except Exception as e:
         print(e)
 
@@ -168,9 +168,9 @@ def chat_chatgpt(query: str):
                 {"role": "user", "content": query}
             ]
         )
-        
+
         return response['choices'][0]['message']['content']
-    
+
     except Exception as e:
         print(e)
 
@@ -186,13 +186,13 @@ uvicorn api:app --reload
 
 Now, open your browser and go to `http://localhost:8000/docs`. You should see the following:
 
-<Img src="https://iili.io/HiZh4fI.png" alt="FastAPI dashboard" caption="FastAPI dashboard"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9b80d24e-a52e-46ef-3410-65c0941d8100/full" alt="FastAPI dashboard" caption="FastAPI dashboard"/>
 
 Try to play with the API and check it out whether everything we implemented correctly. For example, click on `dropdown` > `Try it out`:
 
-<Img src="https://iili.io/HiZhgiN.png" alt="FastAPI voice" caption="FastAPI voice"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/baa94b65-fddd-4350-fac4-b757778d1600/full" alt="FastAPI voice" caption="FastAPI voice"/>
 
-<Img src="https://iili.io/HiZhPUX.png" alt="FastAPI story" caption="FastAPI story"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c25d2a72-6e8c-4418-0a3b-9db58970a900/full" alt="FastAPI story" caption="FastAPI story"/>
 
 
 ## Frontend
@@ -267,7 +267,7 @@ function App() {
       .catch(err => {
           console.log(err);
       });
-      
+
     setLoading(false);
   }
 
@@ -299,7 +299,7 @@ function App() {
       });
 
     setLoading(false);
-    
+
   }
 
 
@@ -405,7 +405,7 @@ Next, we implemented functions: `handleQueryChange`, `generateStory`, `generateA
       .catch(err => {
           console.log(err);
       });
-      
+
     setLoading(false);
   }
 
@@ -442,7 +442,7 @@ Next, we implemented functions: `handleQueryChange`, `generateStory`, `generateA
       });
 
     setLoading(false);
-    
+
   }
 ```
 
@@ -506,17 +506,17 @@ npm start
 
 Open your browser and go to `http://localhost:3000/`. You will see the app running.
 
-<Img src="https://iili.io/HiZhOHg.png" alt="FastAPI voice" caption="FastAPI voice"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5a43af65-4e01-46d3-198e-844536af2300/full" alt="FastAPI voice" caption="FastAPI voice"/>
 
 Let's try to generate a story. `Generate a short story about cat and kittens.`.
 
-<Img src="https://iili.io/HiZhwUF.png" alt="FastAPI voice" caption="FastAPI voice"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1fd4e23c-96ac-4983-521a-b7864e387800/full" alt="FastAPI voice" caption="FastAPI voice"/>
 
 Cool! We got a story. Let's go through it.
 
-<Img src="https://iili.io/HiZhvDv.png" alt="FastAPI voice" caption="FastAPI voice"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/58ca7c51-0592-4821-09b5-2f7ec74fe200/full" alt="FastAPI voice" caption="FastAPI voice"/>
 
-<Img src="https://iili.io/HiZhUVp.png" alt="FastAPI voice" caption="FastAPI voice"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/30c043c3-4cc4-4c83-521f-315d94e56d00/full" alt="FastAPI voice" caption="FastAPI voice"/>
 
 Perfect! Let's listen to the audio of this story by clicking on the `HeadphonesOutlined` icon.
 
@@ -527,8 +527,4 @@ I hope this tutorial provided clear and detailed guidance, accompanied by few sc
 By the end of this tutorial, you should have a working app that can generate stories and voiceovers. This is amazing! Today, we learned a lot of cool technologies and tools.
 
 Thank you for following along with this tutorial.
-
-If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
-
-made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
 
