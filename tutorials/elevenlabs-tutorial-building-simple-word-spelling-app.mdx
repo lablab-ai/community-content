@@ -1,6 +1,7 @@
 ---
 title: "ElevenLabs Tutorial: Building Simple Word Spelling App"
 description: "How to utilize ElevenLabs API and Streamlit to build simple app which generates random words which are commonly misspelled and generate speech to spell them"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/elevenlabs-spelling.png"
 authorUsername: "septiannugraha"
 ---
 
@@ -60,7 +61,7 @@ source env/bin/activate
 ```
 Once activated, the output of our terminal should show the name of the virtual environment (env), like so:
 
-<Img src="https://iili.io/HimUlYG.png" alt="the terminal should show the name of our virtual environment, indicating that the virtual environment is activated" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3b33b30c-8123-4d21-4e3a-4eb0e6ae2600/full" alt="the terminal should show the name of our virtual environment, indicating that the virtual environment is activated" />
 
 Next, it's time to install the libraries we need for this project! let's use the `pip` command to install the `streamlit`, `anthropic`, and `elevenlabs` library. Note that we also install a version-locked `pydantic` library to prevent a Pydantic-related error in one of the `elevenlabs` function.
 
@@ -89,7 +90,7 @@ streamlit run randomwords_app.py
 
 The app should open automatically in our default browsers! it should show the title and text for now. Next, we're going to add random word generation feature using Anthropic's Claude model.
 
-<Img src="https://iili.io/HimU0vf.png" alt="the app should show the title (Random Words Generator) and text (Hello, this is a random words generator app)" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/17e1e8c4-24f2-46f5-c2a7-34145af89600/full" alt="the app should show the title (Random Words Generator) and text (Hello, this is a random words generator app)" />
 
 One last thing though, we'll have to provide our app with the API keys for the services that we're going to use, namely Anthropic's Claude model and ElevenLabs' Speech Synthesis feature. As these keys are considered sensitive, we should keep them in a safe and isolated place. 
 
@@ -228,17 +229,17 @@ Let's run the app once again with the same command. We can also just rerun the a
 
 It should show this updated user interface.
 
-<Img src="https://iili.io/HimU1p4.png" alt="The updated UI of our random words generator app, it has subheader, text elements and button" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6544f772-83ee-41bc-6580-48bf76613700/full" alt="The updated UI of our random words generator app, it has subheader, text elements and button" />
 
 Now, let's try clicking the `Generate` button!
 
-<Img src="https://iili.io/HimUGTl.png" alt="the app shows loading indicator" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fe0dfa23-f632-4e54-0148-deb1a951f300/full" alt="the app shows loading indicator" />
 
 One of the sweet things about Streamlit is that it handled loading and provided the loading indicator out of the box. We should see the indicator in the upper-right corner, as well as the option to "stop" the operation. Neat, huh?
 
 After a few seconds, the result should be showed in the UI.
 
-<Img src="https://iili.io/HimUMj2.png" alt="Our app generated the word 'Gnocchi' for the random word" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d79b178f-3f9d-4b1d-9cd7-106185d05600/full" alt="Our app generated the word 'Gnocchi' for the random word" />
 
 Perfect! notice that the app correctly split the generated text from the Claude model into word and the meaning. However, if the result doesn't come out according to the expected format, we can always click the `Generate` button again.
 
@@ -286,7 +287,7 @@ Curious how it works out? me too! let's test the app now!
 
 Let's run the app again using `streamlit run` or just rerun the app if we have it running already. It should look exactly the same as the last time we left it. However, let's try to click the "Generate" button this time!
 
-<Img src="https://iili.io/HimUVQS.png" alt="Our app shows an audio player once a random word is generated" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/459f9a78-bc76-4412-f065-466a61d61200/full" alt="Our app shows an audio player once a random word is generated" />
 
 Amazing! this time, the app also shows an audio player! Let's try playing it. Using the multilingual model, the speech generated should use the accent and intonation which is close to the origin language of the word. For example, "entrepreneur" should be pronounced in French accent.
 
