@@ -1,6 +1,7 @@
 ---
 title: "ElevenLabs Tutorial: Build Your Fully Voiced AI-Powered Brainstorming Partner App"
 description: "How to utilize ElevenLabs API along with Anthropic's Claude model to build fully-voiced brainstorming partner app, built with Flask and ReactJS"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/eleven-brainstorm.png"
 authorUsername: "septiannugraha"
 ---
 
@@ -262,7 +263,7 @@ flask run
 
 If everything is installed correctly, and our virtual environment is activated, our terminal should display the following output:
 
-<Img src="https://iili.io/HiQEXBn.png" alt="The output of our terminal, indicating that the backend is running well" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c98fff5a-b8f4-422f-9615-946dc44e2400/full" alt="The output of our terminal, indicating that the backend is running well" />
 
 Great! Now, let's begin testing our backend! In this tutorial, I'm going to use [Insomnia](https://insomnia.rest/), a free REST API testing and documentation design tool. It's straightforward to get started - simply create a new collection and begin adding the endpoints we need to test!
 
@@ -270,7 +271,7 @@ Great! Now, let's begin testing our backend! In this tutorial, I'm going to use 
 
 Let's test our `/chat` endpoint first! This endpoint accepts a JSON payload with a `messages` field, which is a list of message objects each containing `role` and `content` fields. Let's ask our backend this question: "let's talk about how we can innovate the health care system".
 
-<Img src="https://iili.io/HiQEN2f.png" alt="We asked the backend to talk about how we can innovate the health care system" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d8da2bab-6efc-445d-e175-ff46d73fe100/w250" alt="We asked the backend to talk about how we can innovate the health care system" />
 
 The backend should respond with its ideas about innovation in the health care system. Because we've specified in the backend code that we need our brainstorming partner to provide concise suggestions, it keeps the response short while still packing in essential information.
 
@@ -280,7 +281,7 @@ Next, how do we generate the speech from the backend? Remember the other endpoin
 
 Next, let's test our `/talk` endpoint. This endpoint accepts JSON as a parameter with a `message` field, where we input our message as a "script" that the ElevenLabs API will use to generate speech. For this test, we'll copy the response from the `/chat` endpoint earlier and use it as the payload for our request to the `/talk` endpoint.
 
-<Img src="https://iili.io/HiQEh1s.png" alt="We made a request to the `/talk` endpoint and, after a while, we received an audio file containing the generated speech" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8c3deb2f-6e62-4079-6a01-990d3a474f00/public" alt="We made a request to the `/talk` endpoint and, after a while, we received an audio file containing the generated speech" />
 
 After a few seconds, our `/talk` endpoint should return an audio file that we can play directly to test the result. Listen to the soothing voice of "Bella" as it reads the suggestion from the Claude model on how we should innovate the health care system. Impressive, isn't it? Now, what could make this even better? Of course, an app based on our backend that automatically plays the generated speech as the bot responds with its brainstorming suggestions.
 
@@ -447,15 +448,15 @@ npm start
 ```
 Our browser should automatically open the app. At this point, it was pretty simple, but it has all the components that we need. It has a component to display the chat history, a text input, and also an audio player to play the generated speech from the backend.
 
-<Img src="https://iili.io/HiQEVLX.png" alt="The view of our Brainstormy app, it has a title, text input, and an audio player" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/233b28ba-2d75-4165-bb65-7f181811b600/w250" alt="The view of our Brainstormy app, it has a title, text input, and an audio player" />
 
 Let's ask our app to brainstorm some idea on how we innovate the health care system. After we're done, click the "Send" button!
 
-<Img src="https://iili.io/HiQEjrG.png" alt="The app shows a loading indicator with the label 'Thinking'" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5d27ece1-3e37-4454-c9b2-d17acdd80100/original" alt="The app shows a loading indicator with the label 'Thinking'" />
 
 Look how our Brainstormy app is thinking! hopefully, it won't take long for the answer to arrive. 
 
-<Img src="https://iili.io/HiQEO74.png" alt="The app shows the response and plays the generated speech immediately after it's received by the frontend" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e540902b-7f4a-4088-01dc-cea63b225200/public" alt="The app shows the response and plays the generated speech immediately after it's received by the frontend" />
 
 See? just as in our real brainstorming sessions, we throw around ideas and let our mind focus on the topics at hand, it might take a while before the next person speaks up. However, once the response along with the generated speech is received, it's immediately played! So, we don't have to worry about missing anything by, for instance, leaving the window minimized, as we shall soon hear the Brainstormy app "speak" its mind.
 
