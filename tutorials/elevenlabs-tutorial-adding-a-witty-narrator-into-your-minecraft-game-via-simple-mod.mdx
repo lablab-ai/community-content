@@ -1,7 +1,8 @@
 ---
 title: "ElevenLabs Tutorial: Adding a Witty Narrator into Minecraft via a Simple Mod"
 description: "How to utilize ElevenLabs and Anthropic's Claude model to generate 'A Stanley Parable'-style narration into Minecraft"
-authorUsername: "septiannugraha"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/elevenlabs-thumbnail324.png"
+authorUsername: "septian_adi_nugraha408"
 ---
 
 ## Introduction
@@ -52,11 +53,11 @@ As discussed briefly in the opening of this section, we will begin the whole mod
 
 First, make sure that already have `Minecraft Java Edition` installed in your operating system. After that, let's open our `Minecraft Launcher`.
 
-<Img src="https://iili.io/HsOKcBV.png" alt="the user interface of minecraft launcher" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2994f510-640f-4528-721d-22f9e4f88e00/full" alt="the user interface of minecraft launcher" />
 
 Let's click the `Installations` tab. This menu should list the various installations of Minecraft in our machine.
 
-<Img src="https://iili.io/HsOK5Ij.png" alt="we create new installation with version 1.12.2" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9fc5a6bb-4e36-4894-ba43-5918d4ce5600/full" alt="we create new installation with version 1.12.2" />
 
 Let's create a new installation and choose "Release 1.12.2" from the dropdown. Save the profile and give it a memorable name, or just "1.12.2", and try to start a new world. Make sure everything worked properly. If everything works nicely, great! We're off to a good start already!
 
@@ -64,25 +65,25 @@ Remember our tools from earlier? Next we will install `Forge`. Download [Forge i
 
 From the same github link, we can download more resources that we need to start our modding project. But first, make sure that we already have a directory in our Minecraft app data directory called `mods`. Let's head to the directory by using Windows' Run (Win key + R) and type `%appdata%\.minecraft` (Take care of the backslash! it's a Windows thing). Once we have the directory opened, craate the `mods` directory.
 
-<Img src="https://iili.io/HsOKuku.png" alt="we go to Minecraft app data directory using Windows' Run" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7cdfabff-0ae1-4d9c-2080-f9a4e4f77900/full" alt="we go to Minecraft app data directory using Windows' Run" />
 
 Once we have the `mods` directory, download the mods.zip file from the [RaspberryJamMod's Github](https://github.com/arpruss/raspberryjammod/releases) and copy the file inside the zip file to the `mods` directory me wade earlier.
 
-<Img src="https://iili.io/HsOKAmb.png" alt="we copy the downloaded mods to the mods directory" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d2dc0684-4e10-4a21-b471-b7657a66cf00/full" alt="we copy the downloaded mods to the mods directory" />
 
 Next, we download another zip file which is called `python-scripts.zip`. Inside the zip file, there should be a directory called `mcpipy`, that's the directory of our Python scripts! let's copy the directory into our Minecraft app data directory.
 
 Let's get into the coding now! Open the `mcpipy` directory inside of our `.minecraft` using our favorite code editors/IDEs. After that, we should see various Python scripts which we can run in-game. For instance, there's a script called `whereami` to return the position of the player character to the console, and `helloworld` which will return "Hello world!" and spawning a diamond ore block under the player.
 
-<Img src="https://iili.io/HsOK7hx.png" alt="the various scripts inside mcpipy directory, such as helloworld.py which return 'Hello World'! and spawn a diamond ore block, and whereami.py which simply returns the position of player character." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3ba94102-b04c-418c-0501-2c309b692f00/full" alt="the various scripts inside mcpipy directory, such as helloworld.py which return 'Hello World'! and spawn a diamond ore block, and whereami.py which simply returns the position of player character." />
 
 Let's open our Minecraft Launcher again, it should have `Forge` version to choose now. Let's choose that version and run the game.
 
-<Img src="https://iili.io/HsOK0rP.png" alt="we choose the forge version and run the game." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2f1601a2-a6a4-4357-e726-a82adbddbe00/full" alt="we choose the forge version and run the game." />
 
 Once we have the game run, create a new world, preferably in "Creative" mode so that we don't get accidentally killed when we play around with the scripts. Next, let's run the script by typing `/py helloworld` in the game and press `enter`.
 
-<Img src="https://iili.io/HsOKlEB.png" alt='the `/py helloworld command returns "Hello world!" to the console and spawns a diamond ore block under the player character&apos;s feet' />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/428fd91a-5ad3-436a-df0d-ff8056768800/full" alt='the `/py helloworld command returns "Hello world!" to the console and spawns a diamond ore block under the player character&apos;s feet' />
 
 Great! not long after that, the game should output "Hello world!" at the in-game chat, and when we look down, there should be a diamond ore block under our characters' feet! If we can run the command without error and returning the desired response, congrats! we just started our modding journey in Minecraft using Python scripts.
 
@@ -168,7 +169,7 @@ flask run
 ```
 Open up our REST API testing tools. We can use tools such as [Postman](https://postman.com), [Insomnia](https://insomnia.rest), or just [cURL](https://curl.se). In this tutorial, I use Insomnia. Let's send the payload which is a JSON with a single field called "event" which we fill with "I step on a cobblestone".
 
-<Img src="https://iili.io/HsOKGYF.png" alt='we test running the narration service, the service responded with the witty and over the top narration, A Stanley Parable-style.' />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e9fa1219-20b3-45d4-b517-6da438769100/full" alt='we test running the narration service, the service responded with the witty and over the top narration, A Stanley Parable-style.' />
 
 Fantastic! our narrator service responded with the text which in my case, is as follow:
 
@@ -303,15 +304,15 @@ Finally, we send the event to our narrator service after we compose the event, w
 
 Let's step into our Minecraft world again. Once we get into the world, type `/py narrate`.
 
-<Img src="https://iili.io/HsOKOEN.png" alt='we input `/py narrate` command into our Minecraft console' />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/71ca873a-0019-4868-e2d4-d9c4af068700/full" alt='we input `/py narrate` command into our Minecraft console' />
 
 After we input the command, let's push `Enter`. The opening message of the mod should show up.
 
-<Img src="https://iili.io/HsOKv2t.png" alt='the opening message of our narrate script shows up along with the position of the character as well as the block ID' />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67c3fdba-8d8c-41c3-1253-ffb19d288800/full" alt='the opening message of our narrate script shows up along with the position of the character as well as the block ID' />
 
 As we stepped on a grass in this image, the narration should describe the situation. Let's wait for a moment, the audio narration should play not long after the block type is identified.
 
-<Img src="https://iili.io/HsOKNBp.png" alt='the narration text should show up after the audio narration finished playing' />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/044116a5-c491-4df7-cf9b-fb1b88bf3a00/full" alt='the narration text should show up after the audio narration finished playing' />
 
 Voila! After we listened to the soothing narration from "Bella", we should see the text that narrated our "step on grass" event from earlier. This time, the narrator said:
 ```text
