@@ -22,14 +22,14 @@ In this tutorial, we will ask ChatGPT to help us come up with ideas for a plugin
 
 [Open ChatGPT in your browser](https://chat.openai.com/), and ask it to come up with ideas for a plugin.
 
-<Img caption={"ChatGPT plugin ideas"} alt="ChatGPT plugin ideas" src="https://freeimage.host/i/HiA28I2" />
+<Img src="https://iili.io/HiA28I2.png" alt="ChatGPT plugin ideas" caption="ChatGPT plugin ideas" />
 
 For simplicity's sake, we are going to choose the first idea: A Currency Exchange Rate converter that allows users to convert between different currencies. But you 
 can take any of the suggestions and apply the same process we are going to use to build your own original plugin.
 
 You can now ask ChatGPT to give you a list of APIs that you can use to develop the plugin.
 
-<Img caption={"ChatGPT plugin ideas"} alt="ChatGPT plugin ideas" src="https://freeimage.host/i/HiA2kml" />
+<Img src="https://iili.io/HiA2kml.png" alt="ChatGPT plugin ideas" caption="ChatGPT plugin ideas" />
 
 We will use the second option [Exchange Rates API](https://exchangeratesapi.io/) because it has a free option that is enough for our use case. [Sign up to the 
 free plan to get an API KEY](https://manage.exchangeratesapi.io/signup/). Save that API KEY for later.
@@ -40,23 +40,23 @@ free plan to get an API KEY](https://manage.exchangeratesapi.io/signup/). Save t
 Let's copy the [documentation for Exchange Rates API in the API Layer website](https://apilayer.com/marketplace/exchangerates_data-api) and give it to ChatGPT
 so it can help us write the endpoints for our plugin. For this use case, we only need to give it the /convert endpoint information.
 
-<Img caption={"Exchange Rates API documentation"} alt="Exchange Rates API documentation" src="https://freeimage.host/i/HiA2O7f" />
+<Img src="https://iili.io/HiA2O7f.png" alt="Exchange Rates API documentation" caption="Exchange Rates API documentation" />
 
 Make sure you copy the GET /convert endpoint code in Python (it's in Javascript by default).
 
-<Img caption={"GET /convert endpoint in Python"} alt="GET /convert endpoint in Python" src="https://freeimage.host/i/HiA2ee4" />
+<Img src="https://iili.io/HiA2ee4.png" alt="GET /convert endpoint in Python" caption="GET /convert endpoint in Python" />
 
 Paste the documentation into ChatGPT and ask it to write a plugin based on it.
 
-<Img caption={"Copy the documentation to ChatGPT"} alt="Copy documentation to ChatGPT" src="https://freeimage.host/i/HiA2SXS" />
+<Img src="https://iili.io/HiA2SXS.png" alt="Copy documentation to ChatGPT" caption="Copy the documentation to ChatGPT" />
 
 You might have to try a few times before getting a good answer.
 
-<Img caption={"Ask ChatGPT to write the code"} alt="Ask ChatGPT to write the code" src="https://freeimage.host/i/HiA2UL7" />
+<Img src="https://iili.io/HiA2UL7.png" alt="Ask ChatGPT to write the code" caption="Ask ChatGPT to write the code" />
 
 Ask it to handle errors and create a Flask app with /convert and all the other endpoints necessary for a completely functional plugin.
 
-<Img caption={"Create a Flask app"} alt="Create a Flask app with ChatGPT" src="https://freeimage.host/i/HiA2rB9" />
+<Img src="https://iili.io/HiA2rB9.md.png" alt="Create a Flask app with ChatGPT" caption="Create a Flask app" />
 
 Here is the complete code ChatGPT gave me:
 
@@ -100,15 +100,15 @@ if __name__ == "__main__":
 Awesome! We are now going to create a replit repo and continue working on our plugin there. [Create a replit account](https://replit.com/) if you haven't already 
 and create a new repo.
 
-<Img caption={"Create replit repo"} alt="Create replit repo" src="https://freeimage.host/i/HiA241e" />
+<Img src="https://iili.io/HiA241e.md.png" alt="Create replit repo" caption="Create replit repo" />
 
 Copy the code ChatGPT just wrote into main.py file of the replit repo.
 
-<Img caption={"Copy code to replit"} alt="Copy code to replit" src="https://freeimage.host/i/HiA26ru" />
+<Img src="https://iili.io/HiA26ru.png" alt="Copy code to replit" caption="Copy code to replit" />
 
 On your replit console, open a New Tab -> Secrets and paste there your Exchange Rates API Key. 
 
-<Img caption={"Paste Exchange Rate API Key in Replit repo"} alt="Paste Exchange Rate API Key in Replit repo" src="https://freeimage.host/i/HiA2idb" />
+<Img src="https://iili.io/HiA2idb.md.png" alt="Paste Exchange Rate API Key in Replit repo" caption="Paste Exchange Rate API Key in Replit repo" />
 
 Now modify the code to get the API_KEY from the repository's environment:
 
@@ -122,24 +122,24 @@ API_KEY = os.environ["YOUR_API_KEY"]
 We a are going to ask ChatGPT to write the rest of the files necessary to build the plugin. Go to [Open AI plugin documentation](https://platform.openai.com/docs/plugins/getting-started/plugin-manifest), 
 copy the documentation under the Plugin Manifest section, give it to ChatGPT and ask it to write a manifest file.
 
-<Img caption={"Copy manifest documentation"} alt="Copy manifest documentation" src="https://freeimage.host/i/HiA2s7j" />
+<Img src="https://iili.io/HiA2s7j.png" alt="Copy manifest documentation" caption="Copy manifest documentation" />
 
-<Img caption={"ChatGPT manifest"} alt="ChatGPT manifest" src="https://freeimage.host/i/HiA2Lkx" />
+<Img src="https://iili.io/HiA2Lkx.png" alt="ChatGPT manifest" caption="ChatGPT manifest" />
 
 On your replit repo, create an ai-plugin.json file a paste the manifest code there:
 
-<Img caption={"AI plugin json"} alt="AI plugin json" src="https://freeimage.host/i/HiA2QmQ" />
+<Img src="https://iili.io/HiA2QmQ.png" alt="AI plugin json" caption="AI plugin json" />
 
 Now go to the [Open API section of the ChatGPT plugin documentation](https://platform.openai.com/docs/plugins/getting-started/openapi-definition) and repeat the last step.
 Copy the text under the Open API definition title, paste it to ChatGPT, and ask it to write an Open API definition for your plugin.
 
-<Img caption={"Open API definition"} alt="Open API definition" src="https://freeimage.host/i/HiA2tIV" />
+<Img src="https://iili.io/HiA2tIV.png" alt="Open API definition" caption="Open API definition" />
 
-<Img caption={"ChatGPT's Open API definition"} alt="ChatGPT's Open API definition" src="https://freeimage.host/i/HiA2DhB" />
+<Img src="https://iili.io/HiA2DhB.png" alt="ChatGPT's Open API definition" caption="ChatGPT's Open API definition" />
 
 Go back to your replit repo, create a openapi.yaml file and paste the Open API definition code there:
 
-<Img caption={"Open API definition"} alt="Open API definition" src="https://freeimage.host/i/HiA2bLP" />
+<Img src="https://iili.io/HiA2bLP.png" alt="Open API definition" caption="Open API definition" />
 
 Finally, we are going to make some changes on the code ChatGPT wrote for us to make it work on our environment.
 
@@ -158,7 +158,7 @@ Open a Shell tab on your replit console, and install waitress.
 pip install waitress
 ```
 
-<Img caption={"Install waitress web server"} alt="Install waitress web server" src="https://freeimage.host/i/HiA2yEF" />
+<Img src="https://iili.io/HiA2yEF.png" alt="Install waitress web server" caption="Install waitress web server" />
 
 Then add the following endpoints to serve our manifest and Open API definition files:
 
@@ -327,12 +327,12 @@ components:
 
 We're almost there! Go to to the ChatGPT plugin store, and click on "Develop your own plugin".
 
-<Img caption={"ChatGPT plugin store"} alt="ChatGPT plugin store" src="https://freeimage.host/i/HiA2pB1" />
+<Img src="https://iili.io/HiA2pB1.png" alt="ChatGPT plugin store" caption="ChatGPT plugin store" />
 
 If prompted, click on the "My manifest is ready" button and give it your app's base URL `https://currency-converter-plugin.< YOUR_REPLIT_USERNAME >.repl.co`.
 Continue with the installation and you should now be able to use your plugin. Let's test it!
 
-<Img caption={"ChatGPT plugin currency converter"} alt="ChatGPT plugin currency converter" src="https://freeimage.host/i/HiA39rg" />
+<Img src="https://iili.io/HiA39rg.md.png" alt="ChatGPT plugin currency converter" caption="ChatGPT plugin currency converter" />
 
 🥳🥳🥳
 
@@ -357,7 +357,7 @@ export REPLICATE_API_TOKEN = os.environ["REPLICATE_API_TOKEN"]
 
 On your replit repo, add the REPLICATE_API_TOKEN secret and paste the value.
 
-<Img caption={"Add Replicate API TOKEN"} alt="Add Replicate API TOKEN" src="https://freeimage.host/i/HiA3J2a" />
+<Img src="https://iili.io/HiA3J2a.png" alt="Add Replicate API TOKEN" caption="Add Replicate API TOKEN" />
 
 You can now call the Stable Diffusion model inside your convert_currency() function to generate images:
 
