@@ -340,6 +340,78 @@ with st.sidebar:
     st.session_state.stable_diffusion_api_key = st.text_input('Stable Diffusion API Key', )
 
 ```
+It's time to implement main functions for generating `ideas`:
+
+```python
+
+def generate_ideas():
+
+    st.session_state.text_error = ""
+
+    if st.session_state.cohere_api_key == "":
+        st.session_state.text_error = "Missed API key."
+        return
+
+
+    st.session_state.text_error = ""
+
+    if st.session_state.file_path == "" or st.session_state.query == "":
+        st.session_state.text_error = "Missed a file or query."
+        return
+
+
+    st.session_state.prompt_generate = ""
+    st.session_state.text_error = ""
+
+    with text_spinner_placeholder:
+        with st.spinner("Please wait while we process your query..."):
+            prompt = ai21_studio.generate(prompt=st.session_state.query, ai21_api_key=st.session_state.ai21_api_key)
+
+            if prompt == "":
+                st.session_state.text_error = "Your request activated the API's safety filters and could not be processed. Please modify the prompt and try again."
+                logging.info(f"Text Error: {st.session_state.text_error}")
+                return
+            
+            st.session_state.prompt_generate = (prompt)
+
+```
+
+and `image`:
+
+
+```python
+
+def imagine():
+
+    st.session_state.text_error = ""
+
+    if st.session_state.stable_diffusion_api_key == "":
+        st.session_state.text_error = "Missed API key."
+        return
+
+
+    st.session_state.text_error = ""
+
+    if st.session_state.im_query == "":
+        st.session_state.text_error = "Missed a query."
+        return
+
+    st.session_state.imagine = ""
+    st.session_state.img_path = ""
+    st.session_state.text_error = ""
+
+    with text_spinner_placeholder:
+        with st.spinner("Please wait while we generate your image..."):
+            im_path = stable_diffusion.imagine(prompt=st.session_state.im_query, stable_diffusion_api_key=st.session_state.stable_diffusion_api_key)
+
+            if im_path == "":
+                st.session_state.text_error = "Your request activated the API's safety filters and could not be processed. Please modify the prompt and try again."
+                logging.info(f"Text Error: {st.session_state.text_error}")
+                return
+            
+            st.session_state.img_path = (im_path)
+
+```
 
 Quickly add a cool `title` and `description` for the app:
 
@@ -424,77 +496,10 @@ if st.session_state.img_path:
 
 ```
 
-And last but not least, it's time to implement main functions for generating `ideas`:
+At last, We need to add requirement.txt file in our app folder. Run this command in terminal. It will add requirement file in your code base which is very important for python projects.
 
 ```python
-
-def generate_ideas():
-
-    st.session_state.text_error = ""
-
-    if st.session_state.cohere_api_key == "":
-        st.session_state.text_error = "Missed API key."
-        return
-
-
-    st.session_state.text_error = ""
-
-    if st.session_state.file_path == "" or st.session_state.query == "":
-        st.session_state.text_error = "Missed a file or query."
-        return
-
-
-    st.session_state.prompt_generate = ""
-    st.session_state.text_error = ""
-
-    with text_spinner_placeholder:
-        with st.spinner("Please wait while we process your query..."):
-            prompt = ai21_studio.generate(prompt=st.session_state.query, ai21_api_key=st.session_state.ai21_api_key)
-
-            if prompt == "":
-                st.session_state.text_error = "Your request activated the API's safety filters and could not be processed. Please modify the prompt and try again."
-                logging.info(f"Text Error: {st.session_state.text_error}")
-                return
-            
-            st.session_state.prompt_generate = (prompt)
-
-```
-
-and `image`:
-
-
-```python
-
-def imagine():
-
-    st.session_state.text_error = ""
-
-    if st.session_state.stable_diffusion_api_key == "":
-        st.session_state.text_error = "Missed API key."
-        return
-
-
-    st.session_state.text_error = ""
-
-    if st.session_state.im_query == "":
-        st.session_state.text_error = "Missed a query."
-        return
-
-    st.session_state.imagine = ""
-    st.session_state.img_path = ""
-    st.session_state.text_error = ""
-
-    with text_spinner_placeholder:
-        with st.spinner("Please wait while we generate your image..."):
-            im_path = stable_diffusion.imagine(prompt=st.session_state.im_query, stable_diffusion_api_key=st.session_state.stable_diffusion_api_key)
-
-            if im_path == "":
-                st.session_state.text_error = "Your request activated the API's safety filters and could not be processed. Please modify the prompt and try again."
-                logging.info(f"Text Error: {st.session_state.text_error}")
-                return
-            
-            st.session_state.img_path = (im_path)
-
+pip freeze > requirements.txt
 ```
 
 Perfect! Now, we can run our app and see the result.
