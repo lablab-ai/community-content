@@ -1,0 +1,77 @@
+---
+title: "Hackathon Tutorial: How to Protect API Key in Your Hackathon Demo"
+description: "A beginner-level tutorial on protecting API key in the demo product in the hackathons."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+## Introduction
+Participating in the hackathons is a great way to learn new things and meet new people. You can learn new things from the mentors and other participants or even win the prize. 
+But, you should be careful when you are participating in the hackathons. You should protect your API key in the demo product in the hackathons. Otherwise, someone can steal your API key and use it for their own purpose. 
+In this tutorial, you will learn how to protect your API key in the demo projects.
+
+
+## Let's get started
+
+First thing first. Open Visual Studio Code and click `Clone Repository`.
+
+<Img src="https://iili.io/HDjZYZX.png" alt="Clone Repository" caption="Clone Repository"/>
+
+Then, paste the repository URL [PaLM2 Tutorial](https://github.com/abdibrokhim/PaLM2-Tutorial) and hit `Enter`.
+
+<Img src="https://iili.io/HDjZ7jt.png" alt="Clone Repository Input Field" caption="Clone Repository Input Field"/>
+
+Alternatively, you can clone the repository using the command line. Open your terminal and run the following command.
+
+```bash
+git clone https://github.com/abdibrokhim/PaLM2-Tutorial
+```
+
+Then, go to the directory.
+
+```bash
+cd PaLM2-Tutorial
+```
+
+After, successfully cloning the repository open `app.py` file. Here you should see the following lines of code.
+
+```bash 
+with st.sidebar:
+    palm_api_key = st.text_input('PaLM API Key', key='palm_api_key')
+```
+
+What `st.sidebar` actually does? It creates a sidebar in the web app with input field, where everyone can input their own PaLM API key. 
+It's a good practice to protect your API key in the demo product in the hackathons. You can see the sidebar in the following image.
+
+<Img src="https://iili.io/HDjbEFa.png" alt="Streamlit Sidebar for API Key" caption="Streamlit Sidebar for API Key"/>
+
+Otherwise, you may create a file named `.env` in the root directory of your project. Then, add the following line of code.
+
+```bash
+palm_api_key = 'YOUR_API_KEY'
+```
+
+After that, open `app.py` file add the following lines of code.
+
+```bash
+import os
+palm_api_key = os.getenv('palm_api_key')
+```
+
+Now, create a file named `.gitignore` in the root directory of your project. Then, add the `.env` to don't push the file to the GitHub repository.
+
+```bash
+.env
+```
+
+## Conclusion
+
+In this tutorial, you have learned how to protect API key in the demo product in the hackathons. 
+Actually, there are many ways to protect your API key. But, we went through the easiest way to do it.
+
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
