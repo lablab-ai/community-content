@@ -1,0 +1,117 @@
+---
+title: "Audiocraft tutorial: How to create long songs with Audiocraft"
+description: "How to install Audiocraft, MetaAI open source audio generation tool, and create music over 2 minutes long."
+image: ""
+authorUsername: "alfredo_lhuissier73"
+---
+
+## What is Audiocraft?
+
+On Friday, June 9, 2023, Meta unveiled yet another amazing AI tool: <a href="https://audiocraft.metademolab.com/" rel="nofollow">Audiocraft</a>. 
+It is a music generator and audio processing tool powered by deep learning. In contrast to Google’s MusicLM, Audiocraft is an open-source platform, 
+providing users with the freedom to explore and experiment as much as they desire. Today, we will delve into the process of installing it and 
+learning how to extend the duration limit (120 seconds) so we can create full-length songs.
+
+
+### Prerequisites
+
+You need to have <a href="https://www.python.org/downloads/release/python-3913/" rel="nofollow">Python 3.9</a> and pip installed, as well as 
+pytorch 2.0 and ffmpeg.
+
+In order to install pytorch on your computer, open a terminal and run:
+
+```bash
+pip install 'torch>=2.0'
+```
+
+To install ffmpeg, run:
+
+```bash
+sudo apt-get install ffmpeg
+# Or if you are using Anaconda or Miniconda
+conda install 'ffmpeg<5' -c  conda-forge
+```
+
+
+## Installation
+
+First, clone the <a href="https://www.python.org/downloads/release/python-3913/" rel="nofollow">github repository</a> and open the downloaded folder.
+
+```bash
+git clone https://github.com/facebookresearch/audiocraft
+cd audiocraft
+```
+
+Now, proceed to install the required libraries:
+
+```bash
+pip install -r requirements.txt
+```
+
+We are ready to start playing music our new instrument!
+
+
+## Creating music with Audiocraft
+
+To start using MusicGen, the module for creating songs, Meta prepared a Gradio UI that we can open running the following command:
+
+```bash
+python -m demos.musicgen_app --share
+```
+
+And voilà! You should see the UI running on http://127.0.0.1:7860/
+
+<Img src="https://iili.io/HDvZYFt.png" alt="MusicGen Dashboard" nonClickable />
+
+The demo also sets up a public URL that you can use to collaborate with others. Now, let's experiment a little bit with this. It might take a while, 
+ the first time around, because it needs to download the models. Specially if you don't have a powerful GPU. But the results are totally
+worth it!
+
+You can choose between 4 models, that will influence the output you will get. The "facebook/musicgen-melody" model generates music with melodies 
+influenced by a music file that you can upload. The other ones generate more ambient-like music and only receive text as input.
+
+I have personally been using this tool since it's release, as I love creating music. <a href="https://on.soundcloud.com/FFRvn" rel="nofollow">
+Here are some results</a> that I got playing with the suggested prompts and the given track "bolero_ravel.mp3" (from the famous Boléro by 
+Maurice Ravel). 
+
+Not bad, right? Yet we can still do much more with this tool. As you might have noticed, the UI has a slider, where you can choose the duration of
+your song, capped at 120 seconds maximum by default.
+
+<Img src="https://iili.io/HDvZIwv.png" alt="2 minutes limit" nonClickable />
+
+Let's see if we can find this and modify it in the code. On your favourite code editor, open the project and go to the demos folder. Here you should
+find the musicgen_app.py file, which renders the Gradio UI that we just used. Inside it, look for the "duration" variable (you can use the search tool
+if you are using VS Code). At the time of writing this tutorial, you can find it in line 240.
+
+```python
+# musicgen_app.py
+...
+with gr.Row():
+    duration = gr.Slider(minimum=1, maximum=200, value=10, label="Duration", interactive=True) # <-- Change the maximum value
+...
+```
+
+<Img src="https://iili.io/HDvtzg9.png" alt="Hacking the song duration limit" nonClickable />
+
+Now modify the value to whatever you like. Notice, though, that using a high value affects the results and also can take a very long time to finish.
+I wanted to create standard 3:20 minutes songs, so I put 200 (seconds) as the duration. Once you've changed the value, save and restart the program.
+You can do that by pressing Ctrl+C and then running again:
+
+```bash
+python -m demos.musicgen_app --share
+```
+
+Now you can see that the maximum limit duration has been altered to whatever you chose.
+
+<Img src="https://iili.io/HDvZzAJ.png" alt="3:20 minutes song" nonClickable />
+
+Don't worry if it's taking too long to render the audio file. On a M1 Mac with 16GB, it took an hour or so to create a 3:20 minutes song. I also had to 
+tinker a little bit with the prompts to get a clean result. I leave it up to you to figure out how to create the next musical masterpiece!
+
+
+## Conclusion
+
+We just managed to create a full song with AI! Isn't that amazing? The possibilities are endless, and it will only get better from here. The use cases 
+include music, movies, ads, podcasting and so much more. You can even generate your own tracks for studying and working. I hope you find this 
+tutorial helpful and you're inspired to create awesome tracks.
+If you have any questions, feel free to reach out to me on Twitter: https://twitter.com/thedevalweb
