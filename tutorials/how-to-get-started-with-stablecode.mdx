@@ -22,7 +22,13 @@ This model was meticulously fine-tuned for specific use cases, focusing on solvi
 StableCode introduces an advanced long-context window model that excels at generating single and multi-line autocomplete suggestions. Compared to previous open models with limited context windows, this new model is designed to handle significantly more code at once—approximately 2 to 4 times more. As a result, developers can effortlessly review or edit the equivalent of multiple average-sized Python files concurrently. This extended context window is particularly beneficial for those eager to expand their coding expertise and take on larger coding challenges.
 
 
-## Let's start!
+## What we're going to do in this tutorial?
+
+In this tutorial, we will learn how to use StableCode to generate code completion. We will go through each model and see how it works. 
+We will also learn how to use StableCode in [Google Colab](https://colab.research.google.com/) and [Hugging Face Inference API](https://huggingface.co/docs/api-inference/index) to run StableCode even if you don't have really good GPU.
+
+
+## Implementation in Google Colab
 
 ### Step 1 - Setting up the project
 
@@ -205,6 +211,45 @@ You should see something similar to the following output.
 
 <Img src="https://iili.io/HDOwKoN.png" alt="Completion by StableCode" caption="Completion by StableCode"/>
 
+
+## Implementation with Hugging Face Inference API
+
+Alternatively you can use [Hugging Face Inference API](https://huggingface.co/docs/api-inference/index) to run StableCode. This is cool when you don't have really good GPU.
+
+
+### Step 1 - Create an account in Hugging Face
+
+Go to [Hugging Face](https://huggingface.co/) and create new account or login if you already have one.
+
+<Img src="https://iili.io/HDwlHil.png" alt="Create an account in Hugging Face " caption="Create an account in Hugging Face"/>
+
+
+### Step 2 - Create a new token in Hugging Face
+
+Next, you need a token to use Hugging Face Inference API. Go to your profile and click `Access tokens` in the left sidebar, then `New token` button.
+
+<Img src="https://iili.io/HDwl9V4.png" alt="Create a new token" caption="Create a new token"/>
+
+Give your token a name, from dropdown select `read` and hit `Generate a token`.
+
+<Img src="https://iili.io/HDwcyxf.png" alt="Create a new token" caption="Create a new token"/>
+
+Perfect! You are good to go to the next step.
+
+
+### Step 3 - Running the StableCode with Hugging Face Inference API
+
+Go to [StableCode model page](https://huggingface.co/stabilityai/stablecode-instruct-alpha-3b) and click `Deploy`.
+
+<Img src="https://iili.io/HD8y5Ex.png" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+Then from dropdown select `Inference API`. It will open a dialog with code snippet, just hit the `Copy`.
+
+<Img src="https://iili.io/HD8y7rQ.png" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+<Img src="https://iili.io/HD8yRBj.png" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+Cool! Now, you can use StableCode even if you don't have really good GPU.
 
 
 ## Conclusion
