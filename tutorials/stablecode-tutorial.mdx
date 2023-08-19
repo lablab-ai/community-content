@@ -45,6 +45,7 @@ To produce code, StableCode uses these three different models such as Instructio
 
 > Fine-Tuning Model is responsible for refining and improving the generated code snippets. With the use of this model, users can further alter the generated code to better suit their individual requirements.
 > It considers any further restrictions, preferences, or particular needs offered by the user. With the use of this model, users can further alter the generated code to better suit their individual requirements. It aids in fine-tuning the output to make sure it complies with any additional standards and satisfies the user's expectations.
+> 
 
 By utilizing those three separate models to aid developers in their coding, StableCode provides developers with a special technique to increase their efficiency. 
 
@@ -81,3 +82,180 @@ pip install -q -U accelerate sentencepiece torch transformers
 ```
 **output** 
 
+<a href="https://freeimage.host/"><img src="https://iili.io/HbfS3yN.png" alt="HbfS3yN.png" border="0" /></a>
+
+Then authenticate and log in to the Hugging Face Hub directly from a Jupyter Notebook or Google Colab environment.
+
+**Input**
+
+```gherkin=
+from huggingface_hub import notebook_login\nnotebook_login()
+
+```
+**output**
+
+<a href="https://freeimage.host/i/HbfUkX9"><img src="https://iili.io/HbfUkX9.th.png" alt="HbfUkX9.th.png" border="0"></a>
+
+In order to create a hanging face access token follow the following stape: 
+
+```
+1, Register or log in, 
+```
+
+Visit the Hugging Face website and register for an account or log in if you already have one.
+
+```
+2, Access your account settings: 
+```
+
+Once you are logged in, navigate to your account settings. You can usually find this option in the user menu or profile section.
+
+```
+3,Generate an API token: 
+```
+
+In your account settings, look for the API Tokens section. Click on it to generate a new API token.
+
+<a href="https://freeimage.host/i/HbfrKuV"><img src="https://iili.io/HbfrKuV.th.png" alt="HbfrKuV.th.png" border="0"></a>
+
+```
+4, Copy the token:
+```
+
+After generating the API token, you will see a unique token value. Copy this token as it will be used to authenticate your API requests.
+
+
+`Step 4:` connect to the stable code:
+
+The "`transformers`" package must be downloaded and installed in order for your Python environment to be able to use it in order to work with the stablecode.
+
+It's a Python library for `natural language processing` (NLP) tasks, and it includes pre-trained models for a range of NLP tasks, including text categorization, named entity identification, question answering, and more.
+
+**Input**
+
+```gherkin=
+!pip install transformers
+```
+
+**output**
+
+<a href="https://freeimage.host/i/HbfPyDQ"><img src="https://iili.io/HbfPyDQ.th.png" alt="HbfPyDQ.th.png" border="0"></a>
+
+Then sets up a language model for causal language modeling using the specified pre-trained model and tokenizer from the transformers library, and allocates the model to a CUDA device for GPU acceleration.
+
+**input**
+
+```gherkin=
+# Define all available models 
+BASE_MODEL = "stabilityai/stablecode-completion-alpha-3b-4k" 
+INSTRUCTION_MODEL = "stabilityai/stablecode-instruct-alpha-3b" 
+LONG_CONTEXT_WINDOW_MODEL = "stabilityai/stablecode-completion-alpha-3b" 
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL) 
+model = AutoModelForCausalLM.from_pretrained( 
+BASE_MODEL, 
+trust_remote_code=True, 
+torch_dtype="auto", 
+ )
+ model.cuda()
+
+```
+
+`Step 5:` use the stable code:
+
+Run_model accepts a prompt, tokenizes it, creates fresh tokens based on the model, decodes the newly created tokens, and then returns the decoded text.
+
+**input**
+
+```gherkin=
+def run_model(prompt):
+    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    del inputs["token_type_ids"]
+    tokens = model.generate(
+        **inputs,
+        max_new_tokens=1000,  # feel free to change this value
+        temperature=0.2,  # feel free to change this value
+        do_sample=True,
+    )
+
+    return tokenizer.decode(tokens[0], skip_special_tokens=True)
+
+
+```
+Then Import the torch library and its nn module might be connected to the resulting code. The particular result would be determined by the pre-trained model in use and the randomness added by the temperature parameter during token production.
+
+**input**
+
+```gherkin=
+ r = run_model("import torch\nimport torch.nn as nn") print(r)
+
+```
+**output**
+<a href="https://freeimage.host/i/HbfZVZx"><img src="https://iili.io/HbfZVZx.th.png" alt="HbfZVZx.th.png" border="0"></a>
+
+**run the following command to instruct the interference model to communicate with the stable code model.**
+
+**input** 
+
+```gherkin=
+ r = run_model("Write a instruction to generate code by the stablecode ")
+print(r)
+ 
+```
+**example 1:** write a python program to perform binary search in a given list
+
+**input**
+
+```gherkin=
+r = run_model("Write a c++ program to perform binary search in a given list")
+print(r)
+ 
+```
+**out put**
+
+Setting `pad_token_id` to `eos_token_id`:0 for open-end generation.
+Write a c++ Code to perform binary search in a given list of numbers.
+
+```gherkin=
+#include <iostream>
+using namespace std;
+
+int binarySearch(int arr[], int n, int x)
+{
+    int start = 0;
+    int end = n - 1;
+    while (start <= end)
+    {
+        int mid = (start + end) / 2;
+        if (arr[mid] == x)
+        {
+            return mid;
+        }
+        else if (arr[mid] > x)
+        {
+            end = mid - 1;
+        }
+        else
+        {
+            start = mid + 1;
+        }
+    }
+    return -1;
+}
+
+
+ 
+```
+
+
+
+
+
+## Appendix and FAQ
+
+> Read more about stablecode here: https://stability.ai/blog/stablecode-llm-generative-ai-coding
+
+:::info
+**Find this document incomplete?** Leave a comment!
+:::
+
+###### tags: `stablityAI` `stablecode`
