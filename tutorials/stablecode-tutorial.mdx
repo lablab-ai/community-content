@@ -5,4 +5,79 @@ image: "https://freeimage.host/i/HbJNSG1"
 authorUsername: "@Gitocoder"
 ---
 
-<a href="https://freeimage.host/i/Hb2z0TQ"><img src="https://iili.io/Hb2z0TQ.th.png" alt="Hb2z0TQ.th.png" border="0"></a>
+
+StableCode Tutorial: How to get started with StableCode
+===
+
+## Table of Contents
+
+[TOC]
+
+## What is stable code 
+
+Stablecode is a large language model (LLMs) developed by the stability AI. It  is the first large language model generative product which leverages advanced natural language processing (NLP) techniques and machine learning models to generate code snippets based on given instructions or prompts. it aims to provide developers with quick and accurate code suggestions to enhance their productivity..
+
+The stable code is trained from the stack Data set which is the part of the BigCode project that is used to develop large language models (LLMs) for the scientific collaboration with the open source community and developers who want to work on the LLMs.
+
+> The Stack contains over 3TB of permissively-licensed source code files covering 30 programming languages crawled from GitHub. The dataset was created as part of the BigCode Project, an open scientific collaboration working on the responsible development of Large Language Models for Code (Code LLMs).
+
+StableCode supports multiple programming languages, including but not limited to Python, JavaScript, Java, C++, and more. This allows developers to use StableCode regardless of their preferred programming language.
+
+
+
+
+How the stable code works 
+---
+
+StableCode offers a unique way for developers to become more efficient by using three different models to help in their coding. 
+
+To produce code, StableCode uses these three different models such as Instruction Model, Code Generation Model and Fine-Tuning Model.
+
+1, ,Instruction Model
+
+> The instruction model helps set the context for the code generation process. This model is in charge of comprehending and deciphering any high-level directives or prompts given by the user. Additionally, it is the responsibility of this model to understand and interpret any high-level instructions or prompts provided by the user
+
+2, Code Generation Model 
+
+> The fundamental mechanism that StableCode uses to produce the actual code snippets from the given instructions is called "Code Generation." Using the code generation model, stablecode analyzes the input and generates code that is in line with the required functionality by utilizing machine learning techniques, such as deep learning and natural language processing. The code generation model can produce code in a variety of programming languages because it was trained on a big collection of code examples.
+
+3, Fine-Tuning Model:
+
+> Fine-Tuning Model is responsible for refining and improving the generated code snippets. With the use of this model, users can further alter the generated code to better suit their individual requirements.
+> It considers any further restrictions, preferences, or particular needs offered by the user. With the use of this model, users can further alter the generated code to better suit their individual requirements. It aids in fine-tuning the output to make sure it complies with any additional standards and satisfies the user's expectations.
+
+By utilizing those three separate models to aid developers in their coding, StableCode provides developers with a special technique to increase their efficiency. 
+
+
+Generally speaking, the stable code's use base and interaction model made it possible for stablecode to exist. 
+
+The pre-trained language model that serves as the basis for code production is known as the base model. It can produce code snippets depending on supplied commands and has been trained on a sizable quantity of code from many different programming languages.
+
+The `base model` is intended to be very adept at comprehending programming ideas and producing code that corresponds to the necessary functionality.
+
+The  second one is the `interactive model` is a model that allows users to have a more interactive and iterative coding experience. 
+
+This architecture enables a more dynamic interaction by allowing users to clarify things, ask questions, and try out various code recommendations until they get the desired result. Users can converse back and forth with the model, altering the generated code in real-time, as opposed to giving a single prompt or instruction. 
+
+
+How to use stablecode 
+---
+
+To use the stablecode in the google colab you have to follow the following steps:
+
+`Step 1:` open google colab in your browser:
+  
+`Step 2:` create a new notebook:
+
+`Step 3:` import stable code : install or update the necessary Python packages required for working with StableCode
+
+First you have to install or update the necessary Python packages required for working with StableCode
+
+**Input**
+
+```gherkin=
+pip install -q -U accelerate sentencepiece torch transformers
+
+```
+**output** 
+
