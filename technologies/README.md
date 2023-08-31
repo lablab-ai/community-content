@@ -53,3 +53,8 @@ Finally, visit our GitHub repo and add AI technologies here, get inspiration fro
 2. Create two pull requests:
    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
    - to `main` branch
+
+## Adding as sponsored content/Adding sponsored image
+
+1. In order to add as sponsored content you can add a link on the top just under the mandatory fields: `[Sponsored by ...](https://linktothesponsorpage.com) `
+2. To place a sponsor image inside the page --> add `<SponsorContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg">` somewhere in the technology page
