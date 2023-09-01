@@ -52,4 +52,4 @@ Finally, visit our GitHub repo and add AI tutorials here, get inspiration from t
 
 Keep in mind still you have to add a valid authorUsername!
 
-2. To place a sponsor image inside the post --> add `<SponsorContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg">` somewhere in the tutorial
+2. To place a sponsor image inside the post --> add `<SponsoredContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg"/>` somewhere in the tutorial
