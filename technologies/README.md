@@ -57,4 +57,4 @@ Finally, visit our GitHub repo and add AI technologies here, get inspiration fro
 ## Adding as sponsored content/Adding sponsored image
 
 1. In order to add as sponsored content you can add a link on the top just under the mandatory fields: `[Sponsored by ...](https://linktothesponsorpage.com) `
-2. To place a sponsor image inside the page --> add `<SponsorContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg">` somewhere in the technology page
+2. To place a sponsor image inside the page --> add `<SponsoredContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg"/>` somewhere in the technology page
