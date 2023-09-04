@@ -42,3 +42,14 @@ Finally, visit our GitHub repo and add AI tutorials here, get inspiration from t
 2. Create two pull requests:
    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
    - to `main` branch
+
+## Adding as sponsored content/Adding sponsored image
+
+1. To add sponsor as author and link to the sponsor website add to the top of the file under the mandatory fields:
+
+   - **sponsor**: Sponsored by ...
+   - **sponsorUrl**: https://...
+
+Keep in mind still you have to add a valid authorUsername!
+
+2. To place a sponsor image inside the post --> add `<SponsoredContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg"/>` somewhere in the tutorial
