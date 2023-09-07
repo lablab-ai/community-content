@@ -1,0 +1,35 @@
+
+---
+title: "Getting Started with SeamlessM4T"
+author: "Meta AI"
+description: "Explore SeamlessM4T, a multilingual AI model for speech/text translation in 100+ languages."
+---
+
+# SeamlessM4T by Meta AI
+SeamlessM4T is a cutting-edge AI model developed by Meta AI, designed for seamless speech and text translation across more than 100 languages. Whether you need speech-to-speech, speech-to-text, or text-to-text translation, SeamlessM4T offers state-of-the-art capabilities to meet your communication needs.
+
+| General  |  |
+| --- | --- |
+| Author | [Meta AI](https://lablab.ai/tech/meta)  |
+| Repository | https://github.com/metaai/seamlessm4t |
+| Type | Multilingual AI Model |
+
+
+## Start building with SeamlessM4T
+
+We have compiled essential resources to help you kickstart your journey with SeamlessM4T. Dive into the world of multilingual translation and discover how you can leverage SeamlessM4T's power in your applications.
+
+---
+
+### Hackathon Preparation
+
+If you're gearing up for a hackathon or want to experiment with SeamlessM4T, here's what you can do:
+
+* **Access the Code**: Visit the [GitHub repo](https://github.com/facebookresearch/seamless_communication) to access the source code of SeamlessM4T. You can explore the codebase, contribute, or use it as a reference for your projects.
+* **Try the Demo**: Head over to [HuggingFace](https://huggingface.co/spaces/facebook/seamless_m4t) to experience the capabilities of SeamlessM4T in action. The demo allows you to experiment with various translation scenarios.
+* **Build Your Applications**: Leverage SeamlessM4T to build your own applications or integrations. Whether it's language translation, speech recognition, or text analysis, SeamlessM4T can power your AI projects.
+* **Responsible AI**: Ensure you follow best practices for responsible AI development. Be mindful of issues related to model bias and toxicity, and refer to Meta's responsible AI framework for guidance.
+
+For more in-depth insights and updates about SeamlessM4T, explore the [Meta AI blog](https://ai.meta.com/blog/seamless-m4t/).
+
+---
