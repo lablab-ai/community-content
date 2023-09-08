@@ -144,12 +144,191 @@ Go back to your replit repo, create a openapi.yaml file and paste the Open API d
 Finally, we are going to make some changes on the code ChatGPT wrote for us to make it work on our environment.
 
 Open your main.py file and add the missing imports:
+```python
+import os
+from waitress import serve
+from flask import Flask, request, jsonify, send_from_directory
+import requests
+```
+
+Open a Shell tab on your replit console, and install waitress.
+
+```Shell
+pip install waitress
+```
+
+<Img src="https://iili.io/HiA2yEF.png" alt="Install waitress web server" caption="Install waitress web server" />
+
+Then add the following endpoints to serve our manifest and Open API definition files:
+
+```python
+@app.route('/.well-known/ai-plugin.json')
+def serve_ai_plugin():
+    return send_from_directory('.', 'ai-plugin.json', mimetype='application/json')
+
+
+@app.route('/.well-known/openapi.yaml')
+def serve_openapi_yaml():
+    return send_from_directory('.', 'openapi.yaml', mimetype='text/yaml')
+```
+
+And serve the app through a web server:
+
+```python
+if __name__ == '__main__':
+    serve(app, host="0.0.0.0", port=8080)
+```
+
+Your complete main.py file should look something like this:
 
 ```python
 import os
 from waitress import serve
 from flask import Flask, request, jsonify, send_from_directory
 import requests
+
+API_KEY = os.environ["YOUR_API_KEY"]
+BASE_URL = "https://api.apilayer.com/exchangerates_data"
+
+app = Flask(__name__)
+
+@app.route("/convert", methods=["GET"])
+def convert_currency():
+    amount = request.args.get("amount")
+    from_currency = request.args.get("from")
+    to_currency = request.args.get("to")
+
+    url = f"{BASE_URL}/convert"
+    headers = {"apikey": API_KEY}
+    params = {
+        "amount": amount,
+        "from": from_currency,
+        "to": to_currency
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+
+    if "result" in data:
+        converted_amount = data["result"]
+        return jsonify({"converted_amount": converted_amount})
+    else:
+        error_message = data.get("error", "Currency conversion failed.")
+        return jsonify({"error": error_message}), 400
+
+
+@app.route('/.well-known/ai-plugin.json')
+def serve_ai_plugin():
+    return send_from_directory('.', 'ai-plugin.json', mimetype='application/json')
+
+
+@app.route('/.well-known/openapi.yaml')
+def serve_openapi_yaml():
+    return send_from_directory('.', 'openapi.yaml', mimetype='text/yaml')
+
+
+if __name__ == '__main__':
+    serve(app, host="0.0.0.0", port=8080)
+```
+
+Hit the Run button on top of your replit repo, and wait for the app to be deployed. You should get a replit URL that you need to copy and paste it on your manifest
+Open API definition. The URL should look something like this: `https://currency-converter-plugin.< YOUR_REPLIT_USERNAME >.repl.co`
+
+Now open the ai-plugin.json file and paste the Open API definition full path. Here is the complete ai-plugin.json:
+
+```json
+{
+  "schema_version": "v1",
+  "name_for_human": "Currency Converter",
+  "name_for_model": "CurrencyConverter",
+  "description_for_human": "Plugin for converting currencies using the latest exchange rates.",
+  "description_for_model": "Plugin for converting currencies using the latest exchange rates. Use keywords 'convert', 'from', 'to', and 'amount' to prompt the plugin.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://currency-converter-plugin.<YOUR_REPLIT_USERNAME>.repl.co/.well-known/openapi.yaml",  // <-- Paste the URL here
+    "is_user_authenticated": false
+  },
+  "logo_url": "https://your-domain.com/logo.png",
+  "contact_email": "support@your-domain.com",
+  "legal_info_url": "https://www.your-domain.com/legal"
+}
+```
+
+And in your openapi.yaml file, paste the main URL:
+
+```yaml
+openapi: 3.0.1
+info:
+  title: Currency Converter Plugin
+  description: A plugin that allows the user to convert currencies using the latest exchange rates with ChatGPT.
+  version: 'v1'
+servers:
+  - url: https://currency-converter-plugin.<YOUR_REPLIT_USERNAME>.repl.co # <-- Paste the URL here
+paths:
+  /convert:
+    get:
+      operationId: convertCurrency
+      summary: Convert currency from one to another
+      parameters:
+        - name: from
+          in: query
+          description: The source currency code
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: The target currency code
+          required: true
+          schema:
+            type: string
+        - name: amount
+          in: query
+          description: The amount to be converted
+          required: true
+          schema:
+            type: number
+        - name: date
+          in: query
+          description: The date for historical exchange rate (optional)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/convertCurrencyResponse'
+components:
+  schemas:
+    convertCurrencyResponse:
+      type: object
+      properties:
+        from:
+          type: string
+          description: The source currency code
+        to:
+          type: string
+          description: The target currency code
+        amount:
+          type: number
+          description: The amount to be converted
+        converted_amount:
+          type: number
+          description: The converted amount
+```
+
+We're almost there! Go to to the ChatGPT plugin store, and click on "Develop your own plugin".
+
+<Img src="https://iili.io/HiA2pB1.png" alt="ChatGPT plugin store" caption="ChatGPT plugin store" />
+
+If prompted, click on the "My manifest is ready" button and give it your app's base URL `https://currency-converter-plugin.< YOUR_REPLIT_USERNAME >.repl.co`.
 Continue with the installation and you should now be able to use your plugin. Let's test it!
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7d802152-1b40-495c-55ab-82cdc8306a00/full" alt="ChatGPT plugin currency converter" caption="ChatGPT plugin currency converter" />
