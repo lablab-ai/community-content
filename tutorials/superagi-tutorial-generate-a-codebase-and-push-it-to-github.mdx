@@ -1,6 +1,7 @@
 ---
 title: "SuperAGI tutorial: Generate a Codebase and Push it to GitHub"
 description: "How to Generate a Codebase and push it to your GitHub Repository using SuperAGI"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/superagi-thumb.png"
 authorUsername: "donald_nwokoro266"
 ---
 
@@ -34,11 +35,11 @@ Before we begin, make sure you have the following:
 
 - Go to **Settings** in your GitHub Account. Then go to **Developer Settings**.
 - Click on "**Personal access tokens**". Then click on "**Tokens (classic)**".
-<Img src="https://iili.io/HpWJ6Fa.png" alt="Personal access token" caption="Click on Tokens classic" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ef1332ba-3d8e-45aa-ab1a-42c85069f900/full" alt="Personal access token" caption="Click on Tokens classic" nonClickable />
 - Click on "**Generate new token**". Then choose "**Generate new token (classic)**".
-<Img src="https://iili.io/HpWJkuV.png" alt="Generate new token" caption="Generate new token" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9aaaefe5-bebf-4111-2445-f14e74ccf300/full" alt="Generate new token" caption="Generate new token" nonClickable />
 - Write a **Note** about what the token is for and choose an appropriate expiration date.
-<Img src="https://iili.io/HpWJvwB.png" alt="Github permissions" caption="Select all github permissions" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8750e4f7-aac4-414e-7feb-cec1d0aa9500/full" alt="Github permissions" caption="Select all github permissions" nonClickable />
 - Select all the **scopes** so as to have the necessary permissions.
 - Click on **Generate New Token**.
 - Copy the token and save it in the config.yaml file as the value of `GITHUB_ACCESS_TOKEN`
@@ -49,13 +50,13 @@ Before we begin, make sure you have the following:
 ## Creating an agent
 In this tutorial we will use an Agent Template from SuperAGI. I will show you how to set up the “Coding + Github Push” Agent template in detail:
 - Go to `localhost:3000`. You should see something like this:
-<Img src="https://iili.io/HpWJr6g.png" alt="Localhost 3000" caption="Go to localhost 3000" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5116554-8712-46dd-e4df-d8a348fe9900/full" alt="Localhost 3000" caption="Go to localhost 3000" nonClickable />
 - Go to the Marketplace and select the “Coding + Github Push” Agent template
-<Img src="https://iili.io/HpWJPcJ.png" alt="Marketplace" caption="Go to marketplace" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff13cd12-b839-4043-1107-f46701fab500/full" alt="Marketplace" caption="Go to marketplace" nonClickable />
 - Install it
-<Img src="https://iili.io/HpWJ8ZP.png" alt="Install it" caption="Install the template" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4114b33a-2ab0-401f-67dd-7a35cc62ac00/full" alt="Install it" caption="Install the template" nonClickable />
 - Create a new Agent and select the “Coding + Github Push” Agent template
-<Img src="https://iili.io/HpWJOyQ.png" alt="Select agent template" caption="Select the agent template" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a26b981d-8e71-4f43-6bfe-9afcb7acf300/full" alt="Select agent template" caption="Select the agent template" nonClickable />
 - Configure the Agent with your desired options or leave it at the default. Make sure to include your GitHub Repository link as well in the third goal. We will use this for this tutorial:
 ```
 Goals
@@ -67,9 +68,9 @@ iii. Upload the code files on the following GitHub Repository: (Your Repository 
 
 iv. Update the README.MD with respect to the project on the repository as well
 ```
-<Img src="https://iili.io/HpWJUn1.png" alt="Configure agent" caption="Configure agent with options" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b27b6473-013a-46cb-fa6f-a549241eb700/full" alt="Configure agent" caption="Configure agent with options" nonClickable />
 - Click on 'Create and Run' to start the process
-<Img src="https://iili.io/HpWJgMF.png" alt="Create and run" caption="Create and run agent" nonClickable />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5781e283-dd9b-40aa-6caa-01abec8c2f00/full" alt="Create and run" caption="Create and run agent" nonClickable />
 - It will generate the code and push it to GitHub. Grab a coffee and let your agent get to work! 😎🍵.
 
 ## Behind the Scenes
@@ -90,4 +91,4 @@ iv. Update the README.MD with respect to the project on the repository as well
 In summary, the agent receives goals, processes them using a thinking tool, and then takes action based on the outputs of the thinking tool. The process involves generating thoughts, plans, criticisms, and selecting a tool to execute, resulting in one iteration or cycle of completing tasks aligned with the goals.
 
 ## Conclusion
-In this tutorial, we have learned how to use SuperAGI to generate a codebase and push it to GitHub using the “Coding + Github Push” Agent template. We have also seen how easy and convenient it is to create and manage AI agents with SuperAGI. You can use this template as a starting point for your own projects or try out other templates from the GitHub Marketplace. You can also customize your agents with your own logic and workflows on SuperAGI, that would be in another tutorial, Stay Tuned 🔥. I hope you enjoyed this tutorial and found it useful. Thank you for reading and happy coding! If you have any feedback or questions, please feel free to reach out or join our community on [Discord](https://discord.gg/C8MCWNAxNB). /claim #251
+In this tutorial, we have learned how to use SuperAGI to generate a codebase and push it to GitHub using the “Coding + Github Push” Agent template. We have also seen how easy and convenient it is to create and manage AI agents with SuperAGI. You can use this template as a starting point for your own projects or try out other templates from the GitHub Marketplace. You can also customize your agents with your own logic and workflows on SuperAGI, that would be in another tutorial, Stay Tuned 🔥. I hope you enjoyed this tutorial and found it useful. Thank you for reading and happy coding! If you have any feedback or questions, please feel free to reach out or join our community on [Discord](https://discord.gg/C8MCWNAxNB). 
