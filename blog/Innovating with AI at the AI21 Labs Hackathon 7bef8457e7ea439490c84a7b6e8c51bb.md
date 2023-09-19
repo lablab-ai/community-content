@@ -1,3 +1,10 @@
+---
+title: "AI21 Labs Hackathon Summary"
+description: "Explore 25 Innovative AI Solutions from the AI21 Labs Hackathon – From AI-Powered Text Summarization to No-Code Integration, witness the future of AI applications."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0ac28bec-5152-44bc-4a8a-8787bacacf00/full"
+authorUsername: "Olesia"
+---
+
 # Innovating with AI at the AI21 Labs Hackathon
 
 Together with AI21 Labs, lablab.ai hosted a 10-day virtual hackathon from June 28 - July 7, bringing together 2000+ participants globally to build AI applications using [AI21's state-of-the-art large language models](https://lablab.ai/tech/ai21-labs).
@@ -11,6 +18,8 @@ The hackathon challenged teams to leverage AI21's APIs to develop plugins that i
 The hackathon resulted in 25 [AI-powered solutions](https://lablab.ai/apps/tech/ai21-labs) built by 147 teams. The applications spanned diverse domains including writing, analytics, accessibility, education, customer service and more.
 
 ## **Top 3 Winning Projects**
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eba4979a-b634-45c2-26cb-ce2e6033b000/full" alt="a team at the AI hackathon" />
 
 ### **FusionLabs Plugin - Unlocking AI for No-Code**
 
@@ -32,6 +41,8 @@ The [AI21 No-Code](https://lablab.ai/event/plug-into-ai-with-ai21/state-change-l
 
 ## **Unlocking Innovation Through Collaboration**
 
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/83e9605f-91ad-4c43-e6c9-f3431fd00600/full" alt="a team at the AI hackathon" />
+
 The hackathon enabled great peer learning and teamwork. Developers, designers and domain experts came together, exchanged ideas, and supported each other in building novel solutions.
 
 ## **AI for Social Good**
@@ -39,6 +50,8 @@ The hackathon enabled great peer learning and teamwork. Developers, designers an
 Many projects focused on using AI for positive impact - improving mental health, advancing education, making information more accessible etc. The hackathon highlighted AI's immense potential as a force for good.
 
 ## **The Road Ahead: Democratizing AI**
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/63df7a6f-b917-4c47-624f-3636fe6fc200/full" alt="a photo of two laptops at the AI hackathon" />
 
 Initiatives like hackathons and community building are key for cultivating a participatory, socially responsible culture around AI development.
 
