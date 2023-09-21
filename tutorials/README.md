@@ -1,8 +1,8 @@
-# Tutorials
+# AI Tutorials
 
 Repo to handle submitting & updating tutorials on lablab.ai
 
-## How to publish a new tutorial on lablab
+## How to publish a new tutorial on lablab.ai
 
 In this guide you will learn how to publish tutorial pages on lablab.
 
@@ -15,6 +15,8 @@ In this guide you will learn how to publish tutorial pages on lablab.
 - The tutorial you create must relate to one of the technologies listed in the lablab database.
 
 ## If you want to publish a new tutorial on lablab.ai, follow these steps:
+
+0. Make sure you have created your profile on [lablab.ai](https://lablab.ai/login?) and filled in the profile information - that will help community readers get to know the author of the tutorial 😉
 
 1. Create an mdx file for the tutorial with the tutorial title in slug format (you can slugify [here](https://slugify.online/)) as the filename in this GitHub repository: [https://github.com/lablab-ai/community-content/tree/main/tutorials](https://github.com/lablab-ai/community-content/tree/main/tutorials)
 
@@ -30,6 +32,7 @@ In this guide you will learn how to publish tutorial pages on lablab.
 Upload images to [this service](https://freeimage.host/) and provide a like that looks like: `https://iili.io/HPaF59p.png`
 
 4. You can use one of our tutorial page as a template or the [template](https://github.com/lablab-ai/community-content/tree/main/tutorials/template.mdx) file in this repo to create your own tutorial page.
+
 5. To add image use the `<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}/>` component.
 
 6. After you create a PR we will check the tutorial content and merge it if everything is fine.
