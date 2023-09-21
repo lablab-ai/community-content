@@ -12,7 +12,7 @@ In this guide you will learn how to publish tutorial pages on lablab.
 - Please **don’t** copy the content from other websites!
 - Please **don’t** use AI content generators to create the content for this page!
 - Make sure the tutorial has a **clear structure**. Use a minimum of three H2 headings, including one for the introduction, another for the topic input, and the last one to summarize all previously discussed points. Additionally, use H3 subheadings for every significant point you cover.
-- The tutorial you create must relate to one of the technologies listed in the lablab database.
+- The tutorial you create should relate to one of the technologies listed in the lablab database. Or, make sure to add the technology you are using to the [AI Tech page](https://github.com/lablab-ai/community-content/blob/main/technologies/README.md#technologies), in case it's not there.
 
 ## If you want to publish a new tutorial on lablab.ai, follow these steps:
 
