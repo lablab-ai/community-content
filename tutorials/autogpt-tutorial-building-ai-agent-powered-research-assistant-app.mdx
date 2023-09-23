@@ -5,51 +5,56 @@ image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/autogpt
 authorUsername: "septiannugraha"
 ---
 
-## Introduction
-### Introduction to AI Agents
+# Creating an AI-Enhanced Research Assistant App with AutoGPT: A Step-by-Step Tutorial
+
+## Diving into the World of AI Agents
 
 Artificial Intelligence (AI) agents are systems that perceive their environment and take actions to achieve specific goals. These agents can range from simple devices, such as a thermostat adjusting the temperature based on its surroundings, to complex systems like a self-driving car navigating through traffic. AI agents form the core of many modern technologies, including recommendation systems and voice assistants. In the context of this tutorial, we will equip an AI agent with additional tools and a specific model to fulfill its role as an AI research assistant.
 
-### Introduction to AutoGPT
+## What is AutoGPT
 
-AutoGPT is an experimental open-source application that leverages the capabilities of the GPT-4 language model. It's designed to autonomously achieve any goal set for it by chaining together GPT-4's "thoughts". This makes it one of the first examples of GPT-4 running fully autonomously, pushing the boundaries of what is possible with AI.
+[AutoGPT](https://lablab.ai/tech/autogpt) is an experimental open-source application that leverages the capabilities of the [GPT-4 language model](https://lablab.ai/tech/openai/gpt4). It's designed to autonomously achieve any goal set for it by chaining together GPT-4's "thoughts". This makes it one of the first examples of GPT-4 running fully autonomously, pushing the boundaries of what is possible with AI.
 
 AutoGPT comes with a variety of features, including internet access for searches and information gathering, long-term and short-term memory management, text generation using GPT-4, access to popular websites and platforms, and file storage and summarization with GPT-3.5. It also offers extensibility with plugins.
 
 Despite its capabilities, AutoGPT is not a polished application or product, but rather an experiment. It may not perform well in complex, real-world business scenarios, and it can be quite expensive to run due to the costs associated with using the GPT-4 language model. Therefore, it's important to set and monitor your API key limits with OpenAI.
 
-In the context of this tutorial, we will be using AutoGPT to build an AI research assistant. This assistant will be able to formulate step-by-step solutions and generate reports in text files, showcasing the potential of AutoGPT in practical applications.
+In the context of this tutorial, we will be using AutoGPT to build an AI research assistant. This assistant will be able to formulate step-by-step solutions and generate reports in text files, showcasing the potential of AutoGPT in practical applications. To dive deeper, feel free to check comprehensive [AutoGPT guide](https://lablab.ai/t/auto-gpt-tutorial-how-to-set-up-auto-gpt).
 
-### Introduction to LangChain
+Let's take a look on the technologies we will use in this tutorial:
 
-LangChain is a Python library designed to assist in the development of applications that leverage the capabilities of large language models (LLMs). These models are transformative technologies that enable developers to build applications that were previously not possible. However, using these LLMs in isolation is often insufficient for creating a truly powerful app - the real power comes when you can combine them with other sources of computation or knowledge.
+### An Overview of the LangChain
 
-LangChain provides a standard interface for LLMs and includes features for prompt management, prompt optimization, and common utilities for working with LLMs. It also supports sequences of calls, whether to an LLM or a different utility, through its Chains feature. Furthermore, LangChain offers functionalities for Data Augmented Generation, which involves specific types of chains that first interact with an external data source to fetch data for use in the generation step.
+[LangChain](https://lablab.ai/tech/langchain) is a Python library designed to assist in the development of applications that leverage the capabilities of large language models (LLMs). These models are transformative technologies that enable developers to build applications that were previously not possible. However, using these LLMs in isolation is often insufficient for creating a truly powerful app - the real power comes when you can combine them with other sources of computation or knowledge.
+
+LangChain provides a standard interface for LLMs and includes features for prompt management, prompt optimization, and common utilities for working with LLMs. It also supports sequences of calls, whether to an LLM or a different utility, through its Chains feature. Furthermore, LangChain offers functionalities for Data Augmented Generation, which involves specific types of chains that first interact with an external data source to fetch data for use in the generation step. You can discover more with [Langchain tutorials](https://lablab.ai/t/tech/langchain).
 
 In the context of this tutorial, we will primarily use LangChain as a wrapper for AutoGPT. As of the time of writing, there are no known SDKs or APIs that provide direct interaction with AutoGPT, making LangChain an invaluable tool for our purposes.
 
 ### Introduction to Flask
 
-Flask is a lightweight web framework for Python. It's designed to be simple and easy to use, but it's also powerful enough to build complex web applications. With Flask, you can create routes to handle HTTP requests, render templates to display HTML, and use extensions to add functionality like user authentication and database integration.
+[Flask](https://flask.palletsprojects.com/en/2.3.x/quickstart/) is a lightweight web framework for Python. It's designed to be simple and easy to use, but it's also powerful enough to build complex web applications. With Flask, you can create routes to handle HTTP requests, render templates to display HTML, and use extensions to add functionality like user authentication and database integration.
 
-### Introduction to ReactJS
+### Exploring the Basics of the ReactJS
 
-ReactJS, often simply called React, is a popular JavaScript library for building user interfaces. Developed by Facebook, React allows developers to create reusable UI components and manage the state of their applications efficiently. React is known for its virtual DOM, which optimizes rendering and improves performance in web applications.
+[ReactJS](https://react.dev/learn), often simply called React, is a popular JavaScript library for building user interfaces. Developed by Facebook, React allows developers to create reusable UI components and manage the state of their applications efficiently. React is known for its virtual DOM, which optimizes rendering and improves performance in web applications.
 
-### Prerequisites
+___
+
+## Prerequisites
 
 - Basic knowledge of Python, preferably with web framework such as Flask
 - Basic knowledge of LangChain and/or AI Agents such as AutoGPT
 - Intermediate knowledge of Typescript and ReactJS for frontend development is a plus, but not necessary
 
-### Outline
+### Outlines
 
 1. Initializing the Environment
 2. Developing the Backend
 3. Developing the Frontend
 4. Testing the AI Research Assistant App
 
-## Discussion
+## Getting Started
 
 ### Initializing the Environment
 
