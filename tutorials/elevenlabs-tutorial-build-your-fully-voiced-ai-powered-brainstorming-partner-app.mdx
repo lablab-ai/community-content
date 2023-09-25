@@ -5,31 +5,35 @@ image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/eleven-
 authorUsername: "septian_adi_nugraha408"
 ---
 
-## Introduction
+# How to Utilize Eleven Labs API for Voice AI Applications
 
-The emerging world of Generative AI has taken to a whole new level these days. With simple to use APIs from various services, we can make use of AI models for various creative endeavors, such as generating short stories, song lyrics, and even images. Not only that, with the arrival of voice generation services by ElevenLabs, we can also synthesis or generate artificial speeches using pre-made voices or even voices of our own making! It is done by cloning recorded voices or by "designing" the voices by selecting gender, age, and accent to generate unique voice.
+## Introduction: Unleash the Potential of Eleven Labs API
 
-In this tutorial, we only use "Speech Synthesis", text-to-speech feature provided by ElevenLabs, which is available starting on Free plan. Given our use case, which is to build a brainstorming partner app, I think using the pre-made voice is good enough. We will also build the UI for the app using ReactJS to make requests and handle the response to and from the Flask-based backend.
+Welcome to this in-depth tutorial where you'll unlock the full potential of Eleven Labs API to create a dynamic AI-powered brainstorming partner app. In this section, we'll introduce you to the exciting world of Eleven Labs API and give you a glimpse of what's ahead in this comprehensive guide.
 
-### Introduction to ElevenLabs
+Are you ready to embark on a journey into the realm of AI-driven creativity? [Eleven Labs API](https://lablab.ai/tech/elevenlabs) opens the door to endless possibilities, allowing you to harness the power of AI speech synthesis for your unique applications. In the following sections, we'll dive deep into the technologies that form the foundation of our project. Let's begin our exploration of the Eleven Labs API, Anthropic's Claude, ReactJS, and Flask as we build your AI-powered brainstorming partner app step by step.
+
+### Introduction to ElevenLabs and Speech Synthesis
 
 ElevenLabs is a voice technology research company which develops "the most compelling AI speech software for publishers and creators". Their goal is to instantly convert spoken audio between languages by making on-demand multilingual audio support a reality across education, streaming, audiobooks, gaming, movies, and even real-time conversation. They offer a suite of tools ranging for voice cloning, designing synthetic voices and their main offering, text-to-speech models which rely on high compression and context understanding.
 
-### Introduction to Anthropic's Claude
+### Understanding Anthropic's Claude: Your Chatbot's AI Engine
 
 Anthropic is an AI safety and research company. Which means, alongside developing products such as AI models, they also put emphasis on the safety, interpretability and safety on their AI systems. They believe AI has the potential to fundamentally change how the world works. By promoting safety on AI at the industry-wide scale, they aim to build frontier AI systems that are reliable, interpretable, and steerable.
 
 Based on their research, they launched their product, an AI model called Claude. Claude is accessible via chat interface and free-to-use API and capable of wide variety of conversational and text processing tasks while maintaining a high degree of reliability and predictability. Users describe Claude's answers as "detailed and easily understood, feel like natural conversation". For that reason, we chose Anthropic's Claude to power our brainstorming partner chatbot app.
 
-### Introduction to ReactJS
+### Leveraging ReactJS for Intuitive User Interfaces
 
 ReactJS is a Javascript/Typescript library for developing user interfaces, which is particularly popular for single-page applications. It makes possible for developers to build both simple and complex apps from ground-up, by building components by components. One particularly popular features of React is its simple but powerful state management which only update and renders certain parts of the UI without requiring full page reloads. For that reason, we will use ReactJs to build the front-end of our brainstorming partner chatbot app.
 
-### Introduction to Flask
+### Building a Robust Backend with Flask
 
 Flask is a Python-based web framework which is lightweight, simple and easy to use. Developers can start small by adding a few routes and develop the app further by adding more functionalities along the way. This tutorial leverages Flask to build the backend of our chatbot app as some of the libraries, such as `anthropic` and `elevenlabs` are mostly available for Python.
 
 ### Prerequisites
+
+Before diving into this tutorial, it's advisable to have:
 
 - Basic knowledge of Python and preferably Flask
 - Basic knowledge of Typescript and ReactJS
@@ -38,15 +42,17 @@ Flask is a Python-based web framework which is lightweight, simple and easy to u
 
 ### Outline
 
+Here's an overview of what we'll cover in this tutorial:
+
 1. Initializing the Projects
 2. Building the Backend
 3. Testing the Backend
 4. Building the Frontend
 5. Testing the Brainstormy App
 
-## Discussion
+## Step-by-Step Tutorial: How to Use Eleven Labs API
 
-### Initializing the Projects
+### Step 1: Initializing the Projects
 
 First thing first, let's initialize our projects for our chatbot app, which we will call "Brainstormy". In this tutorial, we will create two separate projects, one for the backend and one for the frontend.
 
@@ -112,6 +118,7 @@ if __name__ == '__main__':
 ```
 
 This step creates a Flask app with a route that returns the text "Hello, World!".
+
 #### Initializing the Frontend
 
 1. **Create a new ReactJS application:**
@@ -143,7 +150,7 @@ npm start
 ```
 The command above should run the app in development mode, which automatically opens in our default browsers.
 
-### Building the Backend
+### Step 2: Building the Backend
 
 Now, let's get into the coding part! In this part, we will begin by adding some handlers for our backend's endpoints. However, let's start off our coding session by installing the remaining dependencies that our backend needs.
 #### Installing the Necessary Libraries
@@ -251,7 +258,7 @@ Remember the API keys that we use for our various AI services? We will write it 
 XI_API_KEY=xxxxxxxxxxxxxxxx
 CLAUDE_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
-### Testing the Backend
+### Step 3: Testing the Backend
 
 Before moving on to the frontend, it's crucial to ensure our backend is functioning as expected. We will use tools like Postman or Insomnia to send POST requests to our Flask routes and verify the responses. We should receive an audio file that plays the synthesized speech of Claude's response. Once we're confident that our backend is operating correctly, we can proceed to build the frontend.
 
@@ -285,7 +292,7 @@ Next, let's test our `/talk` endpoint. This endpoint accepts JSON as a parameter
 
 After a few seconds, our `/talk` endpoint should return an audio file that we can play directly to test the result. Listen to the soothing voice of "Bella" as it reads the suggestion from the Claude model on how we should innovate the health care system. Impressive, isn't it? Now, what could make this even better? Of course, an app based on our backend that automatically plays the generated speech as the bot responds with its brainstorming suggestions.
 
-### Building the Frontend
+### Step 4: Building the Frontend
 
 After the backend is done and tested, let's move on to the front-end. Thankfully, in our front-end project, we will only build two components, the `App` component, which is the main component of our front-end, and `Chatbot` component, which contains most of the functionalities of our `Brainstormy` app.
 
@@ -437,7 +444,7 @@ Finally, to complete the visual of our brainstorming partner app, let's change t
   </head>
 ```
 
-### Testing the Brainstormy App
+### Step 5: Testing the Brainstormy App
 
 Once our frontend is complete, it's time to test the entire application. We will interact with the chatbot, sending various messages and checking the responses. The responses should be relevant to our messages, and we should hear the synthesized speech of Claude's responses. If everything is working correctly, we have successfully built a chatbot application using the ElevenLabs API, Anthropic's Claude, ReactJS, and Flask.
 
