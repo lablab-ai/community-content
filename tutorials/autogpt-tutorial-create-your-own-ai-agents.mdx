@@ -1,104 +1,136 @@
----
-title: "AutoGPT Tutorial - Create Your Own AI Agents!"
-description: " a tutorial on using AutoGPT for creation of an AI Agent with absolutely no coding skills"
-authorUsername: "youknowsthevibes"
---- 
+# AutoGPT Tutorial - Create Your Own AI Writing Assistant
 
+## Introduction
 
-# Auto GPT Tutorial
-
-In this tutorial, we'll delve into Auto GPT, a tool harnessing advanced language models like GPT-4 to automate various tasks. We'll guide you through the process of installing and using it with practical examples. While it holds promise, it's important to understand its current capabilities and limitations.
+Welcome to the AutoGPT tutorial, where we will guide you through creating your very own AI-enhanced creative writing assistant. This tool is designed to provide inspiration, suggestions, and creative prompts to writers, whether you're a professional or a hobbyist looking to enhance your storytelling and creativity. Let's get started!
 
 ## Table of Contents
-1. Introduction
-2. Installation
-3. Example 1: Finding Email Addresses
-4. Example 2: Generating Python Class Exercises
-5. Challenges and Considerations
-6. Future Potential
+1. [Introduction](#introduction)
+2. [Installation](#installation)
+3. [Creating Your Writing Assistant](#creating-your-writing-assistant)
+4. [Running Your Writing Assistant](#running-your-writing-assistant)
+5. [Example: Generating Writing Prompts](#example-generating-writing-prompts)
+6. [Conclusion](#conclusion)
 
-## Introduction 
+## Installation
 
-Auto GPT is a tool designed to make use of powerful language models to automate tasks, making it easier for developers and users to tackle various challenges.
+Before we dive into creating your writing assistant, you'll need to set up your development environment. Follow these steps:
 
-## Installation 
+### Environment Choice
 
-To get started with Auto GPT, follow these steps:
+Choose your preferred development environment:
+- **VSCode + devcontainer:** If you use Visual Studio Code, you can use a pre-configured development container. Find setup instructions in the `.devcontainer` folder.
+- **Docker:** Alternatively, you can set up your environment using Docker.
+- **Local Python 3.10 or Later:** If you prefer a local environment, make sure you have Python 3.10 or later installed. You can find installation instructions for Python on Windows [here](https://www.tutorialspoint.com/how-to-install-python-in-windows).
 
-1. Clone the Auto GPT repository. 
-   ```shell
-   git clone -b stable https://github.com/auto-gpt/auto-gpt.git
+### Obtain OpenAI API Key
+
+To use AutoGPT, you'll need an OpenAI API key. Get your API key from the [OpenAI platform](https://platform.openai.com/account/api-keys). Note that you must have a paid OpenAI account for the API key to work. Make sure your OpenAI account has billing set up.
+
+### Optional Memory Backend
+
+Depending on your needs, you can choose an optional memory backend such as Pinecone, Milvus, Redis, or Weaviate.
+
+### ElevenLabs Key (Optional)
+
+If you want the AI to speak, you'll need an ElevenLabs key.
+
+### Installation of AutoGPT
+
+Now, let's install AutoGPT:
+
+1. Open a command prompt (CMD), Bash, or PowerShell window. Navigate to a folder on your computer and type `CMD` in the folder path at the top, then press Enter.
+
+2. Clone the AutoGPT repository from GitHub using Git. If you don't have Git, you can also download the [latest stable release](https://github.com/Significant-Gravitas/Auto-GPT/releases/latest) as a ZIP file from the bottom of the page.
+
+   ```bash
+   git clone https://github.com/Significant-Gravitas/Auto-GPT.git
    ```
 
-2. Install the necessary dependencies using `pip`:
-   ```shell
-   pip install -r requirements.txt
+3. Navigate to the directory where you downloaded AutoGPT:
+
+   ```bash
+   cd AutoGPT
    ```
 
-3. Configure your API keys by copying the provided `.env.template` file to `.env` and filling in your OpenAI API key.
 
-Now, you're ready to use Auto GPT for various tasks.
+4. To set up the project, run the following command in the terminal. Follow the instructions to install the necessary dependencies and set up your GitHub access token.
 
-## Example 1: Finding Email Addresses
+   ```bash
+   ./run setup
+   ```<https://freeimage.host/i/JJsqN8F" alt="writer-assistant" caption="AI Agent "/>
+## Creating Your Writing Assistant
 
-In this example, we'll create an assistant named "Email Finder GPT" to locate email addresses of the top 10 coding YouTubers and save them to a file.
+Now that your environment is set up, let's create your writing assistant template. Use the following command:
 
-1. Run Auto GPT with the following command:
-   ```shell
-   ./run.sh
-   ```
-
-2. Enter the name for your assistant and its role, like "Email Finder GPT" and "An AI designed to find the emails of the top 10 coding YouTubers and save them to a file."
-
-3. Next, you can provide up to five individual goals, such as:
-   - Find the emails of the top 10 coding YouTubers.
-   - Save the emails to a file.
-i'ts should look like this 
-<Img src="https://freeimage.host/i/JHxWIzN" alt="AI Agent Shell" caption="Email Finder GPT"/>
-
-4. Auto GPT will start its process, involving tasks like Google searching, website browsing, and email extraction. You can approve or modify its actions as it proceeds.
-after that auto_gpt will automaticly create the file you can  find it on auto_gpt work space 
-there it is : <Img src="https://freeimage.host/i/JHxhJP1" alt="AI Agent workspace" caption="Email Finder GPT"/>
-
-## Example 2: Generating Python Class Exercises <a name="example-2-generating-python-class-exercises"></a>
-
-In this example, we'll create a coding exercise generator assistant to craft Python class exercises, including starter code, solutions, and tests.
-
-1. Run Auto GPT in continuous mode with a limit (e.g., 30 cycles):
-   ```shell
-   ./run.sh -y -a 30
-   ```
-
-2. Define your assistant's role, such as "Coding Exercise Generator GPT."
-
-3. Specify its tasks, which may include:
-   - Write a text description for a Python class exercise.
-   - Create starter code and save it to a file.
-   - Develop solution code and save it.
-   - Generate test cases and save them.
-it's should look like this on your shell 
- <Img src="https://freeimage.host/i/JHxhjOx" alt="AI Agent shell" caption="Coding Exercise Generator GPT"/>
-Auto GPT will begin its work, providing you with coding exercises and related files.
-you can now go gpt workspace where you can find the coding exercice file 
- <Img src="https://freeimage.host/i/JHxjKq7" alt="AI Agent shell" caption="Coding Exercise Generator GPT"/>
-you can run it with 
- ```shell
- python3 bank_account_tests.py
-   ```
-
-## Challenges and Considerations
-
-It's essential to be aware of the following challenges and considerations when using Auto GPT:
-
-- **Early Development**: Auto GPT is in its early stages, and you may encounter occasional bugs and issues.
-
-- **Cost**: Running Auto GPT can be expensive, especially in continuous mode. Carefully monitor costs.
-
-- **Limited Scope**: It's not a substitute for human developers and is best suited for simpler tasks.
-
-## Future Potential 
-Despite its current limitations, Auto GPT is an intriguing tool with the potential to improve over time. It offers various functionalities, including integrating with different APIs and expanding its capabilities.
-
-In summary, Auto GPT is a promising tool that's worth exploring, but it's essential to use it wisely and understand its current capabilities. As it evolves, it may become even more valuable for automating tasks and simplifying development workflows.
+```bash
+./run agent create writing-assistant
 ```
+  ```<https://freeimage.host/i/JJsVxQj" alt="writer-assistant" caption="AI Agent "/>
+## Running Your Writing Assistant
+
+To start your writing assistant, use the command:
+
+```bash
+./run agent start writing-assistant
+```
+
+This will initiate the agent on `http://localhost:8000/`.
+
+  ```<https://freeimage.host/i/JJsO0HQ" alt="writer-assistant" caption="AI Agent "/>
+
+### Logging in and Sending Tasks
+
+Access the frontend at `http://localhost:8000/` and log in using a Google or GitHub account. You can then send tasks to your writing assistant through the interface.
+
+### Stopping and Restarting
+
+When needed, use Ctrl+C to end the session or use the stop command:
+
+```bash
+./run agent stop
+```
+
+This command forcefully stops the agent. You can also restart it using the start command.
+
+## Example: Generating Writing Prompts
+
+Now, let's use your writing assistant for inspiration, suggestions, and creative prompts. Here are some example prompts you can use:
+
+- **Character Development:** Generate a detailed character profile for a time traveler stuck in a different era. Describe their appearance, personality, and motivations.
+
+- **Setting Creation:** Create an enchanting setting for a fantasy novel, complete with unique geography, flora, fauna, and magical elements.
+
+- **Conflict Generation:** Devise a central conflict for a mystery novel involving a detective who can only solve cases in their dreams. What's the most perplexing case they've encountered?
+
+- **Dialogue Enhancement:** Provide a dialogue exchange between two characters who are old friends but are now on opposing sides of a political debate. Make the conversation emotionally charged.
+
+- **Plot Twist Idea:** Suggest a surprising plot twist for a romance novel where the main characters discover they are long-lost siblings. How does this revelation impact their relationship?
+
+- **Genre Mashup:** Combine two seemingly unrelated genres, such as science fiction and historical fiction. Develop a storyline that seamlessly merges elements from both genres.
+
+- **Poetry Prompt:** Compose a short poem about the changing seasons, using vivid imagery and metaphors to capture the transitions.
+
+- **Flash Fiction Challenge:** Challenge the writer to craft a compelling story in 100 words or less, featuring a sudden snowstorm as a central element.
+
+- **Historical Inspiration:** Provide historical facts or events and challenge the writer to create a fictional story set during that time period. How do the characters interact with historical events?
+
+- **Inspirational Quote:** Offer an inspirational quote related to perseverance or overcoming obstacles. Encourage the writer to build a story around the theme of resilience.
+
+- **Character Dilemma:** Present a character with a moral dilemma. For instance, they find a wallet with a large sum of money. Should they keep it or try to return it to its owner?
+
+- **Time Travel Adventure:** Imagine a time travel adventure where the protagonist accidentally changes a critical event in history. How do they correct the timeline?
+
+- **Dream Sequence:** Craft a dream sequence that the writer can use to explore a character's subconscious thoughts and fears. How does this dream affect their actions in the real world?
+
+- **Evolving Relationships:** Describe the evolution of a friendship over several decades, highlighting the key moments that strengthen or strain the bond.
+
+- **Twisted Fairy Tale:** Reimagine a classic fairy tale with a dark twist. How does the story change when the traditional roles of heroes and villains are reversed?
+
+You can choose whether you want your writing assistant to be in continuous mode or not. For this tutorial, 
+ ```<https://freeimage.host/i/JJskqv4" alt="writer-assistant" caption="AI Agent "/>
+
+## Conclusion
+
+In summary, AutoGPT is a promising tool that's worth exploring, whether you're a beginner or an experienced writer. It can be a valuable companion for generating creative ideas and enhancing your writing skills. As you continue to use AutoGPT, you'll discover even more ways to automate tasks and simplify your writing journey. Enjoy your creative writing adventure!
 
