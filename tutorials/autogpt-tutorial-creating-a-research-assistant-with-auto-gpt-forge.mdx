@@ -5,25 +5,25 @@ image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/autgptr
 authorUsername: "sanchayt743"
 ---
 
-# AutoGPT Tutorial: Creating an Agent Powered Research Assistant with Auto-GPT-Forge
+## Ler's begin with crafting your AI-Powered research assistant
 
-# 🎉 Welcome Aboard!
+Welcome to the world of AutoGPT Forge, where we'll embark on a journey to create your very own Research Assistant powered by AutoGPT. I'm Sanchay Thalnerkar, your guide for this exciting tutorial.
 
+### 🎉 Welcome Aboard!
 Hello, curious minds! I'm Sanchay Thalnerkar, and today, we're diving deep into the world of AutoGPT Forge. By the end of our journey, you'll have your very own Research Assistant powered by AutoGPT. So, buckle up, and let's get started!
 
-## 🌟 What's the Hype About Forge?
-
+### 🌟 What's the Hype About Forge?
 Imagine having a toolkit that simplifies the process of building an AI agent. That's what Forge is all about! It's a comprehensive template designed for AutoGPT, ensuring you have a smooth sail while crafting your agent. From setting up to running tests, Forge has got you covered.
 
-## 🛠️ Getting Started: Setting the Stage
+## 🛠️ Getting Started: Step-by-Step Setup of AutoGPT
 
 Before our grand performance, we need to ensure the stage is set. Here's how:
 
-### 1. **System Requirements**
+### 1. **Learn System Requirements**
 
 - **OS**: Linux (Debian based), Mac, or Windows Subsystem for Linux (WSL). Windows users, [here's your guide to WSL](https://learn.microsoft.com/en-us/windows/wsl/).
 
-### 2. **Cloning the Magic Box: The Forge Repository**
+### 2. **Clon the Magic Box: The Forge Repository**
 
 First, fork the [AutoGPT repository](https://github.com/Significant-Gravitas/AutoGPT). Got it? Great! Now, let's bring it to your local machine:
 
@@ -42,7 +42,7 @@ With the repository in place, let's set things up:
 
 Follow the on-screen prompts, and you'll be good to go!
 
-## 🤖 Crafting Your Agent
+### 4. 🤖 Crafting Your Agent
 
 It's time to breathe life into your agent. Give it a unique name, something catchy like `EinsteinBot` or `CurieAssistant`.
 
@@ -50,7 +50,7 @@ It's time to breathe life into your agent. Give it a unique name, something catc
 ./run agent create YOUR_AGENT_NAME
 ```
 
-## 🏟️ Stepping into the Arena
+### 5. 🏟️ Stepping into the Arena
 
 The Arena is where your agent meets others of its kind. It's a competitive space, aiming to find the crème de la crème of agents. To join the ranks:
 
@@ -58,7 +58,7 @@ The Arena is where your agent meets others of its kind. It's a competitive space
 ./run arena enter YOUR_AGENT_NAME
 ```
 
-## 🚀 Launching Your Agent
+### 6. 🚀 Launching Your Agent
 
 With everything in place, let's set your agent in motion:
 
@@ -70,7 +70,7 @@ Visit `http://localhost:8000/`, log in, and voilà! Your agent is ready to assis
 
 ---
 
-## 📂 Navigating to Your Agent's Lair
+## 📂 Navigating to Your AI Agent's Lair
 
 Now that your agent is alive and kicking, it's time to delve deeper into its world. Each agent has its own dedicated space within the Forge. To navigate to your agent's directory:
 
@@ -82,7 +82,7 @@ Replace `YOUR_AGENT_NAME` with the unique name you gave your agent earlier. This
 
 
 ---
-## 📦 Adding Essential Dependencies
+### 📦 Adding Essential Dependencies
 
 While in your agent's directory, it's time to equip it with some essential tools. We'll be using `poetry` to manage our dependencies. If you're new to `poetry`, think of it as a trusty sidekick that ensures your agent has everything it needs.
 
@@ -94,7 +94,7 @@ poetry add langchain bs4 python-dotenv
 
 These packages will empower your agent with capabilities like language processing, web scraping, and environment variable management.
 
-## 🚀 Relaunching Your Agent
+### 🚀 Relaunching Your Agent
 
 With the new tools in place, it's time to set your agent back in motion. To run your agent again, use the following command:
 
@@ -110,7 +110,7 @@ Certainly! Let's guide the user through stopping the agent and then navigating t
 
 ---
 
-## 🛑 Halting Your Agent
+### 🛑 Halting Your Agent
 
 Before we proceed further, let's ensure your agent is at rest. To stop your agent, use the following command:
 
@@ -120,7 +120,7 @@ Before we proceed further, let's ensure your agent is at rest. To stop your agen
 
 This command ensures your agent is no longer active, allowing you to safely make modifications.
 
-## 🌲 Navigating the Directory Tree
+### 🌲 Navigating the Directory Tree
 
 To better understand where the `agent.py` file resides, let's visualize the directory structure:
 
@@ -144,7 +144,7 @@ This `agent.py` file is the brain of your agent. It's where you define its behav
 
 ---
 
-# 📦 1. Setting the Stage with Imports
+## 📦 1. Setting the Stage with Imports
 
 Every great script starts with the right tools. Here's what we're arming ourselves with:
 
@@ -187,7 +187,7 @@ LOG = ForgeLogger(__name__)
 ```
 ---
 
-## 🗝️ Unlocking the Secrets: Setting Environment Variables
+### 🗝️ Unlocking the Secrets: Setting Environment Variables
 
 Before our research assistant can start its work, we need to give it some keys. Not literal keys, but keys to access certain services and tools. These keys are sensitive; think of them as passwords. We don't want to leave them lying around in our code for anyone to see. Instead, we store them safely in a locked drawer, known as environment variables.
 
@@ -198,7 +198,7 @@ serper_api_key = os.getenv('SERP_API_KEY')
 open_ai_api = os.getenv('OPENAI_API_KEY')
 ```
 
-### Breaking it Down:
+#### Breaking it Down:
 
 1. **`load_dotenv('.env')`**: This is like unlocking our drawer. We're telling our code, "Hey, I've stored some secrets in this `.env` file. Please load them up so we can use them."
 
@@ -210,11 +210,11 @@ open_ai_api = os.getenv('OPENAI_API_KEY')
 By setting up these environment variables, we ensure that our agent has all the tools it needs while keeping our sensitive keys safe and secure.
 
 ---
-# 🤖 2. Meet the Star: The ForgeAgent Class
+## 🤖 2. Meet the Star: The ForgeAgent Class
 
 In the vast universe of code, every class has its role. Some are mere supporting characters, while others take center stage. Among them, the `ForgeAgent` class shines the brightest in our script. Let's get to know this star performer a bit better.
 
-## 🎭 The Role
+### 🎭 The Role
 
 The `ForgeAgent` class is the embodiment of our agent's intelligence and behavior. Think of it as the brain behind all the operations, decisions, and interactions your agent will have.We will dive into this at the end after we have created all the tools and assembled all the pieces.
 
@@ -225,36 +225,38 @@ class ForgeAgent(Agent):
 
 By extending the `Agent` class, `ForgeAgent` inherits all the foundational capabilities of an agent. But, as with any great protagonist, it's not just about the inherited traits but the unique ones they bring to the table.
 
-## 🧬 Inheritance and Enhancement
+### 🧬 Inheritance and Enhancement
 
 In object-oriented programming, inheritance allows a class to adopt properties and behaviors from another class. In our case, the `ForgeAgent` inherits from the `Agent` class. This means that our `ForgeAgent` starts with a set of predefined abilities.
 
 However, what makes `ForgeAgent` special is not just what it inherits, but how it enhances and expands upon those inherited capabilities. By defining new methods or overriding existing ones, the `ForgeAgent` can exhibit behaviors tailored to our specific needs.
 
-## 🎨 Customization and Flexibility
+### 🎨 Customization and Flexibility
 
 The ellipsis (`...`) inside our class definition is a placeholder, hinting at the vast potential for customization. Here, you can define methods that dictate how the agent searches for information, interacts with users, processes data, and so much more.
 
 For instance, you might want your agent to scrape specific websites, understand user queries in a particular way, or even have its own unique personality quirks. All these customizations can be coded within the `ForgeAgent` class.
 
-## 🌟 The Spotlight
+### 🌟 The Spotlight
 
 In the grand performance of our agent's operations, the `ForgeAgent` class will often be in the spotlight. Whether it's fetching data, making decisions, or interacting in real-time, this class will be at the heart of it all. As you delve deeper into the code, always remember the pivotal role this class plays in shaping the agent's journey.
 
 ---
-## 2.1 🎬 Action! Creating Tasks
+## Seting up the Tasks
+
+### 2.1 🎬 Action! Creating Tasks
 
 Alright, let's talk about getting things done. You know how we all have our to-do lists? Well, our agent has one too. And every time it needs to tackle something new, it creates a task. That's where the `create_task` method comes in.
 
 Imagine telling your assistant, "Hey, can you fetch me today's weather?" That's a task. And our agent, being the go-getter it is, uses `create_task` to note it down and get cracking.
 
-## 2.2 🧠 The Brain: Executing Steps
+### 2.2 🧠 The Brain: Executing Steps
 
 Now, tasks are great, but they're just the big picture. The real action happens step-by-step. Think of it like following a recipe. You don't just "make a cake." You mix the ingredients, preheat the oven, pour the batter, and so on. Each of these is a step.
 
 The `execute_step` method? That's our agent's way of going through its recipe or, in our case, the task. It's where our agent thinks, "Okay, what's next?" and then does it.
 
-## 🔧 3. The Toolbox: Helper Functions
+### 🔧 3. The Toolbox: Helper Functions
 
 Ever tried fixing something without the right tools? Frustrating, right? Our agent feels the same way. That's why it has a bunch of helper functions. These are like the little gadgets in a toolkit, each designed for a specific job.
 
@@ -271,7 +273,7 @@ Let's define these functions `outside the main class`, essentially laying them o
 Now, let's dive into each tool:
 ---
 
-## 3.1 🔍 The Detective: `search`
+### 3.1 🔍 The Detective: `search`
 
 Every research project begins with a question, a curiosity. And to answer that, we often turn to the vast ocean of information: the internet. The `search` function is our agent's way of sifting through this ocean to find relevant nuggets of information.
 
@@ -291,7 +293,7 @@ def search(query):
 
 Imagine you're writing a paper and need statistics on a specific topic or references from scholarly articles. Instead of spending hours manually searching, our agent uses this function to quickly pull up relevant results. It's like having a librarian who instantly knows where to find every book or article you need.
 
-## 3.2 🌐 The Explorer: `scrape_website`
+### 3.2 🌐 The Explorer: `scrape_website`
 
 Research isn't just about finding sources; it's about extracting valuable information from them. The `scrape_website` function allows our agent to delve into specific websites and retrieve the content we need.
 
@@ -332,7 +334,7 @@ def scrape_website(url):
 
 Think of it as sending our agent on a field trip to a digital archive. It goes in, looks around, and brings back the exact piece of information or data you need for your research. No more manual copy-pasting or sifting through irrelevant content.
 
-## 3.3 📝 The Scribe: `summary`
+### 3.3 📝 The Scribe: `summary`
 
 Research often involves going through vast amounts of information. But not everything you find is going to be relevant. That's where the `summary` function comes in. It distills lengthy content into concise, digestible summaries.
 
@@ -368,7 +370,7 @@ def summary(content):
 Imagine you've found a 50-page report, but you only need the key points. Instead of reading through the entire document, our agent uses this function to provide a brief overview, highlighting the main findings or points. It's like having a personal assistant who can quickly review and summarize documents for you, ensuring you focus only on what's essential.
 
 ---
-# 🛠️ 4. Gearing Up: Initialization and Setup
+### 🛠️ 4. Gearing Up: Initialization and Setup
 
 Before the action unfolds, our agent needs its environment set up just right.Make sure you add this after your imports!
 
