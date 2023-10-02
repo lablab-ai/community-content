@@ -453,7 +453,9 @@ agent_kwargs = {
 Here's a quick breakdown:
 
 1. **extra_prompt_messages**: This is like giving our agent a notepad where it can jot down important notes. The 
-```MessagesPlaceholder(variable_name="memory")``` 
+```bash
+MessagesPlaceholder(variable_name="memory")
+``` 
 is a placeholder where the agent can store and recall information, helping it remember past interactions or data.
 
 2. **system_message**: Here, we're linking our orientation speech (the `system_message` we defined earlier) to the agent. This ensures that, before the agent starts its tasks, it's reminded of its role and responsibilities.
