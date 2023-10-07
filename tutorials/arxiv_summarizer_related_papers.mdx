@@ -25,7 +25,7 @@ pip install openai
 pip install sentence-transformers
 pip install torch
 ```
-or create a requirements.txt file and install the packages using the command  --pip install -r requirements.txt--
+or create a requirements.txt file and install the packages using the command  **pip install -r requirements.txt**
 
 ```bash
 numpy==1.25.2
@@ -34,6 +34,68 @@ annoy==1.17.3
 langchain==0.0.237
 sentence-transformers==2.2.2
 ```
+
+## Kaggle arXiv dataset 
+Create a Kaggle account and download the arXiv dataset with limited metadata <a href="https://www.kaggle.com/datasets/Cornell-University/arxiv/data"> dataset </a>
+
+Unzip the downloaded file. You should see a json file.
+
+## Preprocess the Data
+Load your dataset and preprocess it into the desired format. Here, we're reading a JSON file containing ArXiv metadata and concatenating titles and abstracts with a '[SEP]' separator:
+```
+def preprocess(path):
+    data = []
+    with open(path,'r') as f:
+        for line in f:
+            data.append(json.loads(line))
+    sents = [entry['title']+'[SEP]'+entry['abstract'] for entry in data]
+    return sents
+
+```
+
+## Generate Embeddings using SBERT
+Initialize the SBERT model and generate embeddings for your preprocessed data. We're using the allenai-specter model, which is specially trained for scientific papers
+If you have GPU, set device to cuda else set device to cpu.
+For approximately ~2 million articles of arxiv upto december 2022, it took 8+ hours on RTX3080, 6 hours on RTX4090 and 1.5 hours on A100 (cloud)
+
+```
+def generate_embeddings(sents,model):
+    embeddings = model.encode(sents, batch_size=400, show_progress_bar=True, device='cuda', convert_to_numpy=True)
+    np.save("embeddings.npy", embeddings)
+    return embeddings
+```
+You can adjust the batch_size depending on the GPU memory
+
+| GPU | Time to generate embeddings.npy |
+| --- | ----------- |
+| RTX 3080 (16GB) | 8 hours |
+| RTX 4090 (16 GB) | 5 hours |
+| A100 (80 GB) (on cloud) | 1 hours |
+
+## Index Embeddings with Annoy
+
+Once you have the embeddings, the next step is to index them for fast similarity search. We're using the Annoy library because of its efficiency:
+
+```
+def generate_annoy(embeddings):
+    n_trees = 256
+    embedding_size = 768
+    annoy_index = AnnoyIndex(embedding_size, 'angular')
+    for i in range(len(embeddings)):
+        annoy_index.add_item(i, embeddings[i])
+    annoy_index.build(n_trees)
+    annoy_index.save("annoy_index.ann")
+    return annoy_index
+```
+
+
+Alternatively, if you do not have GPU and is ok with arxiv snapshot upto 12/2022, you can use my public S3 URLS to download the following datasets. These S3 URLs will be alive until i can afford.
+
+|dataset| description | S3URL|
+|-------|-------------|------|
+|annoy_index.ann | Annoy Index  of 2M arxiv articles using the file arxiv-metadata-oai-snapshot.json | S3 URL : https://arxiv-r-1228.s3.us-west-1.amazonaws.com/annoy_index.ann|
+|arxiv-metadata-oai-snapshot.json | Dataset of 2M arxiv articles downloaded from Kaggle |S3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/arxiv-metadata-oai-snapshot.json|
+|embeddings.npy | Embedding numpy file. Contains serialized embeddings of all 2M articles |s3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/embeddings.npy|
 
 {/*To add image to your tutorial use <Img/> component with params:*/}
 {/*<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}*/}
