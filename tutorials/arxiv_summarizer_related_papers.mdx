@@ -5,19 +5,23 @@ image: "path_to_storage"
 authorUsername: "@raghavan848"
 ---
 
-#Introduction
+##Introduction
 The sheer volume of research articles on platforms like arXiv makes it challenging for scholars to digest and stay updated with the latest findings.
 Summarizing long-form articles into key points can help researchers quickly grasp the essence of a paper and discern its relevance.
 Furthermore, identifying similar papers can aid in contextualizing the current study within the broader academic discourse, ensuring a comprehensive understanding and avoiding redundant research efforts.
+This is article has two parts. 
+1. Generating the embeddings and building the Annoy index
+2. Querying index to get related papers and generating summary
 
-#Solution
-In this article, we will build a solution using Langchain, Annoy and GPT3.5
 
-## Prerequisites
+##Part 1: Building the Annoy Index
+
+### Prerequisites
+### Steps:
 
 You need to have <a href="https://www.python.org/downloads/release/python-3913/" rel="nofollow">Python 3.9</a> and pip installed, 
 
-Install the following packages using pip
+###1. Install the following packages using pip
 ```bash
 pip install annoy
 pip install langchain
@@ -35,12 +39,12 @@ langchain==0.0.237
 sentence-transformers==2.2.2
 ```
 
-## Kaggle arXiv dataset 
+#### Kaggle arXiv dataset 
 Create a Kaggle account and download the arXiv dataset with limited metadata <a href="https://www.kaggle.com/datasets/Cornell-University/arxiv/data"> dataset </a>
 
 Unzip the downloaded file. You should see a json file.
 
-## Preprocess the Data
+#### Preprocess the Data
 Load your dataset and preprocess it into the desired format. Here, we're reading a JSON file containing ArXiv metadata and concatenating titles and abstracts with a '[SEP]' separator:
 ```
 def preprocess(path):
@@ -53,7 +57,7 @@ def preprocess(path):
 
 ```
 
-## Generate Embeddings using SBERT
+#### Generate Embeddings using SBERT
 Initialize the SBERT model and generate embeddings for your preprocessed data. We're using the allenai-specter model, which is specially trained for scientific papers
 If you have GPU, set device to cuda else set device to cpu.
 For approximately ~2 million articles of arxiv upto december 2022, it took 8+ hours on RTX3080, 6 hours on RTX4090 and 1.5 hours on A100 (cloud)
@@ -97,8 +101,178 @@ Alternatively, if you do not have GPU and is ok with arxiv snapshot upto 12/2022
 |arxiv-metadata-oai-snapshot.json | Dataset of 2M arxiv articles downloaded from Kaggle |S3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/arxiv-metadata-oai-snapshot.json|
 |embeddings.npy | Embedding numpy file. Contains serialized embeddings of all 2M articles |s3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/embeddings.npy|
 
-{/*To add image to your tutorial use <Img/> component with params:*/}
-{/*<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}*/}
-{/*This is just a template for tutorials .mdx*/}
-{/*Please yse mainly ##, ###, #### for headings, don't use number e.g. '1. abc' in front of them (if not needed)*/}
-{/*After creation of tutorial (and techs if needed), go to /tutorial and add your tutorial. Image and description will be automaticly downloaded from this file.*/}
+## Part2: Summarize and Search for Similar Articles on Arxiv
+
+### Description:
+This tutorial will guide you through the process of summarizing a long-form Arxiv article into key points, generating an idea based on it, and identifying similar papers. We will make use of Sentence Transformers for embeddings, Annoy for indexing, and the OpenAI API for generating the summary.
+
+### Prerequisites:
+1. Python 3+
+2. Flask for creating an endpoint
+3. Knowledge of JSON, Annoy, and Sentence Transformers
+
+### Steps:
+
+#### 1. Setup and Install Dependencies
+First, install the required packages:
+```bash
+pip install sentence_transformers arxiv annoy flask
+```
+
+#### 2. Load and Preprocess Arxiv Metadata
+To summarize and find similar articles, we need the dataset's metadata. The `preprocess` function does this by:
+- Loading the JSON data
+- Extracting titles and abstracts
+- Combining them into sentences
+
+```python
+import json
+import time
+
+path = "arxiv-metadata-oai-snapshot.json"
+data = []
+
+def preprocess(path):
+    with open(path, 'r') as f:
+        for line in f:
+            data.append(json.loads(line))
+    sents = [entry['title'] + '[SEP]' + entry['abstract'] for entry in data]
+    return sents
+```
+
+#### 3. Generate Annoy Index
+Annoy (Approximate Nearest Neighbors Oh Yeah) is used to search for similar vectors in large datasets. Here, we load an Annoy index given a filename.
+
+```python
+from annoy import AnnoyIndex
+
+def generate_annoy(fn):
+    embedding_size = 768
+    annoy_index = AnnoyIndex(embedding_size, 'angular')
+    annoy_index.load(fn)
+    return annoy_index
+```
+
+#### 4. Search Function
+The search function takes a query, computes its embedding using Sentence Transformers, and then finds the closest matches in our Annoy index.
+
+```python
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer('sentence-transformers/allenai-specter', device='cuda')
+
+def search(query, annoy_index, model):
+    query_embedding = model.encode(query, convert_to_numpy=True)
+    hits = annoy_index.get_nns_by_vector(query_embedding, 5, include_distances=True)
+    return hits
+```
+
+#### 5. Display Results
+Once we've found the closest matches, we need to format and display them.
+
+```python
+def print_results(hits, sents):
+    response = ""
+    for i in range(len(hits[0])):
+        response += "<b><a href=https://arxiv.org/abs/" + data[hits[0][i]]['id'] + ">" + sents[hits[0][i]].split('[SEP]')[0] + "</a></b><br>"
+        response += "Abstract:" + sents[hits[0][i]].split('[SEP]')[1]
+        response += "Authors:" +  data[hits[0][i]]['authors']
+        response += "<br>"
+    return response
+```
+
+#### 6. Using OpenAI for Summarization
+We use OpenAI's API to generate a summary of the Arxiv article. The article, its title, abstract, and page content are sent to OpenAI. 
+
+```python
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain.document_loaders import ArxivLoader
+
+open_ai_key = "YOUR_OPENAI_API_KEY"
+llm = OpenAI(openai_api_key=open_ai_key, model_name= "gpt-3.5-turbo-16k")
+```
+
+#### 7. Flask Endpoint
+We create an endpoint in Flask that processes the Arxiv URL, summarizes the article, searches for similar articles, and returns a formatted HTML response.
+
+```python
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/search', methods=['GET'])
+def search_endpoint():
+    args = request.args
+    query = args.get('q')
+    tokens = query.split('/')
+    id = tokens[-1] ## https://arxiv.org/abs/2310.03717
+
+    docs = ArxivLoader(query=id, load_max_docs=2).load()
+    print(docs[0].metadata['Title'])
+    title = docs[0].metadata['Title']
+    abstract = docs[0].metadata['Summary']
+    page_content = docs[0].page_content[:40000]
+    
+    article = title +  '[SEP]' + abstract  + '[SEP]' + page_content
+
+    print("Some related papers:")
+    related = search(article,an,model)
+    html_response = print_results(search(article,an,model), sents)
+    template = """ Take a deep breath. You are a researcher. Your task is to read the  RESEARCH ARTICLE and generate 3 KEY POINTS of it in your own words and generate AN IDEA OF FUTURE EXTENSION based on the RELATED ARTICLES. Generate one actionable idea for extending the RESEARCH.
+    RESEARCH ARTICLE: {article}
+    RELATED ARTICLES: {related}
+    INSTRUCTIONS
+    1. Read the TITLE, ABSTRACT and the CONTENT of the RESEARCH ARTICLE.
+    2. Generate 3 KEY POINTS of the RESEARCH ARTICLE in your own words. Each Key Point should be a bullet point of 10 WORDS are less.
+    3. Read the RELATED ARTICLES
+    4. Generate an IDEA OF FUTURE EXTENSION of the RESEARCH ARTICLE based on the RELATED ARTICLES.
+    5. The IDEA OF FUTURE EXTENSION should be ONE sentence.
+    6. Generate one actionable idea for extending the RESEARCH with Light Bulb emoji.
+    7. STRICTLY generate the response in json format using the TYPESCRIPT SCHEMA below. Insert a line break after each bullet point.
+    SCHEMA
+    response:
+        KEYPOINT1: String,
+        KEYPOINT2: String,
+        KEYPOINT3: String,
+        FUTURE_EXTENSION_IDEA: String,
+        ACTIONABLE_IDEA: String"""
+    prompt = PromptTemplate(template=template, input_variables=["article", "related"])
+    llm_chain = LLMChain(prompt=prompt, llm=llm)
+    output = ""
+    try:
+        output = llm_chain.run({'article': article, 'related':related})
+        print (output)
+    except Exception as e:
+        print (e)
+
+    html_content = "<html> <head> <title> Arxiv Summary for  " + title + " </title> </head> <body> <h1> "+ title + " </h1>  <h2> Summary </h2> <p>"
+    jsonD = json.loads(output)
+    html_content += "<br> 1." + jsonD['KEYPOINT1']
+    html_content += "<br> 2." + jsonD['KEYPOINT2']
+    html_content += "<br> 3. " + jsonD['KEYPOINT3']
+    html_content += "<br> <b>FUTURE EXTENSION IDEA:</b> " + jsonD['FUTURE_EXTENSION_IDEA']
+    html_content += "<br> <b>ACTIONABLE IDEA: </b>" + jsonD['ACTIONABLE_IDEA']
+
+    html_content += "</p> Related Articles: <br>"
+
+
+    html_content += html_response
+    html_content += "</html>"
+    return html_content
+```
+
+#### 8. Running the Flask Server
+Finally, run your Flask application.
+```bash
+if __name__ == "__main__":
+    app.run()
+```
+Then, open a browser and navigate to: `http://127.0.0.1:5000/search?q=ARXIV_URL` replacing `ARXIV_URL` with your desired Arxiv article URL.
+
+### Conclusion
+You've now created a tool that summarizes Arxiv articles and finds similar articles based on their content. This tool can be extended with other features or integrated into larger applications to aid researchers and academics.\
+
+Reference:
+[1] Github: https://github.com/Raghavan1988/arxiv-related-articles-summarizer
