@@ -1,0 +1,225 @@
+---
+title: "Guide on Cohere Models: How to Get Started with Cohere Models."
+description: "A Comprehensive Guide on Cohere Models. Learn how to use Cohere Playground, Cohere API and Cohere Rerank (Beta) via API. Build small application with Cohere Rerank (Beta)."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[Cohere]((https://cohere.com/)), a leading AI company, offers a suite of powerful language models that can transform the way you work with text data. In this comprehensive guide, we'll walk you through everything you need to know to harness the potential of Cohere Models.
+We'll start with the basics, from creating your Cohere account to exploring the Cohere Playground for hands-on experimentation. Then, we'll delve into specific Cohere Models, such as **text generation**, **classification**, **embedding**, **summarization**, and even **Cohere Rerank (Beta)** for optimizing search algorithms.
+By the end of this tutorial, you'll not only have a deep understanding of Cohere Models but also the practical knowledge to implement them in your own applications.
+
+
+## Prerequisites
+A cup of coffee ☕️ and desire to learn something new.
+
+
+## Use Cases
+- Text Summarization
+- Text classification
+- Semantic Similarity
+- Content moderation
+- Entity extraction
+
+
+## Learning Objectives
+- Learn how to use Cohere Playground
+- Learn how to use Cohere API
+- Learn how to use Cohere Rerank (Beta) via API
+- Buils small application with Cohere API
+
+
+## Getting Started
+
+### Create an Account
+
+To get started with Cohere, you'll need to create an account. Go to [Cohere](https://cohere.com/) and click on the `TRY NOW` button in the top right corner of the page. You'll be asked to enter your email address and create a password. Once you've done that, you'll be redirected to the dashboard.
+
+<Img src="https://iili.io/J3CkTiu.png" alt="Cohere Dashboard" caption="Cohere Dashboard"/>
+
+
+### Cohere Playground
+
+Now, let's take a look at the [Cohere Playground](https://dashboard.cohere.com/playground/chat). The Playground is a great place to get started with Cohere. It allows you to test out the models and see how they work. It also generates code for you to use in your own applications smoothly.
+Click on the `Playground` tab in the top right corner of the page to get started.
+
+<Img src="https://iili.io/J3CkoD7.png" alt="Cohere Playground" caption="Cohere Playground"/>
+
+
+## Cohere Models
+
+### Generate
+
+Text generation is a process where a machine learning model, like Cohere Models (in our case), generates human-like text based on a given prompt or input. This is incredibly useful as it enables automation of `content creation`, saves time in writing tasks, and ensures consistent and coherent output.
+
+Let's start with `Cohere Generate`. Click on the `Generate` on the top left side, it opens new page. On the left side of the page, there are list of `EXAMPLES` for quickstart, `INPUT` section where you can enter your prompt and `OUTPUT` section see the resul. On the right side of the page, there are `PARAMETERS` section where you can easily change the parameters of the model and `CONTROL PANEL` which allows to test the model.
+If you click on `See more` on `EXAMPLES` section you can see ready made examples for the model, which is really helpful to get started. So, you will get the idea how to use the model. Let's try to generate some text.
+Select `LINKEDIN POST GENERATOR`, leave `PARAMETERS` as default for now and hit the `RUN` button.
+
+<Img src="https://iili.io/J3Ckzx9.png" alt="Output" caption="Output"/>
+
+Here is output:
+
+```text
+ Whether you're entering the workforce for the first time or considering a new career choice after years of employment, it's essential to consider your potential to thrive in a given industry. Because the tech industry is growing and shows no signs of slowing down, it's an excellent place for anyone to start their career. Here are some reasons why starting a career in tech is a good idea:
+
+1. There are numerous job opportunities: The tech industry offers a variety of career paths suited for various skill levels and interests,  including software engineering, data science, product management, and UX design. As technology continues to infiltrate every aspect of life, the demand for tech workers is only going to increase. 
+
+2. It pays well: Tech jobs are known for their competitive salaries and comprehensive benefits packages. There may be an expectation that you'll need to prove yourself by working long hours for low pay when you first start, but this isn't always the case. Do your research, apply for positions that fit your skills and experience, and be upfront about your salary expectations. 
+
+3. There are many learning opportunities: The tech industry is all about innovation and advancement, so it's essential to constantly learn new skills and stay up-to-date with industry trends. Fortunately, the internet makes it easy to access numerous resources, tutorials, and online courses to help you gain the necessary skills to succeed in the tech space. 
+
+4. It's a great way to make an impact: Many
+```
+
+The model generates text based on the prompt. It's really amazing. However, if you can see it did not finish the sentence. Why? Let's think, yeah, cause we just used with `Default Parameters`. Feel free to change the `PARAMETERS` and `RUN` it again. You may change `number of tokens` to get more rich text, `model type`, `temperature` to get more creative text or enter `stop sequence` to cut off your generation at the end of the sequence. For ex: for line breaks you may use `\n`.
+Moreover, Cohere Playground allows to `View Code` that is really helpful to use Cohere's API in your own application, `Save` as a preset or `Share` even.
+
+<Img src="https://iili.io/J3CkAKb.png" alt="View Code" caption="View Code"/>
+
+
+### Classify
+
+Text classification allows for automated analysis and organization of text data, making it easier to retrieve relevant information, automate decision-making processes, and improve user experiences in various applications such as document management, sentiment analysis, and spam email filtering.
+
+Classify lets you input a list of text, label it, and use it as training examples to label newly input text. Let's try it with one of provided `Examples`. 
+Navigate to `Classify` on the top left side, select `Tweet classification` from examples and hit the `RUN` button. 
+
+You should see something like following:
+<Img src="https://iili.io/J3CUarg.png" alt="Tweet Classification" caption="Tweet Classification"/>
+
+<Img src="https://iili.io/J3CU7B1.png" alt="Tweet Classification" caption="Tweet Classification"/>
+
+You may also `Upload a file` as training data or input parameter.
+
+
+### Embed
+
+Embedding transforms text into numerical representations that machines can analyze, making it a powerful tool for tasks that require understanding the meaning and relationships within textual data.
+
+Embed takes a list of sentences and outputs a list of vectors, allowing models to compare their meanings. 
+Navigate to `Embed` on the top left side, select `Subreddit titles` from examples and hit the `RUN` button. 
+
+You should see something like following:
+<Img src="https://iili.io/J3CrnOx.png" alt="Subreddit titles" caption="Subreddit titles"/>
+
+
+### Summarize
+
+Summarize is currently `beta`. Navigate to `Summarize` on the top left side, select `Article summarization` from examples, leave parameters as a default and hit the `RUN` button. 
+
+You should see something like following:
+<Img src="https://iili.io/J3CZvKQ.png" alt="Article summarization" caption="Article summarization"/>
+
+Yeah, it just summarized the article by highlighting the important sentences. It helps a lot to get the idea of the article in a rush.
+
+### Rerank (Beta)
+
+[Cohere Rerank](https://docs.cohere.com/docs/models#rerank-beta) - model can improve created models by re-organizing their results based on certain parameters. This can be used to improve search algorithms. Currently available `rerank-english-v2.0` and `rerank-multilingual-v2.0` models only via API, no playground.
+Quick Note: Cohere Rerank accepts full strings rather than tokens, so the token limit does not apply. [Click me](https://docs.cohere.com/docs/reranking-best-practices) for more info about formatting documents for the Rerank endpoint.
+
+Want to implement `Cohere Rerank` in your application? Let's do this together.
+
+## Cohere API - Build your own application
+
+Cohere API allows to use Cohere models in your own application. You can use Cohere API to build your own application. Let's see how to use Cohere API and build small application.
+
+### Get API Key
+
+To use Cohere API, you need to get API key. Go back `Dashboard` and click on `API Keys` on the left side of the page. You will see your API key. `Copy/Save` it somewhere safe. We will need it later.
+
+### Cooking
+
+Open your favourite code editor (I use VSCode) and create directory named `cohere-rerank-beta`.
+
+```bash
+mkdir cohere-rerank-beta
+cd cohere-rerank-beta
+```
+
+Now, create new file named `app.py` inside `cohere-rerank-beta` directory.
+
+```bash
+touch app.py
+```
+
+Install `cohere` python package.
+
+```bash
+pip install cohere
+```
+
+Open `app.py` file and set up the Cohere client and import dependencies.
+
+```python
+import cohere
+co = cohere.Client('') # Paste your own API key here
+```
+
+Cool! Now, add a query and documents. The SDK accepts either a list of strings or a list of dictionaries that contain the key `text` as `documents` such that if you have an existing upstream search system you can pass the entire JSON object without parsing for our endpoint.
+
+```python
+query = "What is the capital of the United States?"
+docs = [
+    "Carson City is the capital city of the American state of Nevada. At the 2010 United States Census, Carson City had a population of 55,274.",
+    "The Commonwealth of the Northern Mariana Islands is a group of islands in the Pacific Ocean that are a political division controlled by the United States. Its capital is Saipan.",
+    "Charlotte Amalie is the capital and largest city of the United States Virgin Islands. It has about 20,000 people. The city is on the island of Saint Thomas.",
+    "Washington, D.C. (also known as simply Washington or D.C., and officially as the District of Columbia) is the capital of the United States. It is a federal district. The President of the USA and many major national government offices are in the territory. This makes it the political center of the United States of America.",
+    "Capital punishment (the death penalty) has existed in the United States since before the United States was a country. As of 2017, capital punishment is legal in 30 of the 50 states. The federal government (including the United States military) also uses capital punishment."]
+```
+
+Print top 3 results based on their relevancy to the query. The SDK will always return the text of the documents passed in with the result, but for visibility’s sake, we’ve beautified the output.
+
+```python
+results = co.rerank(
+    query=query, 
+    documents=docs, 
+    top_n=3, # Change top_n to change the number of results returned. If top_n is not passed, all results will be returned.
+    model='rerank-english-v2.0'  # Change model to `rerank-multilingual-v2.0` if you want go with non english documents.
+)
+
+# Beautified output
+for idx, r in enumerate(results):
+  print(f"Document Rank: {idx + 1}, Document Index: {r.index}")
+  print(f"Document: {r.document['text']}")
+  print(f"Relevance Score: {r.relevance_score:.2f}")
+  print("\n")
+```
+
+Now, let's run our application. Open the terminal and run following command:
+
+```bash
+python app.py
+```
+
+You should see something like following:
+
+```bash
+Document Rank: 1, Document Index: 3
+Document: Washington, D.C. (also known as simply Washington or D.C., and officially as the District of Columbia) is the capital of the United States. It is a federal district. The President of the USA and many major national government offices are in the territory. This makes it the political center of the United States of America.
+Relevance Score: 0.99
+
+
+Document Rank: 2, Document Index: 1
+Document: The Commonwealth of the Northern Mariana Islands is a group of islands in the Pacific Ocean that are a political division controlled by the United States. Its capital is Saipan.
+Relevance Score: 0.30
+
+
+Document Rank: 3, Document Index: 5
+Document: Capital punishment (the death penalty) has existed in the United States since before the United States was a country. As of 2017, capital punishment is legal in 30 of the 50 states. The federal government (including the United States military) also uses capital punishment.
+Relevance Score: 0.27
+```
+
+Perfect! You may do the same with other `Cohere LLMs`, just navigate to `Playground` and click on `View Code`, select desired programming language and copy/paste the code in your application.
+
+## Conclusion
+Throughout this comprehensive guide, we've explored how Cohere can transform the way you work with text data and enhance your understanding of language.
+From creating an account to experimenting with Cohere Playground and diving into specific models like text generation, classification, embedding, summarization, and Cohere Rerank (Beta), you've gained valuable insights and practical knowledge.
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
