@@ -1,27 +1,33 @@
 ---
-title: "Summarize and search for similar articles on arxiv"
-description: "Summarize a long form arxiv article into key points and generate an idea, identify similar papers"
+title: "How to Summarize and Find Similar ArXiv Articles"
+description: "Learn how to summarize arXiv articles and identify similar papers for comprehensive research."
 image: "path_to_storage"
 authorUsername: "@raghavan848"
 ---
 
 ##Introduction
-The sheer volume of research articles on platforms like arXiv makes it challenging for scholars to digest and stay updated with the latest findings.
-Summarizing long-form articles into key points can help researchers quickly grasp the essence of a paper and discern its relevance.
-Furthermore, identifying similar papers can aid in contextualizing the current study within the broader academic discourse, ensuring a comprehensive understanding and avoiding redundant research efforts.
-This is article has two parts. 
+
+The volume of research articles on platforms like arXiv can be overwhelming for scholars trying to stay updated with the latest findings. This tutorial will guide you through the process of summarizing long-form arXiv articles into key points and identifying similar papers. 
+
+These actions can help researchers quickly grasp the essence of a paper and contextualize it within the broader academic discourse, ensuring a comprehensive understanding and avoiding redundant research efforts.
+
+This is article has two parts: 
 1. Generating the embeddings and building the Annoy index
 2. Querying index to get related papers and generating summary
 
 
-##Part 1: Building the Annoy Index
+## Part 1: Building the Annoy Index
 
 ### Prerequisites
-### Steps:
 
-You need to have <a href="https://www.python.org/downloads/release/python-3913/" rel="nofollow">Python 3.9</a> and pip installed, 
+Before you begin, make sure you have [Python 3.9](https://www.python.org/downloads/release/python-3913/) and `pip` installed on your system.
 
-###1. Install the following packages using pip
+### Steps
+
+#### Python Packages Installation
+
+Install the following Python packages using `pip`:
+
 ```bash
 pip install annoy
 pip install langchain
@@ -29,7 +35,8 @@ pip install openai
 pip install sentence-transformers
 pip install torch
 ```
-or create a requirements.txt file and install the packages using the command  **pip install -r requirements.txt**
+
+Alternatively, you can create a requirements.txt file and install the packages using the command pip install -r requirements.txt with the following contents:
 
 ```bash
 numpy==1.25.2
@@ -40,12 +47,13 @@ sentence-transformers==2.2.2
 ```
 
 #### Kaggle arXiv dataset 
-Create a Kaggle account and download the arXiv dataset with limited metadata <a href="https://www.kaggle.com/datasets/Cornell-University/arxiv/data"> dataset </a>
 
-Unzip the downloaded file. You should see a json file.
+To proceed, create a Kaggle account and download the arXiv dataset with limited metadata from [this dataset](https://www.kaggle.com/datasets/Cornell-University/arxiv/data). After downloading, unzip the file to find a JSON file.
 
 #### Preprocess the Data
+
 Load your dataset and preprocess it into the desired format. Here, we're reading a JSON file containing ArXiv metadata and concatenating titles and abstracts with a '[SEP]' separator:
+
 ```
 def preprocess(path):
     data = []
@@ -58,9 +66,10 @@ def preprocess(path):
 ```
 
 #### Generate Embeddings using SBERT
-Initialize the SBERT model and generate embeddings for your preprocessed data. We're using the allenai-specter model, which is specially trained for scientific papers
-If you have GPU, set device to cuda else set device to cpu.
-For approximately ~2 million articles of arxiv upto december 2022, it took 8+ hours on RTX3080, 6 hours on RTX4090 and 1.5 hours on A100 (cloud)
+
+Initialize the SBERT model and generate embeddings for your preprocessed data. We're using the allenai-specter model, specially trained for scientific papers. For approximately ~2 million articles of arxiv upto december 2022, it took 8+ hours on RTX3080, 6 hours on RTX4090 and 1.5 hours on A100 (cloud).
+
+Adjust the batch_size based on your GPU memory:
 
 ```
 def generate_embeddings(sents,model):
@@ -68,7 +77,7 @@ def generate_embeddings(sents,model):
     np.save("embeddings.npy", embeddings)
     return embeddings
 ```
-You can adjust the batch_size depending on the GPU memory
+You can adjust the batch_size depending on the GPU memory.
 
 | GPU | Time to generate embeddings.npy |
 | --- | ----------- |
@@ -92,8 +101,7 @@ def generate_annoy(embeddings):
     return annoy_index
 ```
 
-
-Alternatively, if you do not have GPU and is ok with arxiv snapshot upto 12/2022, you can use my public S3 URLS to download the following datasets. These S3 URLs will be alive until i can afford.
+Alternatively, if you do not have a GPU and are okay with the arXiv snapshot up to December 2022, you can use public S3 URLs to download the necessary datasets.
 
 |dataset| description | S3URL|
 |-------|-------------|------|
@@ -101,26 +109,34 @@ Alternatively, if you do not have GPU and is ok with arxiv snapshot upto 12/2022
 |arxiv-metadata-oai-snapshot.json | Dataset of 2M arxiv articles downloaded from Kaggle |S3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/arxiv-metadata-oai-snapshot.json|
 |embeddings.npy | Embedding numpy file. Contains serialized embeddings of all 2M articles |s3 URL: https://arxiv-r-1228.s3.us-west-1.amazonaws.com/embeddings.npy|
 
-## Part2: Summarize and Search for Similar Articles on Arxiv
+## Part 2: Summarize and Search for Similar Articles on Arxiv
 
-### Description:
-This tutorial will guide you through the process of summarizing a long-form Arxiv article into key points, generating an idea based on it, and identifying similar papers. We will make use of Sentence Transformers for embeddings, Annoy for indexing, and the OpenAI API for generating the summary.
+### Description
 
-### Prerequisites:
+This tutorial will guide you through the process of summarizing a long-form arXiv article into key points, generating an idea based on it, and identifying similar papers. We will make use of Sentence Transformers for embeddings, Annoy for indexing, and the OpenAI API for generating the summary.
+
+### Prerequisites
+
+Before proceeding, ensure you have the following:
+
 1. Python 3+
 2. Flask for creating an endpoint
 3. Knowledge of JSON, Annoy, and Sentence Transformers
 
-### Steps:
+### Steps
 
-#### 1. Setup and Install Dependencies
+#### Step 1: Setup and Install Dependencies
+
 First, install the required packages:
+
 ```bash
 pip install sentence_transformers arxiv annoy flask
 ```
 
-#### 2. Load and Preprocess Arxiv Metadata
-To summarize and find similar articles, we need the dataset's metadata. The `preprocess` function does this by:
+#### Step 2: Load and Preprocess Arxiv Metadata
+
+To summarize and find similar articles, we need the dataset's metadata. The preprocess function does this by:
+
 - Loading the JSON data
 - Extracting titles and abstracts
 - Combining them into sentences
@@ -140,7 +156,8 @@ def preprocess(path):
     return sents
 ```
 
-#### 3. Generate Annoy Index
+#### Step 3: Generate Annoy Index
+
 Annoy (Approximate Nearest Neighbors Oh Yeah) is used to search for similar vectors in large datasets. Here, we load an Annoy index given a filename.
 
 ```python
@@ -153,7 +170,8 @@ def generate_annoy(fn):
     return annoy_index
 ```
 
-#### 4. Search Function
+#### Step 4: Search Function
+
 The search function takes a query, computes its embedding using Sentence Transformers, and then finds the closest matches in our Annoy index.
 
 ```python
@@ -167,7 +185,8 @@ def search(query, annoy_index, model):
     return hits
 ```
 
-#### 5. Display Results
+#### Step 5: Display Results
+
 Once we've found the closest matches, we need to format and display them.
 
 ```python
@@ -181,7 +200,8 @@ def print_results(hits, sents):
     return response
 ```
 
-#### 6. Using OpenAI for Summarization
+#### Step 6: Using OpenAI for Summarization
+
 We use OpenAI's API to generate a summary of the Arxiv article. The article, its title, abstract, and page content are sent to OpenAI. 
 
 ```python
@@ -194,7 +214,8 @@ open_ai_key = "YOUR_OPENAI_API_KEY"
 llm = OpenAI(openai_api_key=open_ai_key, model_name= "gpt-3.5-turbo-16k")
 ```
 
-#### 7. Flask Endpoint
+#### Step 7: Flask Endpoint
+
 We create an endpoint in Flask that processes the Arxiv URL, summarizes the article, searches for similar articles, and returns a formatted HTML response.
 
 ```python
@@ -263,7 +284,8 @@ def search_endpoint():
     return html_content
 ```
 
-#### 8. Running the Flask Server
+#### Step 8: Running the Flask Server
+
 Finally, run your Flask application.
 ```bash
 if __name__ == "__main__":
@@ -272,7 +294,11 @@ if __name__ == "__main__":
 Then, open a browser and navigate to: `http://127.0.0.1:5000/search?q=ARXIV_URL` replacing `ARXIV_URL` with your desired Arxiv article URL.
 
 ### Conclusion
-You've now created a tool that summarizes Arxiv articles and finds similar articles based on their content. This tool can be extended with other features or integrated into larger applications to aid researchers and academics.\
 
-Reference:
+You've now created a tool that summarizes Arxiv articles and finds similar articles based on their content. This tool can be extended with other features or integrated into larger applications to aid researchers and academics.
+
+Explore more [AI tutorials](https://lablab.ai/t) for all the levels of expertice, and test your skills at [AI Hackathons](https://lablab.ai/event) at lablab.ai community!
+
+#### Tutorial Reference:
+
 [1] Github: https://github.com/Raghavan1988/arxiv-related-articles-summarizer
