@@ -111,17 +111,31 @@ st.markdown(
 Let's create a sidebar. To handle `API keys` and uploaded files.
 
 ```python
+global arr
+
 with st.sidebar:
+    arr = []
+
     st.session_state.cohere_api_key = st.text_input('Cohere API Key', key='cohere_api_key')
     "Don't have API Key? [Get for free](https://dashboard.cohere.com/api-keys)"
     "[View the source code](https://github.com/abdibrokhim/Cohere-Rerank-Tutorial)"
 
     file = st.file_uploader(label="Upload file", type=["txt",])
-    if file is not None:
-        filename = "file.txt"
-        with open(filename, "wb") as f:
-            f.write(file.getbuffer())
-        st.session_state.file_path = "file.txt"
+    if file:
+        try:
+            filename = "file.txt"
+            with open(filename, "wb") as f:
+                f.write(file.getbuffer())
+
+            with open(filename, "r", encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+                    print(f"line: {line}")
+                    arr.append(line)
+        except FileNotFoundError:
+            print(f"File not found: {file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 ```
 
 Initialize the messages state:
@@ -166,7 +180,7 @@ if user_prompt and st.session_state.cohere_api_key:
 
     response = co.rerank(
         query=user_prompt, 
-        documents=st.session_state.file_path, 
+        documents=arr, 
         top_n=3,
         model='rerank-english-v2.0'  # if your document other than English, you may use 'rerank-multilingual-v2.0'
     )
@@ -187,7 +201,7 @@ Relevance Score: {r.relevance_score:.2f}
     st.session_state.messages.append(msg)
 
     for m in msg["content"]:
-        message(m, is_user=False)
+        message(m, is_user=False, key=m)  # add key to avoid duplicate messages
 ```
 
 
@@ -256,6 +270,14 @@ Wait for a few minutes until the deployment is finished. Once it's done, you sho
 
 You can always update your app by pushing new commits to the repository. Streamlit will automatically pull the new changes.
 
+
+## Testing the app
+
+Let's test our app. Enter your `Cohere API key` and `upload` desired file. Then, enter your query and click on the `Send` button.
+
+<Img src="https://iili.io/J3rxAjR.png" caption="Streamlit app testing"/>
+
+For full Source Code [Fork on GitHub](https://github.com/abdibrokhim/Cohere-Rerank-Tutorial)
 
 ## Conclusion
 
