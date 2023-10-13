@@ -48,7 +48,7 @@ touch .env
 
 And save our Cohere Api Key there.
 
-<Img src="https://iili.io/J3MqnhF.png" caption="Environment Variables" alt="Environment Variables" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eb6038e2-ad7b-484d-9fe9-f281d2d50200/full" caption="Environment Variables" alt="Environment Variables" />
 (Dont' worry, that's not my real Api Key 😉)
 
 
@@ -117,11 +117,11 @@ streamlit run main.py
 
 You should see your app runing on localhost:8501.
 
-<Img src="https://iili.io/J3MqoLg.png" caption="Book list generator" alt="Book list generator" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cd75f821-9869-41f2-be41-1249f6467c00/full" caption="Book list generator" alt="Book list generator" />
 
 Choose a topic and prompt the model. The results should display and be saved in the root of your app.
 
-<Img src="https://iili.io/J3MqA2R.png" caption="Cohere Generate results" alt="Cohere Generate results" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a35e4efb-e07a-4644-7d61-f3c5a4792200/full" caption="Cohere Generate results" alt="Cohere Generate results" />
 
 
 ### 2- Cohere Embed
@@ -180,11 +180,11 @@ Save and refresh the app.
 Following the execution of a query, this code will load the contents of output.txt, generate and display the embeddings in your terminal 
 (solely for educational purposes; you may choose to remove the print() function later), and subsequently store them in the file embeds.ann.
 
-<Img src="https://iili.io/J3MqR7p.md.png" caption="Vectorized Poetry" alt="Vectorized Poetry" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cac20cec-073c-47a2-ed8b-33effde6bb00/full" caption="Vectorized Poetry" alt="Vectorized Poetry" />
 
 It will then create embeddings for the query, and compare the distance between both. This is called a semantic search.
 
-<Img src="https://iili.io/J3MqzBa.png" caption="Semantic search" alt="Semantic search" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c0ed9af-7ac9-4be0-3fff-7e29403a8000/full" caption="Semantic search" alt="Semantic search" />
 
 
 ### 3- Cohere Rerank
@@ -229,7 +229,7 @@ Save and refresh the app.
 
 Let's make another query and see the results:
 
-<Img src="https://iili.io/J3MqIEJ.png" caption="Cohere Rerank" alt="Cohere Rerank" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ce748f20-824d-45e3-061b-e32fc97a7100/full" caption="Cohere Rerank" alt="Cohere Rerank" />
 
 Awesome 🥳. We have just created a basic recommendation system.
 
@@ -248,7 +248,7 @@ mere keyword matching. This capability leads to the retrieval of more pertinent 
 Cohere's Rerank endpoint serves as a crucial bridge in this paradigm shift. Notably, Rerank not only surpasses the quality of results obtained through embedding-based search but also 
 requires just a single line of code alteration in your application.
 
-<Img src="https://iili.io/J3MqTrv.png" caption="Rerank results" alt="Rerank results" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6ea07d72-4d72-4d1a-3def-9c2c590c5900/full" caption="Rerank results" alt="Rerank results" />
 
 The data shown demonstrates that lexical search manages to yield relevant results for roughly 44% of search queries on average. Consequently, for the majority of queries, users find no pertinent 
 information within the top three results. Embedding-based semantic search boosts this figure to 65%, while Rerank achieves even higher performance. For approximately 72% of search queries, 
@@ -261,7 +261,7 @@ Furthermore, Rerank is compatible with embedding-based semantic search, further 
 
 In this tutorial, we learned how to use Cohere's Generate, Embed and Rerank models in one application, and how to create data and query it in an optimal fashion. You could use this knowledge to
 improve existing search systems for businesses and organizations that have large banks of data. Or maybe enhance the user experience of surfing through the web.
- 
+
 Lastly, you could easily deploy this app by uploading it to Github and connecting the repository to the Streamlit platform. 
 [Here is a detailed guide on how to achieve this](https://lablab.ai/t/streamlit-deploy-tutorial).
 
