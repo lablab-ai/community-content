@@ -1,0 +1,139 @@
+---
+title: 'AI21 Labs tutorial: Task Specific APIs!'
+description: 'In this tutorial you will learn how to use the Task Specific APIs from AI21 Labs.'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/391ffe0c-c273-4961-4fd2-18e83071fa00/full'
+authorUsername: 'jakub.misilo'
+---
+
+## Introduction
+
+AI21 Labs offers very powerful Foundation Models. With their help we can build very powerful applications. But in addition to this, they offer very good Task Specific APIs! In some situations, they are the best choice for the given task, so in this tutorial I will show you how to use them!
+
+## Task Specific APIs
+
+### Depedencies
+
+Let's start with creating a new project and installing the dependencies.
+
+```bash
+# Create project directory
+mkdir ai21-tutorial
+
+cd ai21-tutorial
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# Linux/MacOS
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate.bat
+
+# Install dependencies
+pip install ai21 python-dotenv
+```
+
+Great! Now we can put out AI21 Labs API key in `.env` file. You can get it from [AI21 Labs website](https://www.ai21.com/studio).
+
+```bash
+AI21_API_KEY=<YOUR_API_KEY>
+```
+
+Now let's create a new file `main.py` and import the dependencies.
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+```
+
+Now we can put our API key in `ai21.api_key` variable.
+
+```python
+import ai21
+
+ai21.api_key = os.getenv("AI21_API_KEY")
+```
+
+Now we can take care of the Task Specific APIs.
+
+### Paraphrase API
+
+This API offers world-class engine for paraphrasing text.
+
+_The startIndex can be either the character you wish to paraphrase from, or a whitespace before it (in this case, startIndex=0 would have worked).'_
+
+```python
+response = ai21.Paraphrase.execute(text="He is great! We need him in our team. Let's talk to him!", startIndex=0)
+
+print(response)
+```
+
+### Grammatical Error Corrections API
+
+GEC API is able to correct grammatical errors in text.
+
+```python
+text = "jazzz is a great stile of music"
+response = ai21.GEC.execute(text=text)
+
+# fix text
+corrected_text = text
+
+corrections = response["corrections"]
+for curr_correction in reversed(corrections):
+    corrected_text = corrected_text[:curr_correction["startIndex"]] + curr_correction['suggestion'] + corrected_text[curr_correction["endIndex"]:]
+
+print(response)
+print(corrected_text)
+```
+
+### Text Improvements API
+
+_This API is able to improve text in many ways. It can improve fluency, specificity, short sentences, conciseness._
+
+```python
+response = ai21.Improvements.execute(text="",types=["fluency"])
+
+# Put improvements in text
+improved_text = text
+improvements = response["improvements"]
+for curr_improvement in reversed(improvements):
+    improved_text = improved_text[:curr_improvement["startIndex"]] + curr_improvement['suggestions'][0] + improved_text[curr_improvement["endIndex"]:]
+
+print(response)
+print(improved_text)
+```
+
+### Segmentation API
+
+Segmentation API breaks down a piece of text into segments.
+
+```python
+response = ai21.Segmentation.execute(
+    source="https://en.wikipedia.org/wiki/Cristiano_Ronaldo",
+    sourceType='URL')
+
+print(response)
+```
+
+### Summarize API
+
+Summarize API summarizes a piece of text.
+
+```python
+response = ai21.Summarize.execute(
+    source="https://lablab.ai/event/plug-into-ai-with-ai21",
+    sourceType='URL')
+
+print(response)
+```
+
+## Conclusions
+
+As you can see, AI21 has a bunch of APIs in its arsenal that can come in handy to solve very specific problems. I think it is worth considering giving them a chance. You'll have the opportunity to do so at an upcoming [event with AI21 Labs](https://lablab.ai/event/plug-into-ai-with-ai21) starting on 28 June. I encourage you to participate!
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)

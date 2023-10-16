@@ -1,0 +1,203 @@
+---
+title: 'AI Agents tutorial: How to use and build AI Agents'
+description: 'Have you heard of AI Agents? If you didn’t - don’t worry. In a few moments you’re gonna learn everything about AI Agents - their capabilities, how to use them and create tools for them!'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c77c8021-39ee-4d97-7ffd-31d6bb0fd100/full'
+authorUsername: 'jakub.misilo'
+---
+
+## Introduction
+
+AI Agents are rapidly gaining popularity through their ability to solve a given task on their own. I'm guessing you've heard of projects like [AutoGPT](https://lablab.ai/tech/autogpt), [BabyAGI](https://lablab.ai/tech/babyagi) or [CAMEL](https://lablab.ai/tech/camel). Today you will at least partially learn how they work!
+
+### What is an AI Agent?
+
+AI Agent is a computer system that is designed to make decisions, choose tools and take actions to achieve specific, usually a predefined goal or set of goals. The agent operates autonomously, rarely requiring human intervention in its operations.
+
+It is the right powerful tools, as well as self-reliance, that currently makes AI Agents focus so much attention. They are certainly our future, and it's worth getting familiar with this technology.
+
+### How to use AI Agents?
+
+Currently, there are several options to try Agents. You can choose off-the-shelf solutions such as [AutoGPT](https://lablab.ai/tech/autogpt). It so happens that our team has already worked with them, you can find tutorials on our platform.
+
+Another option is to build the Agent yourself. I will choose this very way. It will use [LangChain](https://lablab.ai/tech/langchain) for this. It is a framework created for building applications based on Large Language Models. It is very powerful and makes working with Models and Agents significantly easier!
+
+## Coding part
+
+We already know why it's worth learning Agents. Now let's get to work and try to create something of our own!
+
+### Project structure
+
+Let's start by creating a new directory and initializing the Python environment.
+
+```bash
+mkdir ai-agents
+
+cd ai-agents
+
+python3 -m venv venv
+
+# Linux / MacOS
+source venv/bin/activate
+
+# Windows
+.\venv\Scripts\activate
+```
+
+### Dependencies
+
+Let's start by installing the necessary tools. We will need `langchain` - to work with LLM and Agents, `requests` - to make requests to external APIs, `openai` SDK- for easier usage of OpenAI's models and `duckduckgo-search` for web search.
+
+```bash
+!pip install langchain
+!pip install openai
+!pip install requests
+!pip install duckduckgo-search
+```
+
+Now we can import libraries.
+
+```python
+import requests
+
+from langchain import OpenAI
+from langchain.agents import initialize_agent, load_tools, Tool
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.tools import DuckDuckGoSearchRun
+```
+
+At this point, I want to define LLM from OpenAI. I will use GPT-3 for this tutorial. You can play with other models. I will also define the initial prompt and create a chain for this model.
+
+```python
+OPENAI_API_KEY = "sk-..."
+
+llm = OpenAI(
+    openai_api_key=OPENAI_API_KEY,
+    temperature=0.8,
+    model_name="text-davinci-003"
+)
+
+prompt = PromptTemplate(
+  input_variables=["query"],
+  template="You are New Native Internal Bot. Help users with their important tasks, like a professor in a particular field. Query: {query}"
+)
+
+llm_chain = LLMChain(llm=llm, prompt=prompt)
+```
+
+### Test Model without any Tools
+
+Now let's see how our model behaves when confronted with our questions. Let's see if it knows what lablab.ai is, and how it will handle the integral!
+
+```python
+llm_chain.run("What is lablab.ai")
+```
+
+> Lablab.ai is a technology platform that provides businesses with AI and Machine Learning-powered solutions to help streamline their operations and make them more efficient. It offers a suite of AI services such as Natural Language Processing, Machine Vision, Automation, and other industry-specific solutions. It is designed to help businesses improve their customer experiences, reduce costs, and increase productivity.
+
+```python
+llm_chain.run("Integral of x * (log(x)^2)")
+```
+
+> The answer is x^2 log(x)^3 / 3 + C, where C is an arbitrary integration constant.
+
+As you can see, both answers are false. The correct value of the integral is: `1/4 x^2 (1 - 2 log(x) + 2 log^2(x))`. On the other hand, what lablab.ai is I don't think I need to explain to anyone 😉.
+
+Incorrect answers are due to LLM's lack of numeracy skills, and lack of up-to-date information. The model we used has information up to September 2021. The lablab.ai platform was created later. However, for both problems we have solutions!
+
+### Prepare Tools for Agent
+
+To deal with our problems it will be a good idea to use Agent and Tools. We can use an Internet search tool - this will allow us to search for up-to-date information. This will increase the scope of our model's knowledge to the present day! There is already a ready-made tool that we will only import from LangChain! The solution to the counting problem is an API from [Wolfram Alpha](https://www.wolframalpha.com/). It can handle math problems very well! I highly recommend it.
+
+Let's start by putting together a search tool. It is called `DuckDuckGoSearchRun` and we have imported it before.
+
+```python
+search = DuckDuckGoSearchRun()
+
+# Web Search Tool
+search_tool = Tool(
+    name = "Web Search",
+    func=search.run,
+    description="A useful tool for searching the Internet to find information on world events, issues, etc. Worth using for general topics. Use precise questions."
+)
+```
+
+Simple as that! Now let's create a tool for solving math problems. We will create a custom class for this. There are many APIs created by [Wolfram Alpha](https://www.wolframalpha.com/), but I will use one of simplest.
+
+```python
+class WA:
+  """
+    Wolfram|Alpha API
+  """
+  def __init__(self, app_id):
+    self.url = f"http://api.wolframalpha.com/v1/result?appid={app_id}&i="
+
+  def run(self, query):
+    query = query.replace("+", " plus ").replace("-", " minus ") # '+' and '-' are used in URI and cannot be used in request
+    result = requests.post(f"{self.url}{query}")
+
+    if not result.ok:
+      raise Exception("Cannot call WA API.")
+
+    return result.text
+```
+
+This API will handle request in natural language and return result. It will be perfect for us! `run` method will handle that! Now let's define our tool.
+
+```python
+WA_API_KEY = "<WA_API_KEY>" # You can get it here: https://products.wolframalpha.com/api/
+
+wa = WA(app_id=WA_API_KEY)
+
+wa_tool = Tool(
+    name="Wolfram|Alpha API",
+    func=wa.run,
+    description="Wolfram|Alpha API. It's super powerful Math tool. Use it for simple & complex math tasks."
+)
+```
+
+### Create Agent and test performance
+
+Okay, the last step will be to create an Agent, give it Tools and check the results. Let's do it!
+
+```python
+agent = initialize_agent(
+    agent="zero-shot-react-description",
+    tools=[wa_tool, search_tool],
+    llm=llm,
+    verbose=True, # I will use verbose=True to check process of choosing tool by Agent
+    max_iterations=3
+)
+```
+
+Let's check out previous prompts!
+
+```python
+r_1 = agent("What is lablab.ai?")
+print(f"Final answer: {r_1['output']}")
+
+r_2 = agent("Integral of x * (log(x)^2)")
+print(f"Final answer: {r_2['output']}")
+```
+
+**Previous Answers:**
+
+> Lablab.ai is a technology platform that provides businesses with AI and Machine Learning-powered solutions to help streamline their operations and make them more efficient. It offers a suite of AI services such as Natural Language Processing, Machine Vision, Automation, and other industry-specific solutions. It is designed to help businesses improve their customer experiences, reduce costs, and increase productivity.
+
+> The answer is x^2 log(x)^3 / 3 + C, where C is an arbitrary integration constant.
+
+**New Answers:**
+
+> **lablab.ai** is a platform dedicated to AI tools and technologies. It offers AI tutorials, hackathons, access to state-of-the-art language models, and more.
+
+> x^2/4 + 1/2 x^2 log^2(x) - 1/2 x^2 log(x)
+
+## Conclusion
+
+As you can see with Tools the results are much better! The integral is counted correctly, while the answer to the question about the lablab.ai platform is also of better quality. This shows how the addition of simple tools helped increase the correctness of the answers. I think this is why it is worth your time now, so that in the future our work with LLM can be even better assisted!
+
+### What can be improved?
+
+To improve applications it suggests trying other types of [Agents](https://python.langchain.com/en/latest/modules/agents/agents/agent_types.html#react-docstore), for them it will also be worth using memory, here [Vector Databases](https://python.langchain.com/en/latest/modules/memory/how_to_guides.html) can come in handy. Fortunately, [LangChain](https://lablab.ai/tech/langchain) also supports them!
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)

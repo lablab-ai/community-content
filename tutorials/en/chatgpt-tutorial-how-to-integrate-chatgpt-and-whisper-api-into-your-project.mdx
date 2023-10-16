@@ -1,0 +1,135 @@
+---
+title: "ChatGPT tutorial: How to integrate ChatGPT and Whisper API into your project"
+description: "Short tutorial how to integrate ChatGPT and Whisper API into your project"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4815a58-79ff-440e-6199-461f3fe61900/full"
+authorUsername: "Flafi"
+---
+
+## ChatGPT and Whisper API are out!
+
+Drumroll please... OpenAI finally (1.03.2023) released an official ChatGPT/Chat Completion and Whisper API endpoint! If you missed the news you can read it on their blog
+page [OpenAI Blog](https://openai.com/blog/introducing-chatgpt-and-whisper-apis). If you missed all of the hype started last year and are not familiar with those 2 models, you can read more about them on our [tech page](https://lablab.ai/tech). 
+
+But long story short ChatGPT is a large language model trained by OpenAI to generate human-like text in a conversational style. It is a variant of the GPT-3 model, which was specifically designed to be used to generate text in response to user input. Whisper is a general-purpose speech recognition model trained on a large dataset of diverse audio and is also a multi-task model that can perform multilingual speech recognition as well as speech translation and language identification.
+
+## What does it mean for us developers?
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0063b6ad-8a91-446c-0518-0cfcd888c900/full" alt="chatgpt answer for api" />
+
+Regarding ChatGPT we can finally implement Chat Completion in our projects without some hacks and workarounds. We can use `gpt-3.5-turbo` and `gpt-3.5-turbo-0301` models. We can leverage the cutting edge text to text and audio to text technology into our projects in no time!
+
+Regarding Whisper it means that we don't have to worry anymore about the infrastructure, how to deploy the model and how to scale it, and about the costs of
+running a Virtual Machine with GPU all the time. We can just use the endpoint that is provided by OpenAI and we can start building right away.
+
+But straight to the point - let's add OpenAI's technology to our project!
+
+### How to implement ChatGPT/Chat completion endpoint into our project?
+
+ChatGPT is using the gpt-3.5-turbo model. Because in this model the price of the token is 10% of the price of gpt-3 even OpenAI advises to use it instead of GPT-3.
+If you already have an implementation of GPT-3 it is pretty easy to migrate to GPT-3.5. Only thing that you need to keep in mind that GPT-3.5 is available in 
+chat model. Chat models are taking a series of messages as input instead of a single prompt.  
+The chat format is explained more in details [here](https://platform.openai.com/docs/guides/chat/introduction)  
+
+Instead of adding a prompt to your request body you need to add a messages array.
+for example in Python with openAI library it will look like this:
+
+```python
+import openai
+
+openai.ChatCompletion.create(
+  model="gpt-3.5-turbo",
+  messages=[
+        {"role": "system", "content": "You are a very kind helpdesk agent."},
+        {"role": "user", "content": "How can I fix my computer if it is not turning on?"},
+        {"role": "assistant", "content": "Did you try to turn it off and on again?"},
+        {"role": "user", "content": "Yes, I did. What can be the problem?"}
+    ]
+)
+```
+
+Messages variable must be an array of objects with 2 keys: `role` and `content`. Role can be `user` or `assistant` and `system`
+
+The `system` role message is helping setting the behavior of the assistant.  
+
+### How can we change gpt-3 completion into gpt-3.5 chat completion?
+
+Very easy. For example if before we were doing hashtag creation with gpt-3 the prompt looked like this:
+
+```python
+Create hashtags for the following text: "{text}"
+```
+
+Now we need to change it to:
+
+```python
+[
+  {"role": "system", "content": `You are an assistant that creating hashtags for a text`},
+  {"role": "user", "content": `Create hashtags for the following text: "{text}"`}
+]
+```
+or  
+
+```python
+[
+  {"role": "user", "content": `Create hashtags for the following text: "{text}"`}
+]
+```
+
+Super easy!
+
+### How can you implement Whisper OpenAI endpoint into your project?
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4d865148-d156-4996-4548-1e18fcdb0d00/full" alt="soundwaves" />
+
+If you already had this model deployed on your own infrastructure you can just change the endpoint to the OpenAI endpoint :)  
+Jokes aside, if you are just planning to implement this endpoint into your project you can use OpenAI library for [Python](https://github.com/openai/openai-python)
+and also for [Javascript](https://www.npmjs.com/package/openai) or you can create the requests by yourself.
+
+### Modifying our React Frontend  boilerplate to use OpenAI Whisper endpoint
+
+We already have a React Frontend boilerplate that you can find [here]. (https://github.com/lablab-ai/react-audio-send)
+
+Few things we need to do to make this work.
+We need to change the App.js file `WHISPER_ENDPOINT` variable to the OpenAI endpoint https://api.openai.com/v1/audio/transcriptions.
+
+We need to change some variables
+```javascript
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("model", "whisper-1");
+```
+
+We need to add the `Authorization` header with the `Bearer` token. You can get the token from the  
+[OpenAI dashboard](https://platform.openai.com/account/api-keys)
+
+```javascript
+    const data = await fetch(WHISPER_ENDPOINT, {
+      headers:{
+        "Authorization": "{PASTE_YOUR_TOKEN_HERE}"
+        "Content-Type": "multipart/form-data",
+      }
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        return result;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+```
+
+And that's it! You can now use the OpenAI Whisper endpoint in your previously created project to create transcription of audio files.
+Keep in mind if you want to create a production ready application you will have to hide your API 
+
+## Can I benefit from ChatGPT API?
+
+Of course you can! The AI revolution is here and either you join it or you will be left behind. We're not a fortune tellers, but we can read the numbers and with all of the attention LLM gets from tech giants and tech experts, with enormous amount of foundings into this tech industry and massive layoffs in different IT technology we can surely say the AI technology will be “it” for the ucpoming years. We already wrote it on our blog, but if you don;t want to take it from us but from the greatest startup Investor of all time - you can know more about his prediction regarding generative AI in tech.
+
+But last not least - what's from all of that for me? Well, you can build a ChatGPT or Whisper based app during a 7 days AI Hackathon, get to lablab.ai's slingshot program and build your millions worth AI startup! Just identify the problem and build a solution to it with cutting edge technology!
+
+If you want to learn more AI based tools, visit our [Tutorial Pages](https://lablab.ai/t). And if you want to give a spin to your AI skills,
+join one of our [AI Hackathons](https://lablab.ai/event) and create in a few days a working demo which can be the beginning of your start up!
+
+Every journey starts with a single step and we encourage you to do it with lablab.ai!

@@ -1,0 +1,94 @@
+---
+title: "SuperAGI tutorial: Generate a Codebase and Push it to GitHub"
+description: "How to Generate a Codebase and push it to your GitHub Repository using SuperAGI"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/superagi-thumb.png"
+authorUsername: "donald_nwokoro266"
+---
+
+## What is SuperAGI?
+
+SuperAGI is an open-source framework that enables developers to build, manage, and run useful autonomous AI agents quickly and reliably. With SuperAGI, you can create agents that can perform various tasks, such as coding, testing, deploying, and more.
+In this tutorial, I will show you how to use SuperAGI to generate a codebase and push it to GitHub using the “Coding + Github Push” Agent template.
+
+## What are Agents in SuperAGI?
+
+SuperAGI agents are advanced systems that use LLMs to function autonomously, carrying out tasks, making decisions, and interacting with toolkits. They operate based on user-provided goals, instructions, resources, and constraints, aiming to achieve desired outcomes. An agent template will be used in the tutorial.
+
+## What are Agent templates?
+An agent template is a pre-defined set of characteristics, behaviors, and capabilities that can be used to create new agents. These templates can be used to quickly and easily create agents with similar characteristics, without having to manually specify all of the details for each new agent.
+
+Every agent template available in the marketplace is designed to address particular scenarios and includes:
+
+- Agent Name: A unique identifier for each template.
+- Description: A brief overview detailing the agent's functionality and its intended use case.
+- Goals: The core objectives that the agent is programmed to achieve.
+- Instructions: Set of operational guidelines or tasks for the agent to follow.
+- Tool: Tools or software the agent is designed to work with.
+- Agent Type: The Type of Agent required for the Template - Task Queue Agent, Dynamic Task Agent or Fixed Action Agent.
+- Models: The Model the agent is designed to work with. It can work with other models as well, but works best with the model mentioned.
+
+## Prerequisites
+Before we begin, make sure you have the following:
+
+1. A GitHub account. If you don’t have one, you can [sign up for free here](https://github.com/).
+2. Your GitHub Access Token. You will need a GitHub access token with the necessary permissions for accessing and modifying repositories. You can create one with a few steps:
+
+- Go to **Settings** in your GitHub Account. Then go to **Developer Settings**.
+- Click on "**Personal access tokens**". Then click on "**Tokens (classic)**".
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ef1332ba-3d8e-45aa-ab1a-42c85069f900/full" alt="Personal access token" caption="Click on Tokens classic" nonClickable />
+- Click on "**Generate new token**". Then choose "**Generate new token (classic)**".
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9aaaefe5-bebf-4111-2445-f14e74ccf300/full" alt="Generate new token" caption="Generate new token" nonClickable />
+- Write a **Note** about what the token is for and choose an appropriate expiration date.
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8750e4f7-aac4-414e-7feb-cec1d0aa9500/full" alt="Github permissions" caption="Select all github permissions" nonClickable />
+- Select all the **scopes** so as to have the necessary permissions.
+- Click on **Generate New Token**.
+- Copy the token and save it in the config.yaml file as the value of `GITHUB_ACCESS_TOKEN`
+- Put your Github User Name as the value of `GITHUB_USERNAME`. You can find your GitHub username on your GitHub Profile.
+3. SuperAGI installed on your machine. You can [follow the installation instructions here](https://superagi.com/docs/Installation/).
+4. For this tutorial, we will use Python and VS Code, but you can use any language and editor you like.
+
+## Creating an agent
+In this tutorial we will use an Agent Template from SuperAGI. I will show you how to set up the “Coding + Github Push” Agent template in detail:
+- Go to `localhost:3000`. You should see something like this:
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5116554-8712-46dd-e4df-d8a348fe9900/full" alt="Localhost 3000" caption="Go to localhost 3000" nonClickable />
+- Go to the Marketplace and select the “Coding + Github Push” Agent template
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff13cd12-b839-4043-1107-f46701fab500/full" alt="Marketplace" caption="Go to marketplace" nonClickable />
+- Install it
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4114b33a-2ab0-401f-67dd-7a35cc62ac00/full" alt="Install it" caption="Install the template" nonClickable />
+- Create a new Agent and select the “Coding + Github Push” Agent template
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a26b981d-8e71-4f43-6bfe-9afcb7acf300/full" alt="Select agent template" caption="Select the agent template" nonClickable />
+- Configure the Agent with your desired options or leave it at the default. Make sure to include your GitHub Repository link as well in the third goal. We will use this for this tutorial:
+```
+Goals
+i. Write a Browser-Based Stopwatch timer
+
+ii. Use HTML, CSS, and Javascript, and keep it as simple and clean as possible
+
+iii. Upload the code files on the following GitHub Repository: (Your Repository link)
+
+iv. Update the README.MD with respect to the project on the repository as well
+```
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b27b6473-013a-46cb-fa6f-a549241eb700/full" alt="Configure agent" caption="Configure agent with options" nonClickable />
+- Click on 'Create and Run' to start the process
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5781e283-dd9b-40aa-6caa-01abec8c2f00/full" alt="Create and run" caption="Create and run agent" nonClickable />
+- It will generate the code and push it to GitHub. Grab a coffee and let your agent get to work! 😎🍵.
+
+## Behind the Scenes
+- The agent takes the goals: The agent receives input in the form of goals. These goals represent the desired outcomes or objectives that the agent needs to achieve.
+
+- That go to the thinking tool: The received goals are passed to the "thinking tool." This tool processes the goals and performs various tasks to formulate a response or plan of action.
+
+- Which gives a Thought, Plan, Criticism and Tool: The thinking tool generates several outputs based on the received goals. These outputs include:
+  - Thought: These are insights, ideas, or considerations generated based on the goals.
+  - Plan: A plan of action that outlines the steps or strategies the agent should take to accomplish the goals.
+  - Criticism: Constructive feedback or evaluations related to the goals or the generated plan.
+  - Tool: A specific tool or method that the agent can utilize to achieve the goals.
+
+- The decided tool is then executed: Among the outputs generated by the thinking tool, a particular tool is chosen or "decided" based on some criteria. This selected tool is then put into action.
+
+- Which completes 1 call (iteration): The execution of the chosen tool represents one complete cycle of operation, often referred to as an "iteration." This cycle involves taking the chosen tool, using it to perform tasks, and achieving progress toward the original goals.
+
+In summary, the agent receives goals, processes them using a thinking tool, and then takes action based on the outputs of the thinking tool. The process involves generating thoughts, plans, criticisms, and selecting a tool to execute, resulting in one iteration or cycle of completing tasks aligned with the goals.
+
+## Conclusion
+In this tutorial, we have learned how to use SuperAGI to generate a codebase and push it to GitHub using the “Coding + Github Push” Agent template. We have also seen how easy and convenient it is to create and manage AI agents with SuperAGI. You can use this template as a starting point for your own projects or try out other templates from the GitHub Marketplace. You can also customize your agents with your own logic and workflows on SuperAGI, that would be in another tutorial, Stay Tuned 🔥. I hope you enjoyed this tutorial and found it useful. Thank you for reading and happy coding! If you have any feedback or questions, please feel free to reach out or join our community on [Discord](https://discord.gg/C8MCWNAxNB). 

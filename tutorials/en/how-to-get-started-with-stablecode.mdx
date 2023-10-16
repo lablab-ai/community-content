@@ -1,0 +1,261 @@
+---
+title: "StableCode Tutorial: How to get started with StableCode"
+description: "Brief explanations of key concepts and step-by-step guide to get started with StableCode"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/stablecodetut.png"
+authorUsername: "abdibrokhim"
+---
+
+## What is StableCode from Stability AI?
+
+[StableCode](https://stability.ai/blog/stablecode-llm-generative-ai-coding) the latest offering from Stability AI, is an innovative generative AI product designed to enhance the coding experience for developers at all levels. It serves as a powerful tool for both experienced programmers seeking efficiency and newcomers looking to strengthen their coding skills.
+
+**[Base Model:](https://huggingface.co/stabilityai/stablecode-completion-alpha-3b-4k)** 
+
+The foundation of StableCode is a comprehensive model that underwent initial training on a wide range of programming languages, sourced from the stack-dataset (v1.2) from BigCode. To refine its capabilities, the base model was further trained using popular languages such as Python, Go, Java, JavaScript, C, Markdown, and C++. This training involved a substantial dataset, comprising a staggering 560 billion tokens of code. This robust foundation equips StableCode with a deep understanding of various programming languages and structures.
+
+**[Instruction Model:](https://huggingface.co/stabilityai/stablecode-instruct-alpha-3b)** 
+
+This model was meticulously fine-tuned for specific use cases, focusing on solving intricate programming challenges. By exposing it to around 120,000 pairs of code instruction and corresponding responses in Alpaca format, the instruction model has been sharpened to provide intelligent solutions for complex coding tasks.
+
+**[Long-Context Window Model:](https://huggingface.co/stabilityai/stablecode-completion-alpha-3b)** 
+
+StableCode introduces an advanced long-context window model that excels at generating single and multi-line autocomplete suggestions. Compared to previous open models with limited context windows, this new model is designed to handle significantly more code at once—approximately 2 to 4 times more. As a result, developers can effortlessly review or edit the equivalent of multiple average-sized Python files concurrently. This extended context window is particularly beneficial for those eager to expand their coding expertise and take on larger coding challenges.
+
+
+## What we're going to do in this tutorial?
+
+In this tutorial, we will learn how to use StableCode to generate code completion. We will go through each model and see how it works. 
+We will also learn how to use StableCode in [Google Colab](https://colab.research.google.com/) and [Hugging Face Inference API](https://huggingface.co/docs/api-inference/index) to run StableCode even if you don't have really good GPU.
+
+
+## Implementation in Google Colab
+
+### Step 1 - Setting up the project
+
+Let's start by creating new Notebook in Google Colab.
+
+Go to [Google Colab](https://colab.research.google.com/) and create new Notebook and name it `StableCode Tutorial`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c18cfa73-c8b1-401e-0e77-1188dd851900/full" alt="Creating new Notebook in Google Colab" caption="Creating new Notebook in Google Colab"/>
+
+
+### Step 2 - Install required packages
+
+First of all, we need to set Runtime type to `Python 3` and Hardware accelerator to `GPU`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5ffe126-e7b7-4275-dcb8-0f3c38284d00/full" alt="Google Colab runtime" caption="Google Colab runtime"/>
+
+
+Let's install or update Python packages related to natural language processing (NLP) and machine learning:
+
+```python
+!pip install transformers
+```
+
+Click `Run` button or `CMD/CTRL + Enter` to run the single `code cell`.
+
+Wait until the installation is complete. Then, you are ready to go to the next step.
+
+
+### Step 3 - StableCode - Base Model
+
+Let's try StableCode - Base Model.
+
+Add new `code cell`.
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Define all available models
+BASE_MODEL = "stabilityai/stablecode-completion-alpha-3b-4k"
+INSTRUCTION_MODEL = "stabilityai/stablecode-instruct-alpha-3b"
+LONG_CONTEXT_WINDOW_MODEL = "stabilityai/stablecode-completion-alpha-3b"
+
+tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL)
+model = AutoModelForCausalLM.from_pretrained(
+    BASE_MODEL,
+    trust_remote_code=True,
+    torch_dtype="auto",
+)
+model.cuda()
+
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8999e403-34f1-4f44-c334-75770ce34600/full" alt="Loading base model" caption="Loading base model"/>
+
+Wait until the model is loaded. Usually it takes more longer depends on your internet connection.
+
+Next, let's define a function to run the model. This function will take `prompt` as input and return the result generated by StableCode.
+
+Add new `code cell`.
+
+```python
+def run_model(prompt):
+    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    del inputs["token_type_ids"]
+    tokens = model.generate(
+        **inputs,
+        max_new_tokens=96,  # feel free to change this value
+        temperature=0.2,  # feel free to change this value
+        do_sample=True,
+    )
+
+    return tokenizer.decode(tokens[0], skip_special_tokens=True)
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+Give your desired `prompt` for completion.
+
+Add new `code cell`.
+
+```python
+r = run_model("import torch\nimport torch.nn as nn")
+print(r)
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+You should see something similar to the following output.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/39489252-d5ec-48dc-edc1-5d6ae2a7c700/full" alt="Completion by StableCode" caption="Completion by StableCode"/>
+
+
+### Step 4 - StableCode - Instruction Model
+
+Let's try StableCode - Instruction Model. Just change `BASE_MODEL` to `INSTRUCTION_MODEL` in the `from_pretrained()` function.
+
+Add new `code cell`.
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Define all available models
+BASE_MODEL = "stabilityai/stablecode-completion-alpha-3b-4k"
+INSTRUCTION_MODEL = "stabilityai/stablecode-instruct-alpha-3b"
+LONG_CONTEXT_WINDOW_MODEL = "stabilityai/stablecode-completion-alpha-3b"
+
+tokenizer = AutoTokenizer.from_pretrained(INSTRUCTION_MODEL)
+model = AutoModelForCausalLM.from_pretrained(
+    INSTRUCTION_MODEL,
+    trust_remote_code=True,
+    torch_dtype="auto",
+)
+model.cuda()
+
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8999e403-34f1-4f44-c334-75770ce34600/full" alt="Loading base model" caption="Loading base model"/>
+
+Again, wait until the model is loaded. Then, give your desired `prompt` for completion.
+
+Add new `code cell`.
+
+```python
+r = run_model("Write a python program to perform binary search in a given list")
+print(r)
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+You should see something similar to the following output.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9a1b935e-421b-4d7c-ceb4-9f88e3dcdd00/full" alt="Binary search in a given list by StableCode" caption="Binary search in a given list by StableCode"/>
+
+
+
+### Step 5 - StableCode - Long Context Window Model
+
+Let's try StableCode - Long Context Window Model. To do that, just change `INSTRUCTION_MODEL` to `LONG_CONTEXT_WINDOW_MODEL` in the `from_pretrained()` function.
+
+Add new `code cell`.
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Define all available models
+BASE_MODEL = "stabilityai/stablecode-completion-alpha-3b-4k"
+INSTRUCTION_MODEL = "stabilityai/stablecode-instruct-alpha-3b"
+LONG_CONTEXT_WINDOW_MODEL = "stabilityai/stablecode-completion-alpha-3b"
+
+tokenizer = AutoTokenizer.from_pretrained(LONG_CONTEXT_WINDOW_MODEL)
+model = AutoModelForCausalLM.from_pretrained(
+    LONG_CONTEXT_WINDOW_MODEL,
+    trust_remote_code=True,
+    torch_dtype="auto",
+)
+model.cuda()
+
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8999e403-34f1-4f44-c334-75770ce34600/full" alt="Loading base model" caption="Loading base model"/>
+
+Again, wait until the model is loaded. Then, give your desired `prompt` for completion.
+
+Add new `code cell`.
+
+```python
+r = run_model("def quicksort(arr, reverse=False):")
+print(r)
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+You should see something similar to the following output.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2a3afa8c-64ae-4004-7fc6-21e9f0160200/full" alt="Completion by StableCode" caption="Completion by StableCode"/>
+
+
+## Implementation with Hugging Face Inference API
+
+Alternatively you can use [Hugging Face Inference API](https://huggingface.co/docs/api-inference/index) to run StableCode. This is cool when you don't have really good GPU.
+
+
+### Step 1 - Create an account in Hugging Face
+
+Go to [Hugging Face](https://huggingface.co/) and create new account or login if you already have one.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/61e0843f-1e4b-49e8-3d23-884cfd4bda00/full" alt="Create an account in Hugging Face " caption="Create an account in Hugging Face"/>
+
+
+### Step 2 - Create a new token in Hugging Face
+
+Next, you need a token to use Hugging Face Inference API. Go to your profile and click `Access tokens` in the left sidebar, then `New token` button.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/378afb37-f863-4295-0615-0190dc6d6d00/full" alt="Create a new token" caption="Create a new token"/>
+
+Give your token a name, from dropdown select `read` and hit `Generate a token`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5816157a-7f88-4974-864f-735f51b6d000/full" alt="Create a new token" caption="Create a new token"/>
+
+Perfect! You are good to go to the next step.
+
+
+### Step 3 - Running the StableCode with Hugging Face Inference API
+
+Go to [StableCode model page](https://huggingface.co/stabilityai/stablecode-instruct-alpha-3b) and click `Deploy`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ecdfb805-fb96-46c2-23f0-fb3f2f913b00/full" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+Then from dropdown select `Inference API`. It will open a dialog with code snippet, just hit the `Copy`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/214005df-47cf-4a91-fd0d-1b9a75b9ad00/full" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c771c35-9ba8-4c0a-3183-6b058ea7d100/full" alt="Run with Hugging Face Inference API" caption="Run with Hugging Face Inference API"/>
+
+Cool! Now, you can use StableCode even if you don't have really good GPU.
+
+
+## Conclusion
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).

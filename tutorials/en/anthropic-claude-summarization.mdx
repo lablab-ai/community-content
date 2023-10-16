@@ -1,0 +1,123 @@
+---
+title: "Anthropic Claude tutorial: How to summarize PDF files with Claude"
+description: "Have you checked Anthropic’s Claude yet? It's a language model whose context size can reach 100k tokens, which is approximately 75 000 words! Let’s test out Anthropic’s Claude summarization ability!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/84d5a685-6177-4183-2a3b-17f875002a00/full"
+authorUsername: "jakub.misilo"
+---
+
+## What is Claude?
+
+[Claude](https://lablab.ai/tech/anthropic/claude) is a Large Language Model, created by [Anthropic](https://lablab.ai/tech/anthropic). Claude can help you as a chatbot, summarization tool, code writing and more. Recently Anthropic announced that Claude will increase its context size to 100k tokens, which is around 75 000 words! This is a large capacity that will allow many people to speed up their work with large documents and books. Previously, just reading such long texts could take about 5h. Now the model will be able to read, summarize, analyze the text and answer questions in a few minutes! And also Anthropic’s Claud is focused mostly on safety. Also users claim that interaction with their LLM gives more human feeling. Maybe a new leader arised, and we will be all using  Anthropic Apps in near future?
+
+Maybe, but first test what we came for and check it out
+
+### How to use it?
+
+***To use Claude you must apply for [early access](https://www.anthropic.com/earlyaccess)!***
+
+Today I'll be using the Anthropic Python SDK to make it easier for us to work with the models. You can also use the API or TypeScript/JavaScript SDK.
+
+## Summarizing
+
+### Files
+
+For the purpose of this tutorial I would like to use the books - "The Little Prince" and "The Old Man and the Sea". These books do not have as many tokens (24815 and 40394), but they are still quite long. We'll see how Claude handles them. The files will be in `.pdf` format so to deal with them he will use PDF Reader.
+
+### Dependencies
+Let's start by creating a new directory and virtual environment.
+
+```bash
+mkdir claude_tutorial
+cd claude_tutorial
+
+python3 -m venv venv
+
+# Linux/MacOS
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate.bat
+```
+
+For the purpose of this tutorial, we will use PyPDF2 and Anthropic SDK. Let's install them!
+
+```bash
+pip install PyPDF2 pycryptodome # PyPDF2 and ycryptodome are used to read PDF files
+pip install anthropic # Anthropic SDK
+```
+
+Now is the time to import the necessary libraries.
+
+```python
+import os
+
+from PyPDF2 import PdfReader
+
+import anthropic
+```
+
+Also, I have with me an API Key that I obtained from my early access.
+
+```python
+API_KEY = "sk-ant-..."
+
+anthropic_client = anthropic.Client(API_KEY)
+```
+
+### Usage
+
+In order to use Claude effectively I will create a function that will summarize the given PDF file. We will provide the path to the file, then read it, check the length of the text and if it is okay, then send it to the API and summarize it. So let's do it!
+
+```python
+def summarize_pdf(path: str) -> str:
+    reader = PdfReader(path)
+    text = "\n".join([page.extract_text() for page in reader.pages])
+
+    no_tokens = anthropic.count_tokens(text)
+    print(f"Number of tokens in text: {no_tokens}")
+
+    if no_tokens > 100000:
+        raise ValueError(f"Text is too long {no_tokens}.")
+
+    prompt = f"{anthropic.HUMAN_PROMPT}: Summarize the following text, should be readable:\n\n{text}\n\n{anthropic.AI_PROMPT}:\n\nSummary"
+    res = anthropic_client.completion(prompt=prompt, model="claude-v1.3-100k", max_tokens_to_sample=1000)
+
+    return res["completion"]
+```
+
+Now we can use it to summarize our books!
+
+```python
+summary_little_prince = summarize_pdf(PATH_LITTLE_PRINCE)
+```
+
+**Result**
+
+```
+The story is narrated by an aviator whose plane crashes in the Sahara desert. There he meets a little boy who is a prince from a tiny asteroid. The little prince tells the aviator about his tiny planet, how he cared for his small rose and protected it from baobabs, and his adventures traveling the universe.
+The little prince visits six other asteroids, each inhabited by a single adult. He discovers the pompous and pointless life of each one, especially the businessman, geographer, and conceited man. He realizes how absurd and meaningless their lives are.
+He eventually lands on Earth, where he meets a snake, fox, flowers, and railway switchman. The fox teaches him that “One sees clearly only with the heart. What is essential is invisible to the eye.” The little prince realizes the fox is the only creature that truly understands him.
+A year later, the little prince returns to say goodbye to the fox before returning to his tiny planet. The little prince is worried that his beloved rose, left alone for so long, may have suffered in his absence. The aviator never learns whether the rose survived.
+The story explores themes of loneliness, friendship, love, and loss. Although a children's book, it has become popular with adults for its poetic style and profound insights into human nature.
+In the 2004 news article, it is revealed that wreckage of Saint-Exupery's plane that crashed in 1944 was found in the Mediterranean Sea. Although no body was recovered, authorities identified the plane based on its serial number. Saint-Exupery disappeared during a wartime spy mission, and the discovery of the wreckage provides some closure, although his mysterious end will still remain.
+```
+
+```python
+summary_old_man_and_the_sea = summarize_pdf(PATH_OLD_MAN_AND_THE_SEA)
+```
+
+**Result**
+
+```
+The story is set in 1940s Cuba. The main character is Santiago, an old fisherman who has been unable to catch any fish for 84 days. Despite being considered unlucky by the other fishermen, Santiago refuses to give up. He sails his skiff far out into the Gulf Stream where he hooks a giant marlin. After a prolonged struggle, he manages to harpoon the fish, but then has to fight off sharks in order to bring it home. By the time he does, all that remains is a stripped carcass of the once massive marlin tied to the side of his boat. Despite being ridiculed when he returns to land, the old man is able to retain his dignity and is left with a renewed sense of hope for the future.
+```
+
+## Conclusion
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c5d5aa8-9d06-4e24-a0c5-e2d52dde3f00/full" alt="an old men and the sea" />
+
+As you can see both summaries are mostly accurate. This means that Claude is able to handle large texts. I'm already looking forward to how it will look in the future.
+
+And if you want to build your own Anthropic application, you will soon have a unique opportunity to skip the waitlist. If you are a member of the lablab.ai’s community, and you signed up to Anthropic Hackathon before 23.05, check our step by step guide on how to get Anthropic Claude API before everyone else.
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)
