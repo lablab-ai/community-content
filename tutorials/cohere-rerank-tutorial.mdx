@@ -175,7 +175,7 @@ if user_prompt and st.session_state.cohere_api_key:
     co = cohere.Client(st.session_state.cohere_api_key)
 
     st.session_state.messages.append({"role": "user", "content": user_prompt})
-    
+
     message(user_prompt, is_user=True)
 
     response = co.rerank(
@@ -228,7 +228,7 @@ Now, go http://localhost:8501 or http://192.168.100.48:8501 to view our Streamli
 
 You should see something like this:
 
-<Img src="https://iili.io/J3omp3J.png" alt="Streamlit app preview" caption="Streamlit app preview"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/50649bc7-7935-4656-4615-8d1f7c1c0600/full" alt="Streamlit app preview" caption="Streamlit app preview"/>
 
 For better performance, you may install the Watchdog module:
 
@@ -258,15 +258,15 @@ git push your-github-repo-url
 
 Now, go to [Streamlit Sharing Cloud](https://streamlit.io/sharing) and sign in with your GitHub account. You will be redirected to the Streamlit sharing cloud dashboard. 
 
-<Img src="https://iili.io/J3omyYv.png" caption="Streamlit dashboard"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/77323b8e-4e97-4052-203e-1e2cc2c30d00/w250" caption="Streamlit dashboard"/>
 
 Click on the `New app` button and fill in the details. Choose the repository, branch and main file path `app.py` in our case. Then, click on the `Deploy!` button.
 
-<Img src="https://iili.io/J3omb4a.png" caption="Streamlit deploy"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1d8fd8b0-e954-4f81-d1e0-8f8f651ed200/w250" caption="Streamlit deploy"/>
 
 Wait for a few minutes until the deployment is finished. Once it's done, you should see something like this:
 
-<Img src="https://iili.io/J3omp3J.png" caption="Streamlit app preview"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/50649bc7-7935-4656-4615-8d1f7c1c0600/full" caption="Streamlit app preview"/>
 
 You can always update your app by pushing new commits to the repository. Streamlit will automatically pull the new changes.
 
@@ -275,7 +275,7 @@ You can always update your app by pushing new commits to the repository. Streaml
 
 Let's test our app. Enter your `Cohere API key` and `upload` desired file. Then, enter your query and click on the `Send` button.
 
-<Img src="https://iili.io/J3rxAjR.png" caption="Streamlit app testing"/>
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/830ac99b-66bb-4b0c-5d39-6193c6a68b00/full" caption="Streamlit app testing"/>
 
 For full Source Code [Fork on GitHub](https://github.com/abdibrokhim/Cohere-Rerank-Tutorial)
 
