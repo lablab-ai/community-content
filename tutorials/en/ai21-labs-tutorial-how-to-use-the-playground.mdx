@@ -1,0 +1,132 @@
+---
+title: "AI21 Labs tutorial: How to use the Playground"
+description: "Short tutorial on how to use the AI21 Playground"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/tutorial__ai_21_playground.jpg"
+authorUsername: "Flafi"
+---
+
+## What is an AI21 Studio?
+
+An AI development platform called AI21 Studio was created to make it simpler and more economical for companies to build,
+train, and use Natural Language Processing (NLP) applications. AI21 Studio's simple drag-and-drop user interface makes it easy
+to develop effective AI models. Additionally, it gives users access to Jurassic-1, a sizable language model, allowing companies
+to swiftly put models into production. Additionally, AI21 Studio provides a wide range of capabilities, including automatic model
+versioning, model management, data exploration, and monitoring, to assist users in managing their models and data. In order to jointly
+develop the best NLP models, organizations can also cooperate on projects with their teams using AI21 Studio.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_studio.JPG" alt="screenshot of ai21 page"/>
+
+
+## What is an AI playground?
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_playground_2.png" alt="person with magnifying glass"/>
+
+An intuitive, web-based interface is offered by the AI21 Studio Playground to assist developers in creating and testing their models.
+The main view and the sidebar are the two principal sections of the interface. The code editor and model training output are both available
+in the main window, where programmers can write Python code and use the [AI21 Studio APIs](https://www.ai21.com/studio).
+Access to data sets, training materials, and
+documentation are all available on the sidebar to aid developers in making the most of the platform.  
+
+A number of tools are also available in the AI21 Studio Playground to aid developers in creating and testing their models.
+Users are able to build new data sets, conduct experiments, and monitor their development. To aid developers in understanding model performance,
+the platform also offers graphics like heatmaps and graph visualizations. Additionally, the Playground has an interactive debugger that aids developers
+in finding and fixing issues. Last but not least, the AI21 Studio Playground is private and secure, allowing developers to play with their models and
+data sets without risk. To give consumers the greatest and safest experience possible, the platform is often updated with new features and problem fixes.
+
+## How can I start?
+
+You must first create an account and [sign up](https://studio.ai21.com/sign-up) for a free trial of AI21 Studio before using it.
+If you're unfamiliar with AI21 Studio, this will grant you access to the Playground, which is a terrific place to start.
+You may test out numerous platform models and features as well as the API in the playground. Before digging into the more advanced possibilities,
+you can use the playground to get acquainted with the platform and its features. When you feel comfortable using the platform,
+you may start making your own projects and experimenting with its more sophisticated features.
+
+## Complete API
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_1.JPG" alt="screenshot of the dashboard"/>
+First generation in a series of powerful language models, called Jurassic-1 (J1)  
+https://studio.ai21.com/playground/complete  
+https://docs.ai21.com/docs/complete-api
+
+### Using Presets
+
+Presets are ready made templates/examples that you can use to get started with the API. AI21 was very generous and provided us with a lot of presets to get started with.
+Chat, Classification, Code, Info extraction, Long Form, Named entity recognition, Q & A, Rewrite, Short form, Summarize.
+
+### Choosing a model
+
+You can choose from 4 models that AI21 provided and additionally you can customize Jurassic-1 model.
+- j1-large (7.5B)
+- j1-grande (17B)
+- j1-grande-instruct (beta) (17B)
+- j1-jumbo (178B)
+
+And yes we are talking about Billion parameters here!
+
+### Maximum completion length
+
+You can choose how long the completion should be. The default is 20 tokens. https://docs.ai21.com/docs/when-the-generation-stops#-set-completion-length-parameters
+
+### Temperature
+
+Temperature is a parameter that controls the randomness of predictions. Lowering the temperature results in less random completions. The default value is 0.8. https://docs.ai21.com/docs/sampling-from-language-models
+
+### Top p
+
+The percentile of probability from which tokens are sampled. We limit the total cumulative probability from which to sample.
+
+### Stop sequence
+
+Generation is terminated at the moment when the model generates any of the stop sequences. Choose it properly as it can help you avoid generating unnecessary tokens.
+
+### Repetition penalties
+
+Repetition penalties are used to stop the model from simply copying words from the prompt and repeating them over and over. This is done by adjusting the probability of certain words being generated so that words that have already been used are less likely to appear again.
+
+- Repetition penalty: The penalty for repeating a word. The default value is 0
+- Count penalty: Reducing probability of generating new tokens that appeared in the prompt or in the completion
+- Frequency penalty: Reducing probability of generating new tokens that appeared in the prompt or in the completion, proportional to the appearance frequency.
+
+## Rewrite API
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_rewrite.JPG" alt="screenshot of ai21 rewrite on playground"/>
+
+AI21 Studio's Rewrite API gives you access to an advanced paraphrasing technology. 
+It was created for the purpose of paraphrasing and has been perfected for that purpose. 
+This makes it simpler to incorporate into your systems and, since it's been specifically optimized for this purpose, 
+it's more cost-effective and efficient than creating it yourself.
+
+This API takes a piece of text, rewrites it using different words, and returns a list of paraphrases that mean the same thing. 
+It has specialized features to help you customize the output, like adjusting the tone, 
+or rewriting only certain parts of the text while keeping the context.
+
+Here we also have a lot of presets to get started with. We can even choose the tone we would like to use.
+
+
+## Summarize API
+
+It is exactly doing what you would think. It summarizes the text you give it. It is a very useful tool for
+people who want to read a lot of text but don't have the time to do so. It is also a great tool for people who want to get a quick overview of a text.
+It was specially fine-tuned for summarization and has been optimized for this purpose.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_summarize.JPG" alt="screenshot of ai21 summarize on playground"/>
+
+
+## Generating text, saving Presets, Export to code, Share Presets
+
+On the bottom section you can generate text, save presets, export to code and share presets. You can also use the API in your own code.
+You can also see how many tokens you used in your prompt
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_bottom.JPG" alt="screenshot of ai21 bottom section on playground"/>
+
+
+## Summary
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21-playground/ai21_playground_end.png" alt="talking animals"/>
+
+AI21 Playground enables users to construct and test AI models fast and inexpensively. It makes use of AI21 Studio to offer a user-friendly
+interface that makes AI accessible to anyone with no prior programming skills. With the help of AI21 Playground, developers can easily experiment
+with AI development and swiftly deploy their models. Anyone wishing to maximize the use of AI21 Studio should start here.
+You don't always have to implement  [ChatGPT API](https://lablab.ai/tech/openai/chatgpt) everywhere - different AI can fit different needs. Give A21 playground a spin and see where
+this journey will take your project to! For sure you won't regret it
+

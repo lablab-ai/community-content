@@ -1,0 +1,184 @@
+---
+title: "ChatGPT tutorial: How to create a website with ChatGPT"
+description: "ChatGPT - the hottest AI topic"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_website_creation.jpg"
+authorUsername: "Flafi"
+---
+
+
+[ChatGPT](https://openai.com/blog/chatgpt/) is the hottest AI topic for the last weeks - everyone shares their conversations with it or
+answers regarding many problems. Also people share their insights regarding its ability to write a code - but we are not going to talk about it. In this tutorial we will create a website using ChatGPT.
+And if you want to create an app based on ChatGPT and other ground breaking technologies, you should
+consider enrolling in our [AI Hackathons](https://lablab.ai/event). So… don't waste more time and jump in!
+
+## Make a website with GPTChat
+
+First, I inserted my prompt:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_1.JPG" alt="chatgpt prompt"/>
+
+*Create an html skeleton with bootstrap responsive design and responsive menu and responsive hamburger menu that
+works on mobile as well. And import all the necessary scripts before the closing body tag, such as jquery, popper and bootstrap.*
+
+
+It looks like we got a correct response from ChatGPT but to be sure let't just check it in [replit](https://replit.com/) to be sure and continue work with it there.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_2.JPG" alt="html skeleton in replit"/>
+
+We can see that it's working but the mobile menu isn't. And it seems that ChatGPT chopped the skeleton a bit and we don't have a closing tag for
+one script and if we are checking https://getbootstrap.com/docs/4.1/getting-started/introduction/ we can see that bootstrap script is missing.
+So let's just fix it. Oh, and I will also change the imports to the latest ones based on bootstrap introduction.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Website</title>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
+integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
+</head>
+
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="#">My Website</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav">
+<li class="nav-item active">
+<a class="nav-link" href="#">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#">About</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#">Contact</a>
+</li>
+</ul>
+</div>
+</nav>
+
+<!-- Page content -->
+<div class="container mt-5">
+<h1>Welcome to My Website!</h1>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ornare
+magna eros, eu pellentesque tortor vestibulum ut. Maecenas non massa
+sem. Etiam finibus odio quis feugiat facilisis.
+</p>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"
+integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"
+integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+crossorigin="anonymous"></script>
+</body>
+
+</html>
+```
+
+Hurray, it's working! Let's work on the content. I would like to have a portfolio site.
+
+## What should be the title?
+First of all, what should be the title? I asked ChatGPT, as its doing the job 🙂
+**What should be my portfolio website title?**
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_3.JPG" alt="chatgpt title prompt"/>
+
+Ok I will go with Jane Doe - Beginner AI user
+## Introduction for the website
+
+*Write an introduction for my portfolio website. I am a beginner AI user and a programmer.*
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_4.JPG" alt="chatgpt introduction prompt"/>
+
+## Create an image element on that page
+
+*Show me an image element with a mountain for the bootstrap page.*
+
+I will use a mountain image from lorempicsum
+
+```html
+<img src="https://picsum.photos/id/29/600/600" class="img-fluid rounded" alt="Mountain">
+```
+
+This will be a single page for the sake of simplicity.
+Let's add id for the home part and lets add href to the anchor tags corresponding to the sections.
+
+```html
+<li class="nav-item active">
+<a class="nav-link" href="#home">Home</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#about">About</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#contact">Contact</a>
+</li>
+```
+
+## Making the about section
+
+*Create a text about me for an about page on a website. I like rock climbing and all outdoor sports and I like to program. I started my career as a Quality engineer in the automotive industry but I was always curious about programming. I started with automation and microcontroller programming. I moved to Poland 7 years ago. I started web development by myself 4 years ago with HTML and JavaScript. I am working now as a Full Stack Developer.*
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_5.JPG" alt="chatgpt about prompt"/>
+
+Let's paste this in our about section
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_6.JPG" alt="chatgpt about section"/>
+We need to make this section as high as the device. Therefore I asked ChatGPT to show me the correct way to do it.
+*How to make an element high as the device in bootstrap?*
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_7.JPG" alt="chatgpt about section height"/>
+I will follow the instructions and paste the styling in the Head tag and adding the class to the div element that contains the section.
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_8.JPG" alt="chatgpt about section height"/>
+## Creating the contact section as a form. (We won't make this working in this tutorial)
+*Create a contact form with Bootstrap with the following input fields. Name, email, message.*
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_9.JPG" alt="chatgpt contact form prompt"/>
+```html
+<form>
+<div class="form-group">
+<label for="name">Name</label>
+<input type="text" class="form-control" id="name" placeholder="Enter your name">
+</div>
+<div class="form-group">
+<label for="email">Email</label>
+<input type="email" class="form-control" id="email" placeholder="Enter your email">
+</div>
+<div class="form-group">
+<label for="message">Message</label>
+<textarea class="form-control" id="message" rows="3" placeholder="Enter your message"></textarea>
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+```
+So let's copy this and create the section for the Contact form
+And finally, let's create some nice background for the website
+*What is a nice css gradient for an html website background that is not too bright?*
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/chatgpt_10.JPG" alt="chatgpt background prompt"/>
+I used the paster option and pasted in the style tag in the head tag.
+```css
+body {
+background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+}
+```
+Ok, see the results:  
+[https://replit.com/@Flafi87/LegitimatePrevailingScript#index.html](https://replit.com/@Flafi87/LegitimatePrevailingScript#index.html)
+[https://legitimateprevailingscript.flafi87.repl.co](https://legitimateprevailingscript.flafi87.repl.co/)
+
+And it is ready! I am amazed! Not perfect, but working :) I am not suggesting creating your whole portfolio website with ChatGPT,
+but for sure it can give some good tips and can improve your work. Or at least make it easier and less time consuming.
+
+If you want to learn more AI based tools, visit our [generative AI tutorial page](https://lablab.ai/t). And if you want to give a spin to your AI skills,
+ join our [AI Hackathons](https://lablab.ai/event) and create in 3 or 7 days time a working model of an app which can be the beginning of your start up!

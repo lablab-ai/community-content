@@ -1,0 +1,127 @@
+---
+title: "Chirp Tutorial: How to use Google's Chirp speech-to-text AI model on Google Cloud console."
+description: "Discover a unique Google Chirp tutorial on harnessing Chirp's speech-to-text AI model within the Google Cloud console for an intuitive, seamless experience. Enjoy!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/709873ac-2620-421c-3fcb-7831a115ec00/full"
+authorUsername: "abdibrokhim"
+---
+
+## Introduction
+[Chirp](https://cloud.google.com/blog/products/ai-machine-learning/bringing-power-large-models-google-clouds-speech-api) is Google Cloud's 2B-parameter speech model built via self-supervised training on millions of hours of audio and [28 billion sentences of text spanning 100+ languages](https://ai.googleblog.com/2023/03/universal-speech-model-usm-state-of-art.html). Chirp delivers 98% speech recognition accuracy in English and over 300% relative improvement in several languages with less than 10M speakers. 
+
+## What we are going to do?
+In this tutorial, we will learn how to effortlessly set up Google Cloud console to leverage the powerful Chirp speech-to-text AI model. This comprehensive tutorial provides step-by-step guide for an easy setup process and a quick start to use Chirp speech-to-text AI model. Sit back, relax, enjoy the tutorial and don't forget to make a cup of coffee ☕️.
+
+### Learning outcomes
+- How to use Google Cloud console.
+- How to set up Google's Chirp speech-to-text AI model on Google Cloud console.
+
+### We will cover the following steps:
+
+1. Creating a Google Cloud account.
+2. Creating a new project on the Google Cloud console.
+3. Enabling the Speech API.
+4. Creating an STT (Speech-to-Text) Recognizer using the Chirp model.
+5. Creating a new Workspace for the project.
+6. Performing a transcription on an audio file.
+7. Viewing and downloading the transcription results.
+
+### Prerequisites
+Nothing! Just a cup of coffee ☕️ and a laptop 💻.
+
+## Getting started
+
+### Step 1: Create a Google Cloud account
+
+First, we need to create a Google Cloud account. If you already have one, you can skip this step and [go here](https://cloud.google.com/). If you don't have one, you can create a free account [go here](https://cloud.google.com/free).
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9f53b329-c4f3-4209-85d9-4f88a8282100/full" alt="Google Cloud Console Create account" caption="Google Cloud console Create account"/>
+
+### Step 2: Create a new project
+
+Next, we need to create a new project. On the top left corner click on the `project dropdown menu` > `New Project`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff303190-553d-42a0-8d4e-8b5254257700/full" alt="Google Cloud console creating new project" caption="Google Cloud console creating new project"/>
+
+Give your project a name and click `Create`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c743fd4-5747-4368-857d-60b7003a7400/full" alt="Google Cloud console naming our project" caption="Google Cloud console naming our project"/>
+
+### Step 3: Enable API
+
+Go to [Speech](https://console.cloud.google.com/speech) in Google Cloud console. Click `ENABLE API`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7541ad69-5f77-4022-586d-315b62f3a100/full" alt="Google Cloud console enable API" caption="Google Cloud console enableAPI"/>
+
+### Step 4: Create an STT Recognizer
+
+Go over left sidebar navigation and click `Recognizers` > `CREATE RECOGNIZERS`. 
+
+Give your recognizer a name `chirp-recognizer`. Select `Chirp` as the model. Select the language `en-US` in our case, leave the rest of the settings as default and click `Save`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e2ef2a28-539b-4a7e-89f6-894c42311100/full" alt="Google Cloud console recognizer" caption="Google Cloud console recognizer"/>
+
+### Step 5: Create a new Workspace
+
+Now, we need to create a new Workspace for our project. Go to `Workspace dropdown menu` and click `New Workspace`. You should see a sidebar pops up on the right side of your screen. 
+
+From the Create a new workspace navigation sidebar, click `Browse` > `Create a new bucket`. Give your bucket a name `chirp-bucket` and click `Continue`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b59571a7-ddcf-40b1-2a84-839e08d1e300/full" alt="Google Cloud console naming new Bucket" caption="Google Cloud console naming new Bucket"/>
+
+Note: Rest of the settings are optional, you can leave them as default. 
+
+Click `Create` and you should see a new bucket is created as shown below.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b813b293-945b-401e-59d5-559e28ad6100/full" alt="Google Cloud console Bucket selection" caption="Google Cloud console Bucket selection"/>
+
+Then, click `Select` > `Continue` > `Create` to finish creating your workspace for the speech-to-text UI.
+
+Perfet! Now, we have a workspace for our speech-to-text UI. Let's move on to the next step.
+
+### Step 6: Create a new Transcription
+
+Let's perform a transcription on our actual audio file. 
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9837ed64-6415-4fde-ec09-245858169800/full" alt="Google Cloud console Chirp Workspace" caption="Google Cloud console Chirp Workspace"/>
+
+Go over left sidebar navigation and click `Transcription` > `New Transcription`. From the `New Transcription` page, select your audio file through either uploading audio files `Local upload` or specifying an existing Cloud Storage file `Cloud storage`. 
+
+In this tutorial, we will use `Local upload` option and [this](https://storage.googleapis.com/lablab-static-eu/tutorial_content_file/ElevenLabs_2023-05-26T12_34_02.000Z_Adam_FjVs58vot1BUeNaRj635.mp3) audio file.
+
+Note: The UI will assess your audio file parameters automatically, and you can also specify them manually.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/89fe7088-7df3-4e5c-d215-99460e11d200/full" alt="Google Cloud console transcription" caption="Google Cloud console transcription"/>
+
+Click `Continue`. 
+
+By default API version is set to `V1`, change it to `V2`, specify the language `English (United States) - en-US` in our case spoken in the audio file from the `dropdown menu`, then choose `Chirp` as transcription model and our newly created `chirp-recognizer` as the recognizer.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e36fc0f-5e51-45bd-1833-7068bb452400/full" alt="Google Cloud console transcription options" caption="Google Cloud console transcription options"/>
+
+Click `Submit` and wait for a few seconds.
+
+### Step 7: View Transcription Results and Download
+
+To see the transcription results, click `the name of your transcription`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4a490f43-85fa-420a-8399-ab68ee7e2200/full" alt="Google Cloud console transcription results" caption="Google Cloud console transcription results"/>
+
+You may also download the transcription results in 4 different formats: `JSON`, `TXT`, `SRT`, and `CSV`. Let's download the transcription results in `TXT` format. Click `Download` > `TXT` > `Download.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f3123dee-f840-497d-15ac-2f1aa10d0b00/full" alt="Google Cloud console transcription download options" caption="Google Cloud console transcription download options"/>
+
+## Wrapping Up
+
+This comprehensive guide has led you through implementing Google Chirp's speech-to-text AI model on the Google Cloud console. With step-by-step directions, you can now tap into Chirp's capabilities for precise speech recognition.
+
+This [AI tutorial](https://lablab.ai/t) aimed to provide a user-friendly, detailed roadmap, complete with screenshots, ensuring a smooth setup experience for newcomers and experienced Google Cloud users alike.
+
+Upon completing this tutorial, you should have the know-how required to apply Google Chirp's speech-to-text AI model effectively. Dive into Chirp's potential, incorporating it into projects and applications, and experiment with various languages and audio files.
+
+Put your newfound knowledge to the test in our upcoming [AI Hackathon](https://lablab.ai/event)!
+
+Cheers to your AI journey!
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).

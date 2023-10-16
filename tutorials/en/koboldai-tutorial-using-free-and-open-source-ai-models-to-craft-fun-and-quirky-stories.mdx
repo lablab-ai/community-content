@@ -1,0 +1,151 @@
+---
+title: "KoboldAI Tutorial: Using Free and Open Source AI Models to Craft Fun and Quirky Stories"
+description: "How to utilize and play around with KoboldAI, an open-source platform for various creative writing endeavors"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/949806ce-7892-4fd2-8e33-926da215de00/full"
+authorUsername: "septiannugraha"
+---
+
+## Introduction
+
+### Introduction to KoboldAI
+
+KoboldAI is an open-source project that allows users to run AI models locally on their own hardware. It is a client-server setup where the client is a web interface and the server runs the AI model. The client and server communicate with each other over a network connection. The project is designed to be user-friendly and easy to set up, even for those who are not tech-savvy.
+
+### Introduction to Google Colab
+
+Google Colab is a free cloud service based on Jupyter Notebooks for machine learning education and research. It provides a platform where you can use free GPUs and TPUs. KoboldAI has a Google Colab version that allows you to run the AI model on Google's hardware, which can be faster and more powerful than running it on your own machine.
+
+### Introduction to KoboldAI's Various Models
+
+KoboldAI supports several AI models, including GPT-2, GPT-3, and GPT-Neo. These models are designed to generate human-like text based on the input they are given. They can be used for a variety of applications, such as writing assistance, creative writing, and more. The models vary in size and complexity, with larger models generally producing better results but requiring more computational resources. These models power the three primary use cases of KoboldAI that we will delve into:
+
+1. **Interactive Storytelling**: Learn how to weave captivating narratives where the AI responds to your prompts, creating a dynamic and immersive storytelling experience.
+
+2. **Writing Assistant**: Discover how KoboldAI can serve as your co-author, helping you overcome writer's block, generate new ideas, or simply add a touch of AI-powered creativity to your writing process.
+
+3. **Text Adventure Mode**: Embark on an exciting journey into the realm of AI-powered gaming, showcasing how KoboldAI can be used to create text-based adventures that are as unpredictable as they are fun.
+
+By the end of this tutorial, you will have a solid understanding of how to use KoboldAI on Google Colab to enhance your creative writing process and create interactive text-based games. So, let's dive into this journey of AI-powered creativity together!
+
+### Prerequisites
+
+- Basic knowledge of operating Google Colab
+- Imagination, creativity and openness to the surprise and quirks of open-source AI models
+
+### Outline
+
+1. Powering Up Google Colab
+2. Learning the Various Models and Their Best Use Cases
+3. Testing Nerys Model for interactive storytelling, writing assistant, and text-based adventure game
+
+## Discussion
+
+### Powering Up Google Colab
+
+Getting started with KoboldAI offers several options. You can run it locally, install it automatically, clone it from Github, or run it on a cloud-based platform like Google Colab. 
+
+Running KoboldAI locally provides an isolated environment and total control over the AI model. However, it can be complex to install and requires significant hardware resources. The more powerful your machine, the faster the model can run. More disk space also allows you to store, run, and train more powerful models.
+
+If you prefer a quick start or have limited resources, [Google Colaboratory](https://research.google.com/colaboratory/), or Google Colab, is a great alternative.
+
+Let's get started with Google Colab!
+
+Open [this link](https://colab.research.google.com/github/koboldai/KoboldAI-Client/blob/main/colab/GPU.ipynb#scrollTo=lVftocpwCoYw) to start a GPU-powered KoboldAI instance on Google Colab. Make sure you're logged into your Google account.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b1a636b9-95bd-4e4b-35c7-b7b3ed2e0100/full" alt="The welcome screen of KoboldAI GPU Edition" />;
+
+Congratulations! You've successfully set up KoboldAI on Google Colab. Let's dive in and explore what KoboldAI can do!
+
+### Learning the Various Models and Their Best Use Cases
+
+After familiarizing ourselves with the instructions on "How to load KoboldAI", let's move on to the next important step: choosing our AI model. As we scroll down the page, we'll soon encounter the Model selection screen. But before we select a model, it's important to understand the unique quirks and strengths of each option.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2952b92a-962c-4a41-afb8-70570b0afd00/full" alt="the model selection" />
+
+KoboldAI offers a variety of AI models, each designed for a specific style of writing. In this tutorial, we'll be using the GPU version of these models on Google Colab. Here's an overview of the models we can choose from:
+
+1. **[Nerys](https://huggingface.co/KoboldAI/fairseq-dense-2.7B-Nerys)**: A hybrid model designed for both novel writing and adventure mode. It's versatile and can be used in first, second, or third person perspectives.
+
+2. **[Janeway](https://huggingface.co/KoboldAI/GPT-Neo-2.7B-Janeway)**: Primarily focused on novel writing, Janeway is trained on a wide range of literature genres. It's designed for safe-for-work (SFW) content, but can include mild romantic scenes.
+
+3. **[Picard](https://huggingface.co/KoboldAI/GPT-Neo-2.7B-Picard)**: Another model designed for SFW novel writing. It's trained on a variety of genres and is best used in KoboldAI's regular mode.
+
+4. **[AID](https://huggingface.co/KoboldAI/GPT-Neo-2.7B-AID)**: Also known as Adventure 2.7B, this model is designed for creating the kind of wacky adventures that AI Dungeon Classic players love.
+
+5. **[OPT](https://huggingface.co/facebook/opt-2.7b)**: A generic model with a broad dataset, OPT is considered one of the best base models. However, its license restricts its use to non-commercial and research purposes.
+
+6. **[Fairseq Dense](https://huggingface.co/KoboldAI/fairseq-dense-2.7B)**: This model is known for its performance on pop culture and language tasks. It's primarily focused on literature and may not perform as well on formatting and paragraphing.
+
+7. **[Neo](https://huggingface.co/EleutherAI/gpt-neo-2.7B)**: This is the base model for all other 2.7B models. It's a generic model best used for tasks such as writing blog articles or programming.
+
+Each model is designed for a specific style: Novel, Adventure, or Generic. Novel models are for regular story writing, Adventure models are for playing KoboldAI like a text adventure game, and Generic models are versatile but may require more guidance to work properly.
+
+With this understanding of the various models, we're better equipped to choose the one that best suits our needs. Remember, the choice of model can significantly influence the quality and style of the generated text, so choose wisely!
+
+### Testing Nerys Model for Interactive Storytelling, Writing Assistance, and Text-Based Adventure Game
+
+Now that we've familiarized ourselves with the various models offered by KoboldAI, it's time to choose one for our demonstration. For this tutorial, we'll be using the Nerys model. This model is versatile and well-suited for our use case, which includes interactive storytelling, writing assistance, and text-based adventure gaming.
+
+To begin, select "Nerys V2 6B" from the Model dropdown menu and click the play button located at the top of the Google Colab interface. This will initiate the creation of our GPU instance. You may see a warning message appear; if so, click "Run Anyway". If prompted to access Google Drive, click "Connect to Google Drive" and log in with your Google account if you haven't done so already.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/911ec9ac-8326-406b-f961-560878467e00/full" alt="The instance is created and the code to start our model is being executed" />
+
+Wait for the startup script to run.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a8ca0edd-0b68-4f3d-4fd3-75bd7b026600/full" alt="The model has finished loading" />
+
+Once KoboldAI has finished loading, you should be able to access the front-end. Click on the provided link to open the front-end interface. Please note that this link is auto-generated and will likely differ from the one shown in my screenshot.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6ff5a4bf-772f-4fe0-733a-7ce00c88d600/full" alt="The front-end of KoboldAI" />
+
+Now we can begin using the Nerys model as our writing assistant. As suggested in the introduction, we need to provide the AI with an idea of what we'll be writing about by setting the scene. Aim for around 10 sentences to make our story interesting.
+
+#### As Creative Writing Assistant
+
+Let's start by writing our setting:
+
+```text
+As the hands of the clock converged on the number 10, marking the arrival of the late evening hour, I found myself still ensnared in the confines of my office. The eerie silence of the night was punctuated only by the occasional rustle of papers and the relentless ticking of the clock. This was an unfamiliar scene for me, my first venture into the realm of overtime work that stretched this late into the night.
+
+My impending month-long leave had prompted my boss to extract every last ounce of work from me, a final act of corporate servitude before my temporary departure. The thought of such a prolonged absence from work was unsettling, a disruption to the routine I had grown so accustomed to. Yet, my therapist insisted it was a necessary step, a chance for me to reset and recharge.
+
+Shaking off these contemplations, I was jolted back to reality by the sudden plunge into darkness. The overhead lights, which had been my sole companions in the deserted office, flickered off, leaving me in an ocean of shadows. The janitorial staff must still be around, I reasoned, carrying out their nightly duties.
+
+But something felt amiss. The usual sounds that accompanied their presence - the soft padding of footsteps, the distant hum of conversation - were conspicuously absent. Even more peculiar was the silence that surrounded the moment the lights were switched off. An unsettling quiet that sent a shiver down my spine, turning the mundane into the mysterious.
+
+```
+
+This is a great way to start off our psychological horror novel, isn't it? Type or paste this story into the text input field and then click the "Submit" button. After a moment, KoboldAI will provide a continuation to our opening scene.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4ec27d75-acce-4d5f-ce39-9fa6679ed600/full" alt="The continuation of the opening scene, suggesting my growing suspicion and my action towards the eerie silence" />
+
+For a free and open-source model with smaller training parameters, the Nerys model performs impressively. It added "Was this the same silence that had greeted me upon entering the office? Or was it just my imagination?
+I drew my cell phone from my pocket and flipped it open to the camera application. A quick scan of the room confirmed that there was no one else in sight, but something about the scene still felt wrong" as a continuation to our story, seamlessly injecting inner monologue and advancing the plot. This demonstrates the model's effectiveness as a creative writing assistant.
+
+#### Text-Based Adventure Game
+
+Now that we've set the stage with our chilling narrative, it's time to transform it into a text-based adventure game! KoboldAI provides a simple interface that allows us to do just that. Let's start by enabling Adventure Mode. Scroll up and click the "Settings" button, then look for the "Adventure Mode" switch and turn it on.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d23cab47-1b93-4158-613b-08e2d0d76200/full" alt="We switch on the adventure mode of KoboldAI" />
+
+With Adventure Mode activated, we're ready to dive into our text-based adventure game! Scroll down to the text input field. You'll notice that it now has two modes: "Action" and "Story". The Action mode is used to dictate the actions of our protagonist, while the Story mode allows us to progress the narrative without the protagonist's direct involvement.
+
+Let's guide our protagonist's next move. Type "You take a step back" into the Action input field. This action reflects the protagonist's growing unease and desire to distance themselves from the mysterious situation.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/04fad647-08a3-4557-ff61-c8ffed18a400/full" alt="We insert the action to 'take a step back'" />
+
+After submitting our action, KoboldAI responds with a continuation of the story that incorporates our chosen action. It's like playing a virtual game of Dungeons & Dragons, with the AI serving as our Dungeon Master!
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4b9cb4c6-6325-4ad7-80a0-c41ee3f13100/full" alt="The story continues after our protagonist decides to take a step backward" />
+
+The AI has now introduced a mysterious voice into our story. What will happen next? Where is the voice coming from? Will our protagonist make it out of the office safely? The answers to these questions are in the hands of KoboldAI and your own choices, dear adventurer. What action will you choose next?
+
+## Conclusion
+
+In this tutorial, we've explored how to quickly get started with KoboldAI using Google Colab. This approach allows us to utilize a ready-to-use environment and save on resource usage by leveraging cloud-based computing.
+
+We specifically chose the Nerys model for our demonstration due to its versatility and suitability for both writing assistance and text adventure gaming. Our writing assistance session showcased how the AI, given an initial backdrop of 10 sentences, can continue the story in the expected direction without explicit guidance.
+
+Switching to "Adventure" mode, we took on the role of the protagonist and drove the story forward with our actions. This added a layer of tension and intrigue to the narrative, illustrating the power of KoboldAI in creating engaging and dynamic stories.
+
+Thank you for joining me in this exploration of the exciting realm of open-source AI models powered by KoboldAI! I hope this tutorial has sparked your interest and encouraged you to explore the many other use cases that KoboldAI has to offer. Stay tuned for more tutorials in the future!

@@ -1,0 +1,163 @@
+---
+title: 'Streamlit: How to deploy your AI app'
+description: 'Deploy your AI app in under 5 minutes for free with Streamlit Community Cloud.'
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/steamlitdeployment.png"
+authorUsername: 'alfredo_lhuissier73'
+---
+
+## Streamlit 
+
+Streamlit is a Python library that is open-source, providing a seamless way to develop and distribute interactive web applications and data visualizations. 
+With Streamlit, you can effortlessly create web apps using Python code, enhanced by its robust additional features. The library comes equipped with integrated 
+support for various data visualization libraries such as matplotlib, pandas, and plotly, simplifying the process of generating interactive charts and graphs 
+that dynamically update based on user input. It is a popular tool among data scientists, machine learning (ML) engineers and developers looking to share 
+interactive web apps with their audience.
+
+
+## Overview
+
+Deployment on Streamlit is very easy. You just have to follow these 3 steps:
+
+1. Create a Streamlit app 
+2. Upload your app to Github 
+3. Deploy your Github repository to Streamlit
+
+
+## 1. Create a Streamlit app
+
+For this tutorial, we are going to create a simple app that uses Langchain and OpenAI's GPT to summarize the contents of a URL. You will need to have python >=3.11 installed.
+
+Note: You can try this with your own app if you have one ready to go.
+
+First, open your terminal and create a new folder named "streamlit-app". Then create a python file "streamlit_app.py" and a "requirements.txt" text file
+
+```bash
+mkdir streamlit-app
+cd streamlit-app
+touch streamlit_app.py
+touch requirements.txt
+```
+
+Open the text editor of your preference, navigate to the requirements.txt file, and proceed to insert the names of the libraries required to execute the application.:
+
+```
+streamlit==1.22.0
+langchain==0.0.176
+openai==0.27.7
+tiktoken==0.4.0
+unstructured==0.6.8
+tabulate==0.9.0
+pdf2image==1.16.3
+pytesseract==0.3.10
+```
+
+On your terminal, run this command to install the libraries:
+
+```bash
+pip install -r requirements.txt
+```
+
+Now open your streamlit_app.py file and paste the following code:
+
+```python
+import validators, streamlit as st
+from langchain.chat_models import ChatOpenAI
+from langchain.document_loaders import UnstructuredURLLoader
+from langchain.chains.summarize import load_summarize_chain
+from langchain.prompts import PromptTemplate
+
+# Streamlit app
+st.subheader('Summarize URL')
+
+# Get OpenAI API key and URL to be summarized
+with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API key", value="", type="password")
+    st.caption("*If you don't have an OpenAI API key, get it [here](https://platform.openai.com/account/api-keys).*")
+    model = st.selectbox("OpenAI chat model", ("gpt-3.5-turbo", "gpt-3.5-turbo-16k"))
+    st.caption("*If the article is long, choose gpt-3.5-turbo-16k.*")
+url = st.text_input("URL", label_visibility="collapsed")
+
+# If 'Summarize' button is clicked
+if st.button("Summarize"):
+    # Validate inputs
+    if not openai_api_key.strip() or not url.strip():
+        st.error("Please provide the missing fields.")
+    elif not validators.url(url):
+        st.error("Please enter a valid URL.")
+    else:
+        try:
+            with st.spinner("Please wait..."):
+                # Load URL data
+                loader = UnstructuredURLLoader(urls=[url])
+                data = loader.load()
+                
+                # Initialize the ChatOpenAI module, load and run the summarize chain
+                llm = ChatOpenAI(temperature=0, model=model, openai_api_key=openai_api_key)
+                prompt_template = """Write a summary of the following in 250-300 words:
+                    
+                    {text}
+
+                """
+                prompt = PromptTemplate(template=prompt_template, input_variables=["text"])
+                chain = load_summarize_chain(llm, chain_type="stuff", prompt=prompt)
+                summary = chain.run(data)
+
+                st.success(summary)
+        except Exception as e:
+            st.exception(f"Exception: {e}")
+```
+
+Save the file. You can now run the app with the following command:
+
+```bash
+python streamlit_app.py # or python3 streamlit_app.py
+```
+
+[Here is the app's original repository](https://github.com/alphasecio/langchain-examples/blob/main/url-summary)
+
+
+## 2. Upload your app to Github
+
+[Create a Github account if you haven't already](https://github.com). Then create a new repository and save the URL. The URL must look like this: `https://github.com/<your_username>/<your_repository_name>`
+
+<Img caption={"Create Github Repo"} alt="Create Github Repo" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/aa5b721d-7248-4c76-3592-e000fc0c4f00/full" />
+
+<Img caption={"Remote Github URL"} alt="Remote Github URL" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0da059ca-623b-4599-f685-15fc51bffe00/full" />
+
+Open your terminal and go to the root folder of your app, then type the following commands:
+
+```bash
+git init # Initialize a git repository
+git add . # Add files to your new commit
+git commit -m "first commit" # Make the commit
+git remote add origin <YOUR_REPOSITORY_URL> # Connects your local git repository to your remote Github one
+git push origin main # Pushes your code to your remote repo
+```
+
+This will upload your code to Github.
+
+
+## 3. Deploy your Github repository to Streamlit
+
+Go to the Streamlit website and [create a Community Cloud account](https://streamlit.io/cloud).
+
+After you finished setting up your account, click on "New app" and authorize Streamlit to access your Github repositories.
+
+<Img caption={"Streamlit.io new app"} alt="Streamlit.io new app" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1245aaba-9a0a-48bc-57e3-6c9f4d8aa600/full" />
+
+Select your repository and branch from the lists, and write the "Main file path" field (e.g streamlit_app.py)
+
+<Img caption={"Connect Github repo to Streamlit"} alt="Connect Github repo to Streamlit" src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/073e579e-8b85-47d4-a239-429f7ec78100/full" />
+
+🎉 That is all! Your app should be up and running. You can now share the URL of the app with the community.
+
+
+## 🤔 Final Thoughts
+
+We learned how to create and deploy a Streamlit app from a Github repository in three simple steps. Now it's your turn 
+to build amazing things with AI and share them with the world. That is all for this tutorial, I hope you you find it useful.
+And feel free to reach out to me on [LinkedIn](https://www.linkedin.com/in/thedeval/) or 
+[Twitter](https://twitter.com/thedevalweb) if you have any questions.
+
+And practice what you've learn here during our amazing [AI Hackathons](https://lablab.ai/event)!
+Join the AI revolution!

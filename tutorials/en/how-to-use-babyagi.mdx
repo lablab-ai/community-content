@@ -1,0 +1,89 @@
+---
+title: 'BabyAGI tutorial: How to use BabyAGI to solve tasks?'
+description: 'In this tutorial, we will try to run BabyAGI and use it for solving simple task.'
+image: 'https://storage.googleapis.com/lablab-static-eu/images/tutorials/babyagi-tut.png'
+authorUsername: 'jakub.misilo'
+---
+
+## What is BabyAGI?
+
+[BabyAGI](https://github.com/yoheinakajima/babyagi) is AI-powered task management system. It uses OpenAI models (e.g. [GPT-4]() or [GPT-3.5]()) and Vector Database to create, prioritize and execute tasks. The system creates tasks based on previous results and user's objectives. Then it uses OpenAI models to to solve tasks and Vector Database to store and retrieve past results.
+
+## How to use it?
+
+To use BabyAGI you need to install Python first. Then you can download it's [GitHub repository](https://github.com/yoheinakajima/babyagi). I will do it using Git CLI, but you can also download it manually.
+
+```bash
+git clone https://github.com/yoheinakajima/babyagi
+```
+
+Now let's move to the directory with BabyAGI, create virtual environment and install all dependencies.
+
+```bash
+cd babyagi
+
+python -m venv venv
+
+# linux/mac
+source venv/bin/activate
+
+# windows
+./venv/Scripts/activate
+
+pip install -r requirements.txt
+```
+
+Next step is to create `.env` file and copy value definitions from `.env.example` file. You can do it manually or using command line.
+
+```bash
+cp .env.example .env
+```
+
+Now you need to create OpenAI account and get your API key. Then you need to paste your API key to `.env` file.
+
+```bash
+OPENAI_API_KEY=sk-...
+```
+
+Feel free to change other values in `.env` file, such as `LLM_MODEL`. To define your custom task please change `OBJECTIVE` value and provide `INITIAL_TASK`.
+
+```bash
+OBJECTIVE="Python function that adds two numbers"
+INITIAL_TASK="Write function"
+```
+
+## Let's try it!
+
+Now let's run our Agent and see how it works.
+
+```bash
+python babyagi.py
+```
+
+You should see a lot of operations in your terminal. After a while you should get result. This is result of my task:
+
+```python
+def add_numbers(num1, num2):
+    """
+    This function takes two numbers as input and returns their sum.
+    It can handle positive and negative numbers.
+
+    Parameters:
+    num1 (int or float): The first number to be added.
+    num2 (int or float): The second number to be added.
+
+    Returns:
+    int or float: The sum of the two input numbers.
+    """
+    return num1 + num2
+```
+
+My task was very simple and BabyAGI handled it perfectly. I encourage you to try something more difficult!
+
+## Conclusion
+
+BabyAGI is very powerful tool. It can be used to solve simple tasks, but also to create more complex systems. I hope that this tutorial helped you to understand how to use it.
+
+If you want to test your new skills and create an app based on BabyAGI or try other Autonomous Agents, we invite you to the [LangChain x GPT Agents Hackathon](https://lablab.ai/event/autonomous-gpt-agents-hackathon)!
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/)[@newnative](https://newnative.ai/)

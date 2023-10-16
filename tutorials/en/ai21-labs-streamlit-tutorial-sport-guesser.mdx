@@ -1,0 +1,158 @@
+---
+title: 'AI21 Labs & Streamlit tutorial: how build an app to guess a sport based on description'
+description: 'A step by step guide how to build an app to guess a sport based on description '
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/64f05e37-5e19-433c-27c6-0e1c5ae55900/full'
+authorUsername: 'jakub.misilo'
+Slug: ai21-labs-and-streamlit-tutorial-how-build-an-app-to-guess-a-sport-based-on-description
+---
+
+## AI21 and Streamlit are worth checking out!
+
+[AI21 Labs](https://lablab.ai/tech/ai21-labs) gives a lot of tools for building AI/NLP powered apps. You can access their models through the official API/SDK! And if you don’t know how to use [AI21 API](https://lablab.ai/t/how-to-use-ai21labs) or want to know more about [AI21](https://lablab.ai/tech/ai21-labs), we got you covered!
+
+[Streamlit](https://streamlit.app/) is open-source Python for creating custom web applications. With this technology you are able to build, for example, a prototype of your application in a short time.
+
+## Our idea
+
+Today I would like to show how, using a model from AI21 Labs and Streamlit, we can build a simple application that will return the name of the described sport based on the description of the sport. The task does not seem difficult, and AI21 and Streamlit make it even easier for us with their great solutions! We will only need an input for the description and a button for confirmation. Let's get to coding!
+
+## Let's create the app!
+
+### Dependencies
+
+First, let's create a new directory for our project and move to it:
+
+```bash
+mkdir sports-app
+cd sports-app
+```
+
+At the beginning, we need to create a virtual environment for our project. Let's do it:
+
+```bash
+python3 -m venv venv
+
+# linux/mac
+source venv/bin/activate
+# windows
+.\venv\Scripts\activate
+```
+
+Now we need to install the necessary dependencies. Let's do it:
+
+```bash
+pip install streamlit ai21 python-dotenv
+```
+
+Last, but not least. Let's create a `.env` file to store our API key. We will use it later in our code.
+
+```bash
+# linux/mac
+touch .env
+
+# windows
+echo >.env
+```
+
+Okay, now we have all the necessary dependencies installed. Let's create a file called `main.py` and start coding!
+
+### Creating the app
+
+At the beginning, let's define the API key in `.env` file:
+
+```bash
+AI21_LABS_API_KEY=<your_api_key>
+```
+
+Now we can import the necessary dependencies and load secrets from:
+
+```python
+import os
+
+import ai21
+import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_KEY = os.getenv("AI21_LABS_API_KEY")
+
+ai21.api_key = API_KEY
+```
+
+Next, let's create a function that will take the description of the sport and return the name of it. I will also define a prompt here.
+
+```python
+# Prompt for the model
+PROMPT = "Based on the description given, name the sport.\nDescription: {description}\n Sport name: "
+
+# Initialization of the output variable
+if "output" not in st.session_state:
+    st.session_state["output"] = "Output:"
+
+def guess_sport(inp):
+    if not len(inp):
+        return None
+
+    # overwrite the prompt with the description
+    prompt = PROMPT.format(description=inp)
+
+    response = ai21.Completion.execute(
+        model="j2-grande-instruct",
+        prompt=prompt,
+        temperature=0.5,
+        minTokens=1,
+        maxTokens=15,
+        numResults=1,
+    )
+
+    # return the name of the sport
+    st.session_state["output"] = response.completions[0].data.text
+
+    # a short celebration 😉
+    st.balloons()
+```
+
+Perfect! Now we can create a simple interface for our app. Let's do it:
+
+```python
+
+st.title("The Sports Guesser")
+
+st.write(
+    "This is a simple **Streamlit** app that generates Sport Name based on given description"
+)
+
+inp = st.text_area("Enter your description here", height=100)
+
+st.button("Guess", on_click=guess_sport(inp))
+st.write(f"Answer: {st.session_state.output}")
+```
+
+It's okay, let's run the app!
+
+### Running the app
+
+We can do it using the following command:
+
+```bash
+streamlit run main.py
+```
+
+And that's it! We have a simple app that can guess the name of the sport based on the description. Let's try it out!
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/ai21ss.png" />
+
+## Conclusion
+
+As you can see, creating applications using AI21 & Streamlit setup is very easy, basic programming skills are enough, and all the necessary information is easily available in the documentation! I hope you enjoyed this tutorial and I encourage you to try it out yourself!
+
+If you want to know more about [generative AI models](https://lablab.ai/blog/generative-ai-generative-ai-models) or about building with different AI technologies, such as [OpenAI Whisper](https://lablab.ai/tech/openai/whisper) check our [AI tutorials page](https://lablab.ai/t).
+
+And we encourage you to join our upcoming [AI21 Hackathon](https://lablab.ai/event/ai21-labs-hackathon-2) and test in real life skills you have learnt in this tutorial.
+
+Join the community of builders, innovators and creators and shape the future with AI. Build a working prototype of your AI based app and apply to our AI Slingshot program.
+
+Join lablab.ai
+
+**Thank you for your time!** - [Jakub Misiło](https://www.linkedin.com/in/jmisilo/) [@newnative](https://newnative.ai/)

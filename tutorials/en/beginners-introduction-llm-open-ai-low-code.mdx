@@ -1,0 +1,404 @@
+---
+title: "Beginner's AI tutorial: an introduction to LLM (almost) without coding"
+description: "Dive into the exciting AI universe with our beginner-oriented LLM tutorial, featuring LangChain. Effortlessly grasp AI agent and AI app concepts in this engaging AI tutorial journey."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2800bf7e-8910-479e-8753-3a223fd40300/full"
+authorUsername: "mkbctrl"
+---
+
+## Embracing the World of AI: A Beginner's introduction to LLM (almost) without coding
+
+The realm of AI is vast and filled with countless tools that can seem overwhelming to newcomers. With daily news of breakthroughs, potential risks, and innovative applications, opinions on AI are divided. To form an educated opinion, it's essential to dive into this fascinating world and learn about the intriguing concepts it offers.
+
+## Embarking on an Educational Journey
+
+Long hours of self-study can be challenging, especially when distractions are abundant. To accelerate my learning, I participated in a [AI hackathon](https://lablab.ai/event) - an event where knowledge-seekers, experts, and enthusiasts come together to learn, collaborate, and have fun.
+
+Hackathons are unique experiences, often combining competition with a supportive atmosphere where participants eagerly help one another. Spending 48 hours surrounded by brilliant minds allowed me to grasp the basics and understand what I needed to create my first AI solution.
+
+However, not everyone has the opportunity to attend a hackathon. That's why I've decided to share my learnings in this tutorial, hoping to kickstart your journey into the world of [LangChain](https://lablab.ai/tech/langchain) and LLM.
+
+### LLM Explained for a 5-Year-Old
+
+Imagine you have a magical friend who knows a lot of words and can understand what people say. This friend can help you with your homework, answer your questions, and even tell you stories. A LLM (Large Language Model) is like that magical friend, but it lives inside a computer. It knows many words and can understand what people type. It helps people find information, answer questions, and do many other things on the computer.
+
+### What is LangChain?
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bc344925-e20e-4042-11f5-c75f8a2b7400/full" alt="a power plant next to a river" />
+
+For those with technical experience, LangChain can be thought of as a glue that enhances your existing apps with AI capabilities. It allows you to stream large amounts of data from your apps into tools like chat interfaces, enabling interaction with the data, or automating certain tasks based on the information found in the data. Imagine talking to your database and receiving responses - LangChain makes this possible, saving you time on writing database queries.
+
+For non-technical individuals, picture data as a flowing river. Just as a power plant harnesses energy from the river, LangChain helps you unlock the potential of your data using various [LLMs](https://en.wikipedia.org/wiki/Large_language_model) and third-party tools. These tools are like different types of power plants for diverse terrains and use cases, but without the time and effort required to build them. LangChain makes it easy to put these tools to work, as if they were delivered in a shoebox.
+
+### Example Scenario: AI-Assisted E-commerce Queries
+
+Imagine you're an e-commerce owner with a successful shop and a large group of loyal customers. You want to understand your customers better and use AI to help you. Currently, you might rely on your shop's admin area for analytics data, manually searching, sorting, and filtering vast amounts of table records. If you're not so lucky, you have to ask your programmers or data scientists to do it for you, which can sometimes take days.
+
+Ideally, you'd like to simply ask your database and get the response instantly. Here's a user flow demonstrating how this could work using LangChain and LLM:
+
+```
+1. You: "Hey Mr. Bot, I would like to know who my best customer is."
+2. [Query is sent to the language model]
+3. LLM performs a similarity search on the database and stores relevant information.
+4. [LLM now has both the query and the relevant information]
+5. LLM: "The best customer is Mr. Wick. He definitely loves his dog a lot. Spent 10k just for the treats!"
+6. You: "Awesome, can we send him a voucher?"
+7. LLM: "Of course, would you like me to send him an email with a code?"
+8. You: "Yes, please!"
+9. LLM: "Message sent. Would you like to learn anything else?"
+
+```
+
+In this flow, you interacted with your data, and the data responded. By building a flow like this using tools like LangChain, you enable anyone, even without technical knowledge, to access valuable information in seconds by typing a few words into a prompt.
+
+## Scenario Implementation Plan
+
+We want to create a bot that can receive queries, run them against our data stored in an SQL database, and return insights in a short and concise form. Let's discuss the idea and lessons learned during the hackathon.
+
+### Lessons Learned During the Hackathon
+
+Our team's plan during the event was to build a conversational bot that would ask the user a fixed number of predefined questions, calculate a score based on the answers, and then serve the user with some tips how he/she can improve.
+
+We initially approached the problem with a web developer mindset, wanting to create a list of questions with expected answers, assign weights to the answers, and provide the LLM with the list of questions upfront. We planned to feed the questions to the LLM, have it get the answers from the user, and then run an algorithm to calculate a final score based on user answers' weights. This would provide the user with insights stored in a predefined guidebook, initially stored as a Notion page. At some point, we wanted to move the Notion page to a database as well.
+
+However, this approach turned out to be overly complex and confusing. The solution was much simpler:
+
+```
+**********************************Let the AI drive. Let the AI drive. Let the AI drive!**********************************
+
+```
+
+In our attempt to solve the problem, we tried to control the process from top to bottom, which was **our biggest mistake**. After talking to experts, we discovered two important things:
+
+1. Prompt engineering can work wonders.
+2. Agents can take a lot of heavy lifting from us.
+
+By letting the AI drive and focusing on prompt engineering, we can create a more efficient and effective solution for our conversational bot.
+
+In order to apply those findings we fully resigned from trying to create a table with predefined questions and answers and we simply instructed the LLM through out the prompt template, what we want to achieve.
+
+Now you probably ask yourself: “What this guy just started talking about?”
+
+### **Prompt Engineering Explained for a 5-Year-Old**
+
+
+Imagine you have a magical toy that can answer your questions and help you with many things. But to make the toy work, you need to ask it questions in a special way. Prompt engineering is like figuring out the best way to ask your magical toy questions so it can understand you and give you the best answers. It's like learning how to talk to your toy so you both can have a fun and helpful conversation.
+
+### Agent Explained for a 5-Year-Old
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/91ac1248-b12d-4060-688b-381efb382400/full" alt="robotic teddy bear" />
+
+Imagine you have a helpful robot friend who can do many things for you, like finding your toys, answering your questions, or even helping you with your homework. This robot friend is called an "agent." An agent is like a helper that lives inside a computer or a device and can do tasks for you. It listens to what you say or type and then tries its best to help you with what you need.
+
+### **Hackathon Final Prompt Solution**
+
+Instead of setting up databases, APIs, and writing algorithms to calculate the score, we came up with a simpler solution using prompt engineering:
+
+```
+PREDEFINED_MESSAGES = [
+    SystemMessage(
+        content="""\
+Do not reply instead of the user (don't use the "Human: " message prefix)."""
+    ),
+    HumanMessage(
+        content="""\
+We are building an AIwo, a powerful agent to help managers make data-driven decisions about work organization changes they need to implement. Our product includes a Remote Work Score, a personalized AI-powered Improvements Plan, and a personalized AI-powered Playbook creation.
+AIwo is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, AIwo is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
+AIwo is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, AIwo is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
+Overall, AIwo is a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, AIwo is here to assist."""
+    ),
+    AIMessage(
+        content="""\
+That's a fascinating overview of your AIwo product. Here's a further outline of the product, detailing some more specifics of the individual components you mentioned.
+Remote Work Score: The Remote Work Score provides a quantitative assessment of how well a company or team is adapting to the remote work model. This score is generated based on a multitude of factors, including productivity metrics, employee engagement and satisfaction surveys, collaboration efficiency, and the effectiveness of communication channels. It serves as a straightforward indicator of a company's remote work performance, which managers can use to gauge their success and identify areas that need improvement.
+Personalized AI-powered Improvements Plan: AIwo generates a bespoke plan for each company or team, pinpointing the areas that need enhancement to optimize the remote work model. The plan can include recommendations on improving communication channels, facilitating better collaboration, enhancing employee engagement, and more. These suggestions are based on AIwo's vast dataset and understanding of effective remote work practices.
+Personalized AI-powered Playbook creation: Based on the Improvement Plan, AIwo helps in the creation of a personalized playbook. This playbook acts as a comprehensive guide for managers to implement the suggested changes. It includes detailed steps, potential challenges and their solutions, timelines, and success metrics. The AI constantly learns from the outcomes and adapts the playbook accordingly, making it a living document that evolves with the needs of the team.
+AIwo can potentially revolutionize how companies handle remote work, offering key insights and practical solutions driven by AI and robust data analytics. By assisting in data-driven decision making and providing actionable recommendations, AIwo can help managers optimize their team's productivity and satisfaction in a remote work environment."""
+    ),
+    HumanMessage(
+        content="""\
+Can you act as AIwo and start asking me questions to assess my remote work conditions?
+Ask me 10 questions one by one.
+Please ensure the questions cover all work-related aspects from this list of areas: Communication, Collaboration, Leadership, Job Satisfaction, Company Culture, Transparency, Well-being, Adaptation, Work management.
+After I answer your questions, can you help me compute a score from 0-100 based on my responses?
+Please output it in the following format: "Score: <score>."""
+    ),
+]
+```
+
+Surprisingly, this solution was developed almost entirely by the only non-programming person on our team. Shout out to [Iwo Szapar](https://www.linkedin.com/in/iwoszapar/en), our hackathon team's Senior Prompt Engineer 🚀🚀🚀
+
+It worked like magic:
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c3e67208-306f-44e1-3283-75c91fe5e400/public" alt="Open AI powered slackbot doing his magic while conversing with the user" />
+
+### Applying the Hackhaton Findings to Our Example Scenario
+
+Both the hackathon solution and the example scenario share some assumptions. First, the user produces a query. Second, we send the query back to the LLM, making sure the LLM knows our guidebook and can compare the received score with fixed data stored in the vector database to produce a meaningful response.
+
+We solved it like this:
+
+```
+import os
+
+import pinecone
+from langchain.agents import AgentType, initialize_agent
+from langchain.chat_models import ChatOpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import tool
+from langchain.vectorstores import Pinecone
+
+class PlaybookChat:
+    def __init__(self) -> None:
+        pinecone.init(
+            os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_ENV")
+        )
+        self.docsearch = Pinecone.from_existing_index("playbook", OpenAIEmbeddings())
+
+        @tool
+        def query_playbook(query: str) -> str:
+            """Searches the People Managers guide for the query."""
+            return "\n".join(self.get_relevant_fragments(query))
+
+        tools = [query_playbook]
+
+        memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
+
+        self.agent = initialize_agent(
+            tools,
+            ChatOpenAI(temperature=0.9, model="gpt-4"),
+            AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+            memory=memory,
+            verbose=True,
+        )
+
+    def start_conversation(self, user_score: int) -> str:
+        return self.agent.run(
+            input=f"""Help the user by querying the playbook and answering their questions. \
+The user is a People Manager at a company. \
+You are a very conversational AI. Keep the conversation going.
+
+The user has responded to questions regarding their remote work. \
+Their score was calculated to {user_score}%.
+
+Remote work readiness scale:
+Low: 0-50%
+Medium: 51-90%
+High: 91-100%
+
+End the response with a call to action encouraging the user to ask insightful questions."""
+        )
+```
+
+Now, let me explain what happened here, as I just mentioned a new concept called "vector database" and then shared some code.
+
+### Vector Database Explained for a 5-Year-Old
+
+Imagine you have a big box of toys, and you want to find a specific toy quickly. A vector database is like a magical map that helps you find the toy you're looking for in the big box. It knows where all the toys are and can show you the right toy based on what you tell it.
+
+In the vector database, each toy gets a "vector" - a list of numbers that describe the toy and how it's similar or different from other toys. The vector database uses special math to find similarities between vectors. So if you tell it you're looking for a red toy car, the database would filter for toys with a high "red toy car" similarity score based on their vectors.
+
+To build the vector database, you first "teach" it about each toy by giving it details like the toy's color, shape, size, function, and more. The database turns these details into numbers to create a vector for the toy. By comparing how vectors are similar and different, the database builds a "map" of how all the toys relate.
+
+When you search the database, it looks at the vectors to find toys most similar to what you described. The more it learns about the toys and gets better at finding relationships between them, the more magical its abilities seem. But really, it's all based on math!
+
+In our code, we use a vector database to help the AI find the right information to answer your questions. By teaching the database details about knowledge fragments, it can find the fragments most relevant to a user's query. The database's "magic" comes from its ability to quantify similarities between the knowledge it contains.
+
+### Code explanation
+
+This code defines a conversational AI agent called **`PlaybookChat`** that can interact with users and provide information based on a playbook.
+
+The agent has a set of tools that it can use to assist users. In this case, there is one tool called **`query_playbook`** that allows the agent to search for information in a "People Managers guide".
+
+When a conversation starts, the agent is initialized with the tools and other settings. It uses an underlying language model called "ChatOpenAI" to generate responses. The agent also has a memory component to keep track of the conversation history.
+
+To start a conversation, the **`start_conversation`** method is called with a user score as input. The agent then runs and responds to the user's queries based on the playbook information. The response includes the user's score and encourages them to ask insightful questions.
+
+Overall, this code sets up a conversational AI agent that can provide information and engage in conversation with users based on a playbook's content.
+
+### Final solution for our example
+
+We have a working solution already, so let’s repurpose it a little bit.
+
+Prompt template:
+
+```
+PREDEFINED_MESSAGES = [
+    SystemMessage(
+        content = ""
+        "\
+Do not reply instead of the user (don't use the "
+        You: " message prefix)."
+        ""
+    ),
+    HumanMessage(
+        content = ""
+        "\
+As an e-commerce owner, you have a successful shop with a large group of loyal customers. However, managing and understanding your customers can be a challenging task. You might currently rely on your shop's admin area for analytics data, which involves manually searching, sorting, and filtering vast amounts of table records. This process can be time-consuming and inefficient. You may also need to rely on programmers or data scientists to analyze the data, which can take days to get the insights you need.
+
+        But imagine
+        if you had an AI - powered assistant to help you with customer analytics and provide real - time insights.This assistant can process large amounts of data quickly and generate valuable information to help you understand your customers better.It can provide personalized recommendations and help you make data - driven decisions to improve your e - commerce business.
+
+        With this AI assistant, you can easily find answers to questions like who your best customer is, what their preferences are, and how to engage with them more effectively.You can also receive actionable suggestions on improving customer satisfaction, optimizing marketing campaigns, and identifying potential growth opportunities.
+
+        The AI assistant is designed to simulate a conversation and provide relevant and insightful responses.It can ask you questions about your business and customers to assess your current situation.Based on your responses, it can compute a score from 0 to 100 to evaluate various aspects of your e - commerce performance.
+
+        To get started, please ask any questions you have or provide information about your e - commerce business.I will assist you in understanding your customers better and optimizing your business operations.
+        ""
+        "
+    ),
+    AIMessage(
+        content = ""
+        "\
+That's an exciting opportunity to leverage AI for your e-commerce business! Let's start by exploring your customers and their preferences. Please provide me with any specific questions you have or information about your e-commerce business. I will analyze the data and provide you with valuable insights.
+
+        For example, you can ask questions like:
+        -"Who is my best customer?" -
+        "What are the preferences of my top customers?" -
+        "How can I engage with my customers more effectively?"
+
+        Feel free to ask anything related to your e - commerce business, and I 'll do my best to assist you with accurate and actionable information."""
+    ),
+    HumanMessage(
+        content = ""
+        "\
+Hey Mr. Bot, I would like to know who my best customer is."
+        ""
+    ),
+    AIMessage(
+        content = ""
+        "\
+Certainly! Let me perform an analysis to identify your best customer based on their purchasing behavior and engagement with your e-commerce shop.
+        Please give me a moment to retrieve and analyze the data.
+        ""
+        "
+    ),
+    AIMessage(
+        content = ""
+        "\
+After analyzing the data, I have identified your best customer as Mr. Wick. He has shown consistent loyalty to your shop and has made substantial purchases. He is particularly fond of his dog and has spent $10,000 on dog treats alone!
+
+        If you 'd like, I can help you send Mr. Wick a voucher or special offer to express your appreciation for his loyalty. Just let me know what you would like to offer and how you would like to deliver it."""
+    ),
+    HumanMessage(
+        content = ""
+        "\
+Awesome, can we send him a voucher?"
+        ""
+    ),
+    AIMessage(
+        content = ""
+        "\
+Certainly! I can assist you in sending Mr. Wick a voucher. Please provide the details of the voucher, such as the discount amount or any specific terms and conditions you would like to include. Additionally, let me know how you would like to deliver the voucher to Mr. Wick (e.g., email, SMS).
+
+        Once you provide the necessary details, I will send the voucher to Mr.Wick on your behalf.
+        ""
+        "
+    ),
+    HumanMessage(
+        content = ""
+        "
+        Yes, please send him an email with a code.
+        ""
+        "
+    ),
+    AIMessage(
+        content = ""
+        "
+        Understood!I will prepare an email with the voucher code and send it to Mr.Wick.Please give me a moment to compose and send the email.
+        ""
+        "
+    ),
+    AIMessage(
+        content = ""
+        "
+        The email with the voucher code has been successfully sent to Mr.Wick.He should receive it shortly.Is there anything
+        else I can assist you with ? ""
+        "
+    )
+]
+```
+
+Do you need a place to experiment a little bit more with prompt engineering? OpenAI provides you with an [awesome playground](https://platform.openai.com/playground) to do just that! Feel free to copy&paste the code, and start experimenting over there.
+
+### Final chain solution for our example
+
+```
+import os
+import pinecone
+from langchain.agents import AgentType, initialize_agent
+from langchain.chat_models import ChatOpenAI
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import tool
+from langchain.vectorstores import Pinecone
+
+class CustomerSearchChat:
+    def __init__(self) -> None:
+        pinecone.init(
+            os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_ENV")
+        )
+        self.docsearch = Pinecone.from_existing_index("customer_vectors", OpenAIEmbeddings())
+
+        @tool
+        def search_customer(customer_name: str) -> str:
+            """Searches the customer vector database for the given customer name."""
+            return "\n".join(self.docsearch.search(customer_name))
+
+        tools = [search_customer]
+
+        memory = ConversationBufferMemory(
+            memory_key="chat_history", return_messages=True
+        )
+
+        self.agent = initialize_agent(
+            tools,
+            ChatOpenAI(temperature=0.9, model="gpt-4"),
+            AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+            memory=memory,
+            verbose=True,
+        )
+
+    def start_conversation(self) -> str:
+        return self.agent.run(
+            input="""Hey Mr. Bot, I would like to find a customer in the database."""
+        )
+
+    def continue_conversation(self, user_message: str) -> str:
+        return self.agent.run(input=user_message)
+```
+
+Example usage:
+
+```
+chat = CustomerSearchChat()
+
+# Start the conversation
+response = chat.start_conversation()
+print(response)  # Print the initial response
+
+# Continue the conversation
+user_message = "Can you find customer John Doe?"
+response = chat.continue_conversation(user_message)
+print(response)  # Print the response to the user message
+
+# Continue the conversation with another user message
+user_message = "What are the purchase history and preferences of customer Mary Smith?"
+response = chat.continue_conversation(user_message)
+print(response)  # Print the response to the user message
+```
+
+### Homework
+
+The remaining task for you is to set up a database and populate it with relevant data. While I won't provide detailed instructions in this article, you can refer to our comprehensive guide on similarity search and vector databases, which provides step-by-step guidance. You can find the detailed instructions in one of our other [AI tutorials](https://lablab.ai/t/qdrant-cohere-tutorial).
+
+## Summary
+
+Embarking on an AI journey may seem challenging, but the true power of AI lies in its ability to support you every step of the way. There is just one key requirement: "Let the AI take the wheel," while you guide it in the right direction.
+
+To summarize everything I've discussed, it is crucial to understand key concepts such as **prompt engineering**, **chains**, **agents**, and **vector databases** before you begin. With a solid grasp of these concepts, you will be empowered to achieve remarkable feats!
+
+Wishing you the best of luck on your journey of creating [AI apps](https://lablab.ai/apps), and thank you for your valuable time.
+
+And I hope you want even more to participate in our [AI Hackathons](https://lablab.ai/event)!
