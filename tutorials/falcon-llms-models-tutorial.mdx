@@ -5,33 +5,39 @@ image: ""
 authorUsername: "abdibrokhim"
 ---
 
+[Falcon](https://lablab.ai/tech/tiiuae/falcon-llm) Large Language Models (LLMs) are versatile and powerful tools in the field of Natural Language Processing (NLP), capable of excelling in a broad spectrum of tasks that helps advance applications and use cases to future-proof our world.
 
-## Introduction
-[Falcon](https://falconllm.tii.ae/falcon.html) Large Language Models (LLMs) are versatile and powerful tools in the field of Natural Language Processing (NLP), capable of excelling in a broad spectrum of tasks that helps advance applications and use cases to future-proof our world.
 Built on top of the massive English web dataset such as [RefinedWeb](https://huggingface.co/datasets/tiiuae/falcon-refinedweb) by [The Technology Innovation Institute (TII)](https://www.tii.ae/) - a leading global research center dedicated to pushing the frontiers of knowledge. 
 See the [paper on arXiv](https://arxiv.org/abs/2306.01116) for more details.
 
 [Falcon 40B](https://huggingface.co/tiiuae/falcon-40b) is **Falcon-7B's** big brother, the world’s top-ranked multilingual open-source AI model when launched. For two months following its launch, **Falcon 40B** ranked #1 on Hugging Face’s leaderboard for open source LLMs. Offered completely royalty-free with weights, **Falcon 40B** is revolutionary and helps democratize AI and make it a more inclusive technology.
 
 [Falcon 180B](https://huggingface.co/tiiuae/falcon-180B) is a super-powerful language model with 180 billion parameters, trained on 3.5 trillion tokens and up to 4,096 A100 40GB GPUs, using a 3D parallelism strategy (TP=8, PP=8, DP=64) combined with `ZeRO`. It's currently at the top of the Hugging Face Leaderboard for pre-trained Open LLMs and is available for both research and commercial use.
+
 **Falcon 180B** performs exceptionally well in various tasks like reasoning, coding, proficiency, and knowledge tests, even beating competitors like **Meta's LLaMA 2**. Moreover, it ranks just behind **OpenAI's GPT4**, and performs on par with **Google's PaLM2**, which powers Bard, despite being half the size of the model.
-Quick Note: You will need at least `400GB of memory` to swiftly run inference with **Falcon 180B**.
+
+*Quick Note: You will need at least `400GB of memory` to swiftly run inference with **Falcon 180B**.*
 
 
-## Use Cases
+## Falcon LLMs Use Cases
 
 Here is a more detailed breakdown of the various NLP tasks that `Falcon LLMs` can be employed for:
 
 - Text generation
 **Falcon LLMs** are proficient at generating coherent and contextually relevant text. This can be applied to tasks such as content generation, creative writing and more.
+
 - Summarization
 **Falcon LLMs** can effectively generate concise and coherent summaries of longer texts, making them invaluable for automated document summarization, news article summarization, and content abstraction.
+
 - Translation
 **Falcon LLMs** can be utilized for machine translation tasks, enabling the translation of text from one language to another. Fine-tuning the model on specific language pairs can enhance translation accuracy.
+
 - Question-Answering
 **Falcon LLMs** are adept at answering questions posed in natural language. By providing context and a question, They can generate relevant answers, making them suitable for chatbots, virtual assistants, FAQ systems and more.
+
 - Sentiment analysis
 **Falcon LLMs** can be fine-tuned to classify the sentiment of text, such as determining whether a given piece of text is positive, negative, or neutral. This is widely used in social media monitoring, product reviews analysis, and customer feedback analysis.
+
 - Information Retrieval
 **Falcon LLMs** can be used to develop intelligent search engines that understand user queries and retrieve relevant documents or information from large datasets.
 
@@ -39,25 +45,31 @@ Here is a more detailed breakdown of the various NLP tasks that `Falcon LLMs` ca
 The adaptability of these models allows for customization to specific tasks and datasets, leading to improved performance and tailored solutions.
 
 
-## Key Features
+## Key Features of Falcon LLMs
+
 **Falcon** offers several key features that make it a prominent and valuable resource in the field of NLP.
 
 - Multiple Model Variants
 **Falcon** offers a range of model variants, including Falcon 180B, 40B, 7.5B, and 1.3B, each with different parameter sizes to cater to different use cases and computational resources.
+
 - High-Quality Datasets
 Falcon is trained on high-quality datasets, including the RefinedWeb dataset.
+
 - Multilingual Support
 **Falcon LLMs** supports multiple languages, including `English`, `German`, `Spanish`, `French`, `Italian`, `Portuguese`, `Polish`, `Dutch`, `Romanian`, `Czech`, and `Swedish`. This multilingual capability broadens its applicability across various language-specific NLP tasks.
+
 - Open-Source and Royalty-Free
 **Falcon LLMs** are open-source and offered royalty-free, making it accessible to a wide range of users and contributing to the democratization of AI technology.
+
 - Exceptional Performance
 **Falcon 180B** is at the top of the Hugging Face Leaderboard for pre-trained Open LLM. It excels in various tasks, rivaling even larger models like `GPT4` and `Google's PaLM2`.
 
 
-## Getting Started
+## Getting Started with Falcon LLMs
 
+<Img src="https://cdn.discordapp.com/attachments/1068094951537246310/1163821299873894491/newnative_guy_working_on_his_laptop_on_AI_project_a_bit_of_neon_caadac80-7a9c-4f83-97d1-fd4b943bdc34.png?ex=6540f80c&is=652e830c&hm=4e8ba1b57dd67934370d3d45c847cdfce6e7a15f972f70e7e2162707e3c431b4&" alt="Buid Apps with Falcon LLMs" caption="Get Started with Falcon LLMs"/>
 
-### Google Colab
+### Set-up Google Colab
 
 Go to [Google Colab](https://colab.research.google.com/) and create a new notebook.
 
@@ -68,7 +80,7 @@ Rename it to something simple and clear, for ex: `Falcon-LLMs-Tutorial.`.
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c472f617-b0d7-4aeb-e396-c2c76f268c00/full" alt="Renaming notebook" caption="Renaming notebook"/>
 
 
-### Changing Runtime Type
+### Change Runtime Type
 
 Click `Runtime` in the menu bar and select `Change runtime type`. 
 
@@ -98,7 +110,7 @@ Wait until the installation is complete.
 Perfect! Now you're ready to start with Falcon LLMs.
 
 
-### Falcon 7B
+### Let's give Falcon 7B a test!
 
 **Falcon 7B** was trained on 384 A100 40GB GPUs, using a 2D parallelism strategy (PP=2, DP=192) combined with ZeRO.
 
@@ -192,7 +204,7 @@ If you face an error like `No space left on device`, you can try to run it on Go
 Try Falcon 40B [here](https://huggingface.co/spaces/HuggingFaceH4/falcon-chat).
 
 
-### Falcon 180B - Falcon 40B's BIG brother
+### Falcon 180B - The larger sibling of Falcon 40B
 
 **Falcon 180B** was trained on up to 4,096 A100 40GB GPUs, using a 3D parallelism strategy (TP=8, PP=8, DP=64) combined with ZeRO.
 
@@ -231,7 +243,9 @@ Click `Run` or `CMD/CTRL + Enter`.
 If you face an error like `No space left on device`, you can try to run it on Google Colab Pro or Google Colab Pro+.
 
 
-### Falcon 180B Demo showcase
+## Falcon 180B Demo showcases
+
+<Img src="https://cdn.discordapp.com/attachments/1068094951537246310/1163820519301329046/newnative_showcase_how_AI_system_works_with_chat_window_inside__49b49189-d5af-4323-91d8-1a2930392545.png?ex=6540f752&is=652e8252&hm=f0211a8987aefebeca8ff40f40beb54d283586de548aff7eaf2afe686ac529a0&" alt="Falcon Showcase" caption="Falcon Showcases"/>
 
 You may also try Falcon 180B demo [here](https://huggingface.co/spaces/tiiuae/falcon-180b-demo). It opens experimental preview of the model in Hugging Face Spaces to showcase an early finetuning of Falcon 180B, to illustrate the impact (and limitations) of finetuning on a dataset of conversations and instructions.
 
@@ -249,7 +263,6 @@ Falcon LLMs are available on Hugging Face Spaces:
 - [Falcon 180B Demo](https://huggingface.co/spaces/tiiuae/falcon-180b-demo) experimental preview.
 
 
-
 ## Conclusion
 
 In this tutorial, we have covered the basics of Falcon LLMs, including their use cases, key features, and how to get started with them. We have also demonstrated how to run inference with Falcon LLMs using the Hugging Face Transformers library.
@@ -258,4 +271,4 @@ Thank you for following along with this tutorial.
 
 If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
 
-made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
+Made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
