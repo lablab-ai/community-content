@@ -5,9 +5,9 @@ image: ""
 authorUsername: "alfredo_lhuissier73"
 ---
 
-## 💡 Introduction
+## 💡 Cohere
 
-### About Cohere
+### Introduction
 
 <a href="https://cohere.com" rel="nofollow">Cohere</a> provides a powerful API that seamlessly integrates state-of-the-art language
 processing into any system. By leveraging extensive training, it develops large-scale
@@ -18,19 +18,60 @@ tasks associated with amassing vast volumes of text data, managing dynamic neura
 network architectures, overseeing distributed training, and ensuring models are available
 for use 24/7.
 
+Cohere provides a range of models that can be trained and tailored to suit specific use cases. This tutorial will guide you through the process of utilizing
+the Generate, Embed, and Rerank models, while also
+illustrating some of their use cases. For this purpose, we will progressively create a simple Streamlit app that will make use of these three models.
+
 ### Cohere Models
 
-Cohere provides a range of models that can be trained and tailored to suit specific use cases. This tutorial will guide you through the process of utilizing
-the [Generate](https://lablab.ai/tech/cohere/generate), the [Embed](https://lablab.ai/tech/cohere/embed), and the [Rerank](https://lablab.ai/tech/cohere/rerank) models, while also
-illustrating some of their use cases. For this purpose, we will progressively create a simple Streamlit app that will make use of these three models.
+1. [Generate](https://lablab.ai/tech/cohere/generate)
+
+Documentation: https://docs.cohere.com/reference/generate
+
+Cohere Generate creates text based on an input. It basically tries to guess what is the best way to continue a piece text. If you give a question it will 
+generate an answer, which makes it the ideal model for summarization and building Chatbots.
+
+2. [Embed](https://lablab.ai/tech/cohere/embed)
+
+Documentation: https://docs.cohere.com/reference/embed
+
+Cohere Embed processes a piece of text and generates an embedding, which is a set of floating-point numbers (vectors) that encapsulate semantic information related to the represented text. 
+This characteristic imparts a sense of 'understanding' to AI models in regard to human language, and proves beneficial in constructing classification and semantic search systems.
+
+3. [Rerank](https://lablab.ai/tech/cohere/rerank)
+
+Documentation: https://docs.cohere.com/reference/rerank-1
+
+Cohere Rerank takes a list of documents and a query as input, and returns the same list reorganized based on a score derived from semantic similarity with the query. 
+This functionality is valuable for significantly enhancing the effectiveness of conventional search systems that rely on keyword matching.
+
+### The importance of semantic based search
+
+For decades, Google has maintained its position as the leading search engine, despite often delivering sub-optimal results and irrelevant content. However, this era of dominance is now 
+facing a significant challenge from AI-powered search methods that diverge from the traditional keyword-based approach.
+
+Consider a nuanced search on Google, such as 'break the ice'. The options presented are either a standard 'search' that inundates you with a plethora of internet content to sift through, 
+or an 'I am feeling lucky' option for those confident in their search's commonality. In contrast, semantic-based search systems excels at understanding the essence of a user's query beyond
+mere keyword matching. This capability leads to the retrieval of more pertinent and precise results.
+
+Cohere's Rerank endpoint serves as a crucial bridge in this paradigm shift. Notably, Rerank not only surpasses the quality of results obtained through embedding-based search but also 
+requires just a single line of code alteration in your application.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6ea07d72-4d72-4d1a-3def-9c2c590c5900/full" caption="Rerank results" alt="Rerank results" />
+
+The data shown demonstrates that lexical search manages to yield relevant results for roughly 44% of search queries on average. Consequently, for the majority of queries, users find no pertinent 
+information within the top three results. Embedding-based semantic search boosts this figure to 65%, while Rerank achieves even higher performance. For approximately 72% of search queries, 
+we successfully present the most pertinent result within the first three outcomes (<a href='https://txt.cohere.com/rerank/' rel="nofollow">Source</a>).
+
+Furthermore, Rerank is compatible with embedding-based semantic search, further enhancing the quality of results obtained.
+
+## ⚙️ Setting up
 
 ### Requirements
 
 1. <a href="https://www.python.org/downloads/release/python-3100/" rel="nofollow">Python 3.9+</a>
 2. A <a href="https://dashboard.cohere.com/api-keys" rel="nofollow">Cohere Api Key</a>
 
-
-## Setting up
 
 Let's start by creating a new folder and installing the necessary libraries.
 
@@ -77,10 +118,7 @@ load_dotenv()
 co = cohere.Client(os.getenv('COHERE_API_KEY'))
 ```
 
-### 1- Cohere Generate
-
-Cohere Generate creates text based on an input. It basically tries to guess what is the best way to continue a piece text. If you give a question it will 
-generate an answer, which makes it the ideal model for summarization and building Chatbots.
+### Adding Cohere Generate
 
 Let's ask it to recommend us a list of books based on a given topic. We will save this list in a text file output.txt to use it later with the other models. In the main.py file,
 write the following code:
@@ -124,10 +162,7 @@ Choose a topic and prompt the model. The results should display and be saved in 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a35e4efb-e07a-4644-7d61-f3c5a4792200/full" caption="Cohere Generate results" alt="Cohere Generate results" />
 
 
-### 2- Cohere Embed
-
-Cohere Embed processes a piece of text and generates an embedding, which is a set of floating-point numbers (vectors) that encapsulate semantic information related to the represented text. 
-This characteristic imparts a sense of 'understanding' to AI models in regard to human language, and proves beneficial in constructing classification and semantic search systems.
+### Adding Cohere Embed
 
 In the subsequent step, we will employ this model to generate embeddings using the data we produced earlier. Within the main.py file, append the following code at the end.
 
@@ -187,10 +222,7 @@ It will then create embeddings for the query, and compare the distance between b
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c0ed9af-7ac9-4be0-3fff-7e29403a8000/full" caption="Semantic search" alt="Semantic search" />
 
 
-### 3- Cohere Rerank
-
-Cohere Rerank takes a list of documents and a query as input, and returns the same list reorganized based on a score derived from semantic similarity with the query. 
-This functionality is valuable for significantly enhancing the effectiveness of conventional search systems that rely on keyword matching.
+### Adding Cohere Rerank
 
 Just as we did with Embed, we will formulate a query and instruct the model to provide us with ranked results. Insert the following code at the end of your main.py file.
 
@@ -232,29 +264,6 @@ Let's make another query and see the results:
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ce748f20-824d-45e3-061b-e32fc97a7100/full" caption="Cohere Rerank" alt="Cohere Rerank" />
 
 Awesome 🥳. We have just created a basic recommendation system.
-
-
-### 👀 A closer look on Rerank use case
-
-Before wrapping up, let's dive a little deeper on what is possible with Rerank. 
-
-For decades, Google has maintained its position as the leading search engine, despite often delivering sub-optimal results and irrelevant content. However, this era of dominance is now 
-facing a significant challenge from AI-powered search methods that diverge from the traditional keyword-based approach.
-
-Consider a nuanced search on Google, such as 'break the ice'. The options presented are either a standard 'search' that inundates you with a plethora of internet content to sift through, 
-or an 'I am feeling lucky' option for those confident in their search's commonality. In contrast, semantic-based search systems excels at understanding the essence of a user's query beyond
-mere keyword matching. This capability leads to the retrieval of more pertinent and precise results.
-
-Cohere's Rerank endpoint serves as a crucial bridge in this paradigm shift. Notably, Rerank not only surpasses the quality of results obtained through embedding-based search but also 
-requires just a single line of code alteration in your application.
-
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6ea07d72-4d72-4d1a-3def-9c2c590c5900/full" caption="Rerank results" alt="Rerank results" />
-
-The data shown demonstrates that lexical search manages to yield relevant results for roughly 44% of search queries on average. Consequently, for the majority of queries, users find no pertinent 
-information within the top three results. Embedding-based semantic search boosts this figure to 65%, while Rerank achieves even higher performance. For approximately 72% of search queries, 
-we successfully present the most pertinent result within the first three outcomes (<a href='https://txt.cohere.com/rerank/' rel="nofollow">Source</a>).
-
-Furthermore, Rerank is compatible with embedding-based semantic search, further enhancing the quality of results obtained.
 
 
 ## 🤔 Final Thoughts
