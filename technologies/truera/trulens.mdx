@@ -1,0 +1,53 @@
+---
+title: "TruLens"
+author: "truera"
+description: "Empower your AI projects with TruLens, a suite of tools for developing and evaluating large language models."
+---
+
+# TruLens: Tools for Neural Network Development and Explainability
+
+TruLens provides a set of tools for developing and monitoring neural nets, including large language models. This includes both tools for evaluation of LLMs and LLM-based applications with TruLens-Eval and deep learning explainability with TruLens-Explain. TruLens-Eval and TruLens-Explain are housed in separate packages and can be used independently.
+
+
+| General  |  |
+| --- | --- |
+| Author | [TruEra](https://lablab.ai/tech/truera)  |
+| Repository | https://github.com/truera/trulens |
+| Type | LLMs Development and Explainability Tool |
+
+
+## TruLens-Eval
+
+TruLens-Eval contains instrumentation and evaluation tools for large language model (LLM) based applications. It supports the iterative development and monitoring of a wide range of LLM applications by wrapping your application to log key metadata across the entire chain (or off chain if your project does not use chains) on your local machine. Importantly, it also gives you the tools you need to evaluate the quality of your LLM-based applications.
+
+### Key Features:
+
+- **Evaluation:** TruLens supports the evaluation of inputs, outputs, and internals of your LLM application using any model, including LLMs. It offers various out-of-the-box feedback functions for evaluation, such as groundedness, relevance, and toxicity. The framework is easily extensible for custom evaluation requirements.
+
+- **Tracking:** TruLens contains instrumentation for any LLM application, including question answering, retrieval-augmented generation, agent-based applications, and more. This instrumentation allows for the tracking of a wide variety of usage metrics and metadata. TruLens' instrumentation can be applied to any LLM application without being tied down to a specific framework. Additionally, deep integrations with LangChain and Llama-Index allow the capture of internal metadata and text. Anything that is tracked by the instrumentation can be evaluated!
+
+[Learn more about TruLens-Eval](hhttps://www.trulens.org/trulens_eval/install/)
+
+## TruLens-Explain
+
+TruLens-Explain is a cross-framework library for deep learning explainability. It provides a uniform abstraction layer over TensorFlow, PyTorch, and Keras, allowing for input and internal explanations.
+
+[Read more about TruLens-Explain](https://www.trulens.org/trulens_explain/install/)
+
+### Getting Started
+
+- **[Quick Start Guide](https://github.com/truera/trulens#quick-usage)**
+- **[Installation Guide](https://github.com/truera/trulens#installation-and-setup)**
+- **[GitHub Project](https://github.com/truera/trulens)**
+
+### TruLens User Case Guides
+
+- [Any LLM App](https://www.trulens.org/trulens_eval/use_cases_any/)
+- [RAGs (Retrieval-Augmented Generation Systems)](https://www.trulens.org/trulens_eval/use_cases_rag/)
+- [LLM Agents](https://www.trulens.org/trulens_eval/use_cases_agent/)
+- [Dev to Prod](https://www.trulens.org/trulens_eval/use_cases_production/)
+
+
+### TruLens Tutorials
+<TechTutorials/>
+---
