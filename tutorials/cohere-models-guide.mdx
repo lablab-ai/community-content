@@ -1,0 +1,277 @@
+---
+title: "Get Started with Cohere Generate, Embed and Rerank"
+description: "Guide on Cohere Models: How to utilize Cohere Generate, Embed and Rerank in one app."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/Tutorial_image_cohere.png"
+authorUsername: "alfredo_lhuissier73"
+---
+
+## 💡 Cohere
+
+### Introduction
+
+<a href="https://cohere.com" rel="nofollow">Cohere</a> provides a powerful API that seamlessly integrates state-of-the-art language
+processing into any system. By leveraging extensive training, it develops large-scale
+language models and encapsulates them within an intuitive API. Additionally, users
+have the capability to tailor massive models to suit their specific use cases and
+train them using their own data. This means that Cohere takes care of the intricate
+tasks associated with amassing vast volumes of text data, managing dynamic neural
+network architectures, overseeing distributed training, and ensuring models are available
+for use 24/7.
+
+Cohere provides a range of models that can be trained and tailored to suit specific use cases. This tutorial will guide you through the process of utilizing
+the Generate, Embed, and Rerank models, while also
+illustrating some of their use cases. For this purpose, we will progressively create a simple Streamlit app that will make use of these three models.
+
+### Cohere Models
+
+1. [Generate](https://lablab.ai/tech/cohere/generate)
+
+Documentation: https://docs.cohere.com/reference/generate
+
+Cohere Generate creates text based on an input. It basically tries to guess what is the best way to continue a piece text. If you give a question it will 
+generate an answer, which makes it the ideal model for summarization and building Chatbots.
+
+2. [Embed](https://lablab.ai/tech/cohere/embed)
+
+Documentation: https://docs.cohere.com/reference/embed
+
+Cohere Embed processes a piece of text and generates an embedding, which is a set of floating-point numbers (vectors) that encapsulate semantic information related to the represented text. 
+This characteristic imparts a sense of 'understanding' to AI models in regard to human language, and proves beneficial in constructing classification and semantic search systems.
+
+3. [Rerank](https://lablab.ai/tech/cohere/rerank)
+
+Documentation: https://docs.cohere.com/reference/rerank-1
+
+Cohere Rerank takes a list of documents and a query as input, and returns the same list reorganized based on a score derived from semantic similarity with the query. 
+This functionality is valuable for significantly enhancing the effectiveness of conventional search systems that rely on keyword matching.
+
+### The importance of semantic based search
+
+For decades, Google has maintained its position as the leading search engine, despite often delivering sub-optimal results and irrelevant content. However, this era of dominance is now 
+facing a significant challenge from AI-powered search methods that diverge from the traditional keyword-based approach.
+
+Consider a nuanced search on Google, such as 'break the ice'. The options presented are either a standard 'search' that inundates you with a plethora of internet content to sift through, 
+or an 'I am feeling lucky' option for those confident in their search's commonality. In contrast, semantic-based search systems excels at understanding the essence of a user's query beyond
+mere keyword matching. This capability leads to the retrieval of more pertinent and precise results.
+
+Cohere's Rerank endpoint serves as a crucial bridge in this paradigm shift. Notably, Rerank not only surpasses the quality of results obtained through embedding-based search but also 
+requires just a single line of code alteration in your application.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6ea07d72-4d72-4d1a-3def-9c2c590c5900/full" caption="Rerank results" alt="Rerank results" />
+
+The data shown demonstrates that lexical search manages to yield relevant results for roughly 44% of search queries on average. Consequently, for the majority of queries, users find no pertinent 
+information within the top three results. Embedding-based semantic search boosts this figure to 65%, while Rerank achieves even higher performance. For approximately 72% of search queries, 
+we successfully present the most pertinent result within the first three outcomes (<a href='https://txt.cohere.com/rerank/' rel="nofollow">Source</a>).
+
+Furthermore, Rerank is compatible with embedding-based semantic search, further enhancing the quality of results obtained.
+
+## ⚙️ Setting up
+
+### Requirements
+
+1. <a href="https://www.python.org/downloads/release/python-3100/" rel="nofollow">Python 3.9+</a>
+2. A <a href="https://dashboard.cohere.com/api-keys" rel="nofollow">Cohere Api Key</a>
+
+
+Let's start by creating a new folder and installing the necessary libraries.
+
+```bash
+mkdir cohere-app
+cd cohere-app
+pip install cohere streamlit annoy numpy python-dotenv
+```
+
+Now, let's create an .env file.
+
+```bash
+touch .env
+```
+
+And save our Cohere Api Key there.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eb6038e2-ad7b-484d-9fe9-f281d2d50200/full" caption="Environment Variables" alt="Environment Variables" />
+(Dont' worry, that's not my real Api Key 😉)
+
+
+## 🚀 Building the app
+
+We will build our Streamlit app in 3 steps, each one showcasing the capabilities of one of the Cohere Models, while also expanding the features of our app.
+
+Create a main.py file, where we will write all the code.
+
+```bash
+touch main.py
+```
+
+Open main.py and load the libraries and env variable at the top:
+
+```python
+import cohere
+from dotenv import load_dotenv
+import os
+from annoy import AnnoyIndex
+import numpy as np
+import streamlit as st
+
+load_dotenv()
+
+co = cohere.Client(os.getenv('COHERE_API_KEY'))
+```
+
+### Adding Cohere Generate
+
+Let's ask it to recommend us a list of books based on a given topic. We will save this list in a text file output.txt to use it later with the other models. In the main.py file,
+write the following code:
+
+```python
+st.subheader('Book list Generator and Ranker:')
+
+# Topic input
+topic = st.text_input("Topic", placeholder="Topic",
+                      label_visibility="collapsed")
+
+if st.button("Generate"):
+    try:
+        with st.spinner("Please wait..."):
+            # Load the Cohere Generate module
+            response = co.generate(prompt="Write a list of the 5 most popular books about " +
+                                   topic+" with a short description for each one.")
+
+            # Write the results in a text file for future use
+            with open('output.txt', 'w') as f:
+                f.write(response.generations[0].text)
+
+            # Show the results on the front end
+            st.success(response.generations[0].text)
+    except Exception as e:
+        st.exception(f"Exception: {e}")
+```
+
+Now run the app with:
+
+```bash
+streamlit run main.py
+```
+
+You should see your app runing on localhost:8501.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cd75f821-9869-41f2-be41-1249f6467c00/full" caption="Book list generator" alt="Book list generator" />
+
+Choose a topic and prompt the model. The results should display and be saved in the root of your app.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a35e4efb-e07a-4644-7d61-f3c5a4792200/full" caption="Cohere Generate results" alt="Cohere Generate results" />
+
+
+### Adding Cohere Embed
+
+In the subsequent step, we will employ this model to generate embeddings using the data we produced earlier. Within the main.py file, append the following code at the end.
+
+```python
+if os.path.isfile('output.txt'):
+    st.subheader('Semantic search:')
+    query = st.text_input("Query", placeholder="Query",
+                          label_visibility="collapsed")
+    if st.button("Query"):
+        try:
+            with st.spinner("Please wait..."):
+
+                # Load the list generated in last step and save it in an array after removing irrelevant lines
+                with open('output.txt') as f:
+                    lines = list(filter(None, f.read().splitlines()))[1:]
+
+                # Load theCohere Embed module
+                embeds = co.embed(
+                    texts=lines,
+                    model='small',
+                ).embeddings
+
+                # Create the search index, pass the size of embedding
+                search_index = AnnoyIndex(np.array(embeds).shape[1], 'angular')
+
+                # Add all the vectors to the search index
+                for i in range(len(embeds)):
+                    search_index.add_item(i, embeds[i])
+                search_index.build(10)  # 10 trees
+                search_index.save('embeds.ann')
+
+                print(embeds)
+
+                # Embed the query
+                query_embed = co.embed(texts=[query],
+                                       model="embed-english-v2.0").embeddings
+
+                # Retrieve the nearest neighbor
+                similar_item_id = search_index.get_nns_by_vector(query_embed[0], 1,
+                                                                 include_distances=False)
+
+                # Show the results on the front end
+                st.success(similar_item_id[0].text)
+        except Exception as e:
+            st.exception(f"Exception: {e}")
+```
+
+Save and refresh the app.
+
+Following the execution of a query, this code will load the contents of output.txt, generate and display the embeddings in your terminal 
+(solely for educational purposes; you may choose to remove the print() function later), and subsequently store them in the file embeds.ann.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cac20cec-073c-47a2-ed8b-33effde6bb00/full" caption="Vectorized Poetry" alt="Vectorized Poetry" />
+
+It will then create embeddings for the query, and compare the distance between both. This is called a semantic search.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c0ed9af-7ac9-4be0-3fff-7e29403a8000/full" caption="Semantic search" alt="Semantic search" />
+
+
+### Adding Cohere Rerank
+
+Just as we did with Embed, we will formulate a query and instruct the model to provide us with ranked results. Insert the following code at the end of your main.py file.
+
+```python
+if os.path.isfile('output.txt'):
+    st.subheader('Semantic similarity ranking:')
+    query = st.text_input("Rerank", placeholder="Query",
+                          label_visibility="collapsed")
+
+    if st.button("Rerank"):
+        try:
+            with st.spinner("Please wait..."):
+
+                # Load the list generated in last step and save it in an array after removing irrelevant lines
+                with open('output.txt') as f:
+                    lines = list(filter(None, f.read().splitlines()))[1:]
+
+                # Load the Cohere Rerank module
+                results = co.rerank(
+                    query=query, documents=lines, top_n=5, model='rerank-english-v2.0')
+
+                # Parse the results 
+                results_string = ""
+                for idx, r in enumerate(results):
+                    results_string += f"{r.document['text']}\n\n"
+                    results_string += f"Relevance Score: {r.relevance_score:.2f}\n"
+                    results_string += "\n"
+
+                # Show the results on the frontend
+                st.success(results_string)
+        except Exception as e:
+            st.exception(f"Exception: {e}")
+```
+
+Save and refresh the app.
+
+Let's make another query and see the results:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ce748f20-824d-45e3-061b-e32fc97a7100/full" caption="Cohere Rerank" alt="Cohere Rerank" />
+
+Awesome 🥳. We have just created a basic recommendation system.
+
+
+## 🤔 Final Thoughts
+
+In this tutorial, we learned how to use Cohere's Generate, Embed and Rerank models in one application, and how to create data and query it in an optimal fashion. You could use this knowledge to
+improve existing search systems for businesses and organizations that have large banks of data. Or maybe enhance the user experience of surfing through the web.
+
+Lastly, you could easily deploy this app by uploading it to Github and connecting the repository to the Streamlit platform. 
+[Here is a detailed guide on how to achieve this](https://lablab.ai/t/streamlit-deploy-tutorial).
+
+See what [others have built using Cohere models](https://lablab.ai/apps/tech/cohere)
