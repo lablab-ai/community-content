@@ -1,0 +1,353 @@
+---
+title: "Cohere Rerank Model: The Solution for Search AI Application with ElevenLabs integration"
+description: "Beginner friendly tutorial on how to use Cohere Rerank Model for optimizing search algorithms and build Streamlit app with integration ElevenLab's cutting-edge voice AI."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[Cohere](https://cohere.com/) - a leading AI company, offers a suite of powerful language models that can transform the way you work with text data. In this tutorial we will learn how to use Cohere Rerank (Beta) model for optimizing search algorithms and build Streamlit app with it. If you want to learn more about Cohere LLMs, I highly recommend you to check out [How to Get Started with Cohere LLMs Tutorial]().
+
+[ElevenLabs](https://lablab.ai/tech/elevenlabs) - a voice AI research and deployment company with a mission to make content accessible in any language and voice. They specialize in creating highly realistic, versatile, and contextually-aware AI audio, allowing the generation of speech in numerous voices and languages. Founded in 2022 by Piotr and Mati, former engineers and strategists, ElevenLabs was inspired by the desire to eliminate linguistic barriers in content, particularly poor dubbing in Hollywood movies.
+
+[Streamlit](https://streamlit.io/) - pure Python framework for building web apps. Find out more about it by getting familiar with [Sreamlit apps](https://lablab.ai/apps/tech/streamlit).
+
+
+## Prerequisites
+Download [Visual Studio Code](https://code.visualstudio.com/) compatible with your operating system, or use any other code editor like: [IntelliJ IDEA](https://www.jetbrains.com/idea/), [PyCharm](https://www.jetbrains.com/pycharm/), etc.
+
+It is required to have `Cohere API key` to use **Cohere Models**. You can get your API key by signing up on [Cohere](https://cohere.com/). Once you have your API key, you can use it to access all of Cohere's Models.
+We also need `ElevenLabs API key` to use **ElevenLab's voice AI**. You can get your API key by signing up on [ElevenLabs](https://elevenlabs.io/about). Click on the Profile icon on the top right corner and select `API Keys`. Then, copy your API key.
+
+To deploy our app on **Streamlit**, we need create an account. Go to [Streamlit](https://streamlit.io/) and create an account. It's free!. I would recommend, to sign up with your `GitHub` account, so later on you can smoothly deploy your app on **Streamlit Sharing Cloud**.
+
+What else? A cup of coffee ☕️ and a laptop 💻.
+
+
+## Learning Outcomes
+- Learn how to use Cohere Rerank (Beta) via API
+- Build web apps using Streamlit (pure Python framework).
+- Buils an app with Cohere Rerank (Beta)
+- Deploy the app on Streamlit Sharing Cloud.
+
+
+## Let's Get Started
+
+### Create a new project
+
+Let's start by creating new folder for our project. Open **Visual Studio Code** and create new folder named `cohere-rerank-tutorial`:
+
+```bash
+mkdir cohere-rerank-tutorial
+cd cohere-rerank-tutorial
+```
+
+### Create a virtual environment and activate it
+
+Next, we need to create **Python Virtual Environment** and activate it. To do this, open your terminal and run the following command:
+
+```bash
+python3 -m venv .venv
+
+# on MacOS and Linux:
+source venv/bin/activate
+
+# on Windows:
+venv\Scripts\activate
+```
+
+### Install all dependencies
+
+Now, we need to install all the required dependencies. Run the following command:
+
+```bash
+pip install streamlit
+pip install cohere
+```
+
+### Create a Streamlit app
+
+Cool! After setting up initial project structure, we can start building our app. Create a new file named `app.py` (recommended):
+
+```python
+touch app.py
+```
+
+At the top of the file import libraries:
+
+```python
+import os
+import logging
+
+import streamlit as st
+from streamlit_chat import message
+
+from elevenlabs import generate, set_api_key
+import os
+```
+
+Configure logger (optional). It makes debugging process the way easier.
+
+```python
+logging.basicConfig(format="\n%(asctime)s\n%(message)s", level=logging.INFO, force=True)
+```
+
+Configure Streamlit page by giving a `title`, `favicon` and etc. 
+**Quick Note:** It will be displayed on the browser tab.
+
+```python
+st.set_page_config(page_title="Search Optimizer", page_icon="👀")
+```
+
+Let's give a title to the app.
+
+```python
+st.title("Search Optimizer")
+```
+
+Give a brief description, so that everybody could understand what the app is about, capabilities and etc.
+
+```python
+st.markdown(
+    "This is demo showcase of Cohere Rerank (Beta) model with integration ElevenLab's cutting-edge voice AI."
+)
+```
+
+Let's create a sidebar. To handle `API keys` and uploaded files.
+
+```python
+global arr
+
+with st.sidebar:
+    arr = []
+
+    st.session_state.cohere_api_key = st.text_input('Cohere API Key', key='cohere_api_key')
+    elevenlabs_api_key = st.text_input('ElevenLabs API Key', key='elevenlabs_api_key')
+
+    "Don't have API Keys?"
+    "[Get Cohere API Key](https://dashboard.cohere.com/api-keys)"
+    "[Get ElevenLabs API Key](https://elevenlabs.io/)"
+    "[View the source code](https://github.com/abdibrokhim/Cohere-Rerank-Tutorial)"
+
+    file = st.file_uploader(label="Upload file", type=["txt",])
+    if file:
+        try:
+            filename = "file.txt"
+            with open(filename, "wb") as f:
+                f.write(file.getbuffer())
+
+            with open(filename, "r", encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+                    print(f"line: {line}")
+                    arr.append(line)
+        except FileNotFoundError:
+            print(f"File not found: {file}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+```
+
+Initialize the messages state:
+
+```python
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "Say something to get started!"}]
+```
+
+Now, let's create a form to get user input and sent it to the **Cohere API**. We will use Streamlit's `st.form()` to create a form and `st.columns()` to create two columns. The first column will be used for user input, and the second column `Send` button.
+
+```python
+with st.form("chat_input", clear_on_submit=True):
+    a, b = st.columns([4, 1])
+
+    user_prompt = a.text_input(
+        label="Your message:",
+        placeholder="Type something...",
+        label_visibility="collapsed",
+    )
+
+    b.form_submit_button("Send", use_container_width=True)
+```
+
+Make user input at the left side of the screen, so it looks like a chat app:
+
+```python
+for msg in st.session_state.messages:
+    message(msg["content"], is_user=msg["role"] == "user")
+```
+
+Let's implement function to generate voiceover for each message separately:
+
+```python
+audio_path = 'audios'
+
+def voiceover(text, elevenlabs_api_key):
+    
+    set_api_key(elevenlabs_api_key)
+
+    idx = len(os.listdir(audio_path)) + 1
+
+    name = f'{idx}.mp3'
+    audio_file = f'{audio_path}/{name}'
+
+    audio = generate(
+        text=text,
+        voice="Bella",
+        model="eleven_monolingual_v1"
+    )
+
+    try:
+        with open(audio_file, 'wb') as f:
+            f.write(audio)
+
+        return name
+    
+    except Exception as e:
+        print(e)
+
+        return ""
+```
+
+
+Getting the response from the API and displaying it on the screen:
+
+```python
+if user_prompt and st.session_state.cohere_api_key:
+
+    co = cohere.Client(st.session_state.cohere_api_key)
+
+    st.session_state.messages.append({"role": "user", "content": user_prompt})
+    
+    message(user_prompt, is_user=True)
+
+    response = co.rerank(
+        query=user_prompt, 
+        documents=arr, 
+        top_n=3,
+        model='rerank-english-v2.0'  # if your document other than English, you may use 'rerank-multilingual-v2.0'
+    )
+
+    info = []
+
+    for idx, r in enumerate(response):
+        info.append(f"""
+Document Rank: {idx + 1}
+Document Index: {r.index}
+Document: {r.document['text']}
+Relevance Score: {r.relevance_score:.2f}
+\n
+""")  # feel free to modify the output as you wish
+
+    msg = {"role": "assistant", "content": info}
+
+    st.session_state.messages.append(msg)
+
+    for m in msg["content"]:
+        message(m, is_user=False, key=m)  # add key to avoid duplicate messages
+        
+        # generate voiceover for each message separately
+        file_name = voiceover(msgs, elevenlabs_api_key=elevenlabs_api_key)
+        audio_file = open(f"{audio_path}/{file_name}", 'rb')
+        audio_bytes = audio_file.read()
+        
+        # display audio to allow user to listen to the voiceover
+        st.audio(audio_bytes, format="audio/mp3", start_time=0)
+```
+
+Implement function to clear the chat history (optional):
+
+```python
+def clear_chat():
+    st.session_state.messages.clear()
+    st.session_state.messages = [{"role": "assistant", "content": "Say something to get started!"}]
+    
+    # List all files in the directory
+    file_list = os.listdir(audio_path)
+
+    # Iterate through the files and remove them
+    for filename in file_list:
+        file_path = os.path.join(audio_path, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+
+if len(st.session_state.messages) > 1:
+    st.button('Clear Chat', on_click=clear_chat)
+```
+
+### Run the app
+
+Go ahead and run the app:
+
+```bash
+streamlit run app.py
+```
+
+Now, go http://localhost:8501 or http://192.168.100.48:8501 to view our Streamlit app.
+
+You should see something like this:
+
+<Img src="https://iili.io/J3omp3J.png" alt="Streamlit app preview" caption="Streamlit app preview"/>
+
+For better performance, you may install the Watchdog module:
+
+```bash
+pip install watchdog
+```
+
+## Push the code to GitHub
+
+Firstly, we need to create a new GitHub repository and push our code to it. Go to your GitHub account and create a new repository. Then, copy the `repository URL`.
+**Quick Note:** You MUST push `requirements.txt` file to the repository. Otherwise, you will get an error while deploying the app.
+
+```bash
+pip freeze > requirements.txt
+```
+
+```bash
+git init
+git add .
+git commit -m "init"
+
+git push your-github-repo-url
+```
+
+
+## Deploy the app on Streamlit Sharing Cloud
+
+Now, go to [Streamlit Sharing Cloud](https://streamlit.io/sharing) and sign in with your GitHub account. You will be redirected to the Streamlit sharing cloud dashboard. 
+
+<Img src="https://iili.io/J3omyYv.png" caption="Streamlit dashboard"/>
+
+Click on the `New app` button and fill in the details. Choose the repository, branch and main file path `app.py` in our case. Then, click on the `Deploy!` button.
+
+<Img src="https://iili.io/J3omb4a.png" caption="Streamlit deploy"/>
+
+Wait for a few minutes until the deployment is finished. Once it's done, you should see something like this:
+
+<Img src="https://iili.io/J3omp3J.png" caption="Streamlit app preview"/>
+
+You can always update your app by pushing new commits to the repository. Streamlit will automatically pull the new changes.
+
+
+## Testing the app
+
+Let's test our app. Enter your `Cohere API key` and `upload` desired file. Then, enter your query and click on the `Send` button.
+
+<Img src="https://iili.io/JK3W44I.png" caption="Streamlit app testing"/>
+
+<Img src="https://iili.io/JK3WgBp.png" caption="Streamlit app testing"/>
+
+<Img src="https://iili.io/JK3WrEN.png" caption="Streamlit app testing"/>
+
+For full Source Code [Fork on GitHub](https://github.com/abdibrokhim/Cohere-Rerank-Tutorial)
+
+
+## Conclusion
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
