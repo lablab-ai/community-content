@@ -1,63 +1,34 @@
 ---
 title: "LLaVA"
-description: "A state-of-the-art multimodal model for language and vision understanding."
+description: "A state-of-the-art multimodal language and vision model achieving impressive chat capabilities and setting new accuracy benchmarks."
 ---
 
 # LLaVA: Large Language and Vision Assistant
-LLaVA, short for Large Language and Vision Assistant, is a groundbreaking multimodal model that seamlessly combines vision and language understanding. It excels in tasks requiring deep comprehension of both textual and visual content, setting new standards for AI chat capabilities and accuracy in science-related questions.
+
+LLaVA represents a novel end-to-end trained large multimodal model that combines a vision encoder and Vicuna for general-purpose visual and language understanding, achieving impressive chat capabilities mimicking spirits of the multimodal GPT-4 and setting a new state-of-the-art accuracy on Science QA.
 
 | General  |  |
 | --- | --- |
-| Relese date |  April 17, 2023 |
-| Authors | [Haotian Liu](https://hliu.cc), [Chunyuan Li](https://chunyuan.li), [Qingyang Wu](https://qywu.github.io/about.html), [Yong Jae Lee](https://pages.cs.wisc.edu/~yongjaelee/) |
+| Relese date |  November 20, 2023 |
 | Repository | https://github.com/haotian-liu/LLaVA |
-| Type | Large Language and Vision Assistant |
+| Type | Multimodal Language and Vision Model |
 
+## What is LLaVA?
 
-## Start building with 'author technology'
-LLaVA is a versatile multimodal model that can be used in a wide range of applications. It effectively bridges the gap between text and images, making it a valuable tool for tasks involving both language and vision.
+Visual Instruction Tuning: LLaVA, short for Large Language-and-Vision Assistant, represents a significant leap in multimodal AI models. 
 
-### LLaVA Resources
-
-- **[Documentation](https://llava-vl.github.io)**
-- **[GitHub Project](https://github.com/haotian-liu/LLaVA)**
-- **[Demo](https://llava.hliu.cc/)**
-- **[Dataset](https://huggingface.co/datasets/liuhaotian/LLaVA-Instruct-150K)**
-___
-
+With a focus on visual instruction tuning, LLaVA has been engineered to rival the capabilities of GPT-4V, demonstrating its exceptional prowess in understanding both language and vision. This state-of-the-art model excels in tasks ranging from impressive chatbot interactions to setting a new standard in science question-answering accuracy, achieving a remarkable 92.53%. With LLaVA's innovative approach to instruction-following data and the effective combination of vision and language models, it promises a versatile solution for diverse applications, marking a significant milestone in the field of multimodal AI.
 
 ### LLaVA Tutorials
 <TechTutorials/>
 ---
 
-## A Comparison of LLaVA and the Newly Released LLaVA-1.5
+### LLaVA Libraries
+A curated list of libraries and technologies to help you build great projects with 'technology'.
 
-### The Capabilities of LLaVA
-LLaVA leverages the power of multimodal AI, demonstrating remarkable performance in understanding images and responding to questions related to them. Despite its training on a relatively small dataset, LLaVA exhibits behaviors akin to multimodal models like GPT-4, even when faced with unseen images and complex instructions.
+* [LLaVA Research Paper](https://llava-vl.github.io)
+* [GitHub Repo](https://github.com/haotian-liu/LLaVA)
+* [LLaVA Demo](https://llava.hliu.cc)
+* [Model Zoo](https://github.com/haotian-liu/LLaVA/blob/main/docs/MODEL_ZOO.md)
 
-#### LLaVA Architecture
-
-LLaVA utilizes the LLaMA model for language understanding and the CLIP visual encoder ViT-L/14 for visual content processing. The trainable projection matrix connects visual features to language embeddings, ensuring seamless integration of text and images.
-
-#### LLaVA Training
-
-LLaVA's training comprises two key stages: pre-training for feature alignment and fine-tuning end-to-end. These stages enhance its ability to understand user instructions, language, and visual content, making it a versatile model for various applications.
-
-### The Updates in LLaVA-1.5
-LLaVA-1.5 builds upon the success of LLaVA with two significant improvements: the addition of an MLP vision-language connector and integration of academic task-oriented data.
-
-#### MLP Vision-Language Connector
-
-LLaVA-1.5 enhances its representation power by transitioning from a linear projection to a two-layer MLP vision-language connector. This design change significantly improves its multimodal capabilities, enabling effective interaction with both language and visual elements.
-
-#### Academic Task Oriented Data
-
-LLaVA-1.5 integrates VQA datasets designed for academic tasks, including Optical Character Recognition (OCR) and region-level perception. This enhancement broadens its capabilities, making it suitable for tasks like text recognition and precise localization of fine-grained visual details.
-
-The transition from LLaVA to LLaVA-1.5 reflects Microsoft's commitment to advancing the field of artificial intelligence and creating more sophisticated and adaptable AI assistants.
-
-**For in-depth details, you can refer to the research papers**:
-
-* **[LLaVA Research Paper](https://arxiv.org/abs/2304.08485)**
-* **[LLaVA-1.5 Research Paper](https://arxiv.org/abs/2310.03744)**
-Explore the possibilities with LLaVA and enhance your language and vision understanding capabilities.
+---
