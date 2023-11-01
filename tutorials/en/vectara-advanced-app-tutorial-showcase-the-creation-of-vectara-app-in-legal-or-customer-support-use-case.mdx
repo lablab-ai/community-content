@@ -1,0 +1,671 @@
+---
+title: "Vectara Advanced App Tutorial: Showcase The Creation Of Vectara App In Legal Or Customer Support Use Case"
+description: "Dive into a step-by-step guide on creating an intuitive Vectara application tailored for legal and customer support scenarios. Discover the intricacies of integrating semantic search and user-friendly interfaces, and get a first-hand look at the future of efficient customer support."
+authorUsername: "sanchayt743"
+---
+
+## 1. Introduction to the Vectara Ecosystem: 🌌
+
+Welcome to the realm of Vectara, a platform where search transcends to new horizons powered by Generative AI. Here, I will unravel the essence of the Vectara ecosystem, its fundamental workings, and provide a visual journey through Vectara's official materials to enhance your comprehension.
+
+### 🚀 Overview of Vectara Ecosystem
+
+Vectara is on a mission to redefine search, facilitating a seamless journey from a query to the most relevant information. The platform harbors a complete, but composable search pipeline, making it a powerhouse of semantic search capabilities. Through Vectara, developers are empowered to create applications with a robust search backbone, thus elevating the user experience to a realm where questions meet precise answers.
+
+### 🛠 Fundamental Workings and Workflow
+
+The heartbeat of Vectara is its pure neural search platform enriched with production-ready natural language processing. The workflow is simple, yet powerful:
+
+1. **Data Ingestion**: Ingest your data into Vectara's corpus using the Indexing API.
+2. **Data Indexing**: The ingested data is indexed, storing vector encodings optimized for low latency and high recall.
+3. **Query Execution**: Utilize the Search API to run queries against the indexed data, retrieving highly relevant information swiftly.
+
+The beauty of Vectara lies in its API-addressable platform, which is a canvas for developers to paint their search solutions, embedding them within their applications.
+
+---
+### 🎨 Dive into Vectara's Console
+
+To truly grasp the potential of Vectara, let's delve into its console which is the epicenter of managing your search ecosystem:
+
+- **Creating Corpora**: Start by creating a corpus, a sanctuary for your data awaiting to be queried. The process is straightforward - name your corpus, describe it, select an embedding model, specify filter attributes, and voila, your corpus is ready to be fed with data.
+- **API Access Management**: Vectara grants you the wand to manage API access. Create and manage API keys and app clients with ease. With the necessary permissions, an `API access` tab unveils in the sidebar, guiding you to create API keys and app clients. It's your doorway to interact with Vectara's treasure trove of search capabilities.
+- **Team Collaboration**: Invite your team to the Vectara console, assign specific roles, and foster a collaborative environment to build and refine your search solutions.
+- **Billing Management**: Keep a tab on your account usage and manage billing details ensuring uninterrupted service as you sail through the Vectara ecosystem.
+
+
+In this section, we've skimmed the surface of Vectara's offerings. As we delve deeper into our chosen use case in the next section, the utility and power of Vectara will unfold further, painting a clearer picture of how it can be harnessed for Customer Support applications.
+
+---
+## Our Quest: Orchestrating a Customer Support Maestro 🎵
+
+Embarking on the expedition to create a Customer Support solution requires a sturdy vessel, and Vectara proves to be an admirable choice for this voyage. Unlike the conventional techniques that revolve around wrapping OpenAI APIs without delving deeper into the core concepts, Vectara emerges as a beacon of innovation especially in the wake of GPT-4's multi-modal capabilities which sent ripples through the RAG-based companies recently. Vectara simplifies the creation of QA and conversational based projects, extending its arms to developers with its pre-built models and custom workflows. This eradicates the superficial approach often taken by budding developers who get entangled in ready-made wrappers like Langchain, without a thorough understanding of the underlying principles and optimizations.
+
+### 🎯 Why Vectara for Customer Support?
+
+Vectara shines bright by doing the heavy lifting, encapsulating best practices, and providing both REST and gRPC APIs. This level of customization is a realm beyond, offering unparalleled control while ensuring speed, accuracy, and quality in responses. It's like having a seasoned sailor aboard who knows the ropes, ensuring a smooth sail amidst the turbulent seas of development.
+
+### 🏗️ Concept and Architecture: Your Customized Chatbot Agency
+
+Let's picture ourselves as young entrepreneurs kick-starting a chatbot agency. Shying away from the costly plans of no-code tools like Botpress, and yearning for a higher degree of customization, we find solace in Vectara's ecosystem.
+
+#### Knowledge Base: The CORPUS
+
+Our journey begins with crafting our knowledge base, dubbed as CORPUS in Vectara's realm. Envision each corpus as a personalized library, a repository where multiple documents find their abode. This becomes indispensable for a business owner or a budding entrepreneur in the chatbot realm. The essence is to avert the tedious re-training and re-configuration of the system with every new client project. A centralized knowledge system acts as a reservoir of wisdom, enabling the bot to fetch apt responses swiftly and accurately.
+
+#### Vectara’s Indexing and Querying APIs: The Navigators
+
+When an end-user sends a query, Vectara’s state-of-the-art indexing and querying APIs spring into action. They ingest the data, embed it, and whisk through the corpus to fetch the most apropos response. This data is then fed to a summarizer, adding a human touch to the output, thus evading the robotic undertone often associated with bot responses.
+
+#### Implementation with Streamlit: The Playground
+
+To breathe life into our concept, we’ll employ Streamlit which not only unveils the inner workings of the code but provides a playground to test and iterate quickly. As we advance, a treasure trove of Vectara libraries awaits the backend developers, promising a smoother sail even if centering that div seems like chasing the horizon!
+
+#### A Dash of Humor: The Artistic Struggle
+
+Oh, and about the artistic struggle with centering divs, fear not! While art may have its Mona Lisa, in the coding world, a perfectly centered div is no less of a masterpiece! (And just like me, it seems Vectara too, isn’t too fond of going off-center!)
+
+---
+
+### Setting the Stage: Setup and Installation Guide 🛠️
+
+Before we delve into the realms of code and explore the intricacies of our application, it's imperative to set the stage right. This segment is dedicated to guiding you through the process of setting up and installing the necessary components for our application. The emphasis is on ensuring a smooth sail as we venture into the development phase.
+
+#### Step 1: Create a Virtual Environment
+Creating a virtual environment is a good practice to manage dependencies and ensure the application runs consistently across different setups.
+
+```bash
+python3 -m venv vectara-env
+```
+
+Activate the virtual environment:
+- On Windows:
+```bash
+.\vectara-env\Scripts\activate
+```
+- On macOS and Linux:
+```bash
+source vectara-env/bin/activate
+```
+
+#### Step 2: Install Necessary Packages
+Install the necessary packages using pip:
+
+```bash
+pip install streamlit python-dotenv requests authlib
+```
+
+#### Step 3: Create the .env File
+Create a file named `.env` in the root directory of your project. This file will store your environment variables. Here's how your `.env` file should look like, replace the placeholders with your actual credentials:
+
+```plaintext
+AUTH_URL=https://your-auth-url.com
+APP_CLIENT_ID=your-app-client-id
+APP_CLIENT_SECRET=your-app-client-secret
+CUSTOMER_ID=your-customer-id
+CORPUS_ID=your-corpus-id
+IDX_ADDRESS=api.vectara.io
+API_KEY=your-api-key
+```
+
+Make sure you copy/add the IDX_Address
+
+---
+
+#### Step 4: Setup Instructions
+
+In this step, I'll guide you through obtaining the necessary keys and credentials to get the application up and running. Make sure to closely follow each step to guarantee a smooth setup.
+
+##### 1. Navigate to the Vectara Dashboard and click on the Data Panel
+
+<div align="center">
+
+![Navigate to Vectara Dashboard](https://iili.io/JftkvZQ.md.png)
+
+</div>
+
+Open your web browser, head to the Vectara Dashboard, and sign in.
+
+<div align="center">
+
+![Data Panel](https://iili.io/JftvvJn.md.png)
+
+</div>
+
+Proceed to the data panel and click on the top right to create a data store.
+
+##### 2. Fill in the details
+
+<div align="center">
+
+![Details](https://iili.io/Jftvt5u.md.png)
+
+</div>
+
+Enter the name and description.
+
+##### 3. Once in the corpora, you will be navigated to the add data page
+
+<div align="center">
+
+![Add Data Page](https://iili.io/Jft8Tgt.md.png)
+
+</div>
+
+You can either manually add data or utilize the code provided later in this tutorial.
+
+##### 4. Go to control access tab
+
+<div align="center">
+
+![Control Access Tab](https://iili.io/Jft8W7e.md.png)
+
+</div>
+
+Hit the "create API key" button.
+
+##### 5. Fill the API key creation details 
+
+<div align="center">
+
+![API Key Creation](https://iili.io/Jft88rP.md.png)
+
+</div>
+
+Provide a name, and select both the Query service and Index Service.
+
+##### 6. Copy the API key and add it to your .env
+
+<div align="center">
+
+![API Key](https://iili.io/JftSHTG.md.png)
+
+</div>
+
+##### 7. Copy the corpus id and customer id 
+
+<div align="center">
+
+![Corpus ID](https://iili.io/JftSBa9.md.png)
+
+</div>
+
+Hit "copy corpus id" and "customer id" and integrate them into your .env file.
+
+##### 8. Get the auth URL
+
+<div align="center">
+
+![Auth URL](https://iili.io/JftSYa1.md.png)
+
+</div>
+
+Simply copy the highlighted segment.
+
+##### 9. Get APP client id 
+
+<div align="center">
+
+![App Client ID 1](https://iili.io/JftSYa1.md.png)
+
+</div>
+
+<div align="center">
+
+![App Client ID 2](https://iili.io/JftUyXf.md.png)
+
+</div>
+
+Copy the ID and place it in your .env file.
+
+##### 10. Get App client secret
+
+<div align="center">
+
+![Client Secret](https://iili.io/Jftgb3B.md.png)
+
+</div>
+
+Snag the client secret and slot it into the .env.
+
+---
+
+## **Exploring Vectara.py: A Deep Dive into the Code** 🖥️
+
+In this section, we'll meticulously dissect `Vectara.py`, our backbone script that bridges our application with Vectara's platform. Our aim is to unearth the essence of each function, why certain methods were employed, and how they contribute to the overall functionality of our Customer Support application. So, let’s roll up our sleeves and dive into the code!
+
+### **1. Setting the Stage: Importing Necessary Libraries** 📚
+
+```python
+import json
+import logging
+import mimetypes
+import os
+from typing import Tuple
+
+import requests
+from authlib.integrations.requests_client import OAuth2Session
+from dotenv import load_dotenv
+```
+
+The first step is importing the necessary libraries. Libraries like `requests` and `OAuth2Session` from `authlib` are fundamental for handling HTTP requests and OAuth2 authentication respectively, which are critical when communicating with Vectara's APIs. We also import `dotenv` to load environment variables from a `.env` file, ensuring a secure and organized way to handle configurations.
+
+### **2. Preparing the Environment** 🌿
+
+```python
+# Load environment variables from .env file
+load_dotenv()
+```
+By invoking `load_dotenv()`, we ensure that our script has access to crucial environment variables stored in a `.env` file. This not only enhances security but also promotes code reusability across different environments.
+
+### **3. Unveiling the Indexing Class** 🗂️
+
+```python
+class Indexing:
+    def __init__(self):
+        self.auth_url = os.getenv('AUTH_URL')
+        self.app_client_id = os.getenv('APP_CLIENT_ID')
+        self.app_client_secret = os.getenv('APP_CLIENT_SECRET')
+        self.jwt_token = self._get_jwt_token()
+        ...
+```
+The `Indexing` class is where the magic of data ingestion and indexing happens. Its methods are crafted to interact with Vectara's indexing API, laying down the tracks for our data to travel from our local environment to Vectara's corpus.
+
+#### **Securing Access with JWT Token** 🔐
+
+```python
+    def _get_jwt_token(self) -> str:
+        """Connect to the server and get a JWT token."""
+        token_endpoint = f"{self.auth_url}/oauth2/token"
+        session = OAuth2Session(self.app_client_id, self.app_client_secret, scope="")
+        token = session.fetch_token(token_endpoint, grant_type="client_credentials")
+        return token["access_token"]
+        ...
+```
+In `_get_jwt_token`, we initiate an OAuth2 session to obtain a JWT token, which is indispensable for authenticating our requests to Vectara's API.
+
+#### **Uploading Documents to the Corpus** 📤
+
+```python
+    def upload_file(self, customer_id: int, corpus_id: int, idx_address: str, uploaded_file, file_title: str) -> Tuple[requests.Response, bool]:
+            """Uploads a file to the corpus."""
+            # Determine the MIME type based on the file extension
+            extension_to_mime_type = {
+                '.txt': 'text/plain',
+                '.pdf': 'application/pdf',
+                '.doc': 'application/msword',
+                '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                # ... add more mappings as needed
+            }
+            file_extension = os.path.splitext(uploaded_file.name)[-1]
+            mime_type = extension_to_mime_type.get(file_extension, 'application/octet-stream')
+
+            post_headers = {
+                "Authorization": f"Bearer {self.jwt_token}"
+            }
+            
+            try:
+                file = uploaded_file.read()  
+                files = {"file": (file_title, file, mime_type)}
+                response = requests.post(
+                    f"https://{idx_address}/v1/upload?c={customer_id}&o={corpus_id}",
+                    files=files,
+                    headers=post_headers
+                )
+            
+                if response.status_code != 200:
+                    logging.error("REST upload failed with code %d, reason %s, text %s",
+                                response.status_code,
+                                response.reason,
+                                response.text)
+                    return response, False
+                return response, True
+            except Exception as e:
+                logging.error("An error occurred while uploading the file: %s", str(e))
+                return None, False
+ 
+        ...
+```
+
+The `upload_file` method is our gateway to send documents to Vectara's corpus. It's designed to handle the file upload, ensuring the document finds its place in the corpus for later retrieval.
+
+##### **Automated MIME Type Detection** 🔍
+
+```python
+        # Determine the MIME type based on the file extension
+        extension_to_mime_type = {
+            '.txt': 'text/plain',
+            '.pdf': 'application/pdf',
+            '.doc': 'application/msword',
+            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            # ... add more mappings as needed
+        }
+        file_extension = os.path.splitext(uploaded_file.name)[-1]
+        mime_type = extension_to_mime_type.get(file_extension, 'application/octet-stream')
+```
+
+In the snippet above, we manually map file extensions to their respective MIME types. This is crucial for the Vectara platform to understand the nature of the file and process it accordingly. However, it's worth noting that the `mimetypes` library could also be used to dynamically determine the MIME type of the file being uploaded, as shown below:
+
+```python
+        mime_type = mimetypes.guess_type(uploaded_file.name)[0] or 'application/octet-stream'
+```
+
+### **4. The Searching Class: A Quest for Answers** 🔍
+
+```python
+class Searching:
+    def __init__(self):
+        self.customer_id = os.getenv('CUSTOMER_ID')
+        self.api_key = os.getenv('API_KEY')
+        ...
+```
+`Searching` class is our crafted toolset for querying Vectara's corpus. It encapsulates the logic needed to formulate and send queries, and to process the received responses.
+
+#### **Sending Queries to Vectara** 📩
+
+```python
+    def send_query(self, corpus_id, query_text, num_results, summarizer_prompt_name, response_lang, max_summarized_results):
+        api_key_header = {
+            "customer-id": self.customer_id,
+            "x-api-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+
+        data_dict = {
+            "query": [
+                {
+                    "query": query_text,
+                    "num_results": num_results,
+                    "corpus_key": [{"customer_id": self.customer_id, "corpus_id": corpus_id}],
+                    'summary': [
+                        {
+                            'summarizerPromptName': summarizer_prompt_name,
+                            'responseLang': response_lang,
+                            'maxSummarizedResults': max_summarized_results
+                        }
+                    ]
+                }
+            ]
+        }
+
+        payload = json.dumps(data_dict)
+
+        response = requests.post(
+            "https://api.vectara.io/v1/query",
+            data=payload,
+            verify=True,
+            headers=api_key_header
+        )
+
+        if response.status_code == 200:
+            print("Request was successful!")
+            data = response.json()
+            texts = [item['text'] for item in data['responseSet'][0]['response'] if 'text' in item]
+            return texts
+        else:
+            print("Request failed with status code:", response.status_code)
+            print("Response:", response.text)
+            return None
+        ...
+```
+In `send_query`, we assemble our query, package it in the required format, and send it off to Vectara's query API. The method is a symphony of parameters coming together to form a query, ensuring that the Vectara platform receives our quest for information in a format it understands.
+
+### **5. Conclusion of Vectara.py Exploration** 🎓
+
+`Vectara.py` is more than just a script; it's a well-organized, modular, and robust bridge to Vectara's capabilities. Each line of code is a testament to the thoughtful design that caters to the essential functionalities required for our Customer Support application. Through `Vectara.py`, we've ensured that our application can communicate effectively with Vectara, making the most out of what the platform has to offer. The classes and methods within are not just code; they are the essence of our application's ability to interact with the treasure trove of information housed in Vectara's corpus.
+
+Our deep dive into `Vectara.py` reveals the underpinnings of how our application engages with Vectara's platform. This understanding is instrumental as we forge ahead in our journey of creating a Customer Support solution powered by the cutting-edge capabilities of Vectara.
+
+---
+
+
+### **Dissecting `app.py`**
+
+`app.py` stands as the façade of our application, portraying a user-friendly interface for indexing and searching documents within the Vectara platform. This script leverages Streamlit, a fast, interactive, and browser-based app framework to weave together a seamless user experience. Here’s a detailed walkthrough of the significant segments within `app.py`.
+
+#### **1. Import Section & Initialization**
+
+```python
+import os
+import streamlit as st
+from dotenv import load_dotenv
+from Vectara import Indexing, Searching  
+
+# Load environment variables
+load_dotenv()
+
+# Create instances of Indexing and Searching classes
+indexer = Indexing()
+searcher = Searching()
+```
+In this segment:
+
+- Essential libraries are imported: `os` for interacting with the operating system, `streamlit` for crafting the interface, `dotenv` for managing environment variables, and `Indexing` & `Searching` classes from `helpers.py` to handle document indexing and searching functionality.
+- `load_dotenv()` is invoked to load environment variables from a `.env` file, which is a safer practice for handling configurations.
+- Instances of `Indexing` and `Searching` classes are created, dubbed `indexer` and `searcher` respectively, forming the linchpin between the user interface and the backend logic encapsulated in `helpers.py`.
+
+#### **2. Streamlit Page Configuration**
+
+```python
+# Set up the Streamlit interface
+st.set_page_config(
+    page_title="Vectara Retrieval Augmented System",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+st.title("Vectara Retrieval Augmented System")
+```
+
+In this juncture:
+
+- `st.set_page_config` method is summoned to set the page title, layout, and the initial state of the sidebar, laying the groundwork for a well-structured and inviting interface.
+- `st.title` method is used to display the title of the application at the top of the page.
+
+#### **3. Sidebar Section**
+
+```python
+with st.sidebar:
+    ...
+    st.info("Vectara Retrieval Augmented System powered by Streamlit.")
+```
+Here:
+
+- A sidebar is crafted using `with st.sidebar`, providing a neat space for auxiliary content or actions. 
+
+#### **4. Document Indexing Section**
+
+```python
+with st.expander("Index a Document", expanded=True):
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        uploaded_file = st.file_uploader("Choose a document", type=["txt", "pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx"])
+        file_title = st.text_input("File Title", value="Document Title", key='file_title')
+    if st.button("Index Document"):
+        with st.spinner("Indexing document..."):
+            response, success = indexer.upload_file(
+            customer_id=int(os.getenv('CUSTOMER_ID')),
+            corpus_id=int(os.getenv('CORPUS_ID')),
+            idx_address=os.getenv('IDX_ADDRESS'),
+            uploaded_file=uploaded_file,
+            file_title=file_title
+        )
+            if success:
+                st.success("Document indexed successfully!")
+            else:
+                st.error("Failed to index document.")
+```
+
+In this stretch:
+
+- An expander titled "Index a Document" is created using `st.expander`, which when clicked, unveils the document indexing section.
+- `st.columns` method is employed to create a two-column layout.
+- `st.file_uploader` and `st.text_input` methods are harnessed to create file upload and text input widgets respectively.
+- `st.button` method is used to create a button widget which, when pressed, triggers the indexing process by invoking the `upload_file` method from the `indexer` instance.
+- `st.spinner` method displays a spinner animation during the indexing process to indicate activity.
+- Success or failure messages are displayed using `st.success` and `st.error` methods respectively based on the outcome of the indexing process.
+
+#### **5. Corpus Searching Section**
+
+```python
+with st.expander("Search the Corpus", expanded=True):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        query_text = st.text_input("Enter your query", key='query_text')
+    with col2:
+        num_results = st.slider("Number of Results", min_value=1, max_value=20, value=10, key='num_results')
+    with col3:
+        summarizer_model = st.selectbox("Summary Model", ["vectara-summary-ext-v1.3.0", "vectara-summary-abstr-v1.3.0"], key='summarizer_model')
+        response_lang = st.selectbox("Response Language", ["en", "fr", "es", "de", "it"], key='response_lang')
+    if st.button("Search"):
+        with st.spinner("Searching..."):
+            texts = searcher.send_query(
+                corpus_id=int(os.getenv('CORPUS_ID')),
+                query_text=query_text,
+                num_results=num_results,
+                summarizer_prompt_name=summarizer_model,
+                response_lang=response_lang,
+                max_summarized_results=5  
+            )
+            st.markdown('---')  
+            st.markdown('### Output Answers')
+            if texts:
+                for text in texts:
+                    st.markdown(f'- {text}')
+            else:
+                st.error("No results found.")
+```
+
+In this segment:
+
+- Another expander titled "Search the Corpus" is created which unveils the corpus searching section when clicked.
+- Various input widgets are created for users to input their search query and preferences.
+- A "Search" button is created using `st.button`, which triggers the searching process by invoking the `send_query` method from the `searcher` instance.
+- A markdown divider and a header are added to separate and title the output section.
+- The results from the search query are iterated through and displayed using `st.markdown`, or an error message is displayed if no results are found using `st.error`.
+
+
+
+`app.py` efficiently orchestrates the user interaction with the Vectara platform. It's structured to provide a seamless and intuitive experience for users to index and search documents. Through a combination of Streamlit’s interactive widgets and well-organized code, `app.py` forms a robust and user-friendly interface for the Vectara Retrieval Augmented System.
+
+---
+
+### **4. Showcase of the Final Result: A Sneak Peek into the Future of Customer Support**
+
+As we near the end of our development journey, it's time to showcase what we've built. Our Vectara Retrieval Augmented System, built on the Vectara platform and fleshed out through Streamlit, exemplifies the synergy between semantic search and interactive user interfaces.
+
+#### **1. A Glimpse into the Interface:**
+
+Our application offers a clean and intuitive interface to users. The landing page is straightforward, featuring a sidebar dedicated to Hackathon resources and two expandable sections for document indexing and corpus searching.
+
+<div align="center">
+
+![Interface Glimpse](https://iili.io/Jftsd1j.md.png)
+
+</div>
+
+#### **2. Document Indexing: Your Gateway to Knowledge**
+
+Within the interface, users have the capability to upload documents directly to the Vectara corpus. Be it text, a spreadsheet, or a presentation, our system is adept at handling it. An added document title field aids users in giving a descriptive name, facilitating better organization and retrieval.
+
+<div align="center">
+
+![Document Indexing](https://iili.io/JftsA2R.md.png)
+
+</div>
+
+#### **3. Corpus Searching: Unleashing the Power of Vectara**
+
+The centerpiece of our application is the corpus searching function. Users input their queries, set the desired number of results, and can even specify the summarization model and desired language. Hitting the "Search" button activates Vectara's advanced search and summarization algorithms, which pull the most pertinent information from the corpus.
+
+<div align="center">
+
+![Corpus Searching](https://iili.io/JftsG4f.md.png)
+
+</div>
+
+#### **4. Seamless Interaction:**
+
+What sets our application apart is the flawless interaction between the user interface and the Vectara backend. Thanks to a well-organized codebase, split into `Indexing` and `Searching` classes, users experience fluid and error-free interactions with Vectara's APIs. Additionally, leveraging environment variables for sensitive data guarantees a setup ready for production.
+
+<div align="center">
+
+![Seamless Interaction](https://iili.io/JftQvdx.md.png)
+
+</div>
+
+
+
+This showcase paints a vivid picture of what our Vectara Retrieval Augmented System is capable of. The synergy between Vectara's robust search capabilities and Streamlit's interactive interface creates a powerful tool that is poised to revolutionize customer support operations. As we step into the future, our application stands ready to serve as a reliable, efficient, and user-friendly solution for information retrieval and customer engagement.
+
+---
+### **5. Additional Learning Materials on Vectara: Amplify Your Understanding** 📚
+
+Embarking on a journey through the realms of Vectara opens up a trove of learning opportunities. While this tutorial provides a solid foundation, diving deeper into Vectara's documentation and resources will equip you with the knowledge to explore new horizons. Here are some avenues to further enrich your understanding:
+
+#### **1. Vectara Documentation:** 📖
+Venture into Vectara's official documentation to get a comprehensive understanding of its capabilities and features. The documentation provides a well-structured insight into every aspect of the Vectara platform.
+
+> [Access Vectara Documentation](https://docs.vectara.com/docs/)
+
+#### **2. Vectara Hackathon Guide:** 🚀
+The Vectara Hackathon Guide, curated specifically for this hackathon, is a treasure chest of information. It will guide you through the nuances of the Vectara platform and provide a roadmap to leverage its features optimally for your projects.
+
+> [Explore Vectara Hackathon Guide](https://docs.google.com/document/d/1MfSl-j4wYc0_M8ewH8RrA58Jditz5CczqES8qSIwtSY/edit)
+
+#### **3. LabLab Assistance:** 👩‍🔬👨‍🔬
+The LabLab team is at your disposal to assist in deepening your understanding of Vectara. Engage with the team to get personalized guidance, resolve queries, and explore advanced use cases of Vectara.
+
+#### **4. Community Forums and Discussions:** 💬
+Join community forums and discussions around Vectara. Engaging with other developers and the Vectara team in these forums can provide new perspectives and solutions to challenges you may encounter.
+
+#### **5. Hands-on Projects:** 🛠️
+Nothing beats the learning that happens when you get your hands dirty. Work on mini-projects, experiment with different features of Vectara, and share your experiences with the community. 
+
+#### **6. Follow Vectara on Social Media:** 🐦
+Stay updated with the latest features, updates, and community projects by following Vectara on social media platforms.
+
+
+Armed with these resources and the knowledge acquired through this tutorial, you are well on your way to mastering Vectara and creating impactful solutions. The road to expertise is a journey, not a destination. So, keep exploring, learning, and innovating as you delve deeper into the world of Vectara. Your next big idea might just be a Vectara query away!
+
+---
+### **6. Conclusion: Embarking on a Voyage of Discovery** 🚀
+
+As we wrap up this tutorial, it's time to take a moment to reflect on the key milestones we traversed in our quest to delve into the Vectara ecosystem and craft a Customer Support solution. Our journey, laced with code and creativity, has led us to a vantage point where the horizon of possibilities seems boundless.
+
+**Key Takeaways:**
+
+#### **1. Vectara's Robust Ecosystem:** 🌐
+We initiated our exploration with a dive into the Vectara ecosystem, uncovering its potential to redefine search and information retrieval. Through its composable search pipeline and the marriage of semantic search and natural language processing, Vectara emerged as a formidable ally in our venture.
+
+#### **2. Tailoring Customer Support Solutions:** 🛎️
+The tutorial delved into conceptualizing a Customer Support solution, underscoring the pivotal role Vectara plays in facilitating a central knowledge system. The notion of ingesting, indexing, and querying data to assist the user ecosystem unfolded as a cornerstone of our application design.
+
+#### **3. Seamless Setup and Code Excursion:** 🛠️
+A meticulous walkthrough of the setup and code structure equipped us with the wherewithal to navigate through the development phase seamlessly. The code narrative elucidated the importance of a well-structured, modular approach and the ease of interaction between the user interface and Vectara's backend.
+
+#### **4. Demonstrating Capability:** 🎥
+The showcase of our final application brought to light the synergy between an intuitive user interface and the powerful search capabilities of Vectara. Our application stood as a testament to the potential of semantic search in revolutionizing customer support.
+
+#### **5. Resources for the Inquisitive Mind:** 📚
+An array of resources from Vectara's documentation to community forums was highlighted to fuel the inquisitive minds eager to delve deeper into Vectara's realm.
+
+#### **6. The Road Ahead:** 🛣️
+As we conclude, it's but the beginning of many more explorations into the Vectara platform. The knowledge acquired sets a robust foundation for developing innovative solutions, and the resources highlighted pave the way for continuous learning and experimentation.
+
+---
+
+This tutorial was a voyage of discovery, and as you step out with a quiver full of knowledge, the adventure into the world of Vectara and Customer Support solutions continues. The road is long, filled with challenges, learnings, and triumphs, awaiting your footsteps. So, keep coding, keep exploring, and let the quest for knowledge always drive you forward. Your journey into creating impactful solutions has just begun, and the sky's the limit!
+
+---
+
+### **Live Demo and Further Exploration**
+
+Experience the application firsthand and delve deeper into its mechanics.For a deeper dive into the code and underlying mechanisms, visit the project on Hugging Face:
+
+<div align="center">
+
+**[Try it on Hugging Face](https://huggingface.co/spaces/Sanchayt/Vectara)**
+
+
+
+---
