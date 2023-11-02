@@ -11,22 +11,21 @@ Welcome to the realm of Vectara, a platform where search transcends to new horiz
 
 ### 🚀 Overview of Vectara Ecosystem
 
-Vectara is on a mission to redefine search, facilitating a seamless journey from a query to the most relevant information. The platform harbors a complete, but composable search pipeline, making it a powerhouse of semantic search capabilities. Through Vectara, developers are empowered to create applications with a robust search backbone, thus elevating the user experience to a realm where questions meet precise answers.
+Vectara is on a mission to redefine how users interact with data and knowledge, facilitating a seamless journey from a user query to the most relevant response. The platform harbors a complete, but easy to customize, search and summarization pipeline, making it an API-based easy-to-use platform to build applications powered by semantic search and Generative AI. Through Vectara, developers are empowered to create GenAI applications with a state-of-the-art retrieval engine and summarization capability, thus elevating the user experience to a realm where questions meet precise answers.
 
 ### 🛠 Fundamental Workings and Workflow
 
 The heartbeat of Vectara is its pure neural search platform enriched with production-ready natural language processing. The workflow is simple, yet powerful:
 
 1. **Data Ingestion**: Ingest your data into Vectara's corpus using the Indexing API.
-2. **Data Indexing**: The ingested data is indexed, storing vector encodings optimized for low latency and high recall.
-3. **Query Execution**: Utilize the Search API to run queries against the indexed data, retrieving highly relevant information swiftly.
+2. **Query Execution**: Utilize the Search API to run queries against the indexed data, retrieving highly relevant information swiftly.
 
-The beauty of Vectara lies in its API-addressable platform, which is a canvas for developers to paint their search solutions, embedding them within their applications.
+The beauty of Vectara lies in its API-addressable platform, which is a canvas for developers to paint their GenAI solutions, embedding them within their applications.
 
 ---
 ### 🎨 Dive into Vectara's Console
 
-To truly grasp the potential of Vectara, let's delve into its console which is the epicenter of managing your search ecosystem:
+To truly grasp the potential of Vectara, let's delve into its console which is the epicenter of managing your account:
 
 - **Creating Corpora**: Start by creating a corpus, a sanctuary for your data awaiting to be queried. The process is straightforward - name your corpus, describe it, select an embedding model, specify filter attributes, and voila, your corpus is ready to be fed with data.
 - **API Access Management**: Vectara grants you the wand to manage API access. Create and manage API keys and app clients with ease. With the necessary permissions, an `API access` tab unveils in the sidebar, guiding you to create API keys and app clients. It's your doorway to interact with Vectara's treasure trove of search capabilities.
@@ -107,88 +106,65 @@ OPENAI_API_KEY=openai_api_key here
 
 #### Step 4: Setup Instructions
 
-In this step, I'll guide you through obtaining the necessary keys and credentials to get the application up and running. Make sure to closely follow each step to guarantee a smooth setup.
+Welcome to Step 4! In this crucial phase, we'll walk through obtaining the necessary keys and credentials to kickstart your application. Adhering closely to each instruction ensures a smooth and error-free setup.
 
-##### 1. Navigate to the Vectara Dashboard and click on the Data Panel
+##### 1. Navigate to the Vectara Dashboard and Sign In
+To begin, open your web browser, navigate to the Vectara Dashboard, and sign in using your credentials.
 
-<div align="center">
+<Img src="https://iili.io/JftkvZQ.md.png" alt="Navigate to Vectara Dashboard" caption="Open your web browser, head to the Vectara Dashboard, and sign in." />
 
-![Navigate to Vectara Dashboard](https://iili.io/JftkvZQ.md.png)
-
-</div>
-
-Open your web browser, head to the Vectara Dashboard, and sign in.
-
-<div align="center">
-
-![Data Panel](https://iili.io/JftvvJn.md.png)
-
-</div>
-
-Proceed to the data panel and click on the top right to create a data store.
-
-##### 2. Fill in the details
-
-<div align="center">
-
-![Details](https://iili.io/Jftvt5u.md.png)
-
-</div>
-
-Enter the name and description.
-
-##### 3. Once in the corpora, you will be navigated to the add data page
-
-<div align="center">
-
-![Add Data Page](https://iili.io/Jft8Tgt.md.png)
-
-</div>
-
-You can either manually add data or utilize the code provided later in this tutorial.
-
-##### 4. Go to control access tab
-
-<div align="center">
-
-![Control Access Tab](https://iili.io/Jft8W7e.md.png)
-
-</div>
-
-Hit the "create API key" button.
-
-##### 5. Fill the API key creation details 
-
-<div align="center">
-
-![API Key Creation](https://iili.io/Jft88rP.md.png)
-
-</div>
-
-Provide a name, and select both the Query service and Index Service.
-
-##### 6. Copy the API key and add it to your .env
-
-<div align="center">
-
-![API Key](https://iili.io/JftSHTG.md.png)
-
-</div>
-
-##### 7. Copy the corpus id and customer id 
-
-<div align="center">
-
-![Corpus ID](https://iili.io/JftSBa9.md.png)
-
-</div>
-
-Hit "copy corpus id" and integrate them into your .env file.
-
-
-Snag the client secret and slot it into the .env.
+Once logged in, proceed to the data panel, located at the top right, and click to create a new data store.
 
 ---
+
+##### 2. Provide the Necessary Details
+
+<Img src="https://iili.io/Jftvt5u.md.png" alt="Add Data Page" />
+
+Enter a name and a brief description for your data store.
+
+---
+
+##### 3. Add Your Data
+In the corpora section, you will be redirected to the 'Add Data' page.
+
+<Img src="https://iili.io/Jft8Tgt.md.png" alt="Add Data Page" />
+
+Here, you have the option to manually add data or utilize the code snippet provided later in this tutorial.
+
+---
+
+##### 4. Access the Control Tab
+Navigate to the 'Control Access' tab.
+
+<Img src="https://iili.io/Jft8W7e.md.png" alt="Control Access Tab" />
+
+Click on the “create API key” button.
+
+---
+
+##### 5. Create Your API Key
+<Img src="https://iili.io/Jft88rP.md.png" alt="API Key Creation" />
+
+Provide a name for your API key, ensuring you select both the Query Service and Index Service.
+
+---
+
+##### 6. Secure Your API Key
+<Img src="https://iili.io/JftSHTG.md.png" alt="API Key" />
+
+Copy your API key and add it to your .env file.
+
+---
+
+##### 7. Obtain Corpus and Customer IDs
+<Img src="https://iili.io/JftSBa9.md.png" alt="Corpus ID" />
+
+Copy the corpus id and integrate it along with the customer id into your .env file. Additionally, secure the client secret by adding it to the .env file.
+
+---
+
+
 ### Importing Necessary Libraries: Setting the Foundation 🧱
 
 Before diving into the intricacies of building our application, it's crucial to import the necessary libraries that will empower our code. This sets the foundation for crafting the interactive web interface, initializing Vectara, streamlining the NLP pipeline, and integrating all these components for a seamless user experience.
@@ -363,18 +339,21 @@ Our application exudes a user-centric design, ensuring that navigating through t
 
 Upload your PDF and enter your keys and submit to proceed!
 
-<div align="center">
-
-[![Screenshot-2023-11-02-at-2-42-36-PM.png](https://i.postimg.cc/4dSW3JDS/Screenshot-2023-11-02-at-2-42-36-PM.png)](https://postimg.cc/LYjtCM6t)
-</div>
+<Img 
+  src="https://i.postimg.cc/4dSW3JDS/Screenshot-2023-11-02-at-2-42-36-PM.png" 
+  alt="Interface 1" 
+  href="https://postimg.cc/LYjtCM6t" 
+/>
 
 #### **2. Legal Knowledge Base: Your Personal Legal Advisor**
 
 The core of the Vectara App lies in its robust legal knowledge base. Users can dive into a sea of legal information, understand laws, and find answers to their legal queries with just a few clicks.
 
-<div align="center">
-
-[![legal.png](https://i.postimg.cc/dtbtyrRq/legal.png)](https://postimg.cc/56mVcHkG)
+<Img 
+  src="https://i.postimg.cc/dtbtyrRq/legal.png" 
+  alt="legal" 
+  href="https://postimg.cc/56mVcHkG" 
+/>
 
 ---
 
@@ -393,9 +372,8 @@ As we wrap up, the potential for further enhancement and the impact that the Vec
 
 Experience the application firsthand and delve deeper into its mechanics.For a deeper dive into the code and underlying mechanisms, visit the project on Hugging Face:
 
-<div align="center">
 
-**[Try it on Hugging Face](https://huggingface.co/spaces/Sanchayt/Vectara)**
+**[Try it on Hugging Face](https://huggingface.co/spaces/Sanchayt/VectaraBeginner)**
 
 
 
