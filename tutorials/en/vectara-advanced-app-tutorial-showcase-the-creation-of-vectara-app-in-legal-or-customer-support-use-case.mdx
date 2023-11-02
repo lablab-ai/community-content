@@ -6,7 +6,7 @@ authorUsername: "sanchayt743"
 
 ## 1. Introduction to the Vectara Ecosystem: 🌌
 
-Welcome to the realm of Vectara, a platform where search transcends to new horizons powered by Generative AI. Here, I will unravel the essence of the Vectara ecosystem, its fundamental workings, and provide a visual journey through Vectara's official materials to enhance your comprehension.
+Welcome to Vectara, a platform at the forefront of Generative AI innovation, enhancing and expanding the capabilities of semantic search and beyond. Here, we'll delve into the Vectara ecosystem and its utilization of Generative AI, including its role in powering Retrieval-Augmented Generation (RAG) applications. Our journey will also include a visual walkthrough of Vectara's official materials, providing you with a deeper insight into the platform's diverse functionalities and the advanced AI-driven solutions it offers.
 
 ### 🚀 Overview of Vectara Ecosystem
 
@@ -30,6 +30,7 @@ To truly grasp the potential of Vectara, let's delve into its console which is t
 - **Creating Corpora**: Start by creating a corpus, a sanctuary for your data awaiting to be queried. The process is straightforward - name your corpus, describe it, select an embedding model, specify filter attributes, and voila, your corpus is ready to be fed with data.
 - **API Access Management**: Vectara grants you the wand to manage API access. Create and manage API keys and app clients with ease. With the necessary permissions, an `API access` tab unveils in the sidebar, guiding you to create API keys and app clients. It's your doorway to interact with Vectara's treasure trove of search capabilities.
 - **Team Collaboration**: Invite your team to the Vectara console, assign specific roles, and foster a collaborative environment to build and refine your search solutions.
+- **Search and Summarization**: Directly from the console, utilize the search tab to execute queries and summarizations on ingested data. This feature is invaluable for testing and fine-tuning your search parameters in real-time.
 - **Billing Management**: Keep a tab on your account usage and manage billing details ensuring uninterrupted service as you sail through the Vectara ecosystem.
 
 
@@ -38,11 +39,15 @@ In this section, we've skimmed the surface of Vectara's offerings. As we delve d
 ---
 ## Our Quest: Orchestrating a Customer Support Maestro 🎵
 
-Embarking on the expedition to create a Customer Support solution requires a sturdy vessel, and Vectara proves to be an admirable choice for this voyage. Unlike the conventional techniques that revolve around wrapping OpenAI APIs without delving deeper into the core concepts, Vectara emerges as a beacon of innovation especially in the wake of GPT-4's multi-modal capabilities which sent ripples through the RAG-based companies recently. Vectara simplifies the creation of QA and conversational based projects, extending its arms to developers with its pre-built models and custom workflows. This eradicates the superficial approach often taken by budding developers who get entangled in ready-made wrappers like Langchain, without a thorough understanding of the underlying principles and optimizations.
+Vectara embarks on a mission to redefine Customer Support with the power of Generative AI. It breaks away from traditional API wrappers, employing GPT-4's advanced capabilities to enhance and streamline support services. Vectara offers a suite of intuitive tools and models, making it easier to build sophisticated QA and conversational AI systems.
+
+For developers, Vectara eliminates the initial complexity by providing a straightforward path to creating robust conversational experiences. This approach opens the door to deeper understanding and refinement, bypassing the initial pitfalls that tools like LlamaIndex may present. With Vectara, the intricacies of Generative AI are made accessible, allowing for the construction of intelligent and responsive support systems from the ground up.
 
 ### 🎯 Why Vectara for Customer Support?
 
-Vectara shines bright by doing the heavy lifting, encapsulating best practices, and providing both REST and gRPC APIs. This level of customization is a realm beyond, offering unparalleled control while ensuring speed, accuracy, and quality in responses. It's like having a seasoned sailor aboard who knows the ropes, ensuring a smooth sail amidst the turbulent seas of development.
+Vectara stands out in the realm of customer support by taking on the complex challenges and intricacies of development, effectively doing the heavy lifting for your team. By encapsulating industry best practices within our solutions, we ensure that you’re always on the cutting edge, providing fast, accurate, and high-quality responses to your customers.
+
+Vectara is versatile, offering a range of integration options through both REST and gRPC APIs. This ensures that regardless of your technical setup or preferences, implementing and scaling Vectara within your customer support workflow is seamless and efficient.
 
 ### 🏗️ Concept and Architecture: Your Customized Chatbot Agency
 
@@ -110,122 +115,50 @@ API_KEY=your-api-key
 Make sure you copy/add the IDX_Address
 
 ---
-
 #### Step 4: Setup Instructions
 
-In this step, I'll guide you through obtaining the necessary keys and credentials to get the application up and running. Make sure to closely follow each step to guarantee a smooth setup.
+This step provides a comprehensive guide to obtain the keys and credentials necessary for the application to function effectively. Follow each step carefully to ensure a seamless setup process.
 
-##### 1. Navigate to the Vectara Dashboard and click on the Data Panel
+1. **Navigate to the Vectara Dashboard and Access the Data Panel**
+<Img src="https://iili.io/JftkvZQ.md.png" alt="Navigate to Vectara Dashboard" caption="Navigate to the Vectara Dashboard by signing in and accessing the data panel." />
 
-<div align="center">
+2. **Enter Your Data Store Details**
+<Img src="https://iili.io/JftvvJn.md.png" alt="Data Panel" caption="Enter the required details for your data store." />
 
-![Navigate to Vectara Dashboard](https://iili.io/JftkvZQ.md.png)
+3. **Add Data to Your Corpus**
+<Img src="https://iili.io/Jft8Tgt.md.png" alt="Add Data Page" caption="Add data manually or use the provided code to populate your corpus." />
 
-</div>
+4. **Generate an API Key in the Access Control Tab**
+<Img src="https://iili.io/Jft8W7e.md.png" alt="Control Access Tab" caption="Create a new API key through the access control tab." />
 
-Open your web browser, head to the Vectara Dashboard, and sign in.
+5. **Create and Configure Your API Key**
+<Img src="https://iili.io/Jft88rP.md.png" alt="API Key Creation" caption="Fill in the details to generate a new API key for Query and Index Services." />
 
-<div align="center">
+6. **Securely Store the API Key**
+<Img src="https://iili.io/JftSHTG.md.png" alt="API Key" caption="Copy and store your new API key in your .env file." />
 
-![Data Panel](https://iili.io/JftvvJn.md.png)
+7. **Retrieve Corpus and Customer IDs**
+<Img src="https://iili.io/JftSBa9.md.png" alt="Corpus ID" caption="Copy your corpus and customer IDs for integration." />
 
-</div>
+8. **Obtain the Authentication URL**
+<Img src="https://iili.io/JftSYa1.md.png" alt="Auth URL" caption="Copy the necessary authentication endpoint." />
 
-Proceed to the data panel and click on the top right to create a data store.
+9. **Get the App Client ID**
+<Img src="https://iili.io/JftUyXf.md.png" alt="App Client ID" caption="Document the App Client ID for your records." />
 
-##### 2. Fill in the details
+10. **Acquire the App Client Secret**
+<Img src="https://iili.io/Jftgb3B.md.png" alt="Client Secret" caption="Securely add the client secret to your .env file." />
 
-<div align="center">
+### Why Use Both API-Key and OAuth?
+Vectara's platform employs two different authentication methods: OAuth for indexing and API-keys for searching. This dual approach balances ease of use with robust security measures.
 
-![Details](https://iili.io/Jftvt5u.md.png)
+OAuth is specifically leveraged for indexing because it's well-suited for server-to-server communications, where operations require higher security due to the changing nature of data. It is a protocol that allows for secure authorization in a simple and standard method from web, mobile, and desktop applications. Therefore, for any operation that modifies data, like indexing, OAuth provides an additional layer of security by enabling token-based authentication and authorization.
 
-</div>
+On the other hand, API-keys are used for search operations as they offer a simpler method of access control that can be managed easily within an application. Searches often do not require the same level of security as indexing since they typically do not involve altering data.
 
-Enter the name and description.
+While indexing can also be performed with an API-key, using OAuth is a best practice for actions that could affect the integrity of your data. Vectara thus offers flexibility, allowing users to choose the most appropriate authentication method for their specific needs.
 
-##### 3. Once in the corpora, you will be navigated to the add data page
-
-<div align="center">
-
-![Add Data Page](https://iili.io/Jft8Tgt.md.png)
-
-</div>
-
-You can either manually add data or utilize the code provided later in this tutorial.
-
-##### 4. Go to control access tab
-
-<div align="center">
-
-![Control Access Tab](https://iili.io/Jft8W7e.md.png)
-
-</div>
-
-Hit the "create API key" button.
-
-##### 5. Fill the API key creation details 
-
-<div align="center">
-
-![API Key Creation](https://iili.io/Jft88rP.md.png)
-
-</div>
-
-Provide a name, and select both the Query service and Index Service.
-
-##### 6. Copy the API key and add it to your .env
-
-<div align="center">
-
-![API Key](https://iili.io/JftSHTG.md.png)
-
-</div>
-
-##### 7. Copy the corpus id and customer id 
-
-<div align="center">
-
-![Corpus ID](https://iili.io/JftSBa9.md.png)
-
-</div>
-
-Hit "copy corpus id" and "customer id" and integrate them into your .env file.
-
-##### 8. Get the auth URL
-
-<div align="center">
-
-![Auth URL](https://iili.io/JftSYa1.md.png)
-
-</div>
-
-Simply copy the highlighted segment.
-
-##### 9. Get APP client id 
-
-<div align="center">
-
-![App Client ID 1](https://iili.io/JftSYa1.md.png)
-
-</div>
-
-<div align="center">
-
-![App Client ID 2](https://iili.io/JftUyXf.md.png)
-
-</div>
-
-Copy the ID and place it in your .env file.
-
-##### 10. Get App client secret
-
-<div align="center">
-
-![Client Secret](https://iili.io/Jftgb3B.md.png)
-
-</div>
-
-Snag the client secret and slot it into the .env.
+By understanding and implementing both authentication methods as recommended, you ensure that your application interacts with Vectara's services in a secure and efficient manner, adhering to best practices for API usage.
 
 ---
 
@@ -453,7 +386,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.title("Vectara Retrieval Augmented System")
+st.title("Vectara Retrieval Augmented Generation")
 ```
 
 In this juncture:
@@ -466,7 +399,7 @@ In this juncture:
 ```python
 with st.sidebar:
     ...
-    st.info("Vectara Retrieval Augmented System powered by Streamlit.")
+    st.info("Vectara Retrieval Augmented Generation powered by Streamlit.")
 ```
 Here:
 
@@ -557,50 +490,50 @@ As we near the end of our development journey, it's time to showcase what we've 
 
 Our application offers a clean and intuitive interface to users. The landing page is straightforward, featuring a sidebar dedicated to Hackathon resources and two expandable sections for document indexing and corpus searching.
 
-<div align="center">
 
-![Interface Glimpse](https://iili.io/Jftsd1j.md.png)
+<Img 
+  src="https://iili.io/Jftsd1j.md.png" 
+  alt="Interface Glimpse"
+/>
 
-</div>
 
 #### **2. Document Indexing: Your Gateway to Knowledge**
 
 Within the interface, users have the capability to upload documents directly to the Vectara corpus. Be it text, a spreadsheet, or a presentation, our system is adept at handling it. An added document title field aids users in giving a descriptive name, facilitating better organization and retrieval.
 
-<div align="center">
-
-![Document Indexing](https://iili.io/JftsA2R.md.png)
-
-</div>
+<Img 
+  src="https://iili.io/JftsA2R.md.png" 
+  alt="Document Indexing"
+/>
 
 #### **3. Corpus Searching: Unleashing the Power of Vectara**
 
 The centerpiece of our application is the corpus searching function. Users input their queries, set the desired number of results, and can even specify the summarization model and desired language. Hitting the "Search" button activates Vectara's advanced search and summarization algorithms, which pull the most pertinent information from the corpus.
 
-<div align="center">
-
-![Corpus Searching](https://iili.io/JftsG4f.md.png)
-
-</div>
+<Img 
+  src="https://iili.io/JftsG4f.md.png" 
+  alt="Document Indexing"
+/>
 
 #### **4. Seamless Interaction:**
 
 What sets our application apart is the flawless interaction between the user interface and the Vectara backend. Thanks to a well-organized codebase, split into `Indexing` and `Searching` classes, users experience fluid and error-free interactions with Vectara's APIs. Additionally, leveraging environment variables for sensitive data guarantees a setup ready for production.
 
-<div align="center">
-
-![Seamless Interaction](https://iili.io/JftQvdx.md.png)
-
-</div>
-
+<Img 
+  src="https://iili.io/JftQvdx.md.png" 
+  alt="Document Indexing"
+/>
 
 
-This showcase paints a vivid picture of what our Vectara Retrieval Augmented System is capable of. The synergy between Vectara's robust search capabilities and Streamlit's interactive interface creates a powerful tool that is poised to revolutionize customer support operations. As we step into the future, our application stands ready to serve as a reliable, efficient, and user-friendly solution for information retrieval and customer engagement.
+
+
+This showcase paints a vivid picture of what our Vectara Retrieval Augmented Generation is capable of. The synergy between Vectara's robust search capabilities and Streamlit's interactive interface creates a powerful tool that is poised to revolutionize customer support operations. As we step into the future, our application stands ready to serve as a reliable, efficient, and user-friendly solution for information retrieval and customer engagement.
 
 ---
 ### **5. Additional Learning Materials on Vectara: Amplify Your Understanding** 📚
 
-Embarking on a journey through the realms of Vectara opens up a trove of learning opportunities. While this tutorial provides a solid foundation, diving deeper into Vectara's documentation and resources will equip you with the knowledge to explore new horizons. Here are some avenues to further enrich your understanding:
+Embarking on a journey through the realms of Vectara not only opens up a trove of learning opportunities but also invites hands-on experience with advanced search capabilities. This tutorial lays the groundwork for your exploration, and I strongly encourage you to delve further into Vectara's comprehensive documentation. A particularly useful resource is the interactive API playground found at [Vectara's Documentation](https://docs.vectara.com/docs/rest-api/), which allows you to experiment with the API in real-time. It’s an invaluable tool for trying out features, testing your understanding, and witnessing the power of Vectara's Generative AI firsthand. So, as you build upon the foundation this guide has provided, use the playground to sharpen your skills and unlock the full potential of your search applications.
+
 
 #### **1. Vectara Documentation:** 📖
 Venture into Vectara's official documentation to get a comprehensive understanding of its capabilities and features. The documentation provides a well-structured insight into every aspect of the Vectara platform.
@@ -662,7 +595,7 @@ This tutorial was a voyage of discovery, and as you step out with a quiver full 
 
 Experience the application firsthand and delve deeper into its mechanics.For a deeper dive into the code and underlying mechanisms, visit the project on Hugging Face:
 
-<div align="center">
+
 
 **[Try it on Hugging Face](https://huggingface.co/spaces/Sanchayt/Vectara)**
 
