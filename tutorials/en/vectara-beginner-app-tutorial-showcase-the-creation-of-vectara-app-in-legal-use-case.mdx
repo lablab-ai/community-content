@@ -1,0 +1,402 @@
+---
+
+Title: "Vectara Beginner App Tutorial: Showcase The Creation Of Vectara App In Legal Use Case"
+Description: "Embark on a step-by-step journey to create an intuitive Vectara application specifically tailored for the legal domain. Uncover the nuances of integrating semantic search and user-friendly interfaces, and get a glimpse into the streamlined process of providing automated legal consultations."
+Author Username: "sanchayt743"
+---
+
+## 1. Introduction to the Vectara Ecosystem: 🌌
+
+Welcome to the realm of Vectara, a platform where search transcends to new horizons powered by Generative AI. Here, I will unravel the essence of the Vectara ecosystem, its fundamental workings, and provide a visual journey through Vectara's official materials to enhance your comprehension.
+
+### 🚀 Overview of Vectara Ecosystem
+
+Vectara is on a mission to redefine search, facilitating a seamless journey from a query to the most relevant information. The platform harbors a complete, but composable search pipeline, making it a powerhouse of semantic search capabilities. Through Vectara, developers are empowered to create applications with a robust search backbone, thus elevating the user experience to a realm where questions meet precise answers.
+
+### 🛠 Fundamental Workings and Workflow
+
+The heartbeat of Vectara is its pure neural search platform enriched with production-ready natural language processing. The workflow is simple, yet powerful:
+
+1. **Data Ingestion**: Ingest your data into Vectara's corpus using the Indexing API.
+2. **Data Indexing**: The ingested data is indexed, storing vector encodings optimized for low latency and high recall.
+3. **Query Execution**: Utilize the Search API to run queries against the indexed data, retrieving highly relevant information swiftly.
+
+The beauty of Vectara lies in its API-addressable platform, which is a canvas for developers to paint their search solutions, embedding them within their applications.
+
+---
+### 🎨 Dive into Vectara's Console
+
+To truly grasp the potential of Vectara, let's delve into its console which is the epicenter of managing your search ecosystem:
+
+- **Creating Corpora**: Start by creating a corpus, a sanctuary for your data awaiting to be queried. The process is straightforward - name your corpus, describe it, select an embedding model, specify filter attributes, and voila, your corpus is ready to be fed with data.
+- **API Access Management**: Vectara grants you the wand to manage API access. Create and manage API keys and app clients with ease. With the necessary permissions, an `API access` tab unveils in the sidebar, guiding you to create API keys and app clients. It's your doorway to interact with Vectara's treasure trove of search capabilities.
+- **Team Collaboration**: Invite your team to the Vectara console, assign specific roles, and foster a collaborative environment to build and refine your search solutions.
+- **Billing Management**: Keep a tab on your account usage and manage billing details ensuring uninterrupted service as you sail through the Vectara ecosystem.
+
+
+In this section, we've skimmed the surface of Vectara's offerings. As we delve deeper into our chosen use case in the next section, the utility and power of Vectara will unfold further, painting a clearer picture of how it can be harnessed for Customer Support applications.
+
+---
+
+
+# Introduction to Legal Consultation Application 🏛️
+
+Embark on an insightful journey through this tutorial, where we unveil the Legal Consultation Application meticulously crafted using Streamlit, Vectara, and Langchain. This innovative application is engineered to demystify the legal consultation process for individuals or entities in need of legal guidance. With just a simple PDF document upload, users are ushered into a realm of instantaneous, automated consultations based on the document's contents.
+
+## Legal Consultation 📜
+
+The spotlight of this tutorial is a use case deeply rooted in the Legal domain. Amidst a burgeoning demand for swift and accessible legal consultations, this application emerges as a beacon of convenience. By harnessing the magic of automation and artificial intelligence, it offers preliminary legal advice derived from the uploaded documents, making legal assistance merely a click away.
+
+## Concept and Structure of the Application 🛠️
+
+The essence of this application is to provide a user-centric platform where obtaining legal consultations is a breeze with just a PDF document upload. The collaborative prowess of Streamlit, Vectara, and Langchain serves as the bedrock of this application, orchestrating a robust and intuitive environment.
+
+### Streamlit
+Streamlit, an open-source app framework, is the mastermind behind the interactive web interface of our application. It fosters a seamless user journey with widgets for file upload and elegantly unfurls the consultation output to the user, making the interface a joy to navigate.
+
+### Vectara 🧠
+Vectara is the linchpin that elevates the application's capabilities to a new zenith. As a semantic search software company, Vectara is on a mission to redefine search by leveraging artificial intelligence and neural network technologies for natural language processing. It facilitates a deeper understanding of user queries and provides extraordinarily relevant responses. In the scope of our application, Vectara processes the legal documents uploaded by users, delving into the semantics to extract crucial legal insights that form the basis of the automated consultations provided. The integration of Vectara transforms the application into a powerhouse of semantic search, ensuring users receive precise and relevant legal advice based on their documents.
+
+### Langchain 🤖
+Langchain, the engine of text generation in the application, sifts through the legal insights extracted by Vectara to generate automated legal advice. It is the cornerstone that enables the application to furnish text-based consultations, making legal advice easily accessible.
+
+The architecture of the application is elegantly simple yet potent. The user-friendly interface, sculpted with Streamlit, facilitates effortless uploading of PDF documents. Upon upload, Vectara springs into action, processing the document to extract legal insights. Langchain then takes the baton, generating legal advice that is promptly displayed to the user. This synergy ensures that users not only receive instant legal consultations but also have the option for further discussions with legal experts if needed.
+
+Dive into this tutorial to traverse the developmental voyage of this Legal Consultation Application and explore the plethora of features awaiting your discovery!
+
+---
+
+### Setting the Stage: Setup and Installation Guide 🛠️
+
+Before we delve into the realms of code and explore the intricacies of our application, it's imperative to set the stage right. This segment is dedicated to guiding you through the process of setting up and installing the necessary components for our application. The emphasis is on ensuring a smooth sail as we venture into the development phase.
+
+#### Step 1: Create a Virtual Environment
+Creating a virtual environment is a good practice to manage dependencies and ensure the application runs consistently across different setups.
+
+```bash
+python3 -m venv vectara-env
+```
+
+Activate the virtual environment:
+- On Windows:
+```bash
+.\vectara-env\Scripts\activate
+```
+- On macOS and Linux:
+```bash
+source vectara-env/bin/activate
+```
+
+#### Step 2: Install Necessary Packages
+Install the necessary packages using pip:
+
+```bash
+pip install streamlit python-dotenv langchain 
+```
+
+#### Step 3: Create the .env File
+Create a file named `.env` in the root directory of your project. This file will store your environment variables. Here's how your `.env` file should look like, replace the placeholders with your actual credentials:
+
+```plaintext
+CUSTOMER_ID=your-customer-id
+CORPUS_ID=your-corpus-id
+API_KEY=your-api-key
+OPENAI_API_KEY=openai_api_key here
+```
+---
+
+#### Step 4: Setup Instructions
+
+In this step, I'll guide you through obtaining the necessary keys and credentials to get the application up and running. Make sure to closely follow each step to guarantee a smooth setup.
+
+##### 1. Navigate to the Vectara Dashboard and click on the Data Panel
+
+<div align="center">
+
+![Navigate to Vectara Dashboard](https://iili.io/JftkvZQ.md.png)
+
+</div>
+
+Open your web browser, head to the Vectara Dashboard, and sign in.
+
+<div align="center">
+
+![Data Panel](https://iili.io/JftvvJn.md.png)
+
+</div>
+
+Proceed to the data panel and click on the top right to create a data store.
+
+##### 2. Fill in the details
+
+<div align="center">
+
+![Details](https://iili.io/Jftvt5u.md.png)
+
+</div>
+
+Enter the name and description.
+
+##### 3. Once in the corpora, you will be navigated to the add data page
+
+<div align="center">
+
+![Add Data Page](https://iili.io/Jft8Tgt.md.png)
+
+</div>
+
+You can either manually add data or utilize the code provided later in this tutorial.
+
+##### 4. Go to control access tab
+
+<div align="center">
+
+![Control Access Tab](https://iili.io/Jft8W7e.md.png)
+
+</div>
+
+Hit the "create API key" button.
+
+##### 5. Fill the API key creation details 
+
+<div align="center">
+
+![API Key Creation](https://iili.io/Jft88rP.md.png)
+
+</div>
+
+Provide a name, and select both the Query service and Index Service.
+
+##### 6. Copy the API key and add it to your .env
+
+<div align="center">
+
+![API Key](https://iili.io/JftSHTG.md.png)
+
+</div>
+
+##### 7. Copy the corpus id and customer id 
+
+<div align="center">
+
+![Corpus ID](https://iili.io/JftSBa9.md.png)
+
+</div>
+
+Hit "copy corpus id" and integrate them into your .env file.
+
+
+Snag the client secret and slot it into the .env.
+
+---
+### Importing Necessary Libraries: Setting the Foundation 🧱
+
+Before diving into the intricacies of building our application, it's crucial to import the necessary libraries that will empower our code. This sets the foundation for crafting the interactive web interface, initializing Vectara, streamlining the NLP pipeline, and integrating all these components for a seamless user experience.
+
+```python
+import os
+import tempfile
+import time
+
+import streamlit as st
+from dotenv import load_dotenv
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
+from langchain.schema import StrOutputParser
+from langchain.vectorstores import Vectara
+
+load_dotenv()
+
+```
+
+With the libraries imported, we now have the tools at our disposal to embark on the journey of creating an intuitive and powerful application.
+
+---
+
+### **1. Streamlit: Crafting the Web Interface** 🎨
+
+Streamlit is employed to forge a user-friendly web interface for the application, facilitating the easy creation of interactive widgets like text inputs and file uploaders.
+
+```python
+# Sidebar for PDF upload and API keys
+with st.sidebar:
+    st.header("Configuration")
+    uploaded_file = st.file_uploader("Choose a PDF file", type=["pdf"])
+    customer_id = st.text_input("Vectara Customer ID", value=os.getenv("CUSTOMER_ID", ""))
+    api_key = st.text_input("Vectara API Key", value=os.getenv("API_KEY", ""))
+    corpus_id = st.text_input("Vectara Corpus ID", value=str(os.getenv("CORPUS_ID", "")))
+    openai_api_key = st.text_input("OpenAI API Key", value=os.getenv("OPENAI_API_KEY", ""))
+    submit_button = st.button("Submit")
+
+# Constants
+CUSTOMER_ID = customer_id if customer_id else os.getenv("CUSTOMER_ID")
+API_KEY = api_key if api_key else os.getenv("API_KEY")
+CORPUS_ID = int(corpus_id) if corpus_id else int(os.getenv("CORPUS_ID", 0))  # Assuming CORPUS_ID should be an integer
+OPENAI_API_KEY = openai_api_key if openai_api_key else os.getenv("OPENAI_API_KEY")
+    ...
+```
+
+In this snippet, a sidebar is crafted for configuration, where users can upload a PDF file and input necessary API keys.
+
+---
+
+### **2. Vectara: Initialization and Document Retrieval** 📚
+
+Vectara is initialized using a simplified function which conceals the intricacies of API interaction, making it beginner-friendly.
+
+```python
+def initialize_vectara():
+    vectara = Vectara(
+        vectara_customer_id=CUSTOMER_ID,
+        vectara_corpus_id=CORPUS_ID,
+        vectara_api_key=API_KEY
+    )
+    return vectara
+
+vectara_client = initialize_vectara()
+```
+
+In this segment, a `Vectara` client is initialized with essential credentials which will be utilized to interact with Vectara's services.
+
+```python
+def get_knowledge_content(vectara, query, threshold=0.5):
+    found_docs = vectara.similarity_search_with_score(
+        query,
+        score_threshold=threshold,
+    )
+    knowledge_content = ""
+    for number, (score, doc) in enumerate(found_docs):
+        knowledge_content += f"Document {number}: {found_docs[number][0].page_content}\n"
+    return knowledge_content
+    ...
+```
+
+Here, the `get_knowledge_content` function abstracts the process of querying Vectara to retrieve pertinent documents based on the user's input query, simplifying interaction with Vectara's neural search capabilities.
+
+---
+
+### **3. Langchain: Streamlining the NLP Pipeline** 🗣️
+
+Langchain is leveraged to establish an NLP pipeline that processes user input and generates responses, abstracting away the complexities of handling language models.
+
+```python
+prompt = PromptTemplate.from_template(
+    """You are a professional and friendly Legal Consultant and you are helping a client with a legal issue. The client is asking you for advice on a legal issue. Just explain him in detail the answer and nothing else. This is the issue: {issue} 
+    To assist him with his issue, you need to know the following information: {knowledge} 
+    """
+)
+runnable = prompt | ChatOpenAI(streaming=True, callbacks=[StreamingStdOutCallbackHandler()], openai_api_key=OPENAI_API_KEY) | StrOutputParser()
+
+# Main Streamlit App
+st.title("Legal Consultation Chat")
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+```
+
+In these lines, various Langchain components are imported and a pipeline (`runnable`) is established to process user input and generate responses.
+
+---
+
+### **4. Integrating and Running the App** 🔄
+
+The setup integrates Streamlit, Vectara, and Langchain to create a seamless user experience.
+
+```python
+...
+if user_input := st.chat_input("Enter your issue:"):
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    knowledge_content = get_knowledge_content(vectara_client, user_input)
+    print("__________________ Start of knowledge content __________________")
+    print(knowledge_content)
+    response = runnable.invoke({"knowledge": knowledge_content, "issue": user_input})
+
+    response_words = response.split()
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        for word in response_words:
+            full_response += word + " "
+            time.sleep(0.05)
+            message_placeholder.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response)
+
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+# Run when the submit button is pressed
+if submit_button and uploaded_file:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmpfile:
+        tmpfile.write(uploaded_file.getvalue())
+        tmp_filename = tmpfile.name
+
+    try:
+        vectara_client.add_files([tmp_filename])
+        st.sidebar.success("PDF file successfully uploaded to Vectara!")
+    except Exception as e:
+        st.sidebar.error(f"An error occurred: {str(e)}")
+    finally:
+        os.remove(tmp_filename)
+```
+
+In this snippet, user input is captured through Streamlit's `st.chat_input`, Vectara is queried for relevant knowledge content, and Langchain processes the input to generate a response. Additionally, new documents are added to Vectara to enrich the knowledge base when a submit action occurs.
+
+---
+
+### Final Result: Grasping Your Law and Securing Legal Assistance
+
+
+Embarking on the venture of 'The Creation Of Vectara App In Legal Use Case' has been a remarkable journey. The culmination of this project has resulted in a platform that's not just technically sound but one that stands as a beacon of legal assistance for those in need. The Vectara App is designed to be a haven of legal knowledge, making legal understanding and help accessible to everyone.
+
+#### **1. A Visual Tour Through the Interface:**
+
+Our application exudes a user-centric design, ensuring that navigating through the multitude of legal information is a breeze. Each section is meticulously crafted to offer a seamless user experience.
+
+Upload your PDF and enter your keys and submit to proceed!
+
+<div align="center">
+
+[![Screenshot-2023-11-02-at-2-42-36-PM.png](https://i.postimg.cc/4dSW3JDS/Screenshot-2023-11-02-at-2-42-36-PM.png)](https://postimg.cc/LYjtCM6t)
+</div>
+
+#### **2. Legal Knowledge Base: Your Personal Legal Advisor**
+
+The core of the Vectara App lies in its robust legal knowledge base. Users can dive into a sea of legal information, understand laws, and find answers to their legal queries with just a few clicks.
+
+<div align="center">
+
+[![legal.png](https://i.postimg.cc/dtbtyrRq/legal.png)](https://postimg.cc/56mVcHkG)
+
+---
+
+## Conclusion
+
+
+The expedition of creating the Vectara App in a legal use case scenario has not only been an avenue of technical exploration but a venture into making legal help more accessible. Through this project, a platform has been constructed where legal understanding is not confined to the experts, but is available to all.
+
+The Vectara App stands as a testament to the power of blending legal expertise with cutting-edge technology. As you navigate through the app, the ease with which you can now understand and seek legal help is apparent. This project is a stride towards demystifying the legal realm and making legal assistance a part of the daily lives of individuals.
+
+As we wrap up, the potential for further enhancement and the impact that the Vectara App can create in the legal domain is colossal. The horizon is vast and inviting, promising a realm where legal assistance is not a hurdle but a companion in everyone's life.
+
+---
+
+### **Live Demo and Further Exploration**
+
+Experience the application firsthand and delve deeper into its mechanics.For a deeper dive into the code and underlying mechanisms, visit the project on Hugging Face:
+
+<div align="center">
+
+**[Try it on Hugging Face](https://huggingface.co/spaces/Sanchayt/Vectara)**
+
+
+
+---
