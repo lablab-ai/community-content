@@ -1,0 +1,704 @@
+---
+title: "Cohere Rerank Model: The Solution For Search AI Application"
+description: "Learn how to leverage Cohere Rerank and Generate to build an advanced resume shortlisting and candidate selection system."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/012Tutorial_image_template.png"
+authorUsername: "sanchayt743"
+---
+
+# Harnessing the Power of Cohere Rerank and Generate for Resume Shortlisting and Candidate Selection
+
+In this tutorial, I will guide you through the process of building an advanced system for resume shortlisting and candidate selection using Cohere's Rerank and Generate functionalities. By the end of this guide, you will have a fully functional tool to assist you in the recruitment process, backed by the power of Cohere.
+
+---
+
+## Introduction to Advanced Resume Shortlisting with Cohere
+
+Welcome to the exciting journey of transforming the way we shortlist resumes and select candidates! I'm Sanchay Thalnerkar, and I'll be your guide through this comprehensive tutorial. Today, we're tapping into the capabilities of Cohere, a platform that offers powerful natural language processing models.
+
+### 🎯 What Are We Building?
+
+We are creating a state-of-the-art system that goes beyond traditional keyword matching for resume shortlisting. This tool will understand the context, experience, and skills detailed in the resumes, ensuring that you select the most suitable candidates for your job openings.
+
+### 🛠️ Technologies and Tools Involved
+
+* **Streamlit**: A framework for creating web applications with ease.
+* **Cohere**: A platform that provides access to powerful language models.
+  * **Rerank**: To accurately rank resumes based on their relevance to the job description.
+  * **Generate**: To create detailed explanations for our selections.
+* **Pinecone**: A service for efficient vector search.
+* **Pandas**: A library for data manipulation and analysis.
+* **OpenAI**: For additional natural language processing capabilities.
+
+### 📜 Why Cohere and Not Just Vector Search?
+
+While vector search is a powerful tool for finding similar documents, it sometimes falls short when it comes to understanding the nuances of human language and context. Cohere fills this gap by offering advanced functionalities:
+
+* **Rerank**: It provides a deeper understanding of context and relevance, leading to more accurate rankings of resumes.
+* **Generate**: It enables us to produce detailed explanations for our choices, showcasing a level of understanding and reasoning akin to a human recruiter.
+
+---
+
+### Introduction to Cohere and Streamlit
+
+#### Cohere
+[Cohere](https://cohere.ai/) is a platform offering access to cutting-edge natural language processing (NLP) models. It enables developers to harness the power of large language models for various applications, including text generation, classification, and more. Cohere's models understand the context and semantics of text, allowing for more accurate and meaningful interactions with textual data.
+
+In this tutorial, we will focus on two specific functionalities of Cohere:
+
+* **Rerank**: This function allows us to re-rank a list of items based on their relevance to a particular query. In our case, we will use it to rank resumes based on their fit for a job description.
+* **Generate**: This function enables us to generate text based on a prompt. We will use it to create explanations for why a particular resume was ranked highly.
+
+#### Streamlit
+[Streamlit](https://streamlit.io/) is an open-source Python library for creating web applications with minimal effort. It's designed for data scientists and engineers who want to turn data scripts into shareable web apps. With Streamlit, you can create interactive dashboards and tools quickly, making it a perfect choice for our resume shortlisting tool.
+
+---
+
+
+### Step 1 : Setting Up the Environment
+
+Before we dive into building our resume shortlisting and candidate selection tool, we need to prepare our development environment. Follow these steps to ensure everything is set up correctly:
+
+1. **Install Python**: 
+   - Ensure Python is installed on your system. If not, you can download and install it from the [official Python website](https://www.python.org/).
+
+2. **Create a Virtual Environment (Optional)**: 
+   - It’s good practice to create a virtual environment to manage dependencies more efficiently and avoid potential conflicts.
+   - Run the following commands in your terminal:
+     ```bash
+     python -m venv myenv
+     source myenv/bin/activate  # On Windows, use `myenv\Scripts\activate`
+     ```
+
+3. **Install Required Packages**: 
+   - Now, install the necessary Python packages using pip. The packages required for this project include `streamlit`, `pandas`, `cohere`,`openai` and `pinecone`.
+   - Run the following command to install all the required packages:
+     ```bash
+     pip install streamlit pandas cohere pinecone openai
+     ```
+
+4. **Install Additional Dependencies**: 
+   - Depending on your system and the specifics of your project, you might need to install additional dependencies. Refer to the documentation of each package for guidance.
+
+Now that our environment is ready, we can start diving into the code and building our application!
+
+---
+
+### Step 2 :  Acquiring API Keys and Setting Up the Environment File:
+
+To securely store our API keys, we will create an environment file named `.env`. This file will store various configurations including the API keys required to interact with Cohere, Pinecone, and OpenAI.
+
+#### 2.1  Cohere API Key
+   - Visit the [Cohere’s Developer Portal](https://os.cohere.ai/signup) and sign up for an account.
+   - Once signed up, navigate to the API keys section.
+   - Create a new API key.
+   - Copy the API key securely as it will not be shown again.
+   - **Screenshot:** See the image below to locate the API key on the Cohere Developer Portal.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4bd80990-486b-4c0f-4c0e-ead3570e1900/full" alt="Paste the cohere api key" />
+
+
+#### 2.2 Pinecone API Key:
+   - Go to the [Pinecone website](https://www.pinecone.io/start/) and create an account or log in.
+   - After logging in, go to your dashboard, and create a new API key.
+   - Copy and securely store the API key.
+   - **Screenshot:** Check the image below to find where to get your Pinecone API key.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b1d7debd-c558-4f6e-b0ab-cf40bd2c1900/full" alt="Paste the Pinecone api key" />
+
+
+#### 2.3 OpenAI API Key:
+   - Visit [OpenAI’s website](https://platform.openai.com/signup) and sign up for an account or log in.
+   - Navigate to the API keys section in your account settings and generate a new API key.
+   - Securely copy the generated API key.
+   - **Screenshot:** The image below shows where to obtain your OpenAI API key.
+
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/80bbf8b0-7688-428a-7609-27ce755ad100/full" alt="Input the Openai api key" />
+
+
+
+### 2.4 Creating the .env File:
+
+Now that you have obtained the API keys and decided on your Pinecone environment, let’s create a `.env` file in the root of your project directory:
+
+```bash
+touch .env
+```
+
+Open the `.env` file in your preferred text editor, and add the following lines:
+
+```ini
+PINECONE_API_KEY=YOUR_PINECONE_API_KEY
+PINECONE_ENVIRONMENT=YOUR_PINECONE_ENVIRONMENT
+COHERE_API_KEY=YOUR_COHERE_API_KEY
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+```
+
+Replace the placeholders with the actual values:
+- `YOUR_PINECONE_API_KEY`: The API key you obtained from Pinecone.
+- `YOUR_PINECONE_ENVIRONMENT`: The Pinecone environment you are using (e.g., 'us-west1-gcp').
+- `YOUR_COHERE_API_KEY`: The API key from Cohere.
+- `YOUR_OPENAI_API_KEY`: The API key from OpenAI.
+
+Save the `.env` file after entering the details.
+
+🛑 **Important**: Keep your API keys confidential. Never share your `.env` file or expose your API keys in your code or public repositories.
+
+---
+## Step 3: Setting Up the Project Structure
+
+Now that our environment is ready, and we have secured our API keys, it's time to set up the project structure. A clean and organized directory structure is crucial for the maintainability and scalability of your project.
+
+### 3.1 Directory Structure
+
+Our project will consist of the following files:
+
+```
+your-main-folder/
+│   main.py
+│   helpers.py
+│   .env
+```
+
+- `main.py`: This is the main file that will run the Streamlit app. It is responsible for the user interface and the interaction between the user and the app.
+  
+- `helpers.py`: This file contains helper functions and the core logic of our application. By separating the core logic from the main file, we ensure that our code is modular, easier to maintain, and more readable.
+  
+- `.env`: This file stores our environment variables, including the API keys for Pinecone, Cohere, and OpenAI. Keeping sensitive information like API keys in a separate environment file helps to secure our keys, and it also makes it easier to manage them.
+
+### 3.2 Why Two Python Files?
+
+You might wonder why we need to separate our code into two files. Here are some key reasons:
+
+1. **Modularity**: By keeping the core logic and helper functions in a separate file (`helper.py`), we make our code more modular. This means that different parts of our code have specific responsibilities, making the codebase easier to understand and manage.
+
+2. **Maintainability**: When we need to make changes or updates to the logic of our application, we can do so in `helpers.py` without touching the UI code in `main.py`. This separation makes our application more maintainable.
+
+3. **Readability**: Having a clear separation between the UI code and the logic makes our codebase more readable. Other developers (or even ourselves in the future) can quickly understand the structure and flow of the application, making it easier to work on.
+
+4. **Scalability**: As our application grows, we might need to add more features or make it more complex. Having a modular structure from the start makes it easier to scale our application.
+
+
+Now that we have a clear understanding of our project structure and the purpose of each file, let's dive into implementing the core functionality of our application. In the next section, we will start with setting up `helper.py`, where we will implement the functions needed for resume shortlisting and candidate selection.
+
+---
+
+### Step 4: Our helpers.py File
+
+In this `helpers.py` file, we have a collection of functions that serve various purposes, including initializing connections, generating data, and performing operations related to searching and ranking documents. This modular approach makes our code cleaner, easier to understand, and maintainable.
+
+### 4.1 Importing Libraries and Initialization**
+
+```python
+import random
+import time
+
+import faker
+import openai
+import pinecone
+import tqdm
+from datasets import Dataset
+
+fake = faker.Faker()
+index_name = "coherererank"
+dimension = 1536
+embed_model = "text-embedding-ada-002"
+```
+
+Here, we start by importing the necessary libraries that our helper functions depend on. We have the `random` and `time` libraries for generating random data and handling time-related tasks, respectively. 
+
+We are using `Faker` to generate fake data, which is incredibly useful when we want to simulate real-world data without using actual personal information. This is what we'll use to create our synthetic resumes.
+
+`openai`, `pinecone`, and `datasets` are libraries that allow us to interact with OpenAI's API, Pinecone's vector database, and handle datasets in an efficient manner.
+
+The `tqdm` library is used for showing progress bars, helping us visualize the progress of our operations, especially when dealing with large amounts of data.
+
+We then initialize some variables:
+- `fake`: An instance of `Faker` to generate fake data.
+- `index_name`, `dimension`, `embed_model`: Configuration variables for Pinecone and OpenAI.
+
+### 4.2 Initializing Pinecone
+
+```python
+def initialize_pinecone(api_key, env, index_name, dimension):
+    print("Initializing Pinecone...")
+    pinecone.init(api_key=api_key, environment=env)
+    if index_name not in pinecone.list_indexes():
+        print(f"Creating Pinecone index: {index_name}")
+        pinecone.create_index(index_name, dimension=dimension, metric="dotproduct")
+        while not pinecone.describe_index(index_name).status["ready"]:
+            print("Waiting for index to be ready...")
+            time.sleep(1)
+    index = pinecone.Index(index_name)
+    print("Pinecone initialized successfully!")
+    return index
+```
+
+In this function, we're setting up our connection to Pinecone, a vector database that helps us in storing and querying vectorized data. 
+
+- **First**, we print a message to let the user know that Pinecone is being initialized.
+- **Next**, we call `pinecone.init` to initialize the Pinecone environment with our API key and environment.
+- **Then**, we check if our desired index already exists. If not, we create it.
+- **After that**, we wait until the index is ready to be used.
+- **Finally**, we return the initialized index, ready to be used for inserting and querying data.
+
+This function encapsulates all the necessary steps to ensure that our connection to Pinecone is set up correctly and is ready to go.
+
+### 4.3 Generating Synthetic Resume
+
+```python
+def generate_resume():
+    print("Generating a synthetic resume...")
+    resume = {
+        "id": fake.uuid4(),
+        "text": f"{fake.name()}\n{fake.job()}\n{fake.company()}\n{fake.catch_phrase()}\nSkills: {', '.join(fake.words(ext_word_list=None, unique=True))}\nExperience: {fake.bs()} at {fake.company()} for {random.randint(1, 10)} years.",
+        "metadata": {
+            "experience": f"{random.randint(1, 10)} years",
+            "education": random.choice(["Bachelor's", "Master's", "PhD"]),
+        },
+    }
+    print("Synthetic resume generated successfully!")
+    return resume
+```
+
+This function is our data factory. It generates a synthetic resume with various fields filled with random, but plausible data. 
+
+- We start by printing a message to inform the user that a synthetic resume is being generated.
+- We then use the `Faker` library to fill in the different parts of the resume, such as name, job, company, and skills.
+- Additionally, we include some metadata, like years of experience and education level, to make our resume more realistic.
+- After the resume is generated, we inform the user that the process was successful, and return the resume.
+
+This function is crucial for testing our application, ensuring that even without access to a real dataset, we can simulate the behavior of our application and verify that everything is working as expected.
+
+
+### 4.4 Creating a Dataset
+
+```python
+def create_dataset(num_resumes=1000, chunk_size=800):
+    print("Creating dataset...")
+    synthetic_resumes = [generate_resume() for _ in range(num_resumes)]
+    data = []
+    for resume in synthetic_resumes:
+        resume_text = resume["text"]
+        text_chunks = [
+            resume_text[i : i + chunk_size]
+            for i in range(0, len(resume_text), chunk_size)
+        ]
+        for idx, chunk in enumerate(text_chunks):
+            chunk_id = f'{resume["id"]}-{idx}'
+            data_entry = {
+                "id": chunk_id,
+                "text": chunk,
+                "metadata": {
+                    "title": "Resume Chunk",
+                    "url": f"https://example.com/resume/{chunk_id}",
+                    "primary_category": "Resume",
+                    "published": "20231028",
+                    "updated": "20231028",
+                    "text": chunk,
+                },
+            }
+            data.append(data_entry)
+    dataset_dict = {
+        "id": [item["id"] for item in data],
+        "text": [item["text"] for item in data],
+        "metadata": [item["metadata"] for item in data],
+    }
+    formatted_dataset = Dataset.from_dict(dataset_dict)
+    print("Dataset created successfully!")
+    return formatted_dataset
+```
+
+In this function, we are focusing on creating a dataset of synthetic resumes. This is particularly useful for simulating a real-world scenario where you have a collection of resumes to work with.
+
+- **Beginning** with a print statement, we inform the user that the dataset creation process has started.
+- We then **generate a list of synthetic resumes** using the previously defined `generate_resume` function. The number of resumes generated depends on the `num_resumes` parameter.
+- After having our list of resumes, we **iterate through each resume** and **break the text into chunks** of size `chunk_size`. This is crucial for processing large text documents, ensuring that each piece of text is small enough to be handled efficiently.
+- As we chunk the text, we also **create a unique ID for each chunk** and **prepare the data entries** with their respective metadata.
+- All the data entries are collected into a list, which is then **converted into a dataset** using the `datasets` library.
+- Finally, we inform the user that the dataset has been created successfully and return the dataset.
+
+This function ensures that we have a manageable and well-structured dataset ready for further processing.
+
+### 4.5 Embedding Documents
+
+```python
+def embed(docs: list[str]) -> list[list[float]]:
+    print("Embedding documents...")
+    res = openai.Embedding.create(input=docs, engine=embed_model)
+    print("Documents embedded successfully!")
+    return [x["embedding"] for x in res["data"]]
+
+```
+
+This function is crucial for converting our text data into numerical vectors, which is a format that can be understood and processed by machine learning models.
+
+- We start by **informing the user** that the embedding process has started.
+- Using the `openai.Embedding.create` method, we **convert the list of text documents into embeddings**. The model used for embedding is specified by the `embed_model` variable.
+- Once the documents are embedded, we **extract the embeddings from the response** and return them.
+- A **success message** is printed to let the user know that the embedding process is complete.
+
+These embeddings are essential for comparing text documents based on their semantic meaning, which is a cornerstone of many natural language processing applications.
+
+### 4.6 Inserting Data to Pinecone
+
+```python
+def insert_to_pinecone(index, dataset, batch_size=100):
+    print("Inserting data to Pinecone...")
+
+    # Check if the Pinecone index is empty
+    index_stats = index.describe_index_stats()
+    if index_stats.total_vector_count > 0:
+        print("Pinecone index is not empty. No new data will be inserted.")
+        return
+
+    # Fetch existing vector IDs in the index
+    response = index.fetch(ids=dataset["id"])
+    existing_ids = set(response.get("id", []))
+
+    # Filter out the data that is already in the index
+    new_data = dataset.filter(lambda example: example["id"] not in existing_ids)
+
+    if len(new_data) == 0:
+        print("All data is already present in the Pinecone index.")
+        return
+
+    # Insert the new data in batches
+    for i in range(0, len(new_data), batch_size):
+        batch = new_data[i : i + batch_size]
+        embeds = embed(batch["text"])
+        to_upsert = list(zip(batch["id"], embeds, batch["metadata"]))
+        index.upsert(vectors=to_upsert)
+        print(
+            f"Batch {i // batch_size + 1}/{(len(new_data) - 1) // batch_size + 1} inserted."
+        )
+
+    print("New data inserted to Pinecone successfully!")
+```
+
+In this function, we are focused on inserting our dataset into the Pinecone index. 
+
+- We begin by **checking if the Pinecone index is empty**. If it's not, we inform the user and return early, as we don't want to insert duplicate data.
+- If the index is empty, we proceed to **insert the data in batches**. This is done to manage memory usage and ensure efficiency, especially when dealing with large datasets.
+- For each batch, we **convert the text documents to embeddings**, and then **insert them into the Pinecone index** along with their metadata.
+- After each batch is inserted, we **print a progress message** to keep the user informed.
+- Once all the data is inserted, we let the user know that the process is complete.
+
+By the end of this function, our Pinecone index is populated with the dataset, ready for querying.
+
+Certainly! Let's proceed with the explanation of the remaining functions in `helpers.py`.
+
+### 4.7 Fetching Documents from Pinecone
+
+```python
+def get_docs(index, query: str, top_k: int):
+    print("Fetching documents from Pinecone...")
+    xq = embed([query])[0]
+    res = index.query(xq, top_k=top_k, include_metadata=True)
+    docs = {x["metadata"]["text"]: i for i, x in enumerate(res["matches"])}
+    print("Documents fetched successfully!")
+    return docs
+```
+
+In this function, we are querying the Pinecone index to fetch documents that are most relevant to a given query.
+
+- We start with a print statement to inform the user that we are fetching documents from Pinecone.
+- Using the `embed` function, we convert the query string into an embedding.
+- We then perform a query on the Pinecone index to fetch the `top_k` most similar documents based on the dot product of their embeddings.
+- The results are stored in a dictionary, with the text of the document as the key and its original rank as the value.
+- Finally, we print a success message and return the dictionary of documents.
+
+This function is crucial for retrieving relevant information from our dataset based on user queries.
+
+### 4.8 Comparing Search and Rerank Results
+
+```python
+def compare(index, co, query, top_k=25, top_n=3):
+    # Get vec search results
+    docs = get_docs(index, query, top_k=top_k)
+    i2doc = {docs[doc]: doc for doc in docs.keys()}
+    
+    # Re-rank
+    rerank_docs = co.rerank(
+        query=query,
+        documents=list(docs.keys()),
+        top_n=top_n,
+        model="rerank-english-v2.0",
+    )
+    
+    comparison_data = []
+    # Compare order change
+    for i, doc in enumerate(rerank_docs):
+        rerank_i = docs[doc.document["text"]]
+        
+        comparison_data.append({
+            'Original Rank': i,
+            'Original Text': i2doc[i],
+            'Reranked Rank': rerank_i,
+            'Reranked Text': doc.document['text']
+        })
+    return comparison_data
+
+```
+
+This function is used to compare the results of a vector search in Pinecone with the results after applying Cohere’s reranking.
+
+- We start by fetching the top `top_k` documents from Pinecone using the `get_docs` function.
+- We then call Cohere's rerank function to rerank these documents based on the query. The number of documents to return after reranking is specified by `top_n`.
+- We store the results in a list of dictionaries, where each dictionary represents a document and contains information about its original rank, reranked position, and text content.
+- The comparison data is then returned.
+
+This function provides valuable insights into how reranking can improve the relevance of search results.
+
+### 4.9 : Evaluating Resumes
+
+```python
+def evaluate_resumes(index, co, query, top_k=10, rerank_top_n=5):
+    print("Evaluating resumes...")
+    docs = get_docs(index, query, top_k=top_k)
+    if not docs:
+        print("No documents found.")
+        return None, "No documents found."
+    doc_texts = list(docs.keys())
+    rerank_response = co.rerank(
+        query=query,
+        documents=doc_texts,
+        top_n=rerank_top_n,
+        model="rerank-english-v2.0",
+    )
+    rerank_docs = [result.document for result in rerank_response.results]
+    combined_resumes = "\n\n".join([doc["text"] for doc in rerank_docs])
+
+    prompt = f"""
+    You are an HR professional with extensive experience in evaluating resumes for various job roles.This is the task you have been assigned.
+    Task:
+    {query}
+    Based on the resumes provided below, your task is to select the top candidates and provide a detailed justification for each selection, highlighting their skills, experience, and overall fit for a general job role. Focus solely on the evaluation and selection process, and ensure your response is clear, concise, and directly related to the task at hand.
+
+    ---
+
+    Resumes:
+    {combined_resumes}
+
+    ---
+
+    Please provide your selections and detailed justifications below:
+    """
+    response = co.generate(prompt=prompt)
+    if response.generations:
+        print("Resumes evaluated successfully!")
+        return response.generations[0].text, None
+    else:
+        print("Failed to generate a response.")
+        return None, "Failed to generate a response."
+        return None, "Failed to generate a response."
+        return None, "Failed to generate a response."
+
+```
+
+This function is specifically tailored for evaluating resumes based on a given job query.
+
+- We start by fetching the top `top_k` resumes from Pinecone using the `get_docs` function.
+- If no documents are found, we print a message and return early.
+- Otherwise, we proceed to rerank the fetched resumes using Cohere’s reranking functionality. The number of resumes to consider after reranking is determined by `rerank_top_n`.
+- We concatenate the top resumes and create a prompt for Cohere’s language model, asking it to evaluate the resumes and provide detailed justifications for selecting the top candidates.
+- We call Cohere’s `generate` function to get the model’s response.
+- Finally, we return the generated text, which contains the evaluations and justifications.
+
+This function is a practical application of our setup, showcasing how one might use vector search and language models to automate the resume evaluation process.
+
+---
+
+### Step 5: Our main.py
+
+At the outset, the script imports various libraries and modules necessary for its operation. These include:
+
+1. **os:** A standard Python module for interacting with the operating system. In this script, it is used to retrieve environment variables.
+2. **cohere:** A library for interacting with Cohere's natural language processing API.
+3. **helpers:** A custom module presumably containing utility functions and classes for this specific application.
+4. **openai:** A library for interacting with OpenAI’s GPT models.
+5. **pandas as pd:** A powerful data manipulation library, with "pd" serving as a shorthand alias.
+6. **streamlit as st:** A library for creating web applications with minimal effort, with "st" serving as a shorthand alias.
+7. **dotenv:** A library for loading environment variables from a .env file.
+
+The environment variables are loaded right after the imports.
+
+```python
+import os
+import cohere
+import helpers
+import openai
+import pandas as pd
+import streamlit as st
+from dotenv import load_dotenv
+
+load_dotenv()
+```
+
+### 5.1 Function: initialize_apis
+
+Following the imports, a function named `initialize_apis` is defined. Its purpose is to initialize the necessary APIs for the application. Here’s a breakdown of its operation:
+
+1. It checks if the required API keys are already stored in Streamlit’s session state.
+2. If the keys are present, it sets the API key for OpenAI and initializes a Cohere client.
+3. It also initializes a Pinecone index by calling a helper function, ensuring that the application is ready to interact with Pinecone’s services.
+4. Finally, the function returns the Cohere client and the Pinecone index.
+
+```python
+def initialize_apis():
+    if "openai_api_key" in st.session_state and "cohere_api_key" in st.session_state:
+        openai.api_key = st.session_state["openai_api_key"]
+        co = cohere.Client(st.session_state["cohere_api_key"])
+        index = helpers.initialize_pinecone(
+            st.session_state["api_key"], st.session_state["env"], "coherererank", 1536
+        )
+        return co, index
+    return None, None
+```
+
+### 5.2 Streamlit Sidebar for API Key Input
+
+In the next segment, a Streamlit sidebar is created to facilitate user input for various API keys:
+
+1. **Pinecone API Key**: A text input field for the Pinecone API key, pre-filled with the value from the environment variable "PINECONE_API_KEY".
+2. **Pinecone Environment**: A text input for the Pinecone environment, pre-filled with the value from the environment variable "PINECONE_ENVIRONMENT".
+3. **OpenAI API Key**: A text input for the OpenAI API key, pre-filled with the value from the environment variable "OPENAI_API_KEY".
+4. **Cohere API Key**: A text input for the Cohere API key, pre-filled with the value from the environment variable "COHERE_API_KEY".
+
+There is also a "Submit API Keys" button that, when pressed, stores the inputted API keys in the Streamlit session state.
+
+```python
+with st.sidebar:
+    api_key = st.text_input("Enter Pinecone API key:", value=os.getenv("PINECONE_API_KEY", ""))
+    env = st.text_input("Enter Pinecone environment:", value=os.getenv("PINECONE_ENVIRONMENT", ""))
+    openai_api_key = st.text_input("Enter OpenAI API key:", value=os.getenv("OPENAI_API_KEY", ""))
+    cohere_api_key = st.text_input("Enter Cohere API key:", value=os.getenv("COHERE_API_KEY", ""))
+
+    if st.button("Submit API Keys"):
+        st.session_state["api_key"] = api_key
+        st.session_state["env"] = env
+        st.session_state["openai_api_key"] = openai_api_key
+        st.session_state["cohere_api_key"] = cohere_api_key
+```
+
+### 5.3 Main Application Flow
+
+Following the sidebar setup, the script checks if all the required API keys are present in the session state. If they are, it proceeds to initialize the APIs and then provides input fields for the user to enter a search query and specify the number of resumes to fetch and rerank.
+
+The "Search" button triggers the fetching and evaluating of resumes, which involves interacting with the Pinecone index and the Cohere API, using functions from the `helpers` module. The results, along with any comparison data, are then displayed to the user.
+
+```python
+if all(key in st.session_state for key in ["api_key", "env", "openai_api_key", "cohere_api_key"]):
+    co, index = initialize_apis()
+    if co and index:
+        query = st.text_input("Enter search query:")
+        top_k = st.number_input("Top K resumes to fetch:", min_value=1, max_value=50, value=10)
+        rerank_top_n = st.number_input("Top N resumes to rerank:", min_value=1, max_value=top_k, value=5)
+
+        if st.button("Search"):
+            if query:
+                with st.spinner("Fetching and evaluating resumes..."):
+                    dataset = helpers.create_dataset()
+                    helpers.insert_to_pinecone(index, dataset)
+                    evaluation, error = helpers.evaluate_resumes(
+                        index, co, query, top_k=top_k, rerank_top_n=rerank_top_n
+                    )
+                    comparison_data = helpers.compare(
+                        index, co, query, top_k=top_k, top_n=rerank_top_n
+                    )
+
+                if evaluation:
+                    st.markdown("### Evaluation:")
+                    st.markdown(evaluation)
+                    st.markdown("### Original vs Reranked Docs Comparison:")
+                    st.write("---")
+                    df_comparison = pd.DataFrame(comparison_data)
+                    st.table(df_comparison)
+                elif error:
+                    st.warning(error)
+            else:
+                st.warning("Please enter a query.")
+```
+---
+
+## Step 6 : Running Your Streamlit Application
+
+Once you've set up the environment and initiated the Streamlit application, you'll be greeted by the application's interactive user interface. Here's a step-by-step guide to navigate and effectively use this tool:
+
+### 6.1 Setting Up API Keys
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/44ac7198-6330-40c8-092b-1eee3629fd00/full" alt="Run streamlit" />
+
+
+
+#### Purpose:
+Before the application can search and rerank resumes, it needs to communicate with various services (like Pinecone, OpenAI, etc.). These API keys serve as unique identifiers that grant the app access to those services.
+
+#### Steps:
+- In the left panel, you will notice fields designated for different API keys:
+  - **Pinecone API Key**: This allows the app to interact with Pinecone, a vector database that powers search and recommendation features.
+  - **Pinecone Environment**: Specifies the environment within Pinecone your application will work in.
+  - **OpenAI API Key**: Used to access models from OpenAI, potentially for generating or processing textual content.
+  - **Cohere API Key**: Essential to tap into Cohere's natural language processing services.
+
+If these keys are already integrated into your environment variables, the fields will automatically be filled. If not, manually enter them. After inputting, press "Submit API Keys". This action ensures the application establishes connections with the respective platforms.
+
+### 6.2 Making a Query
+
+#### Purpose:
+This is the main action point. Here, you're indicating what kind of candidates you're looking for and how many resumes you'd like to evaluate.
+
+#### Steps:
+- **Enter Search Query**: Craft your question. For instance, "Who is the best graphic designer?" This informs the system about the type of profiles you're interested in.
+- **Top K Resumes to Fetch**: Dictate the volume of resumes you want to pull in initially. This might be a larger pool from which you'll subsequently narrow down.
+- **Top N Resumes to Rerank**: Out of the initially fetched resumes, decide how many should be closely analyzed and rearranged based on their relevance to your query.
+
+After setting your preferences, press "Search". The application will then communicate with the backend, process your request, and display results.
+
+### 6.3 Encountering Errors:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67903633-8122-43aa-44eb-cf9635904700/full" alt="Run the query" />
+
+#### Purpose:
+In the world of APIs and cloud-based applications, occasional hiccups are normal. This section prepares you for one such potential hiccup.
+
+#### Explanation:
+Sometimes, you might see a "ForbiddenException" error. This can arise due to:
+- Mismatches between API key projects.
+- Exceeding the permissible number of requests in a short span (rate limits).
+  
+**Note**: If this error pops up, stay calm! Simply retry by clicking "Search" again. Most errors of this nature are transient and resolve upon a second attempt.
+
+Certainly! Let's reframe the "Viewing Results" section to provide a clearer understanding and highlight the purpose and relevance of reranking.
+
+### 6.4 Viewing Results:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b58c02b9-5ca4-47f0-8672-2a8b08d19900/full" alt="Image Description" />
+
+
+Upon executing a search, the application presents you with a list of potential candidates. It's important to note that these aren't just any candidates, but a refined list based on your query and the algorithms at play. This process ensures a higher chance of finding a match that fits your requirements. 
+
+The table showcases a comparative view of "Original" vs. "Reranked" documents:
+
+**Original Rank**: This is the ranking of candidates as they were originally fetched. It gives an initial list based on a broad match to your query.
+
+**Original Text**: These are snippets or summaries from the original resumes, providing a glimpse of each candidate's background and experience.
+
+**Reranked Rank**: Post-processing, the application reranks the candidates based on their relevance to your query. This list is more tailored, taking into account nuances and specificities.
+
+**Reranked Text**: These snippets provide insights into why a candidate was reranked. It might highlight specific skills, experiences, or qualifications that make them a better fit for your query.
+
+For instance, in the given data, while "Stephanie Gibbs" was the top candidate in the original rank, the reranked list places "Elizabeth Mitchell" at the top, due to her experience with the Cortez Group and her expertise that seems more aligned with the query.
+
+By juxtaposing the original and reranked documents, the application empowers you to make informed decisions, offering transparency in how candidates are evaluated and presented to you.
+
+---
+
+
+## See the Working Prototype!
+
+You've successfully navigated through setting up and running your Streamlit application. If you want to see a working prototype of this application, head over to the Hugging Face link provided here: [Hugging Face Prototype](https://huggingface.co/spaces/Sanchayt/Cohere-Rerank). 
+
+Thank you for following along with this tutorial. I hope you found it informative and helpful. Happy coding!
+
+--- 
