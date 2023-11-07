@@ -84,7 +84,7 @@ hugs = Huggingface()
 openai = OpenAI()
 tru = Tru()
 
-# Load environment variables from ./streamlit/secrets.toml
+# Load environment variables from .streamlit/secrets.toml
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 os.environ["HUGGINGFACE_API_KEY"] = st.secrets["HUGGINGFACE_API_KEY"]
 ```
@@ -278,6 +278,8 @@ GPT-4 is the definitive winner 🥳
 We just managed to build a chatbot with contextual memory and integrated with a complete evaluation suite from TruLens. Thanks to TruLens Eval, we can continuously monitorize and improve the performance of any LLM application and compare different configurations and models.
 
 In summary, it is crucial to assess the downstream effects of specific chain configuration choices on response quality, cost, and latency during the development of LLM applications. This ensures optimal performance. Furthermore, TruLens and Langchain together form an effective combination for building reliable chatbots. Langchain efficiently manages the storage of context vital for LLM applications, while TruLens provides a comprehensive framework for monitoring and evaluating each iteration of the application.
+
+Last but not least, [you could easily deploy this app by uploading it to Github and connecting the repository to the Streamlit platform](https://lablab.ai/t/streamlit-deploy-tutorial).
 
 Thanks for following along! If you have any questions, don't hesitate to reach out to me on [LinkedIn](https://www.linkedin.com/in/thedeval/) or [Twitter](https://twitter.com/thedevalweb).
 
