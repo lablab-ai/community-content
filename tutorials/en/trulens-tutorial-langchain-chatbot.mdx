@@ -46,13 +46,13 @@ pip install streamlit langchain trulens-eval openai
 
 Streamlit simplifies the process of storing sensitive data by offering built-in file-based secrets management, ensuring secure storage and easy access to your application's API keys.
 
-Let's add our OpenAI API key and HuggingFace Access Token to Streamlit secrets. We do this by creating a ```.streamlit/secrets.toml``` file in our project directory:
+To incorporate our OpenAI API key and HuggingFace Access Token into Streamlit secrets, we'll proceed by creating a .streamlit/secrets.toml file within our project directory:
 
 ```bash
 touch ./streamlit/secrets.toml
 ```
 
-And then adding and replacing the following lines with your own keys:
+Next, you'll need to insert and substitute the following lines with your respective keys:
 
 ```toml
 OPENAI_API_KEY = "YOUR_API_KEY"
@@ -126,7 +126,7 @@ f_selfharm = Feedback(openai.moderation_selfharm, higher_is_better=False).on_out
 f_maliciousness = Feedback(openai.maliciousness_with_cot_reasons, higher_is_better=False).on_output()
 ```
 
-We can now instantiate <a href="https://www.trulens.org/trulens_eval/api/truchain/#trulens_eval.trulens_eval.tru_chain--langchain-instrumentation-and-monitoring" rel="nofollow">TruChain</a>, a wrapper that will track the output's of our LLM chain.
+We can now instantiate <a href="https://www.trulens.org/trulens_eval/api/truchain/#trulens_eval.trulens_eval.tru_chain--langchain-instrumentation-and-monitoring" rel="nofollow">TruChain</a>, a wrapper that will track the outputs of the LLM chain.
 
 ```python
 # TruLens Eval chain recorder
@@ -174,7 +174,7 @@ tru.run_dashboard()
 
 Here's the complete <a href="https://github.com/alhuissi/TruLens-LangChain-Chatbot/blob/main/chatbot.py" rel="nofollow">chatbot.py</a> file.
 
-Let's run our chatbot by entering the following command on your terminal:
+Let's run the chatbot by entering the following command on the terminal:
 
 ```bash
 streamlit run chatbot.py
@@ -190,7 +190,7 @@ And you can check TruLens' dashboard on ```http://192.168.0.7:8502/```
 
 ## 🧐 Evaluation and Improvement
 
-Now, with the Chatbot running on ```http://localhost:8501/```, let's test it's output with TruLens Eval. 
+Now that the Chatbot is running on http://localhost:8501/, let's assess its output using TruLens Eval.
 
 <Img src="https://iili.io/JB9CfPs.png" alt="Moderation Test" caption="Moderation Test" />
 
@@ -198,9 +198,9 @@ Now, with the Chatbot running on ```http://localhost:8501/```, let's test it's o
 
 <Img src="https://iili.io/JB9CKVn.png" alt="TruLens Eval Graphs" caption="TruLens Eval Graphs" />
 
-Not so bad! Let's see if we can improve them by modifying the initial prompt on the LLM chain.
+Not so bad! Let's see if we can obtain better performance by modifying the initial prompt on the LLM chain.
 
-Change your prompt template for this:
+Change your prompt template to something like this:
 
 ```python
 ...
@@ -217,7 +217,7 @@ prompt = PromptTemplate(
 ...
 ```
 
-And now let's try again talking with our new friend 😂.
+And now let's try talking again with our new friend 😂.
 
 <Img src="https://iili.io/JB9CBKG.png" alt="Moderation Test 2" caption="Moderation Test 2" />
 
@@ -227,7 +227,9 @@ Remember that the moderation scores are based on outputs, not inputs.
 
 Seems reasonable. The responses are considerably more toughtful and the scores are coherent with that. And the best of all, this therapy session cost me just about $0.001.
 
-Jokes aside, let's change the model "chatgpt-3.5-turbo" for another one more powerful, like "gpt-4", and see what happens. Inside your LLM definition, modify the model name like this:
+Jokes aside, let's change the model "chatgpt-3.5-turbo" for another one more powerful, like "gpt-4", and see what happens. 
+
+Inside your LLM definition, modify the model name like this:
 
 ```python
 # Build LLM chain
@@ -238,7 +240,7 @@ chain = LLMChain(llm=llm, prompt=prompt, memory=memory, verbose=True)
 ...
 ```
 
-You can also change your recorder's app_id so you can differentiate it in TruLen's result displays.
+You can also change your recorder's app_id so you can differentiate it in TruLen's results displays.
 
 ```python
 ...
@@ -251,7 +253,7 @@ chain_recorder = TruChain(
 
 <Img src="https://iili.io/JB9CAx9.png" alt="TruLens Results 3" caption="TruLens Results 3" />
 
-It's noticeably faster (and more expensive). Let's make one last test with an older model "gpt-3.5-turbo-0301". Like before, change the model name and app_id. Let's see what happens.
+It's noticeably faster (and more expensive). Let's make one last test with an older model like "gpt-3.5-turbo-0301". As we did before, change the model name and app_id. Let's see what happens.
 
 ```python
 # Build LLM chain
@@ -267,6 +269,8 @@ chain_recorder = TruChain(
 ```
 
 <Img src="https://iili.io/JB9C5iu.png" alt="TruLens Results 4" caption="TruLens Results 4" />
+
+GPT-4 is the definitive winner 🥳
 
 
 ## 🎁 Wrapping Up
