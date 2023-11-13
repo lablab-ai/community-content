@@ -1,0 +1,120 @@
+---
+title: How to get started with GPTConsole
+description: This page describes step by step process on how to get started with GPTConsole and use AI agents.
+authonname: Hari
+---
+
+## Quick Start: How to use GPTConsole
+
+#### Installation
+```bash
+yarn global add gpt-console
+```
+or 
+```bash
+npm i gpt-console -g
+```
+
+#### Usage
+Open any terminal and run the following command to use GPTConsole:
+
+```bash
+gpt-console
+```
+A console appears. Type your prompts and get answers. To begin, enter `login`.
+
+#### Initial CLI Screen
+[CLI Screen](https://freeimage.host/i/JC5y2R9)
+
+
+### Console
+- **Context-Aware**: Remembers past prompts for context-relevant answers. 
+- **URL Support**: Prompts with a single URL is supported
+- **Auto Clipboard**: Responses auto-copied to clipboard
+
+#### Commands and Multi-Line Features
+- Single 'esc' to clear text
+- Double 'esc' to exit
+- `.editor` for multi-line text/code
+
+### Agents
+- **Pixie**:  Generates sophisticated landing pages using ReactJS based on your prompts. [Watch Demo](https://www.youtube.com/watch?v=1hl9XgSpL4s)
+- **Bird**: Seamlessly manages your Twitter, engaging in Tweets and Replies. [Watch Demo](https://www.youtube.com/watch?v=rMWKRot600A)
+- **Chip**: Capable of answering any code-related questions in your stack. (Coming soon)
+
+
+
+### Pixie: The Auto Web Architect
+- **Purpose**: Define the goals
+- **Design**: Specify layout and elements
+
+To interact with Pixie:
+```
+gpt-console>pixie
+
+        How to use Pixie?:
+        pixie start "your business description"
+        pixie update "page update"
+```
+
+**Example 1**: Start building a landing page with a business description.
+
+    pixie start "Create a landing page for my AI startup AWESO.ME: Generates cool looking UI components with javascript"
+
+**Example 2**: Start building a documentation page with a prompt.
+
+    pixie start "Create a documentation page for my business yourwebsite.com"
+    
+**Example 3**: Update a pixie created landing page backgorund image.
+
+    pixie update "Change background image of header section"
+
+**Example 4**: Update a pixie created landing page messaging.
+
+    pixie update "Change messaging of features section"
+
+**Example 4**: Update a pixie created landing page design.
+
+    pixie update "Change header section design"
+
+**Example 5**: Create fresh from pixie created landing page.
+
+    pixie update "I really didn't like what you created; You suck"
+
+<small>Total you have 8 sections: header, features, blogs, teams, projects, pricing, testimonials, contact us.</small>
+
+
+### Bird: The Twitter Maestro
+- **Clarity**: Precise AI-driven prompts work best
+- **Context**: Utilize natural language processing to optimize engagement
+
+To interact with Bird:
+```
+gpt-console>bird
+
+        How to use Bird?:
+        bird start
+        bird start "your requirement prompt"
+        bird stop
+```
+**Example 1**:  Start tweeting with a custom prompt.
+
+    bird start "tweet 5 times about my new AI tool, GPTConsole"
+
+**Example 2**:  Start tweeting with a custom prompt with URL.
+
+    bird start "tweet 5 times about the article at example.com/fewguys_did_somethig_cool"
+
+**Example 3**:  Start replying with a custom prompt.
+
+    bird start "perform 5 replies on my account, selecting the most interesting tweets"
+
+**Example 3**:  Stop the Bird agent.
+
+    bird stop
+  
+**Example 4**:  Start the Bird in autonomous mode for automated tweets and replies
+
+    bird start
+
+Ensure AI agents align with ethical and legal standards.
