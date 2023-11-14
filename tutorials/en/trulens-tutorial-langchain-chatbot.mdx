@@ -1,7 +1,7 @@
 ---
 title: "Evaluate and Improve your Chatbots with TruLens"
 description: "A guide on how to evaluate and track LLM Applications"
-image: ""
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/truelenschatbot.png"
 authorUsername: "alfredo_lhuissier73"
 ---
 
@@ -21,10 +21,10 @@ to closely monitor diverse usage metrics and metadata, offering valuable insight
 
 ### Requisites
 
-- <a href="https://www.python.org/downloads/release/python-3100/" rel="nofollow">Python 3.10+</a>
-- <a href="https://docs.conda.io/projects/conda/en/stable/" rel="nofollow">Conda</a> (recommended)
-- <a href="https://platform.openai.com/account/api-keys" rel="nofollow">OpenAI API Key</a>
-- <a href="https://huggingface.co/settings/tokens" rel="nofollow">HuggingFace API Key</a>
+- [Python 3.10+](https://www.python.org/downloads/release/python-3100/)
+- [Conda](https://docs.conda.io/projects/conda/en/stable/) (recommended)
+- [OpenAI API Key](https://platform.openai.com/account/api-keys)
+- [HuggingFace API Key](https://huggingface.co/settings/tokens)
 
 ## ⚙️ Setting Up
 
@@ -182,21 +182,21 @@ streamlit run chatbot.py
 
 A new tab should open automatically on your browser with URL ```http://localhost:8501/```
 
-<Img src="https://iili.io/JB9C2tt.png" alt="Contextual Chatbot" caption="Contextual Chatbot" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9836eb12-4dac-441d-f4f7-61d081151d00/full" alt="Contextual Chatbot" caption="Contextual Chatbot" />
 
 And you can check TruLens' dashboard on ```http://192.168.0.7:8502/```
 
-<Img src="https://iili.io/JB9CnS4.png" alt="TruLens Dashboard" caption="TruLens Dashboard" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9680ef7f-e6f7-4374-d06b-41b3b046d700/full" alt="TruLens Dashboard" caption="TruLens Dashboard" />
 
 ## 🧐 Evaluation and Improvement
 
 Now that the Chatbot is running on http://localhost:8501/, let's assess its output using TruLens Eval.
 
-<Img src="https://iili.io/JB9CfPs.png" alt="Moderation Test" caption="Moderation Test" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c2ec3e03-6811-43de-cf66-b686c8c8f900/full" alt="Moderation Test" caption="Moderation Test" />
 
-<Img src="https://iili.io/JB9CClf.png" alt="TruLens Eval Results" caption="TruLens Eval Results" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/44250f62-4ef3-4ec6-eb55-16be2a1ea800/full" alt="TruLens Eval Results" caption="TruLens Eval Results" />
 
-<Img src="https://iili.io/JB9CKVn.png" alt="TruLens Eval Graphs" caption="TruLens Eval Graphs" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1115b029-d923-48d1-a558-0cdafeadff00/full" alt="TruLens Eval Graphs" caption="TruLens Eval Graphs" />
 
 Not so bad! Let's see if we can obtain better performance by modifying the initial prompt on the LLM chain.
 
@@ -219,11 +219,11 @@ prompt = PromptTemplate(
 
 And now let's try talking again with our new friend 😂.
 
-<Img src="https://iili.io/JB9CBKG.png" alt="Moderation Test 2" caption="Moderation Test 2" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e27be874-4859-430b-100f-8e4379ddc600/full" alt="Moderation Test 2" caption="Moderation Test 2" />
 
 Remember that the moderation scores are based on outputs, not inputs.
 
-<Img src="https://iili.io/JB9CxHl.png" alt="TruLens Results 2" caption="TruLens Results 2" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/214c10db-85b1-4205-9f3f-e1b8cedadb00/full" alt="TruLens Results 2" caption="TruLens Results 2" />
 
 Seems reasonable. The responses are considerably more toughtful and the scores are coherent with that. And the best of all, this therapy session cost me just about $0.001.
 
@@ -251,7 +251,7 @@ chain_recorder = TruChain(
 ...
 ```
 
-<Img src="https://iili.io/JB9CAx9.png" alt="TruLens Results 3" caption="TruLens Results 3" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8721e788-0dc9-42ba-cddb-db2345e8a100/full" alt="TruLens Results 3" caption="TruLens Results 3" />
 
 It's noticeably faster (and more expensive). Let's make one last test with an older model like "gpt-3.5-turbo-0301". As we did before, change the model name and app_id. Let's see what happens.
 
@@ -268,7 +268,7 @@ chain_recorder = TruChain(
 )
 ```
 
-<Img src="https://iili.io/JB9C5iu.png" alt="TruLens Results 4" caption="TruLens Results 4" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c8ac6cc-12b9-4e98-57ac-b1011a99ce00/full" alt="TruLens Results 4" caption="TruLens Results 4" />
 
 GPT-4 is the definitive winner 🥳
 
@@ -281,6 +281,4 @@ In summary, it is crucial to assess the downstream effects of specific chain con
 
 Last but not least, [you could easily deploy this app by uploading it to Github and connecting the repository to the Streamlit platform](https://lablab.ai/t/streamlit-deploy-tutorial).
 
-Thanks for following along! If you have any questions, don't hesitate to reach out to me on [LinkedIn](https://www.linkedin.com/in/thedeval/) or [Twitter](https://twitter.com/thedevalweb).
-
-And practice what you've learned in the [TruLens Hackaton](https://lablab.ai/event/trulens-hackathon)!
+Thanks for following along!
