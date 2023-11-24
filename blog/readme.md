@@ -8,7 +8,7 @@ In this guide you will learn how to publish blog postss on lablab.
 
 ## General information
 
-- [Check out our example blog posts page](https://github.com/lablab-ai/community-content/blob/main/blog/ai-in-business-how-use-ai-to-stay-ahead-of-the-competition.mdx)
+- [Check out our example blog posts page](https://github.com/lablab-ai/community-content/blob/main/blog/en/ai-in-business-how-use-ai-to-stay-ahead-of-the-competition.mdx)
 - Please **don’t** copy the content from other websites!
 - Please **don’t** use AI content generators to create the content for this page!
 - Make sure the blog post has a **clear structure**. Use a minimum of three H2 headings, including one for the introduction, another for the topic input, and the last one to summarize all previously discussed points. Additionally, use H3 subheadings for every significant point you cover.
@@ -37,3 +37,13 @@ Finally, visit our GitHub repo and add AI Blog posts here, get inspiration from 
 2. Create two pull requests:
    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
    - to `main` branch
+
+## Adding as sponsored content/Adding sponsored banner
+
+1. To add sponsor as author and link to the sponsor website add to the top of the file under the mandatory fields:
+   - **sponsor**: Sponsored by ...
+   - **sponsorUrl**: https://...
+
+Keep in mind still you have to add a valid authorUsername!
+
+2. To place a sponsor banner inside the post --> add `<SponsoredContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg"/>` somewhere in the post

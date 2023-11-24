@@ -1,0 +1,249 @@
+---
+title: "E-commerce chatbot build with Redis, Langchain and ChatGPT: a step-by-step tutorial"
+description: "In this tutorial, we will build an e-commerce chatbot that can query Amazon product embeddings using Redis, CHatGPT and generate responses with Langchain."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/ecomm-chatbot.png"
+authorUsername: "ezzcodeezzlife"
+---
+
+## Why use AI in your e-commerce business?
+
+In today's fast-paced digital world, e-commerce has become a significant part of our daily lives. With the vast number of products available online, it can be challenging for users to find the right product that suits their needs. To address this issue, we can use AI-powered chatbots to help users find the perfect product for their needs by leveraging natural language processing techniques.
+
+In this tutorial, we will walk you through the process of building an e-commerce chatbot that utilizes Amazon product embeddings, the [ChatGPT API](https://lablab.ai/tech/openai/chatgpt) (gpt-3.5-turbo) and [Langchain](https://github.com/hwchase17/langchain) to create a seamless and engaging user experience. Our chatbot will take user input, find relevant products from a dataset, and present the information in a friendly and detailed manner. This not only enhances the user experience but also makes the process of finding products much more enjoyable.
+
+## Let’s start!
+
+We will begin by loading and preprocessing the product data, followed by creating a Redis index and loading vectors into the index. Then, we will use Langchain to create an LLM chain and a prompt template for generating comma-separated product keywords based on the user input. Next, we will query the product embeddings in Redis using the generated keywords and retrieve the top results. Finally, we will present the retrieved products to the user in a nice and engaging way, allowing them to ask follow-up questions.
+
+By the end of this tutorial, you will have a better understanding of how to build an CLI based e-commerce chatbot that can query Amazon product embeddings and generate user-friendly responses using Langchain. This will not only help improve the overall user experience in the e-commerce space but also pave the way for more advanced and personalized chatbot solutions in the future. So, let's get started and build our very own ecommerce chatbot!
+
+Here is a quick example of how a conversation with our chatbot might look like:
+
+```
+User: im looking for some jewelry for my girlfriend
+Bot: Based on your query, I would recommend checking out these Women's Engravable 14k Gold Plated 925 Sterling Silver Polished Disc Charm on 18" Chain Pendant Necklace. They might make a great gift for your girlfriend if she likes elegant and stylish jewelry. However, if you are looking for shoes, you might want to check out Amazon Brand - The Fix Women's Lizzie Block Heel Ruffled Sandal Heeled, Dove Suede, 9 B US. These shoes are great for spring and summer, and perfect for a date night or a fancy event. Another option for shoes could be Amazon Brand - The Fix Women's Giana Open Toe Bootie with Pearl Buckle, which comes in bright white leather and sizes up to 9.5 B US. I hope this helps!
+User: tell me more about the necklace
+Bot: The Women's Engravable 14k Gold Plated 925 Sterling Silver Polished Disc Charm on 18" Chain Pendant Necklace is a beautiful and elegant piece of jewelry. The pendant is made of 925 sterling silver and is plated with 14k gold for a luxurious look. The pendant is disc-shaped and can be engraved with a personal message or initials to make it even more special. The chain is 18 inches long and adds a delicate touch to the necklace. This necklace is perfect for everyday wear or for special occasions.
+User: what's the product id
+Bot: The product ID for the Women's Engravable 14k Gold Plated 925 Sterling Silver Polished Disc Charm on 18" Chain Pendant Necklace is B07CJCSYQF.
+```
+
+## Prerequisites
+
+### Get the dataset CSV file
+
+Get the dataset CSV file from [here](https://drive.google.com/file/d/1tHWB6u3yQCuAgOYc-DxtZ8Mru3uV5_lj/view?usp=sharing).
+
+### Install the required Python packages
+
+Before we start, make sure you have the following Python packages installed:
+
+- `redis`
+- `pandas`
+- `sentence-transformers`
+- `openai`
+- `langchain`
+
+You can install them using the following commands:
+
+```python
+pip install redis pandas
+pip install -U sentence-transformers
+pip install openai
+pip install langchain
+```
+
+## Loading and Preprocessing the Data
+
+First, we need to load the product data from a CSV file and truncate long text fields. We will use the first 1000 products with non-empty item keywords for our chatbot.
+
+```python
+import numpy as np
+import pandas as pd
+import time
+from redis.commands.search.field import VectorField
+from redis.commands.search.field import TextField
+from redis.commands.search.field import TagField
+from redis.commands.search.query import Query
+import redis
+```
+
+```python
+MAX_TEXT_LENGTH=512
+NUMBER_PRODUCTS=1000
+
+def auto_truncate(val):
+    return val[:MAX_TEXT_LENGTH]
+
+#Load Product data and truncate long text fields
+all_prods_df = pd.read_csv("product_data.csv", converters={'bullet_point': auto_truncate,'item_keywords':auto_truncate,'item_name':auto_truncate})
+all_prods_df['primary_key'] = all_prods_df['item_id'] + '-' + all_prods_df['domain_name']
+all_prods_df['item_keywords'].replace('', np.nan, inplace=True)
+all_prods_df.dropna(subset=['item_keywords'], inplace=True)
+all_prods_df.reset_index(drop=True,inplace=True)
+
+#get the first 1000 products with non-empty item keywords
+product_metadata = all_prods_df.head(NUMBER_PRODUCTS).to_dict(orient='index')
+
+all_prods_df.head()
+```
+
+### Creating the Redis Index and Loading Vectors
+
+Now, we will create a function to load vectors into the Redis index and a function to create a flat index. We will use these functions later to index our product data.
+
+```python
+def load_vectors(client, product_metadata, vector_dict, vector_field_name):
+    p = client.pipeline(transaction=False)
+    for index in product_metadata.keys():    
+        #hash key
+        key='product:'+ str(index)+ ':' + product_metadata[index]['primary_key']
+        
+        #hash values
+        item_metadata = product_metadata[index]
+        item_keywords_vector = vector_dict[index].astype(np.float32).tobytes()
+        item_metadata[vector_field_name]=item_keywords_vector
+        
+        # HSET
+        p.hset(key,mapping=item_metadata)
+            
+    p.execute()
+
+def create_flat_index (redis_conn,vector_field_name,number_of_vectors, vector_dimensions=512, distance_metric='L2'):
+    redis_conn.ft().create_index([
+        VectorField(vector_field_name, "FLAT", {"TYPE": "FLOAT32", "DIM": vector_dimensions, "DISTANCE_METRIC": distance_metric, "INITIAL_CAP": number_of_vectors, "BLOCK_SIZE":number_of_vectors }),
+        TagField("product_type"),
+        TextField("item_name"),
+        TextField("item_keywords"),
+        TagField("country")        
+    ]) 
+```
+
+### Connect to our Redis DB
+
+Next, we will create the Redis connection and load the vectors into the Redis index.
+
+```python
+ITEM_KEYWORD_EMBEDDING_FIELD='item_keyword_vector'
+TEXT_EMBEDDING_DIMENSION=768
+NUMBER_PRODUCTS=1000
+
+print ('Loading and Indexing + ' +  str(NUMBER_PRODUCTS) + ' products')
+
+#flush all data
+redis_conn.flushall()
+
+#create flat index & load vectors
+create_flat_index(redis_conn, ITEM_KEYWORD_EMBEDDING_FIELD,NUMBER_PRODUCTS,TEXT_EMBEDDING_DIMENSION,'COSINE')
+load_vectors(redis_conn,product_metadata,item_keywords_vectors,ITEM_KEYWORD_EMBEDDING_FIELD)
+     
+```
+
+## Creating the Chatbot
+
+We will use the ChatGPT API (gpt-3.5-turbo) in combination with Langchain to create a response to our questions. If you want to dive deep and learn more about how to integrate the [ChatGPT API](https://lablab.ai/t/chatgpt-tutorial-how-to-integrate-chatgpt-and-whisper-api-into-your-project) to your other projects, we have dedicated tutorials for this.
+
+### Go from user input string to product keywords
+
+We will use Langchain to create an LLM chain for our chatbot. First, we will create a prompt template to generate comma-separated product keywords from the user input.
+
+```python
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+
+llm = OpenAI(model_name="gpt-3.5-turbo", temperature=0.3, openai_api_key="sk-9xxxxxxxxxx4")
+prompt = PromptTemplate(
+    input_variables=["product_description"],
+    template="Create comma seperated product keywords to perform a query on a amazon dataset for this user input: {product_description}",
+)
+
+from langchain.chains import LLMChain
+chain = LLMChain(llm=llm, prompt=prompt)
+```
+
+Now, let's use our chain.
+
+```python
+userinput = input("Hey im a E-commerce Chatbot, how can i help you today? ")
+print("User:", userinput)
+# Run the chain only specifying the input variable.
+keywords = chain.run(userinput)
+```
+### Query our data
+
+We will then use the generated keywords to query the product embeddings in Redis and retrieve the top 3 results.
+
+```python
+topK = 3
+# Vectorize the query
+query_vector = model.encode(keywords).astype(np.float32).tobytes()
+
+# Prepare the query
+q = Query(f'*=>[KNN {topK} @{ITEM_KEYWORD_EMBEDDING_FIELD} $vec_param AS vector_score]').sort_by('vector_score').paging(0, topK).return_fields('vector_score', 'item_name', 'item_id', 'item_keywords').dialect(2)
+params_dict = {"vec_param": query_vector}
+
+# Execute the query
+results = redis_conn.ft().search(q, query_params=params_dict)
+
+full_result_string = ''
+for product in results.docs:
+    full_result_string += product.item_name + ' ' + product.item_keywords + ' ' + product.item_id + "\n\n\n"
+```
+
+### Create the chatbot
+
+Finally, we will create another LLM chain to generate a nice response from the retrieved products and present it to the user. The user is also able to ask follow up questions. Note, that we added a memory to the chain to keep track of the chat history.
+
+```python
+from langchain.memory import ConversationBufferMemory
+
+template = """You are a chatbot. Be kind, detailed and nice. Present the given queried search result in a nice way as answer to the user input. dont ask questions back! just take the given context
+
+{chat_history}
+Human: {user_msg}
+Chatbot:"""
+
+prompt = PromptTemplate(
+    input_variables=["chat_history", "user_msg"],
+    template=template
+)
+memory = ConversationBufferMemory(memory_key="chat_history")
+llm_chain = LLMChain(
+    llm=OpenAI(model_name="gpt-3.5-turbo", temperature=0.8, openai_api_key="sk-9xxxxxxxxxxxxxxxxxxxx4"),
+    prompt=prompt,
+    verbose=False,
+    memory=memory,
+)
+
+answer = llm_chain.predict(user_msg=f"{full_result_string} ---\n\n {userinput}")
+print("Bot:", answer)
+time.sleep(0.5)
+
+while True:
+    follow_up = input("Anything else you want to ask about this topic?")
+    print("User:", follow_up)
+    answer = llm_chain.predict(
+        user_msg=follow_up
+    )
+    print("Bot:", answer)
+    time.sleep(0.5)
+```
+
+## Conclusion
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/New_Native_a_dreamlike_picture_of_a_robotclerk_selling_a_trinqu_579b7263-dc3e-4165-a008-801184b76a71.png" alt="conclusion banner" />
+
+In this tutorial, we have built an e-commerce chatbot that can query Amazon product embeddings using Redis and generate detailed and friendly responses with Langchain. We have demonstrated how to load and preprocess product data, create a Redis index, and load vectors into the index. We have also shown how to use Langchain to create an LLM chain for generating keywords and responses for user queries.
+
+By utilizing the power of product embeddings and language models, our chatbot can efficiently search for relevant product recommendations and present them in an engaging and informative manner. This approach can be further extended to include more products, handle complex queries, and even provide personalized recommendations by incorporating user preferences.
+
+We hope this tutorial has given you a good starting point for building your own e-commerce chatbot or implementing similar solutions in other domains. With the rapid advancements in AI technologies, there are endless possibilities for creating intelligent, engaging, and helpful chatbots that can improve user experience and drive business success.
+
+You can find the full source code for this tutorial [here on Github](https://github.com/lablab-ai/redis-langchain-ecommerce-chatbot)
+
+And if you want to give your new skills a spin and build an amazing app with cutting edge technology and assistance from our mentors, [join our AI Hackathons and build the future with AI](https://lablab.ai/event).
+
+**Thank you!** 
+If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t) - [Fabian Stehle](https://github.com/ezzcodeezzlife), Full Stack Developer at [New Native](https://newnative.ai/)
+
+

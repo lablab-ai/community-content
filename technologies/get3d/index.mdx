@@ -1,0 +1,137 @@
+---
+title: "GET3D"
+description: "GET3D is an innovative generative model developed by Nvidia, designed to synthesize high-quality 3D textured shapes directly from images."
+---
+
+# GET3D by Nvidia
+
+
+## **Introduction to GET3D: A Generative Model of High Quality 3D Textured Shapes**
+
+GET3D is a groundbreaking generative model designed by Nvidia. This technology synthesizes high-quality 3D textured shapes learned directly from images. It encompasses complex topologies and rich geometries, which can be directly consumed by 3D rendering engines.
+
+
+### **Basic Theoretical Information**
+
+The GET3D model comprises the following key components:
+
+1. **Generates 3D SDF & Texture Field**: Two latent codes are utilized to create a 3D SDF and a texture field.
+2. **Utilizes DMTet**: The model uses DMTet to extract a 3D surface mesh from the SDF and retrieve the texture field's colors.
+3. **Rasterization-Based Differentiable Renderer**: It helps obtain RGB images and silhouettes using adversarial losses.
+4. **End-to-End Trainable Model**: With two 2D discriminators, the model classifies whether the inputs are real or fake.
+
+
+## **Use Cases and Tips**
+
+GET3D is designed to generate a variety of textured 3D shapes, making it highly suitable for various industries.
+
+### **Use Cases**
+
+1. **Virtual World Modeling**: In sectors like gaming and VR, it generates textured meshes like cars, chairs, buildings, etc.
+2. **Unsupervised Material Generation**: Integrated with DIBR++, GET3D can produce view-dependent lighting effects.
+3. **Text-Guided Shape Generation**: Utilizing textual prompts, the model generates meaningful shapes.
+
+
+### **Tips**
+
+
+
+* **Diverse Shapes Generation**: Leverage GET3D for creating diverse shapes with complex topology and high-quality textures.
+* **Disentanglement**: GET3D efficiently disentangles geometry and texture, allowing unique control over shape creation.
+* **Latent Code Interpolation**: For smooth transitions between different shapes, use random walks in the latent space.
+
+## **How-To Set Up Guide with Code Samples**
+
+Setting up GET3D requires careful preparation. This guide provides a comprehensive overview of the necessary steps to prepare datasets, train the GET3D model, conduct inference, and evaluate the model's performance.
+
+
+### **Preparing Datasets**
+
+GET3D is trained using a synthetic dataset. Rendering scripts for ShapeNet are provided, and instructions for downloading the ShapeNet dataset and rendering it can be found in the accompanying README file.
+
+### **Training the Model**
+
+
+#### **1. Cloning the Repository and Acquiring Necessary Files**
+
+The necessary code and files can be obtained from GitLab by executing the following commands:
+
+```
+cd YOUR_CODE_PATH
+git clone git@github.com:nv-tlabs/GET3D.git
+cd GET3D; mkdir cache; cd cache
+wget https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/metrics/inception-2015-12-05.pkl
+```
+
+
+#### **2. Model Training**
+
+Training the model involves the following steps:
+
+
+* Setting the working directory and environment variables:
+
+```
+cd YOUR_CODE_PATH 
+export PYTHONPATH=$PWD:$PYTHONPATH
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+```
+
+
+* Training on the unified generator for cars, motorbikes, or chairs (improved generator details can be found in the Appendix):
+
+```
+python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
+python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=80 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
+
+python train_3d.py --outdir=PATH_TO_LOG --data=PATH_TO_RENDER_IMG --camera_path PATH_TO_RENDER_CAMERA --gpus=8 --batch=32 --gamma=400 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0
+```
+
+
+Three different commands can be used for training on different objects, and variations exist for training on separate generators, as described in the main figure of the paper.
+
+* Debugging the Model (Optional): \
+To debug the model, the number of GPUs can be reduced to 1 and the batch size to 4 using the flags `--gpus=1 --batch=4`.
+
+
+### **Inference**
+
+#### 1. Visualization on a Pretrained Model
+
+A pretrained model can be downloaded from the provided link for visualization. Inference can operate on a single GPU with 16 GB of memory:
+
+```
+python train_3d.py --outdir=save_inference_results/shapenet_car  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_car  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_chair  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_chair  --dmtet_scale 0.8  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+python train_3d.py --outdir=save_inference_results/shapenet_motorbike  --gpus=1 --batch=4 --gamma=40 --data_camera_mode shapenet_motorbike  --dmtet_scale 1.0  --use_shapenet_split 1  --one_3d_generator 1  --fp32 0 --inference_vis 1 --resume_pretrain MODEL_PATH
+
+```
+
+Additional options can be added to the inference command to generate mesh with textures (`--inference_to_generate_textured_mesh 1`) or to generate results with latent code interpolation (`--inference_save_interpolation 1`).
+
+
+### **Evaluation Metrics**
+
+#### 1. Computing FID
+
+To evaluate the model with the FID metric, add the option `--inference_compute_fid 1` to the inference command.
+
+
+#### 2. Computing COV & MMD Scores for LFD & CD
+
+First, generate 3D objects for evaluation by adding the option `--inference_generate_geo 1` to the inference command. Then, follow the instructions in the README to compute the metrics.
+
+
+## **Links for Useful Materials**
+
+
+* **Paper**:[ GET3D Paper](https://nv-tlabs.github.io/GET3D/assets/paper.pdf)
+* **Project Page**:[ Project Page](https://nv-tlabs.github.io/GET3D/)
+* **Nvidia Source Code License**:[ License](https://github.com/nv-tlabs/GET3D/blob/master/LICENSE.txt)
+* **Pretrained Model on Shapenet**:[ Download](https://drive.google.com/drive/folders/1oJ-FmyVYjIwBZKDAQ4N1EEcE9dJjumdW)
+* **Code Release**:[ Github Repository](https://github.com/nv-tlabs/GET3D)
+
+
+---
+
+The GET3D model by Nvidia opens up a new realm of possibilities in 3D shape generation. By understanding its theoretical underpinnings, real-world applications, and carefully following the setup guide, users can leverage this advanced tool for cutting-edge Point-E and 3D AI tasks. Visit the linked resources for more in-depth information and assistance.

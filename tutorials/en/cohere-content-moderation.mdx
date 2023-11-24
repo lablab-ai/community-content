@@ -1,0 +1,85 @@
+---
+title: "Cohere tutorial: How to use Cohere for content moderation"
+description: "Dive into our detailed guide on using the Cohere app for content moderation. Learn how to leverage this AI tool to create a safer, more inclusive digital environment."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fe5f762a-a66f-43ac-ad61-38fe51e91800/full"
+authorUsername: "ezzcodeezzlife"
+---
+
+## Why Choose the Cohere App for Your Application?
+
+User-generated content, such as posts and comments, can be a powerful tool for fostering engagement. However, it can also become a breeding ground for toxic, racist, and hateful sentiments. To combat this, we introduce the [Cohere app](https://lablab.ai/apps/tech/cohere), an AI-based tool that stands as a beacon of modern language model APIs.
+
+[Cohere](https://cohere.com/) operates by classifying user text into categories such as benign, toxic, hateful, or racist. This advanced feature allows you to maintain a healthy and respectful environment within your application by eliminating harmful content before it sees the light of day.
+
+In this comprehensive [Cohere tutorial](https://lablab.ai/t/tech/cohere), we will guide you on how to seamlessly integrate Cohere into your app, ensuring a safe and respectful space for your users.
+
+## Let's get started
+
+First we will head over to [Cohere](https://cohere.ai/) and create an account. After we have created an account we will get an API key. We will need this API key later in our app.
+
+Next, we can check out the [Cohere Playground](https://dashboard.cohere.ai/welcome/login?redirect_uri=%2Fplayground%2Fgenerate). It's great for testing your ideas and getting started with a project. You have a clean UI and can export your code in multiple languages. For this tutorial we will add a couple of examples in the Cohere Classify Playground like this:
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere-tut.JPG" />
+
+You can see that each example has a text and a label. The label can be toxic or benign. With these examples the model can better determine if a new text is toxic or not.
+
+Now you can already test the classification below the examples field with some input texts. You can see that the Cohere's model is already pretty good at classifying the text.
+
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/cohere-tut2.JPG" />
+
+That's already pretty cool! But how do we get this working in our [Cohere app](https://lablab.ai/apps/tech/cohere)? We can simply press the "Export code" button and choose the language we want to use. You can choose from Python, Nodejs, Go and additionally Curl and the Cohere CLI. For now we will use Pyhton.
+
+After export the code looks like this:
+
+```python 
+import cohere 
+from cohere.classify import Example 
+co = cohere.Client('{apiKey}') 
+response = co.classify( 
+  model='large', 
+  inputs=["My grandma has birthday today", "I want to kill santa claus"], 
+  examples=
+    [
+      Example("yo how are you", "benign"), 
+      Example("PUDGE MID!", "benign"), 
+      Example("I would buy this again", "benign"), 
+      Example("I think I saw it first", "benign"), 
+      Example("bring me a potion", "benign"), 
+      Example("The order is 5 days late", "benign"), 
+      Example("I will honestly kill you", "toxic"), 
+      Example("get rekt moron", "toxic"), 
+      Example("go to hell", "toxic"), 
+      Example("you are hot trash", "toxic")
+    ]
+) 
+print('The confidence levels of the labels are: {}'.format(response.classifications)) 
+```
+
+Make sure you have the Cohere client package installed. If not you can do this with the help 
+of pythons package manager PIP:
+
+```
+pip install cohere
+```
+
+You can dynamically change the `inputs` field to the content of your users. Note that you don't have to provide two or more inputs. You can also run it with only one input text.
+
+You can extract the prediction and the confidence from the response like this:
+
+```
+prediction = response.classifications[0].prediction # toxic
+confidence = response.classifications[0].confidence # 0.98
+```
+
+## Empowering Your App with Cohere API: A Toxic-Free Environment
+
+Through this detailed tutorial, we've journeyed together into the heart of the Cohere API, an advanced tool that is transforming the landscape of content moderation in applications.
+
+The Cohere Python client, a central focus of our tutorial, has showcased its prowess in transmitting user text inputs to Cohere for a thorough classification. This sophisticated feature equips you with the knowledge to discern the content that is suitable for your app, thereby fostering a respectful and inclusive user environment.
+
+Join our AI Hackathons to test your knowledge and build with assistance of our mentors AI based tools to change the world! Check the upcoming ones under the link [https://lablab.ai/event](https://lablab.ai/event)
+
+Check our [AI blog](https://lablab.ai/blog) stay up to date with the AI tools.
+
+**Thank you!** If you enjoyed this tutorial you can find more and continue reading [on our tutorial page](https://lablab.ai/t) - Fabian Stehle, Data Science Intern at [New Native](https://newnative.ai/)
+

@@ -1,0 +1,172 @@
+---
+title: "AutoGPT tutorial: How to set up AutoGPT"
+description: "A step by step guide on how to set up AutoGPT in your computer"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5637901d-25aa-4788-1908-84f56feb3700/full"
+authorUsername: "EmmanuelIriarte"
+---
+
+Hey Friends! Are you ready to dive into the fascinating world of AutoGPT and generative models? Well, hold onto something because we're about to embark on a journey to explore this cutting-edge technology. I promise that by the end of this tutorial, you'll be well-versed in setting up AutoGPT and understanding its relationship with generative models, no matter your field of expertise. If you want to know more about ways how to use [AutoGPT API](https://lablab.ai/tech/autogpt) for your business, we got you covered!
+
+## What is AutoGPT and how is it related to Generative Agents?
+
+So, what's the deal with AutoGPT? Simply put, it's an incredibly powerful AI model designed for various tasks like text generation, translation, and other wonders. It works its magic using a technique called Generative Pre-trained Transformer (GPT), which is a type of generative model. 
+
+Now, let's talk about generative models. They're AI models that can generate new data based on the patterns they've learned from existing data. Think of them as the master artists of the AI world, creating new, never-before-seen masterpieces.
+
+In a nutshell, AutoGPT and generative models are like PB&J - a match made in heaven. They work in harmony to bring forth the remarkable power of AI, enabling us to tackle a wide array of problems with ease.
+
+Setting up AutoGPT is much like assembling a jigsaw puzzle - you need to get all the pieces in the right place. First, you'll need to acquire a pre-trained GPT model, which you can do by browsing popular repositories like GitHub. Once you have the model, you can customize it according to your specific task by fine-tuning its parameters.
+
+And that's it, folks! You've now got a solid grasp of AutoGPT and its relationship with generative models. Welcome to the future of AI! Exciting times await, so go forth and conquer the world of artificial intelligence..
+ 
+
+## Prerequisites 
+
+Before starting with AutoGPT, you need to install:
+
+1. **Python**: Download from the official [Python website](https://www.python.org/downloads/). During installation, remember to check the box that adds Python to PATH.
+
+2. **Git** (Optional): Git is used for cloning the AutoGPT repository. To install Git, download it from its official [website](https://git-scm.com/downloads). If you prefer not to use Git, you can manually download the repository as a .zip file. (Refer to **Step 1 Option B** for this)
+
+## Installation Guide for AutoGPT
+
+### Step 1: Obtain the AutoGPT repository
+#### Option A: Cloning with Git (Recommended)
+For Git users, start by going to your Command Prompt (Windows) / Terminal (Mac/Linux). Navigate to the folder where you want to clone the AutoGPT repository. You can clone the repository by using the following git command:
+
+```bash
+git clone https://github.com/Significant-Gravitas/Auto-GPT.git
+```
+#### Option B: Download and extract the .zip file
+If you chose not to install Git, navigate to the [AutoGPT repository](https://github.com/Significant-Gravitas/Auto-GPT) on your web browser. Click on `Code` and then `Download ZIP`. Once the zip file is downloaded, extract it and place the contents into your preferred directory. 
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8d42cf8c-2bd5-49d9-0873-fe64d2885200/full" alt="github screenshot"/>
+
+`Note`: Download the latest [stable release] (https://github.com/Significant-Gravitas/AutoGPT/releases/latest) The master branch is under heavy development and may often be in a broken state.
+
+
+### Step 2: Navigate to the AutoGPT directory
+
+Navigate to the newly created AutoGPT directory with the following command:
+
+```bash
+cd Auto-GPT
+```
+
+### Step 3: Install the required packages
+
+AutoGPT requires several Python packages, including Transformers and Torch. Use the `requirements.txt` file in the AutoGPT directory to install these packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+If any permission-related errors occur, use the `--user` tag:
+
+```bash
+pip install -r requirements.txt --user
+```
+
+### Step 4. Give AutoGPT access to your API keys
+
+For AutoGPT to work it needs access to GPT-4 (GPT-3.5 can also work but will return less favorable results and has a higher tendency to hallucinate), to configure the settings for AutoGPT you need to set it up with your own API key 🔑, if you don’t have one you can get it from [Open AI´s website](https://platform.openai.com/account/api-keys) 🌐  For this you will need to create a new account (if you don´t have one already) and click “Create new secret key” 🔐
+ 
+You can then give a name to your key, something like AutoGPT and click create 🆕
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/30f977de-808f-4163-3937-2f53f64f0500/full"/>
+
+Remember to keep your key safely stored since you won’t be able to see it after this (you can always create a new one and change it in the configurations file)🤫
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/636052e5-f5a9-4d43-38eb-44db9a7b2100/full"/>
+
+
+
+### Step 5: Configure `env.template`
+
+The `env.template` primarily contains commented (inactive) lines. One of the active lines says `SMART LLM MODEL` followed by `Default: gpt-4.`. Change `gpt-4` to `gpt-3.5`, save the file and rename it to `.env`.
+
+### Step 6: Start AutoGPT
+
+Now, you can start AutoGPT using the command:
+
+```bash
+python -m autogpt
+```
+
+## Using Docker
+
+Preferring Docker? Here's how to prepare your environment:
+
+```bash
+docker build -t autogpt .
+```
+
+This command builds a Docker image. Once completed, run:
+
+```bash
+docker run -it --env-file=./.env -v $PWD/auto_gpt_workspace:/app/auto_gpt_workspace autogpt
+```
+
+If you've installed Docker Compose, use these commands:
+
+```bash
+docker-compose run --build --rm auto-gpt
+```
+Or
+
+```bash
+docker-compose run --build --rm auto-gpt --gpt3only --continuous
+```
+
+🎉 Now that the agent is running, you have to give it a name (or by default I will be named “Entrepreneur-GPT”), define the role of the AI 🤖 and the goals it wishes to accomplish one by one, and there you have it! 🚀
+ 
+## Give your Agent a voice
+
+Turns out that AutoGPT is full with surprises, one of the that it is even able to speak! Can you believe that? 🤔 So let´s see how can we set up this interesting feature.
+
+## Step 1: Get your API key from ElevenLabs
+
+Head to [ElevenLabs](https://lablab.ai/tech/elevenlabs) and create an Starters account for free, at the top right click in your profile image, then selet Profile👉🖼️
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f623a9c0-fae7-4fa0-64f7-9381266f9600/full" />
+
+Then locate your API key and copy it 🔍🔑
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ec7c8f1e-16ae-47f5-24f7-ac004a813e00/full" />
+
+### Step 2: Give acces to your Agent to its new found voice
+
+Open your .env file and replace "your-elevenlabs-api-key" with the API key you just copy and "your-voice-id-1" with wither the name of the voice you wish to use (e.g. "premade/adam"), you can find a list of the available voices in ElevenLabs' Speech Sythesis page 📝🔊
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fb5b641a-368c-4777-d856-80e5ee891c00/full"/>
+
+or you can use the ID of the voices intead, you can get the ID's from the list below📋
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8048d54-da5c-4d59-2ceb-d69b7717a500/full"/>
+
+you can find the values to be replaces in the following lines from your .env file👇📄
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/15f25f35-2c78-4213-147a-81e069f48400/full"/>
+
+## Step 3: Run the speak command
+
+The last step to hear your Agent speak, you just need to run the following command in your terminal
+
+```
+python -m autogpt --speak
+```
+
+
+But wait, we have one more surprise for you. What is better than an Agent that can remember things and also speak? Easy answer, one that can also generate images! 🤩 So with no more further ado, let's get to it.
+
+## How to give your Agent the ability to generate images
+
+## Step 1: Set your image provider
+The most straight forward option to set up is Dall-e, so go to your .env file and make sure that IMAGE_PROVIDER is set up to "dalle".
+You can also set the image size to different values, your options are 256, 512 and 1024. Just change the value of IMAGE_SIZE in your .env file. 📝
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/54700886-9900-4f43-ab84-3256076b9300/full"/>
+
+Finally, sit back and watch your AI buddy create some fantastic content. You're now an AutoGPT whisperer! 🐴
+
+So, there you have it! A swift and sweet tutorial for understanding AutoGPT and its relationship with generative models. Enjoy your newfound power and keep exploring! And I invite you to learn more about [AutoGPT app](https://lablab.ai/tech/autogpt) 🌟🎉
+
+And if you want to test your new skills and create an app based on AutoGPT, we invite you to the [AutoGPT Hackathon](https://lablab.ai/t/autogpt-tutorial-how-to-set-up-your-own-ai-bot-in-under-30-minutes)!

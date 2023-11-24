@@ -1,0 +1,387 @@
+---
+title: "GPT-4 tutorial: How to build a website with Bing chatbot"
+description: "A step by step guide how to create website with Bing’s built in GPT-4 chatbot and make changes to it afterwards"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f83b3fcc-431c-45ce-9fae-a9e199f31b00/full"
+authorUsername: "Marek"
+---
+
+## GPT-4 is out!
+
+Last week’s big news was the launch of GPT-4, which everyone in the AI tech community already knows. We even went through the GPT-4 Technical Report and [cherry picked](https://lablab.ai/blog/8-mind-blowing-things-you-might-have-missed-about-gpt-4) some of the facts you might have missed.
+
+But as only paid users can use GPT-4, also Microsoft [announced](https://techcrunch.com/2023/03/14/microsofts-new-bing-was-using-gpt-4-all-along/?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAJLH5_4ZY8HhH6eXrNUOtbQWEEJzJ83DLH6pyDgGACYdNQ76fnunb2OaK1J0_B-e5Tobu-pwPs613l64M589qHaGjBYF-jRmYOLTQvHXXo5IUAptKy19W9KXb9KW_hfocdMloxk82KQpiiX3wNpaWXAUYoU5EAES_x4NpzQNrk3u) that while playing with bing chatbot we’ve been using GPT-4 since its release. 
+
+But before we jump in, we would like to encourage you to take part in our AI Hackathon, where you can build with the released to the public API from OpenAI - Whisper and [ChatGPT API](https://lablab.ai/event/chatgpt-api-and-whisper-api-global-hackathon).
+
+So let’s use Bing's free GPT-4 powered Chatbot and use it to build us a website! 
+
+
+## Make a website with Bing Chatbot
+
+Ok, we want to check its capabilities and build something simple. Let’s go with a website with a panda’s image and some facts about these lovely animals - because who doesn’t love pandas?
+
+
+### First, I inserted my prompt:
+
+_Create an html skeleton with css responsive design and responsive menu that works on mobile as well. Without javascript, pure HTML & CSS._
+
+_!INCLUDED Page content!: Picture of panda eating bamboo and description of what is panda + 5 fun facts about pandas.._
+
+_Footer with 2023 copyrights._
+
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7829b764-7efa-40bb-3ef8-2835b56a5d00/full" alt="a screenshot of a conversation with bing chatbot" />
+
+
+So we got a pretty detailed code, see below:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Page</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background-color: #333;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            display:block
+        }
+        .menu a:hover {
+            background-color:#111
+        }
+        
+         @media (max-width :600px) {
+             .menu a{
+                 flex-basis :100%
+             }
+         }
+
+        
+         main{
+             max-width :800px ;
+             margin :auto ;
+             padding :20px ;
+         }
+
+         footer{
+             text-align:center ;
+             padding :20px ;
+         }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Panda Page</h1>
+</div>
+
+<nav class="menu">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<main>
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Grosser_Panda.JPG/1200px-Grosser_Panda.JPG" alt="Panda eating bamboo" style="width :100% ;">
+
+<h2>What is a Panda?</h2>
+
+<p>The giant panda, also known as the panda bear or simply the panda, is a bear native to south central China. It is characterised by large, black patches around its eyes, over the ears, and across its round body.</p>
+
+<h3>5 Fun Facts About Pandas:</h3>
+
+<ol>
+<li>A newborn panda is about the size of a stick of butter—about 1/900th the size of its mother—but can grow to up to 330 pounds as an adult.</li>
+<li>Pandas have been known to eat up to 60 pounds of bamboo per day.</li>
+<li>Pandas have sometimes been seen rolling down hills for fun.</li> 
+<li>In addition to bamboo pandas also eat small rodents and birds.</li> 
+<li>Giant pandas have lived on Earth for two to three million years.</li> 
+</ol>
+
+</main>
+
+
+<footer>&copy;2023 Panda Page </footer>
+
+
+</body>
+</html>
+
+```
+### Test the code
+
+Ok, let’s test it. 
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/58fdae58-5657-462e-7a53-09ffdd5a2d00/full" alt="a screenshot of a website created with bing chatbot" />
+
+Well, it’s not a masterpiece, but we have a working code, with all of the details requested in a few moments! Pretty impressive for a free tool.
+
+But can we push it further?
+
+
+### Adding new features to the website
+
+As Bing’s Chatbot already asked if we want something more, let’s go with it
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e64377e6-e933-49d5-b379-2594e684c400/full" alt="a screenshot of a conversation with bing chatbot" />
+
+
+Ok, I want some “about us” information, so let’s ask Bing Chat for it:
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/aa349d7c-21c7-4472-0eaf-dca2f2310700/full" alt="a screenshot of a conversation with bing chatbot" />
+
+So, what did you create for us, Bing chat?
+```html
+ <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Page</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background-color: #333;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            display:block
+        }
+        .menu a:hover {
+            background-color:#111
+        }
+        
+         @media (max-width :600px) {
+             .menu a{
+                 flex-basis :100%
+             }
+         }
+
+        
+         main{
+             max-width :800px ;
+             margin :auto ;
+             padding :20px ;
+         }
+
+         footer{
+             text-align:center ;
+             padding :20px ;
+         }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Panda Page</h1>
+</div>
+
+<nav class="menu">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<main>
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Grosser_Panda.JPG/1200px-Grosser_Panda.JPG" alt="Panda eating bamboo" style="width :100% ;">
+
+<h2>What is a Panda?</h2>
+
+<p>The giant panda, also known as the panda bear or simply the panda, is a bear native to south central China. It is characterised by large, black patches around its eyes, over the ears, and across its round body.</p>
+
+<h3>5 Fun Facts About Pandas:</h3>
+
+<ol>
+<li>A newborn panda is about the size of a stick of butter—about 1/900th the size of its mother—but can grow to up to 330 pounds as an adult.</li>
+<li>Pandas have been known to eat up to 60 pounds of bamboo per day.</li>
+<li>Pandas have sometimes been seen rolling down hills for fun.</li> 
+<li>In addition to bamboo pandas also eat small rodents and birds.</li> 
+<li>Giant pandas have lived on Earth for two to three million years.</li> 
+</ol>
+
+
+<h2 id="about">About Us:</h2>
+
+<p>We are a group of panda lovers who are passionate about sharing information and raising awareness about these amazing animals. We believe that through education and conservation efforts we can help ensure that pandas continue to thrive in their natural habitats for generations to come.</p>
+
+
+</main>
+
+
+<footer>&copy;2023 Panda Page </footer>
+
+
+</body>
+</html>
+```
+
+It is lovely that it added extra information and upon clicking the “about us” section we are redirected to the correct content.
+
+But let’s push it further!
+
+
+### Change design of the page with BingChat
+
+Ok, I want the background to be green, headings to be purple and use font Helvetica for everything. So…
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Page</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background-color: #333;
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            display:block
+        }
+        .menu a:hover {
+            background-color:#111
+        }
+        
+         @media (max-width :600px) {
+             .menu a{
+                 flex-basis :100%
+             }
+         }
+
+        
+         main{
+             max-width :800px ;
+             margin :auto ;
+             padding :20px ;
+         }
+
+         footer{
+             text-align:center ;
+             padding :20px ;
+         }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Panda Page</h1>
+</div>
+
+<nav class="menu">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<main>
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Grosser_Panda.JPG/1200px-Grosser_Panda.JPG" alt="Panda eating bamboo" style="width :100% ;">
+
+<h2>What is a Panda?</h2>
+
+<p>The giant panda, also known as the panda bear or simply the panda, is a bear native to south central China. It is characterised by large, black patches around its eyes, over the ears, and across its round body.</p>
+
+<h3>5 Fun Facts About Pandas:</h3>
+
+<ol>
+<li>A newborn panda is about the size of a stick of butter—about 1/900th the size of its mother—but can grow to up to 330 pounds as an adult.</li>
+<li>Pandas have been known to eat up to 60 pounds of bamboo per day.</li>
+<li>Pandas have sometimes been seen rolling down hills for fun.</li> 
+<li>In addition to bamboo pandas also eat small rodents and birds.</li> 
+<li>Giant pandas have lived on Earth for two to three million years.</li> 
+</ol>
+
+
+<h2 id="about">About Us:</h2>
+
+<p>We are a group of panda lovers who are passionate about sharing information and raising awareness about these amazing animals. We believe that through education and conservation efforts we can help ensure that pandas continue to thrive in their natural habitats for generations to come.</p>
+
+
+</main>
+
+
+<footer>&copy;2023 Panda Page </footer>
+
+
+</body>
+</html>
+
+```
+As you can see, the final result meets my requirements:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8fa06a7-4408-4b14-5b04-54a27fefae00/full" alt="a screenshot og a page created by bing chatbot" />
+
+## Is Bing's chatbot worth using for coding?
+
+As you can see in the tutorial above, it is. And you don’t need high coding skills to use it. Of course with more time spent you can make it look better and have more features but we wanted to give you a sneak peak into capabilities of a free tool.
+
+We already knew that you can [create a website with ChatGPT](https://lablab.ai/t/chatgpt-tutorial-how-to-create-a-website-with-chatgpt#creating-the-contact-section-as-a-form-we-wont-make-this-working-in-this-tutorial), now there's a tutorial on how you can do so with a free Bing chatbot.
+
+And if you want to grow with AI, create a prototype of an app, that will solve one of the world’s problems and even accelerate it in a [slingshot program](https://nextgrid.ai/ai-startup-accelerator/), we encourage you to join our [AI Hackathons](https://lablab.ai/event), the [lablab.ai community](https://discord.gg/lablab-ai-877056448956346408) and make the world a better place.
+
+Join our AI Hackathons.
+
+Shape the future with AI.
+
+Be part of lablab.ai

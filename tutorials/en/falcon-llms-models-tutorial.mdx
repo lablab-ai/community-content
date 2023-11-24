@@ -1,0 +1,270 @@
+---
+title: "Falcon LLMs: In-depth Tutorial."
+description: "Detailed tutorial on use cases, best practices and setting up Falcon LLMs."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5d48f8e5-398b-46ec-8c6c-6fe05892cd00/full"
+authorUsername: "abdibrokhim"
+---
+
+[Falcon](https://lablab.ai/tech/tiiuae/falcon-llm) Large Language Models (LLMs) are versatile and powerful tools in the field of Natural Language Processing (NLP), capable of excelling in a broad spectrum of tasks that helps advance applications and use cases to future-proof our world.
+
+Built on top of the massive English web dataset such as [RefinedWeb](https://huggingface.co/datasets/tiiuae/falcon-refinedweb) by [The Technology Innovation Institute (TII)](https://www.tii.ae/) - a leading global research center dedicated to pushing the frontiers of knowledge. 
+See the [paper on arXiv](https://arxiv.org/abs/2306.01116) for more details.
+
+[Falcon 40B](https://huggingface.co/tiiuae/falcon-40b) is **Falcon-7B's** big brother, the world’s top-ranked multilingual open-source AI model when launched. For two months following its launch, **Falcon 40B** ranked #1 on Hugging Face’s leaderboard for open source LLMs. Offered completely royalty-free with weights, **Falcon 40B** is revolutionary and helps democratize AI and make it a more inclusive technology.
+
+[Falcon 180B](https://huggingface.co/tiiuae/falcon-180B) is a super-powerful language model with 180 billion parameters, trained on 3.5 trillion tokens and up to 4,096 A100 40GB GPUs, using a 3D parallelism strategy (TP=8, PP=8, DP=64) combined with `ZeRO`. It's currently at the top of the Hugging Face Leaderboard for pre-trained Open LLMs and is available for both research and commercial use.
+
+**Falcon 180B** performs exceptionally well in various tasks like reasoning, coding, proficiency, and knowledge tests, even beating competitors like **Meta's LLaMA 2**. Moreover, it ranks just behind **OpenAI's GPT4**, and performs on par with **Google's PaLM2**, which powers Bard, despite being half the size of the model.
+
+*Quick Note: You will need at least `400GB of memory` to swiftly run inference with **Falcon 180B**.*
+
+
+## Falcon LLMs Use Cases
+
+Here is a more detailed breakdown of the various NLP tasks that `Falcon LLMs` can be employed for:
+
+- Text generation
+**Falcon LLMs** are proficient at generating coherent and contextually relevant text. This can be applied to tasks such as content generation, creative writing and more.
+
+- Summarization
+**Falcon LLMs** can effectively generate concise and coherent summaries of longer texts, making them invaluable for automated document summarization, news article summarization, and content abstraction.
+
+- Translation
+**Falcon LLMs** can be utilized for machine translation tasks, enabling the translation of text from one language to another. Fine-tuning the model on specific language pairs can enhance translation accuracy.
+
+- Question-Answering
+**Falcon LLMs** are adept at answering questions posed in natural language. By providing context and a question, They can generate relevant answers, making them suitable for chatbots, virtual assistants, FAQ systems and more.
+
+- Sentiment analysis
+**Falcon LLMs** can be fine-tuned to classify the sentiment of text, such as determining whether a given piece of text is positive, negative, or neutral. This is widely used in social media monitoring, product reviews analysis, and customer feedback analysis.
+
+- Information Retrieval
+**Falcon LLMs** can be used to develop intelligent search engines that understand user queries and retrieve relevant documents or information from large datasets.
+
+**Falcon LLMs** can be adapted and fine-tuned to excel in a wide array of NLP tasks, making them a valuable asset for businesses and researchers seeking to leverage the power of natural language understanding and generation in various applications. 
+The adaptability of these models allows for customization to specific tasks and datasets, leading to improved performance and tailored solutions.
+
+
+## Key Features of Falcon LLMs
+
+**Falcon** offers several key features that make it a prominent and valuable resource in the field of NLP.
+
+- Multiple Model Variants
+**Falcon** offers a range of model variants, including Falcon 180B, 40B, 7.5B, and 1.3B, each with different parameter sizes to cater to different use cases and computational resources.
+
+- High-Quality Datasets
+Falcon is trained on high-quality datasets, including the RefinedWeb dataset.
+
+- Multilingual Support
+**Falcon LLMs** supports multiple languages, including `English`, `German`, `Spanish`, `French`, `Italian`, `Portuguese`, `Polish`, `Dutch`, `Romanian`, `Czech`, and `Swedish`. This multilingual capability broadens its applicability across various language-specific NLP tasks.
+
+- Open-Source and Royalty-Free
+**Falcon LLMs** are open-source and offered royalty-free, making it accessible to a wide range of users and contributing to the democratization of AI technology.
+
+- Exceptional Performance
+**Falcon 180B** is at the top of the Hugging Face Leaderboard for pre-trained Open LLM. It excels in various tasks, rivaling even larger models like `GPT4` and `Google's PaLM2`.
+
+
+## Getting Started with Falcon LLMs
+
+<Img src="https://cdn.discordapp.com/attachments/1068094951537246310/1163821299873894491/newnative_guy_working_on_his_laptop_on_AI_project_a_bit_of_neon_caadac80-7a9c-4f83-97d1-fd4b943bdc34.png?ex=6540f80c&is=652e830c&hm=4e8ba1b57dd67934370d3d45c847cdfce6e7a15f972f70e7e2162707e3c431b4&" alt="Buid Apps with Falcon LLMs" caption="Get Started with Falcon LLMs"/>
+
+### Set-up Google Colab
+
+Go to [Google Colab](https://colab.research.google.com/) and create a new notebook.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c865160-edc9-4582-4886-5de6c2fce100/full" alt="Creating new notebook" caption="Creating new notebook"/>
+
+Rename it to something simple and clear, for ex: `Falcon-LLMs-Tutorial.`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c472f617-b0d7-4aeb-e396-c2c76f268c00/full" alt="Renaming notebook" caption="Renaming notebook"/>
+
+
+### Change Runtime Type
+
+Click `Runtime` in the menu bar and select `Change runtime type`. 
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6bcc2b58-b446-4e26-58c7-7f48804e4000/full" alt="Change runtime type" caption="Change runtime type"/>
+
+From there, select `T4 GPU` and click `Save`.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1c3aba32-0c93-4c21-8d99-a805b6dec700/full" alt="Change runtime type" caption="Change runtime type"/>
+
+
+
+### Install Hugging Face Transformers and Accelorate
+
+Let's install the `transformers` and `accelorate` library. 
+
+Add new `code cell`. Enter the following code and run it.
+
+```python
+!pip install transformers
+!pip install accelorate
+```
+
+Click `Run` button or `CMD/CTRL + Enter` to run the single `code cell`.
+
+Wait until the installation is complete.
+
+Perfect! Now you're ready to start with Falcon LLMs.
+
+
+### Let's give Falcon 7B a test!
+
+**Falcon 7B** was trained on 384 A100 40GB GPUs, using a 2D parallelism strategy (PP=2, DP=192) combined with ZeRO.
+
+We will use the transformers pipeline API to load the 7B model like this.
+
+Add new `code cell`. Copy/paste the following code and run it.
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import transformers
+import torch
+
+model = "tiiuae/falcon-7b"  # use "tiiuae/falcon-7b-instruct" for instruction model
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",  # To automatically distribute the model layers across various cards
+)
+```
+
+And then, you'd run text generation using code like the following:
+
+```python
+
+sequences = pipeline(
+   "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Giraftron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",  # try to be creative here
+    max_length=200,
+    do_sample=True,
+    top_k=10,
+    num_return_sequences=1,
+    eos_token_id=tokenizer.eos_token_id,
+)
+for seq in sequences:
+    print(f"Result: {seq['generated_text']}")
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+It takes around 3-4 minutes depending on your internet connection. If everything goes well, you may get something like the following:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0ccdae90-4562-47af-2b62-15743e48e100/full" alt="Generated result" caption="Generated result"/>
+
+
+### Falcon 40B - Falcon 7B's big brother
+
+**Falcon 40B** was trained on 384 A100 40GB GPUs, using a 3D parallelism strategy (TP=8, PP=4, DP=12) combined with ZeRO.
+
+Running the 40B model is challenging because of its size: it doesn't fit in a single A100 with 80 GB of RAM. Loading in 8-bit mode, it is possible to run in about 45 GB of RAM, which fits in an A6000 (48 GB) but not in the 40 GB version of the A100.
+Here is the same process for Falcon 40B, just change the model name to `tiiuae/falcon-40b`.
+
+Add new `code cell`. Copy/paste the following code and run it.
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import transformers
+import torch
+
+model = "tiiuae/falcon-40b"  # use "tiiuae/falcon-40b-instruct" for instruction model
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",  # To automatically distribute the model layers across various cards
+)
+sequences = pipeline(
+   "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Giraftron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",  # try to be creative here
+    max_length=200,
+    do_sample=True,
+    top_k=10,
+    num_return_sequences=1,
+    eos_token_id=tokenizer.eos_token_id,
+)
+for seq in sequences:
+    print(f"Result: {seq['generated_text']}")
+
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+If you face an error like `No space left on device`, you can try to run it on Google Colab Pro or Google Colab Pro+.
+
+Try Falcon 40B [here](https://huggingface.co/spaces/HuggingFaceH4/falcon-chat).
+
+
+### Falcon 180B - The larger sibling of Falcon 40B
+
+**Falcon 180B** was trained on up to 4,096 A100 40GB GPUs, using a 3D parallelism strategy (TP=8, PP=8, DP=64) combined with ZeRO.
+
+Add new `code cell`. Copy/paste the following code, change the model name to `tiiuae/falcon-180b` and run it again.
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import transformers
+import torch
+
+model = "tiiuae/falcon-180b"  # use "tiiuae/falcon-180b-chat" for chatbot model
+
+tokenizer = AutoTokenizer.from_pretrained(model)
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model,
+    tokenizer=tokenizer,
+    torch_dtype=torch.bfloat16,
+    trust_remote_code=True,
+    device_map="auto",  # To automatically distribute the model layers across various cards
+)
+sequences = pipeline(
+   "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Giraftron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",  # try to be creative here
+    max_length=200,
+    do_sample=True,
+    top_k=10,
+    num_return_sequences=1,
+    eos_token_id=tokenizer.eos_token_id,
+)
+for seq in sequences:
+    print(f"Result: {seq['generated_text']}")
+```
+
+Click `Run` or `CMD/CTRL + Enter`.
+
+If you face an error like `No space left on device`, you can try to run it on Google Colab Pro or Google Colab Pro+.
+
+
+## Falcon 180B Demo showcases
+
+<Img src="https://cdn.discordapp.com/attachments/1068094951537246310/1163820519301329046/newnative_showcase_how_AI_system_works_with_chat_window_inside__49b49189-d5af-4323-91d8-1a2930392545.png?ex=6540f752&is=652e8252&hm=f0211a8987aefebeca8ff40f40beb54d283586de548aff7eaf2afe686ac529a0&" alt="Falcon Showcase" caption="Falcon Showcases"/>
+
+You may also try Falcon 180B demo [here](https://huggingface.co/spaces/tiiuae/falcon-180b-demo). It opens experimental preview of the model in Hugging Face Spaces to showcase an early finetuning of Falcon 180B, to illustrate the impact (and limitations) of finetuning on a dataset of conversations and instructions.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f29c88c8-5a1f-408b-7baa-2c5951e85000/full" alt="Falcon 180B demo" caption="Falcon 180B demo"/>
+
+
+Falcon LLMs are available on Hugging Face Spaces:
+- [Falcon 7B](https://huggingface.co/tiiuae/falcon-7b).
+- [Falcon 7B instruct](https://huggingface.co/tiiuae/falcon-7b-instruct).
+- [Falcon 40B](https://huggingface.co/tiiuae/falcon-40b).
+- [Falcon 40B instruct](https://huggingface.co/tiiuae/falcon-40b-instruct).
+- [Falcon 40B Demo](https://huggingface.co/spaces/HuggingFaceH4/falcon-chat) experimental preview.
+- [Falcon 180B](https://huggingface.co/spaces/tiiuae/falcon-180b).
+- [Falcon 180B Chat](https://huggingface.co/spaces/tiiuae/falcon-180b-demo).
+- [Falcon 180B Demo](https://huggingface.co/spaces/tiiuae/falcon-180b-demo) experimental preview.
+
+
+## Conclusion
+
+In this tutorial, we have covered the basics of Falcon LLMs, including their use cases, key features, and how to get started with them. We have also demonstrated how to run inference with Falcon LLMs using the Hugging Face Transformers library.
+
+Thank you for following along with this tutorial.
