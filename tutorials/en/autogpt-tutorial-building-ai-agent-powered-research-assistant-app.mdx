@@ -1,0 +1,589 @@
+---
+title: "AutoGPT Tutorial: Building an AI Agent-Powered Research Assistant App"
+description: "Learn how to develop a research assistant app powered by AI agents. These agents can formulate step-by-step solutions and generate reports in text files."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/autogpt-tut-thumbnail.png"
+authorUsername: "septiannugraha"
+---
+
+## Diving into the World of AI Agents
+
+Artificial Intelligence (AI) agents are systems that perceive their environment and take actions to achieve specific goals. These agents can range from simple devices, such as a thermostat adjusting the temperature based on its surroundings, to complex systems like a self-driving car navigating through traffic. AI agents form the core of many modern technologies, including recommendation systems and voice assistants. In the context of this tutorial, we will equip an AI agent with additional tools and a specific model to fulfill its role as an AI research assistant.
+
+## What is AutoGPT
+
+[AutoGPT](https://lablab.ai/tech/autogpt) is an experimental open-source application that leverages the capabilities of the [GPT-4 language model](https://lablab.ai/tech/openai/gpt4). It's designed to autonomously achieve any goal set for it by chaining together GPT-4's "thoughts". This makes it one of the first examples of GPT-4 running fully autonomously, pushing the boundaries of what is possible with AI.
+
+AutoGPT comes with a variety of features, including internet access for searches and information gathering, long-term and short-term memory management, text generation using GPT-4, access to popular websites and platforms, and file storage and summarization with GPT-3.5. It also offers extensibility with plugins.
+
+Despite its capabilities, AutoGPT is not a polished application or product, but rather an experiment. It may not perform well in complex, real-world business scenarios, and it can be quite expensive to run due to the costs associated with using the GPT-4 language model. Therefore, it's important to set and monitor your API key limits with OpenAI.
+
+In the context of this tutorial, we will be using AutoGPT to build an AI research assistant. This assistant will be able to formulate step-by-step solutions and generate reports in text files, showcasing the potential of AutoGPT in practical applications. To dive deeper, feel free to check comprehensive [AutoGPT guide](https://lablab.ai/t/auto-gpt-tutorial-how-to-set-up-auto-gpt).
+
+Let's take a look on the technologies we will use in this tutorial:
+
+### An Overview of the LangChain
+
+[LangChain](https://lablab.ai/tech/langchain) is a Python library designed to assist in the development of applications that leverage the capabilities of large language models (LLMs). These models are transformative technologies that enable developers to build applications that were previously not possible. However, using these LLMs in isolation is often insufficient for creating a truly powerful app - the real power comes when you can combine them with other sources of computation or knowledge.
+
+LangChain provides a standard interface for LLMs and includes features for prompt management, prompt optimization, and common utilities for working with LLMs. It also supports sequences of calls, whether to an LLM or a different utility, through its Chains feature. Furthermore, LangChain offers functionalities for Data Augmented Generation, which involves specific types of chains that first interact with an external data source to fetch data for use in the generation step. You can discover more with [Langchain tutorials](https://lablab.ai/t/tech/langchain).
+
+In the context of this tutorial, we will primarily use LangChain as a wrapper for AutoGPT. As of the time of writing, there are no known SDKs or APIs that provide direct interaction with AutoGPT, making LangChain an invaluable tool for our purposes.
+
+### Introduction to Flask
+
+[Flask](https://flask.palletsprojects.com/en/2.3.x/quickstart/) is a lightweight web framework for Python. It's designed to be simple and easy to use, but it's also powerful enough to build complex web applications. With Flask, you can create routes to handle HTTP requests, render templates to display HTML, and use extensions to add functionality like user authentication and database integration.
+
+### Exploring the Basics of the ReactJS
+
+[ReactJS](https://react.dev/learn), often simply called React, is a popular JavaScript library for building user interfaces. Developed by Facebook, React allows developers to create reusable UI components and manage the state of their applications efficiently. React is known for its virtual DOM, which optimizes rendering and improves performance in web applications.
+
+___
+
+## Prerequisites
+
+- Basic knowledge of Python, preferably with web framework such as Flask
+- Basic knowledge of LangChain and/or AI Agents such as AutoGPT
+- Intermediate knowledge of Typescript and ReactJS for frontend development is a plus, but not necessary
+
+### Outlines
+
+1. Initializing the Environment
+2. Developing the Backend
+3. Developing the Frontend
+4. Testing the AI Research Assistant App
+
+## Getting Started
+
+### Initializing the Environment
+
+Before we start building our application, we need to set up our development environment. This involves creating a new project for both the backend and frontend, and installing the necessary dependencies.
+
+#### Backend Setup
+
+Our backend will be built using Flask, a lightweight web framework for Python. To start, create a new directory for your project and navigate into it:
+
+```bash
+mkdir autoresearch
+cd autoresearch
+```
+
+Next, create a new virtual environment. This keeps the dependencies required by different projects separate by creating isolated Python environments:
+
+```bash
+python3 -m venv env
+```
+
+Activate the virtual environment:
+
+```bash
+source env/bin/activate  # On Windows, use `env\Scripts\activate`
+```
+
+Now, install Flask and other necessary libraries:
+
+```bash
+pip install flask langchain python-dotenv google-search-results openai tiktoken faiss-cpu
+```
+
+Before we jump into building our AutoGPT agent with Flask, it's important to understand the libraries we'll be using. Each library has a crucial role to play in the overall functionality of the application. Let's go through them one by one:
+
+1. **Flask**: This is a lightweight and flexible Python web framework that provides the basic functionality needed to build web applications, such as routing, request and response handling, and template rendering.
+
+2. **LangChain**: LangChain is an AI-oriented tool that helps us build applications using the OpenAI GPT-3 model. It provides features like chat history management, tool management, and message formatting.
+
+3. **python-dotenv**: This library helps us manage application configuration in a `.env` file, which is then loaded into the environment when the application starts. This separation of configuration from code is especially important when your code is under version control.
+
+4. **google-search-results**: This Python client for the SerpApi lets us programmatically perform Google searches and retrieve the results. In this tutorial, we'll use it for a "search the web" functionality, but other search APIs or libraries could be used depending on the specific requirements of your application.
+
+5. **OpenAI**: This is the official Python client for the OpenAI API, which provides a convenient interface for us to interact with OpenAI's models, like GPT-3.
+
+6. **tiktoken**: Developed by OpenAI, tiktoken allows us to count how many tokens are in a text string without making an API call. This can be crucial for managing the cost of API calls, as OpenAI charges per token.
+
+7. **faiss-cpu**: FAISS (Facebook AI Similarity Search) is a library developed by Facebook AI Research (FAIR) for efficient similarity search and clustering of high-dimensional vectors. In our application, we use faiss-cpu to store and retrieve information used by the AI agents as "memory". It's particularly useful for tasks like nearest neighbor search in natural language processing.
+
+In the context of our AI application, here's how these libraries work together:
+
+- Flask serves as the backbone of our web application interface.
+- LangChain manages the interaction with the OpenAI model.
+- python-dotenv handles application configuration, like the OpenAI API key.
+- google-search-results provides our "search the web" functionality.
+- The OpenAI library is our conduit to the OpenAI API.
+- tiktoken helps manage usage of the OpenAI API by counting tokens in text strings.
+- faiss-cpu forms the "memory" of our AI agents, storing information and retrieving it efficiently.
+
+In the following sections of this tutorial, we'll dive deeper into how each of these libraries is used and how they contribute to the overall functionality of our AutoGPT agent. Stay tuned!
+
+#### Frontend Setup
+
+Our frontend will be built using ReactJS with TypeScript. To start, make sure you have Node.js and npm installed on your machine. You can download Node.js from [here](https://nodejs.org/en/download/) and npm is included in the installation.
+
+Next, install Create React App, a tool that sets up a modern web app by running one command:
+
+```bash
+npx create-react-app autoresearch-client --template typescript
+```
+
+Navigate into your new project directory:
+
+```bash
+cd autoresearch-client
+```
+
+Now, install the necessary libraries:
+
+```bash
+npm install axios
+npm install -D tailwindcss
+npx tailwindcss init
+```
+
+We're using `axios` for making HTTP requests and `tailwindcss` for styling purposes.
+
+Special for TailwindCSS, there are a few steps that we need to go through before we are set in this part. We should have a `tailwind.config.js` file once we initialize our `tailwindcss` setup in our project. Let's modify that file.
+
+```diff
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+--    content: [],
+++  content: [
+++    "./src/**/*.{js,jsx,ts,tsx}",
+++  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+Next, we need to add Tailwind directives to our CSS. Let's open our `./src/index.css` file and append the directives at the beginning of our files.
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+With these steps, your development environment should be ready. In the next sections, we'll start building our AI research assistant application.
+### Developing the Backend
+
+#### app.py 🐍
+
+Let's dive into the coding! Start by creating an `app.py` file, and then input the following code. We begin by importing the necessary dependencies. While it may seem like a lot of import statements for a single file, rest assured that these are all the imports we need for this project. Each one plays a crucial role in our application, and we'll go through each one as we progress through the tutorial.
+
+```python
+import os
+from flask import Flask, jsonify, request
+from langchain.utilities import SerpAPIWrapper
+from langchain.agents import Tool
+from langchain.tools.file_management.write import WriteFileTool
+from langchain.tools.file_management.read import ReadFileTool
+from langchain.vectorstores import FAISS
+from langchain.docstore import InMemoryDocstore
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.chat_models import ChatOpenAI, ChatAnthropic
+import faiss
+from agent import AutoGPT
+```
+This section imports all the necessary modules and packages for our Flask application. It includes Flask itself, several modules from the LangChain library, the Faiss library for efficient similarity search and clustering of dense vectors, and our custom AutoGPT agent. Note that we import AutoGPT from our own `agent` module, which is a slightly modified version of the one provided by the LangChain library.
+```python
+app = Flask(__name__)
+```
+This line creates a new Flask web server from the Flask class. `__name__` is a special variable in Python that is set to the name of the module in which it is used. Flask uses the location of the module passed here as a starting point when it needs to load associated resources such as template files.
+
+```python
+@app.route('/research', methods=['POST'])
+def do_research():
+    keyword = request.json.get('keyword', '')
+
+    search = SerpAPIWrapper()
+    tools = [
+        Tool(
+            name="search",
+            func=search.run,
+            description="useful for when you need to answer questions about current events. You should ask targeted questions",
+        ),
+        WriteFileTool(),
+        ReadFileTool(),
+    ]
+    # Define your embedding model
+    embeddings_model = OpenAIEmbeddings()
+    # Initialize the vectorstore as empty
+
+    embedding_size = 1536
+    index = faiss.IndexFlatL2(embedding_size)
+    vectorstore = FAISS(embeddings_model.embed_query, index, InMemoryDocstore({}), {})
+
+    agent = AutoGPT.from_llm_and_tools(
+    ai_name="AutoResearch",
+    ai_role="Assistant",
+    tools=tools,
+    llm=ChatOpenAI(temperature=0),
+    # llm=ChatAnthropic(temperature=0),
+    memory=vectorstore.as_retriever(),
+    )
+    # Set verbose to be true
+    agent.chain.verbose = True
+
+    result = agent.run([f"write a witty, humorous but concise report about {keyword}", f"save the report in the `report` directory"], limit=4)
+
+    return jsonify({'status':'success', 'result': result})
+```
+This section defines a route for your Flask application that listens for POST requests at the `/research` URL. When a POST request is received at this URL, the `do_research` function is called. Inside this function, you initialize your AI agent and use it to generate a report based on the keyword received in the request.
+
+```python
+@app.route('/reports', methods=['GET'])
+def list_reports():
+    reports = os.listdir('report')  # replace 'report' with the path to your report directory
+    return jsonify({'status': 'success', 'result': reports})
+```
+This section defines a route that listens for GET requests at the `/reports` URL. When a GET request is received at this URL, the `list_reports` function is called. This function lists all the report files in the specified directory.
+
+```python
+@app.route('/reports/<report_name>', methods=['GET'])
+def read_report(report_name):
+    report_path = os.path.join('report', report_name)  # replace 'report' with the path to your report directory
+    if os.path.exists(report_path):
+        with open(report_path, 'r') as file:
+            content = file.read()
+        return jsonify({'status':'success', 'result': content})
+    else:
+        return jsonify({'status':'failed', 'error': 'File not found'}), 404
+```
+This section defines a route that listens for GET requests at the `/reports/<report_name>` URL. When a GET request is received at this URL, the `read_report` function is called with the `report_name` parameter set to the value in the URL. This function reads the content of the specified report file and returns it.
+
+```python
+@app.route('/')
+def home():
+    return "Hello, World!"
+```
+This section defines a route that listens for GET requests at the root URL (`/`). When a GET request is received at this URL, the `home` function is called, which returns the string "Hello, World!".
+
+```python
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+This section checks if the script is being run directly (as opposed to being imported as a module) and, if so, starts the Flask development server. The `debug=True` argument enables debug mode, which causes the server to restart whenever it detects a change in your source files and provides detailed error pages.
+
+#### .env 🌏
+
+Next, let's create our `.env` file. Populate the file with the following variables and their respective values:
+
+```text
+SERPAPI_API_KEY=xxxxxxxxxxxxxxx
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxx
+```
+
+The `SERPAPI_API_KEY` is used to perform web searches using the SerpAPI service. The `OPENAI_API_KEY` is utilized for various purposes, including generating embeddings, running our AI agents, and counting used tokens with the `tiktoken` library. Remember to replace the 'x's with your actual API keys.
+#### agent.py 🕵️‍♀️
+
+We technically don't write this file on our own, but instead, we adapt it from the already excellent module provided by the LangChain library. If you've installed the library in a virtual environment, the path to the module should look like this:
+```bash
+env/lib/python3.8/site-packages/langchain/experimental/autonomous_agents/autogpt/agent.py
+```
+Please adjust it according to your own environment. Generally, it should start with `python[version]` and end with the `site-packages` directory. Once you've found the file, copy it to our project root, alongside the `app.py` file.
+
+Next, we will modify the file. Let's navigate to the `run()` function definition, and modify the function like so:
+```diff
+-- def run(self, goals: List[str]) -> str:
+++ def run(self, goals: List[str], limit) -> str:
+    user_input = (
+        "Determine which next command to use, "
+        "and respond using the format specified above:"
+    )
+    # Interaction Loop
+    loop_count = 0
+    while True:
+        # Discontinue if continuous limit is reached
+        loop_count += 1
+++         if limit & loop_count > limit:
+++             break
+...
+```
+While AutoGPT is a powerful tool, it is still in the experimental stage and can sometimes get stuck in a loop, repeating the same thought process without deciding how to complete the task. In this modified module, we set a limit for the agent, which will break the loop after a specified number of iterations, as determined by the backend that runs the agent. Once the loop is broken, the agent will decide that it has successfully carried out all the necessary steps.
+
+### Testing the Backend
+
+Once everything is set up, we can start our backend. Use the following command to run the Flask app:
+
+```bash
+flask run
+```
+
+If everything has been installed and configured correctly, your terminal should display the following output:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/82f7e06f-9206-4ef6-054b-1ecafb9edd00/full" alt="The running output, indicating that the app is running successfully" />
+
+Next, we'll test our endpoints, starting with `/research`, followed by `/reports`, and finally `/reports/<report-name>`. In this tutorial, I will use a REST API testing and documentation tool called [Insomnia](https://insomnia.rest), but feel free to use other tools such as [Postman](https://www.postman.com/), [Hoppscotch](https://hoppscotch.io/), or just plain old [cURL](https://curl.se/).
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d31c5b0a-1f00-4e74-9611-08089db1f700/full" alt='We make a request to /research endpoint, researching Black Swan movie' />
+
+Let's make a POST request to the `/research` endpoint, using "Black Swan movie" as the value for our "keyword" field in the payload. When you're ready, click the "Send" button or press Ctrl + Enter buttons.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0b94bbcd-c976-4eca-fa73-76c9e3805b00/full" alt="While we're waiting, we see that AutoGPT is forming the steps to complete" />
+
+Let's take a look at our terminal. We can see that AutoGPT is formulating its thought process and establishing the steps it needs to take to fulfill its goal, which is to research the "Black Swan movie" and write a witty, humorous, but concise report.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6d7bcfb7-a607-4b1b-b426-44a8bb5f2700/full" alt="The backend has finished the processes" />
+
+Approximately half a minute after the request is made, the backend should respond with "has completed all of its objectives.". However, you might wonder why we don't see the report in our response. That's because we instructed the AI agent to write the report in a file!
+
+Let's look at the report files generated by the AI agent! Let's make a GET request to the `/reports` endpoint.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b08f05c4-fc89-490a-9d98-d0d71e3e9200/full" alt="The reports generated by the AI agent" />
+
+Interestingly, it created a text file titled "black_swan_report.txt". But how do we view the content of the report? We can always browse our backend project and open the txt file, but where's the fun in that? Fortunately, we have created a handler for the `/reports/<report-name>` endpoint, which, as the name suggests, allows us to view the content of a report file based on its filename. So, let's try make a request to that endpoint!
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/87c7a85a-1832-429c-d3b7-83085385c200/full" alt="The response of the endpoint, showing the concise and witty report on The Black Swan movie." />
+
+The AI agent correctly deduced and wrote the synopsis of the Black Swan movie! However, let's take it up a notch. Let's ask it to research about "the FTX Scandal" which takes place post-2021, to showcase the capabilities of AI agent in retrieving informations beyond its model's training data.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/19bcc2a9-c8af-49ff-1a2a-c3250cb78400/full" alt="This time we try asking the backend to research on the FTX scandal" />
+
+Great! It also completes the request in around half a minute, which is quite impressive for a search-powered AI research assistant. However, it's worth noting that if you encounter an unusually long request, you should cancel the request and terminate the process. There are some hard-to-reproduce bugs such as when the AI agent couldn't find any command called "delegate", although it clearly thought of using delegation as one of its steps. Although as long as the requests take under one minute, all is good!
+
+Let's review the report written by the AI agent now! This time, it correctly mentioned the main problems underlying the FTX bankruptcy scandal. It also deftly summarized the scandal with both negative and positive impact of the scandal.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9840b666-7e1f-44db-16b6-0cf4e1db6200/full" alt="The AI agent report on FTX scandal" />
+
+Isn't that impressive? But what could be even more impressive? Of course, an AI research assistant with a user interface that makes it easier to switch between the different reports generated by the AI agent! Stay tuned for the next section where we will dive into creating the front-end of our application.
+
+### Developing the Frontend
+
+Next, we will build the frontend to capture the awesomeness of our AI research assistant, powered by AutoGPT.
+
+#### Research.tsx
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+```
+Here, we import the necessary dependencies. `React` is the library we're using to build our user interface. `useState` and `useEffect` are hooks provided by React that let us use state and other React features inside functional components. `axios` is a promise-based HTTP client for making requests.
+
+```jsx
+const Research: React.FC = () => {
+    const [keyword, setKeyword] = useState('');
+    const [reports, setReports] = useState<string[]>([]);
+    const [selectedReport, setSelectedReport] = useState('');
+    const [reportContent, setReportContent] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+```
+In this section, we declare our state variables using the `useState` hook. Each call to `useState` returns a pair: the current state value and a function that lets you update it. We're tracking the keyword input, the list of reports, the selected report, the content of the selected report, and a loading state.
+
+```jsx
+    const fetchReports = async () => {
+        setIsLoading(true);
+        const response = await axios.get('/reports');
+        setReports(response.data.result);
+        setIsLoading(false);
+    };
+```
+`fetchReports` is an asynchronous function that sets `isLoading` to true, makes a GET request to the `/reports` endpoint, updates the `reports` state with the response data, and finally sets `isLoading` back to false.
+
+```jsx
+    const fetchReportContent = async (reportName: string) => {
+        setIsLoading(true);
+        const response = await axios.get(`/reports/${reportName}`);
+        setReportContent(response.data.result);
+        setIsLoading(false);
+    };
+```
+`fetchReportContent` is similar to `fetchReports`, but it makes a GET request to the `/reports/<reportName>` endpoint and updates the `reportContent` state with the response data.
+
+```jsx
+    const handleKeywordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setKeyword(event.target.value);
+    };
+```
+`handleKeywordChange` is a handler function that updates the `keyword` state with the current value of the input field whenever it changes.
+
+```jsx
+    const handleReportClick = (reportName: string) => {
+        setSelectedReport(reportName);
+        fetchReportContent(reportName);
+    };
+```
+`handleReportClick` is a handler function that updates the `selectedReport` state and fetches the content of the clicked report.
+
+```jsx
+    const handleResearch = async () => {
+        setIsLoading(true);
+        await axios.post('/research', { keyword });
+        fetchReports();
+    };
+```
+`handleResearch` is an asynchronous function that sets `isLoading` to true, makes a POST request to the `/research` endpoint with the current keyword, and then fetches the updated list of reports.
+
+```jsx
+    useEffect(() => {
+        fetchReports();
+    }, []);
+```
+`useEffect` is a hook that runs side effects in functional components. In this case, it fetches the list of reports when the component mounts.
+
+The rest of the code is the JSX that defines the structure and appearance of the component. It includes an input field for the keyword, a button to start the research, a loading indicator, and two sections to display the list of reports and the content of the selected report.
+
+```jsx
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-4xl font-bold mb-4">AutoResearch</h1>
+            <div className="mb-4">
+                <input
+                    type="text"
+                    value={keyword}
+                    onChange={handleKeywordChange}
+                    className="border-2 border-gray-300 rounded px-4 py-2 w-full"
+                    placeholder="Enter a keyword"
+                />
+            </div>
+            <button
+                onClick={handleResearch}
+                className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+            >
+                Start Research
+            </button>
+            {isLoading && <p>Loading...</p>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="border p-4 rounded">
+                    <h2 className="text-2xl font-bold mb-2">Reports</h2>
+                    {reports.map((report) => (
+                        <p
+                            key={report}
+                            onClick={() => handleReportClick(report)}
+                            className={`underline cursor-pointer ${report === selectedReport && "text-blue-500"}`}
+                        >
+                            {report}
+                        </p>
+                    ))}
+                </div>
+                <div className="border p-4 rounded">
+                    <h2 className="text-2xl font-bold mb-2">Report Content</h2>
+                    <p>{reportContent}</p>
+                </div>
+            </div>
+        </div>
+    );
+```
+Finally, a good icing of the React component cake would be the export statement! Let's add that.
+
+```jsx
+export default Research;
+```
+
+#### App.tsx
+
+```jsx
+import React from 'react'; // We import the React library
+import logo from './logo.svg'; // We import the logo image (not used in this file)
+import './App.css'; // We import the CSS styles for this component
+import Research from './Research'; // We import the Research component
+
+// We define the App component
+function App() {
+  return (
+    // We create a div element
+    <div>
+      // We include the Research component inside the div
+      <Research />
+    </div>
+  );
+}
+
+export default App; // We export the App component as the default export
+```
+
+This is a very straightforward React component. The `App` component is the root component of our application. Inside it, we're including the `Research` component, which is where the main functionality of our application resides.
+
+The `logo` import isn't being used in this file, so we could remove it to clean up our code. The `./App.css` import is for the CSS styles for this component, but if we're not using any specific styles for this component, we could also remove this import.
+
+The `App` function defines a React component that returns some JSX. In this case, it's returning a `div` that contains the `Research` component. This `Research` component is where the main functionality of our application is defined.
+
+Finally, `export default App;` is exporting the `App` component as the default export from this module. This means that when other files import from `App.tsx`, they will get the `App` component by default.
+
+#### index.html
+
+```diff
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+--    <title>React App</title>
+++    <title>AutoResearch Client</title>
+  </head>
+  <body>
+  ...
+```
+In this step, we're making a small but important change to our application's HTML file. We're changing the title of the webpage from the default "React App" to "AutoResearch Client". This title appears in the browser tab and provides users with a clear indication of what the page is about. It's a small detail, but it contributes to the overall user experience and professionalism of your application.
+
+#### package.json
+
+In our `package.json`, we declare a proxy to our backend. This is an important step to avoid Cross-Origin Resource Sharing (CORS) errors. CORS is a security feature that restricts HTTP requests from being made between different domains. By setting up a proxy, we're telling our application to send API requests to our own domain first, and then forward them to the backend server. This way, the requests appear to be coming from the same domain and won't be blocked by the browser's CORS policy.
+
+```diff
+{
+  "name": "autoresearch-client",
+  "version": "0.1.0",
+  "private": true,
+++   "proxy": "http://localhost:5000",
+  "dependencies": {
+    ...
+```
+Remember to replace `"http://localhost:5000"` with the actual address and port where your backend server is running.
+
+
+### Testing the AI Research App
+
+Alright, it's time for the moment of truth! Before we run our front-end, we need to ensure that our backend is already running. Once we've confirmed that, we can start our front-end application with the following command:
+
+```bash
+npm start
+```
+
+If everything is configured correctly, we should see an output in our terminal indicating that the app has been successfully built.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fdbcbc6e-28c3-424a-326c-7f653196eb00/full" alt="The terminal output indicating that the app is successfully built" />
+
+After a moment, our default browser should automatically open the URL to our app.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/98507ff1-0fb6-4c8e-8df5-155cdaef3e00/full" alt="The user interface of AutoResearch" />
+
+One of the cool features of our app is that it automatically fetches the list of reports on the first page load, thanks to the `fetchReports()` function inside our `useEffect()` hook. It neatly displays the list of our previously generated reports! Let's try clicking on one of them. It should show the content of the report just like what was returned from the backend.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2597c5aa-6dca-4189-0136-335b03d54d00/full" alt="We click the report file on FTX scandal and it correctly shows the content of the txt file" />
+
+Finally, let's put our app to the test with a new topic. This time, let's ask it about a very recent topic to see if our research assistant is up to the task. Let's ask it about the "Reddit blackout".
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/668b045e-f8ff-47c8-72b2-0205411cc100/full" alt="We ask the research assistant about Reddit blackout, it shows a simple Loading label, indicating an ongoing request" />
+
+Voila! After a while, our research assistant app should return with its report. Let's take a look at the content.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f229d16a-d76f-4787-9a0e-0280b093f700/full" alt="The report generated on Reddit blackout" />
+
+Well, it is certainly concise, and witty. The AI agent certainly has an opinion on what's happening on Reddit! It says "The Reddit Blackout Is Breaking Reddit. When the user revolt ends—if it ever does—Reddit's community won't ever be the same." in its report. Talk about AI agency!
+
+## Conclusion
+
+Throughout this tutorial, we've explored and hacked our way into harnessing the power of AutoGPT, a tool for building "autonomous, long-running AI agents". While the autonomy of the AI agent is a crucial feature, we also needed to ensure that it doesn't get stuck in an endless loop without arriving at any tangible conclusions. To address this, we copied one of the LangChain modules and modified it to better suit our use case.
+
+The results were quite satisfactory! It turns out, we didn't need the AI agent to go through too many loops to produce a satisfactory answer. This approach also allowed the backend to deliver results in a consistent and predictable timeframe. We set a limit of one minute for the response time before terminating the process if the agents go astray. Additionally, we made the AI agent store its findings in text files, which we can review later.
+
+Thank you for joining me in this exciting exploration of autonomous AI agents! I hope you've had as much fun building the projects as I had while writing this tutorial and wrangling with the limitations of such a new but popular tool. You can find the [backend](https://github.com/septiannugraha/autoresearch) and [frontend](https://github.com/septiannugraha/autoresearch-client) for this tutorial on my Github.

@@ -1,0 +1,199 @@
+---
+title: "How to build your own AutoGPT agent with Forge and test it with Benchmark"
+description: "A step-by-step guide on setting up AutoGPT Forge and Benchmark."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/autogptforge.png"
+authorUsername: "alfredo_lhuissier73"
+---
+
+## An introduction AutoGPT and autonomous AI agents
+
+[AutoGPT](https://lablab.ai/apps/tech/autogpt) is a groundbreaking AI agent leveraging OpenAI's GPT-4 or GPT-3.5 APIs to autonomously tackle tasks through natural language interaction. Unlike traditional systems, it initiates tasks without constant human guidance, adapting its strategies based on evolving information. It adeptly handles databases, files, web searches, and more, even featuring text-to-speech capabilities. Notably, AutoGPT excels in coding tasks, with potential for self-improvement. From research to coding and creative writing, it outperforms ChatGPT, executing tasks with precision. Its repository includes
+
+[Forge](https://github.com/Significant-Gravitas/Auto-GPT/tree/master/autogpts/forge), which allows you to easily build your own conversational AI agent powered by AutoGPT, and [Benchmark](https://github.com/Significant-Gravitas/Auto-GPT/tree/master/benchmark), a tool to test the agent's performance. This tutorial will walk you through the basics of getting started with both through the command line tools provided by the AutoGPT team. Ready to unleash the full potential of autonomous AI agents? Let's dive in!
+
+And also very important is the [Quickstart Guide](https://github.com/Significant-Gravitas/Auto-GPT/blob/master/QUICKSTART.md) to get started in no time.
+
+### Requirements
+
+Before starting, make sure your development environment meets these requirements:
+
+1. [Python 3.10+](https://www.python.org/downloads/release/python-3100/)
+2. [OpenAI API Key](https://platform.openai.com/account/api-keys)
+3. [Git](https://git-scm.com/downloads)
+
+
+### Tutorial Outline
+
+1. Setup
+2. Using the User Interface
+3. Testing performance with Benchmark
+
+
+## Setup
+
+To get started, you first need to clone the AutoGPT repository:
+
+```sh
+git clone https://github.com/Significant-Gravitas/Auto-GPT
+```
+
+Run the setup command, which will make sure that you have Python, Poetry, Flutter and Google Chrome installed in your system:
+
+```sh
+./run setup
+```
+
+**Output**:
+
+```
+Setup initiated
+...
+Installation has been completed.
+```
+
+After installation is complete, you can terminate the setup script with CTRL + C. 
+
+See if poetry was installed correctly.
+
+```sh
+poetry --version
+```
+
+If you get an error, you might need to add Poetry to your PATH:
+
+1. Open the .bashrc file in your home directory (for example, /home/your-user-name/.bashrc) in a text editor.
+2. Add export PATH="$PATH:$HOME/.local/bin" at the end of the file.
+3. Save the .bashrc file.
+4. Restart your terminal.
+
+
+After that, choose a name for your agents and run the following command:
+
+```sh
+./run agent create your_agent_name
+```
+
+This command will use Forge to create a new agent.
+
+You can list all available agents with the command:
+
+```sh
+./run agent list
+```
+
+Now, open the folder where your new agent was created:
+
+```sh
+cd autogpts/your_agent_name
+```
+
+I created an agent named scraper:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67015300-938a-4e8e-c320-9f3e22a93c00/full" alt="Create new agent" caption="Create a new agent with Forge" />
+
+
+Copy the example environment into a new .env file:
+
+```sh
+cp .env.example .env
+```
+
+Open the .env file and add your [OpenAI API Key](https://platform.openai.com/account/api-keys). Your environment should look something like this:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ef89e5ec-fa05-4a7c-4aca-b573433e1400/full" alt="Set environment" caption="Set OpenAI Api Key in .env file" />
+
+
+Finally, install the project dependencies:
+
+```sh
+poetry install
+```
+
+And activate the virtual environment with:
+
+```sh
+poetry shell
+```
+
+Make sure your virtual environment is always active before running an agent.
+
+That's it! Inside your agent's folder, you can now run it with: 
+
+```sh
+./run agent start your_agent_name
+```
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/343a4647-dca9-49f4-0780-378b141fd800/full" alt="Running an agent" caption="Running an agent" />
+
+
+This command runs the server on http://0.0.0.0:8000 and watches for changes.
+
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/241b7268-e74e-4a38-1b6c-1734becfdf00/full" alt="Agent running" caption="Agent running on http://0.0.0.0:8000" />
+
+
+
+## Using the User Interface
+
+Access the frontend at http://localhost:8000/ and log in using a Google or GitHub account. You can then send tasks to your agent through the interface.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d76848bd-95c1-4b58-97a7-2ae36ba8b600/full" alt="AutoGPT user interface" caption="AutoGPT Flutter interface" />
+
+Each time you save changes, the app auto-refreshes so you can test in real-time.
+
+As you dig into the code, the app will become a custom creation all your own. Build the AI assistant you've always dreamed of!
+
+## Creating Tasks with AutoGPT Forge UI
+
+Within the AutoGPT Forge UI, the "New Task" button is your gateway to creating tasks for your AI agent.
+
+1. Click on the "New Task" button located at the top of the Task List section.
+2. In the Task Interface, input the details of the task you want your agent to perform.
+3. Click the "Send" button to transmit the task to your agent.
+
+Feel free to continue the interaction by typing additional messages and sending them as needed.
+
+## Leveraging Continuous Mode
+
+One remarkable feature we have here is what we call "Continuous Mode". This nifty little function lets your agent perform tasks on a loop. 
+
+But, here's the kicker - when you decide to hit that second button in the task input box, be ready for a warning message to pop up. It's there to remind you that you might be stepping into a never-ending loop, especially if you haven't clearly defined your task conditions. 
+
+So, if you're not entirely sure about how your agent will behave or what the task requires, my advice is to take it one step at a time. Just keep pressing that "Send" button and typing "y" until your task is in the bag.
+
+## Benchmarking: Gauging Your Agent’s Proficiency
+
+Alright, let's talk benchmarking - the backbone of agent development. It's like your agent's report card, a way to size up its skills and potential.
+
+See that trophy icon on the left side of your screen in the AutoGPT Forge UI? Click it and you're diving headfirst into the benchmarking world.
+
+You'll find a tree structure on that screen, loaded with all sorts of challenges for your agent. You can pick and choose from different challenge categories to create your own test suite. Keep an eye on the real-time progress as your agent tackles these challenges. Results come in as passed, failed, or in-progress - it's not just a score, it's a push, a challenge, a motivator to get your agent to reach its limits and keep evolving.
+
+## Submitting Your Agent’s Prowess to the Leaderboard
+
+Now, when you're satisfied with your test suite results, look for the "Submit to Leaderboard" button. Click it when it's live and you'll get a submission form. You need to fill in a few key details:
+
+* **Team Name**: Your team's name, easy enough.
+* **Github Repo URL**: Share the web link to your forked repository.
+* **Commit SHA**: For some traceability, go to the root of your repository and run 'git rev-parse HEAD.' That'll give you a unique git hash. Copy and paste it where it belongs.
+
+Once that's all set, hit "Submit." Your scores will be on the leaderboard, letting you see how your agent stacks up against others in the AutoGPT community. That's how you make a mark, people. Now, go out there and conquer those challenges!
+
+When you're done, make sure to remember to stop the agent running with the following command:
+
+```sh
+./run agents stop
+```
+
+You can also exit your Poetry virtual environment with:
+
+```sh
+exit
+```
+
+These are the basics of AutoGPT. Be aware that this is a project in constant development, so things can evolve quickly. If you want to dive deeper, you can check
+[AutoGPT's Github page](https://github.com/Significant-Gravitas/Auto-GPT) and [AutoGPT's discord](https://discord.com/channels/877056448956346408/880204983021240370/1152247561458032652).
+
+With this tutorial, you now have the basics to start building your own AI agent powered by AutoGPT! The possibilities are endless.
+
+Curious to see what other people are building with this amazing tool? Checkout [Lablab's directory with applications of AutoGPT](https://lablab.ai/apps/tech/autogpt)

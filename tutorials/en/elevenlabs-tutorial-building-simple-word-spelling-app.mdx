@@ -1,0 +1,298 @@
+---
+title: "ElevenLabs Tutorial: Building Simple Word Spelling App"
+description: "How to utilize ElevenLabs API and Streamlit to build simple app which generates random words which are commonly misspelled and generate speech to spell them"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/elevenlabs-spelling.png"
+authorUsername: "septian_adi_nugraha408"
+---
+
+## Introduction
+
+Nowadays is one of the most exciting time for software development, what with the emergence of various "generative AI" tools in the market. Just name it, cover letter generation? check! e-mail generation? check! automatic code comment generation? check! Even outside coding and software development, the use case possibilities are enormous. Now we can generate images with text prompts with various image generation models. Thus makes it possible for us to incorporate generated assets in our various products. The next question is, how about voices? The trend of user experiences in the past few years mentioned "voice command" as one of the emerging trend. It is only natural that the software we build will incorporate voices as one of the features. Which is why, in this tutorial, we will showcase the "Speech Synthesis" feature offered by ElevenLabs in a simple app, which generates random words and have it spell it. To build the UI for this Python-based app, we will use Streamlit, a new UI library to share data science projects.
+
+### Introduction to ElevenLabs
+
+[ElevenLabs](https://lablab.ai/tech/elevenlabs) is a voice technology research company which offers speech synthesis solution. With easy to use API, it allows developers to generate high-quality speeches using AI. It is made possible by the AI model which has been trained on a vast amount of audiobooks and also podcasts. The training allows the AI to deliver predictable and high-quality results in speech generation. There are two main features that ElevenLabs has to offer, the first one is VoiceLab, where users can clone voices from recorded audio and/or existing pre-made voices, and also "design" voices based on gender, ages, ethnicities and races. Once users have the voices to work with, they can move on to the next feature, Speech Synthesis, where they can generate speeches using their designed voices or just using the pre-made ones.
+
+### Introduction to Anthropic's Claude Model
+
+Claude is the latest AI model developed by Anthropic, an AI research organization which focuses on improving the interoperability, robustness and safety of artificial intelligence systems. The Claude model is designed to generate human-like responses, making it a powerful tool for a wide range of applications, from content creation, legal, to customer service. Just like any other AI models in the market, Claude is also trained on a diverse range of internet text. However, unlike most AI models, it has focus on "safety", which makes it possible to refuse outputs that it considers "harmful" or "untruthful" for the users.
+
+### Introduction to Streamlit
+
+Streamlit is an open-source Python library that makes it easy and possible for developers and data scientists to create and share visually appealing and customized web apps. Developers can use Streamlit to build and deploy fully featured data science apps in minutes. It is made possible by the simple and intuitive API that can be used to turn data scripts into UI components.
+
+### Prerequisites
+
+- Basic knowledge of Python and UI development using Streamlit
+- Access to Anthropic API
+- Access to ElevenLabs API
+
+### Outline
+
+1. Initializing our Streamlit Project
+2. Adding Word Generation Feature using Claude Model
+3. Adding Speech Generation Feature using ElevenLabs API
+4. Testing the Word Generator App
+
+## Discussion
+
+There are at least four steps that we will get through in this tutorial. First we need to initialize the Streamlit-based project, to get a general feel of developing user interfaces using Streamlit. Next, we start adding more features, beginning with engineering prompt to get Claude model to give us a randomized word that is commonly misspelled. After that, we'll add text-to-voice generation provided by ElevenLabs to demonstrate how the multilingual model spell the words. Finally, we're going to test the simple app.
+
+### Initializing our Streamlit Project
+
+Let's get into the coding action! First, let's make a directory for our project and enter it!
+
+```bash
+mkdir randomwords
+cd randomwords
+```
+Next, we're going to use this directory as the basis of our Streamlit project. Because a Streamlit project is essentially a Python project, we need to do some steps to initialize our Python project, such as defining and activating our virtual environment.
+
+```bash
+# Creating the virtual environment
+python -m venv env
+
+# Activate the virtual environment
+# On Linux/Mac
+source env/bin/activate
+
+# On Windows:
+.\env\Scripts\activate
+```
+Once activated, the output of our terminal should show the name of the virtual environment (env), like so:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3b33b30c-8123-4d21-4e3a-4eb0e6ae2600/full" alt="the terminal should show the name of our virtual environment, indicating that the virtual environment is activated" />
+
+Next, it's time to install the libraries we need for this project! let's use the `pip` command to install the `streamlit`, `anthropic`, and `elevenlabs` library. Note that we also install a version-locked `pydantic` library to prevent a Pydantic-related error in one of the `elevenlabs` function.
+
+```bash
+pip install streamlit anthropic elevenlabs "pydantic==1.*"
+```
+With all the project's requirements out of the way, now let's dive into the coding part! Create a new file inside our project directory, let's call it `randomwords_app.py`.
+
+```bash
+touch randomwords_app.py
+```
+After the file is created, let's open the file in our favorite code editor or integrated development environment (IDE). For the starter, let's build our simple app from the simplest parts possible, a title and a text for the caption!
+
+```python
+import streamlit as st
+
+st.title("Random Words Generator")
+
+st.text("Hello, this is a random words generator app")
+```
+To wrap up our project initialization part, let's try test running the app. Make sure that our current working directory is still inside our project and our virtual environment is already activated. When everything is ready, use the `streamlit run <app-name>` to run the app.
+
+```bash
+streamlit run randomwords_app.py
+```
+
+The app should open automatically in our default browsers! it should show the title and text for now. Next, we're going to add random word generation feature using Anthropic's Claude model.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/17e1e8c4-24f2-46f5-c2a7-34145af89600/full" alt="the app should show the title (Random Words Generator) and text (Hello, this is a random words generator app)" />
+
+One last thing though, we'll have to provide our app with the API keys for the services that we're going to use, namely Anthropic's Claude model and ElevenLabs' Speech Synthesis feature. As these keys are considered sensitive, we should keep them in a safe and isolated place. 
+
+However, this time we don't store them in a `.env` file. This is because Streamlit deal with environment variables differently. According to the [documentation](https://docs.streamlit.io/library/advanced-features/secrets-management), we need to create a secret configuration file inside a `.streamlit` directory. We can create the directory inside our project and then create the file.
+
+```bash
+mkdir .streamlit
+touch .streamlit/secrets.toml
+```
+Let's edit the TOML file we created, note that TOML file uses different formatting from the usual `.env` file.
+
+```toml
+xi_api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+claude_key = "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+### Adding Word Generation Feature using Claude Model
+
+In this step, we will add a button that will generate the random word, the heading element to show the generated word and the subheading to show the meaning of the word. However, coming from a webdev background, I strongly believe that UI elements should be placed and arranged inside containers. So, we'll do exactly that.
+
+#### Import the necessary libraries
+
+First of all, let's add some import statements. We're going to import the `anthropic` library to generate our random words.
+
+```python
+import streamlit as st
+import anthropic
+```
+Then, before we get to the UI part, let's create our word generation function first.
+
+#### Defining the word generation function
+
+```python
+def generate_word():
+    prompt = (f"{anthropic.HUMAN_PROMPT} Give me one non-English word that's commonly misspelled and the meaning. Please strictly follow the format! example: Word: Schadenfreude; Meaning: joy at other's expenses."
+              f"{anthropic.AI_PROMPT} Word: Karaoke; Meaning: a form of entertainment where people sing popular songs over pre-recorded backing tracks."
+              f"{anthropic.HUMAN_PROMPT} Great! just like that. Remember, only respond following the pattern.")
+
+    c = anthropic.Anthropic(api_key=st.secrets["claude_key"])
+    resp = c.completions.create(
+        prompt=f"{prompt} {anthropic.AI_PROMPT}",
+        stop_sequences=[anthropic.HUMAN_PROMPT],
+        model="claude-v1.3-100k",
+        max_tokens_to_sample=900,
+    )
+
+    print(resp.completion)
+    return resp.completion
+```
+In this function, the most heavy lifting is done by Anthropic's Claude model (Thanks, Claude! 😉). However, our part in this function is how to make Claude return the exact format consistently. So we need to both instruct Claude to "strictly follow the format" and give it an example response by adding it after our initial prompt. Finally, we make sure that Claude comply with our agreements by ask it to "Remember to only respond following the pattern". The function ends by returning the response from Claude.
+
+Next, let's get back to editing the UI!
+
+#### Updating the UI
+
+```python
+st.title("Random Words Generator")
+
+with st.container():
+    st.header("Random Word")
+    random_word = st.subheader("-")
+    word_meaning = st.text("Meaning: -")
+
+    st.write("Click the `Generate` button to generate new word")
+    if st.button("Generate"):
+        result = generate_word()
+        # Split the string on the semicolon
+        split_string = result.split(";")
+
+        # Split the first part on ": " to get the word
+        word = split_string[0].split(": ")[1]
+
+        # Split the second part on ": " to get the meaning
+        meaning = split_string[1].split(": ")[1]
+
+        print(f"word result: {word}")
+        random_word.subheader(word)
+        word_meaning.text(f"Meaning: {meaning}")
+```
+This time, we added a container with some elements inside it. The header, subheader for displaying the random word, and the text element to show the meaning of the word. We also have a text to show the hint on how to use the app, as well as a button beneath it.
+
+In Streamlit, we can declare click event handler by using a conditional statement, where it returns `True` when the button is clicked. In this code, we invoke the `generate_word()` function which returns the generated word and the meaning, and split the result into separate variables for the word and the meaning, respectively. Finally, we update the subheader and the text element to display the word and the meaning.
+
+#### Final form
+
+Let's double check our code once again! It should contains the import statements, the function for generating the random word, and the updated UI which contains subheader, and text elements as well as button that generate the word by invoking the `generate_word()` function.
+
+```python
+import streamlit as st
+import anthropic
+
+def generate_word():
+    prompt = (f"{anthropic.HUMAN_PROMPT} Give me one non-English word that's commonly misspelled and the meaning. Please strictly follow the format! example: Word: Schadenfreude; Meaning: joy at other's expenses."
+              f"{anthropic.AI_PROMPT} Word: Karaoke; Meaning: a form of entertainment where people sing popular songs over pre-recorded backing tracks."
+              f"{anthropic.HUMAN_PROMPT} Great! just like that. Remember, only respond following the pattern.")
+
+    c = anthropic.Anthropic(api_key=st.secrets["claude_key"])
+    resp = c.completions.create(
+        prompt=f"{prompt} {anthropic.AI_PROMPT}",
+        stop_sequences=[anthropic.HUMAN_PROMPT],
+        model="claude-v1.3-100k",
+        max_tokens_to_sample=900,
+    )
+
+    print(resp.completion)
+    return resp.completion
+
+
+st.title("Random Words Generator")
+
+with st.container():
+    st.header("Random Word")
+    random_word = st.subheader("-")
+    word_meaning = st.text("Meaning: -")
+
+    st.write("Click the `Generate` button to generate new word")
+    if st.button("Generate"):
+        result = generate_word()
+        # Split the string on the semicolon
+        split_string = result.split(";")
+
+        # Split the first part on ": " to get the word
+        word = split_string[0].split(": ")[1]
+
+        # Split the second part on ": " to get the meaning
+        meaning = split_string[1].split(": ")[1]
+
+        print(f"word result: {word}")
+        random_word.subheader(word)
+        word_meaning.text(f"Meaning: {meaning}")
+```
+
+### Testing the Word Generation Function
+
+Let's run the app once again with the same command. We can also just rerun the app by clicking the upper right menu and click "Rerun" if we've had the app running before.
+
+It should show this updated user interface.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6544f772-83ee-41bc-6580-48bf76613700/full" alt="The updated UI of our random words generator app, it has subheader, text elements and button" />
+
+Now, let's try clicking the `Generate` button!
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fe0dfa23-f632-4e54-0148-deb1a951f300/full" alt="the app shows loading indicator" />
+
+One of the sweet things about Streamlit is that it handled loading and provided the loading indicator out of the box. We should see the indicator in the upper-right corner, as well as the option to "stop" the operation. Neat, huh?
+
+After a few seconds, the result should be showed in the UI.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d79b178f-3f9d-4b1d-9cd7-106185d05600/full" alt="Our app generated the word 'Gnocchi' for the random word" />
+
+Perfect! notice that the app correctly split the generated text from the Claude model into word and the meaning. However, if the result doesn't come out according to the expected format, we can always click the `Generate` button again.
+
+The next step is the main feature of this app, to incorporate speech generation into our random word generator. Besides demonstrating how to generate the audio file using the API provided by ElevenLabs, this step also serve to demonstrate the capabilities of ElevenLabs' multilingual model.
+
+### Adding Speech Generation Feature using ElevenLabs API
+
+The first step of this section is, as you've probably guessed, is to add more import statement! So, let's add some functions from `elevenlabs` that we'll use for the speech generation feature.
+
+```diff
+import streamlit as st
+import anthropic
+++ from elevenlabs import generate, set_api_key
+```
+Next, we're going to define the function to handle the speech generation.
+
+```python
+def generate_speech(word):
+    set_api_key(st.secrets['xi_api_key'])
+    audio = generate(
+        text=word,
+        voice="Bella",
+        model='eleven_multilingual_v1'
+    )
+
+    return audio
+```
+Thanks to the simplicity and readability of Python, and also ElevenLabs easy-to-use API, we can generate the speech by using this code alone! The function accepts the random word which we use to generate the speech. We also specifically use "eleven_multilingual_v1" model which is a multilingual model, perfect for our use case to demonstrate the spelling and pronounciation of foreign and commonly misspelled words! Finally, we use the "Bella" voice for this tutorial, which is one of the pre-made voice provided by ElevenLabs.
+
+Next, we'll add an audio player to play the generated speech.
+
+```diff
+    print(f"word result: {word}")
+    random_word.subheader(word)
+    word_meaning.text(f"Meaning: {meaning}")
+++     speech = generate_speech(word)
+++     st.audio(speech, format='audio/mpeg')
+```
+
+Just below our latest code from earlier, we add the variable to store the generated speech, and run the speech using audio player provided by `st.audio` function from Streamlit. At this point, our app should work as expected, only showing the audio player when there is a random word available to "read".
+
+Curious how it works out? me too! let's test the app now!
+
+### Testing the Word Spelling Feature
+
+Let's run the app again using `streamlit run` or just rerun the app if we have it running already. It should look exactly the same as the last time we left it. However, let's try to click the "Generate" button this time!
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/459f9a78-bc76-4412-f065-466a61d61200/full" alt="Our app shows an audio player once a random word is generated" />
+
+Amazing! this time, the app also shows an audio player! Let's try playing it. Using the multilingual model, the speech generated should use the accent and intonation which is close to the origin language of the word. For example, "entrepreneur" should be pronounced in French accent.
+
+## Conclusion
+
+In this short tutorial, hopefully we've explored the capabilities of speech generation technology offered by ElevenLabs. With the multilingual model, it's easy to generate speeches that is intended for non-English listener. In our use case, we need multilingual model to aid us in finding the correct way to pronounce and spell non-English words that are commonly misspelled.
+
+Thank you for joining me in this process of exploring what ElevenLabs has to offer! I hope this tutorial has sparked some inspirations on how we leverage voice generation model such as the ones offered by ElevenLabs, whether monolingual or multilingual, in more interesting and varying use cases. You can find the finished project on my [Github](https://github.com/septiannugraha/randomwords). Stay tuned for more tutorials in the future!

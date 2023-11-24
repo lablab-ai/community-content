@@ -1,0 +1,70 @@
+---
+title: "إنشاء تطبيق بسيط باستخدام OpenAI GPT-4 و Streamlit"
+description: "Streamlit هو أداة شهيرة لبناء تطبيقات الويب للتعلم الآلي وعلوم البيانات. في هذا الدرس، سنقوم ببناء تطبيق ويب بسيط حيث يمكن للمستخدمين إدخال النص والحصول على رد من نموذج GPT-4 التابع لـ OpenAI."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0b885c46-90a2-49f5-fda0-9c4834875200/full"
+authorUsername: "zakrz303"
+---
+
+##  الشروط المسبقة:
+
+يجب أن يكون لديك Python مثبتًا.
+يجب أن يكون لديك Streamlit مثبتًا: pip install streamlit
+تحتاج إلى مكتبة OpenAI Python: pip install openai
+
+### الخطوات:
+
+إعداد مفتاح API الخاص بك:
+قبل استخدام GPT-4، تأكد من أن لديك مفتاح API لـ OpenAI. قم بإعداده كمتغير بيئي أو مباشرة في الكود (لا يُوصى به للإنتاج بسبب أسباب الأمان).
+
+كتابة تطبيق Streamlit:
+
+قم بإنشاء ملف جديد باسم gpt4_app.py وأضف الكود التالي:
+
+```python
+import streamlit as st
+import openai
+
+# قم بإعداد مفتاح API لـ OpenAI
+openai.api_key = 'YOUR_OPENAI_API_KEY'
+
+def get_gpt4_response(prompt):
+    """احصل على رد من GPT-4 استنادًا إلى الإدخال المعطى."""
+    response = openai.Completion.create(
+        model="gpt-4.0-turbo",
+        prompt=prompt,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
+
+# التطبيق الرئيسي لـ Streamlit
+def main():
+    st.title("تطبيق GPT-4 Streamlit")
+    
+    user_input = st.text_area("أدخل نصك هنا:", "اكتب شيئًا للحصول على رد من GPT-4...")
+    if st.button("احصل على الرد"):
+        response = get_gpt4_response(user_input)
+        st.write(response)
+
+if __name__ == "__main__":
+    main()
+```
+
+تشغيل تطبيق Streamlit:
+
+في النافذة الطرفية أو موجه الأوامر، انتقل إلى الدليل الذي يحتوي على gpt4_app.py وقم بتشغيل:
+
+```
+streamlit run gpt4_app.py
+```
+
+تفاعل مع GPT-4 من خلال Streamlit:
+
+بمجرد تشغيل تطبيق Streamlit، انتقل إلى الرابط المقدم (عادةً ما يكون http://localhost:8501/) في المتصفح. يمكنك بعد ذلك كتابة أي نص والنقر على زر "احصل على الرد" لرؤية رد GPT-4.
+
+### ملاحظات:
+
+تذكر استبدال 'YOUR_OPENAI_API_KEY' بمفتاح API الحقيقي الخاص بك.
+بالنسبة للتطبيقات الإنتاجية، فكر في إعداد متغيرات البيئة أو استخدام أداة إدارة الأسرار للتعامل مع مفاتيح API بأمان.
+قم بضبط معلمة max_tokens في الوظيفة get_gpt4_response إذا كنت ترغب في ردود أقصر أو أطول.
+قد تواجه حدود معدلات أو تكاليف مرتبطة بواجهة API الخاصة بـ OpenAI حسب اشتراكك واستخدامك.
+هذا هو! لديك الآن تطبيق Streamlit بسيط يتفاعل مع OpenAI GPT-4.

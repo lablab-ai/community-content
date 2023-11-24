@@ -1,0 +1,146 @@
+---
+title: "WebGPU"
+description: "WebGPU is a low-level, high-performance graphics and compute API for the web. Its compute capabilities have significant implications for AI applications on the web."
+---
+
+# WebGPU
+
+WebGPU is a modern, high-performance API that provides low-level access to modern Graphics Processing Unit (GPU) hardware directly from web browsers. This revolutionary API allows web applications to harness the incredible power of GPUs to perform tasks such as 3D rendering, image processing, physics simulation, machine learning, and more. This detailed guide aims to provide a comprehensive overview of WebGPU, its remarkable capabilities, and how you can effectively utilize it in your projects. We will also delve into practical use-cases and provide a step-by-step guide on setting up and getting started with the WebGPU API.
+
+| General  |  |
+| --- | --- |
+| Author | [W3C](https://www.w3.org/) |
+| Repository | https://github.com/gpuweb/gpuweb |
+| Type | Graphics and Compute API |
+---
+
+## **What is WebGPU and Why Does it Matter?**
+
+Historically, web browsers have relied on APIs such as WebGL and WebGL2 to gain access to GPU hardware. While these APIs have certainly been useful, they are built on the OpenGL ES graphics API which was introduced in the early 90s. With the rapid evolution of GPU hardware and the advent of new architectures like Vulkan and DirectX 12, the WebGL framework has become outdated.
+
+Enter WebGPU, a modern alternative specifically designed to expose a GPU programming model tailored for the web. WebGPU aims to replace WebGL by offering an array of exciting features and improvements, including:
+
+* Cleaner API design free of legacy cruft.
+* Improved support for modern GPU features such as compute shaders.
+* Enhanced multi-threading and synchronization capabilities.
+* More refined control over GPU resources.
+* Wider browser support as WebGL gradually falls behind.
+
+WebGPU holds immense potential for high-performance applications like 3D games, augmented reality/virtual reality (AR/VR), computer vision, and other graphics/compute-intensive tasks, by unlocking significant performance and capability improvements on the web. Even for simpler tasks like 2D rendering, the API design of WebGPU offers a more intuitive experience for developers familiar with modern best practices.
+
+
+## **Current Browser Support and Status for WebGPU**
+
+Despite its numerous advantages, WebGPU support is still in its early stages across major browsers. Here's the current status of WebGPU support in various browsers as of mid-2023:
+
+* **Chrome**: Enabled by default since Chrome 102, offering the most complete WebGPU experience.
+* **Firefox**: Partial support enabled behind a flag since Firefox 99, with full support still under development.
+* **Safari**: No support yet.
+* **Edge**: The implementation of WebGPU support is under consideration.
+
+Additionally, JavaScript polyfill libraries like **gpuweb** and **dawn** aim to provide WebGPU support by translating calls to WebGL/WebGL2. While these libraries are useful for development, their performance and capabilities are somewhat limited.
+
+You can use the demo page on the [webgpu.io](http://webgpu.io/) site to test whether your browser supports WebGPU. However, as the technology landscape is evolving rapidly, expect to see broader adoption of WebGPU across various browsers in the near future.
+
+
+## **Understanding the Core Concepts of WebGPU**
+
+To leverage the WebGPU API effectively, it's essential to grasp a few key concepts:
+
+* **GPUAdapter**: This represents a physical GPU device on the system.
+* **GPUDevice**: This is a logical device created from a GPUAdapter and manages resource creation and ownership.
+* **GPUBuffer**: This is a buffer of data (vertices, textures, etc.) that resides in GPU memory.
+* **GPUTexture**: This is image data (textures, render targets) that resides in GPU memory.
+* **GPUSampler**: This configures how textures are sampled.
+* **GPUShaderModule**: This is compiled shader code.
+* **GPUBindGroup**: This is a collection of resources that are bound together.
+* **GPUPipeline**: This is a collection of shaders and fixed function states defining a complete GPU pipeline.
+* **GPUCommandEncoder**: This records commands like draw calls that get submitted to the GPU.
+* **GPUCommandBuffer**: This is a bundled list of recorded commands for execution.
+* **GPUQueue**: This submits command buffers for execution on the GPU.
+
+While this may seem overwhelming initially, as you work through examples, these concepts will become more comprehensible. The general flow is to create resources like buffers and textures in GPU memory, assemble these resources into pipelines, record commands into command buffers that reference the resources and pipelines, and then submit these command buffers to queues for execution.
+
+
+## **Diving into WebGPU Use Case Examples**
+
+The power of WebGPU has already begun to manifest in a range of applications, demonstrating its potential for future development. Here are some compelling examples of how WebGPU has been used:
+
+* **[WebLLM](https://webllm.mlc.ai/)** + **[GitHub](https://github.com/mlc-ai/web-llm/tree/main)** + **[NPM Package](https://npmjs.com/package/@mlc-ai/web-llm)**: A web version of a Language Model that uses WebGPU, available as an npm package.
+* **[WebSD](https://websd.mlc.ai/)**: This is a web version of Stable Diffusion, an AI for generating images from text, which utilizes WebGPU.
+
+These examples illustrate the potential of WebGPU in enabling more efficient and high-performance web applications, pushing the boundaries of what's possible on the web.
+
+## **How to Set Up WebGPU: A Quick Start Guide**
+
+WebGPU is a new web standard for performing high-performance graphics and computations on the web. It allows developers to leverage the GPU directly from JavaScript without going through intermediate APIs like WebGL.
+
+Setting up WebGPU requires a few steps:
+
+
+### **Use a Browser with WebGPU Support**
+
+As of now, WebGPU support is still limited to certain browsers. Your options are:
+
+* Chrome Canary with the `--enable-unsafe-webgpu` flag enabled
+* Firefox Nightly
+* Safari Technology Preview
+
+So you'll need to download and install one of these browser versions to start using WebGPU.
+
+
+### **Detect WebGPU Support**
+
+Once you have a compatible browser, you can check for WebGPU support by:
+
+```js
+if ('gpu' in navigator) {
+  // WebGPU is supported!
+} else {
+  // WebGPU is not supported
+}
+```
+
+This checks if the `gpu` object exists in `navigator`, which indicates WebGPU support.
+
+
+### **Request a GPU Device**
+
+To start using WebGPU, you need to get a GPU device object:
+
+```js
+async function initWebGPU() {
+  // Request adapter
+  const adapter = await navigator.gpu.requestAdapter();
+  
+  // Request device
+  const device = await adapter.requestDevice();
+}
+```
+
+This asynchronously requests the GPU adapter and then requests the actual WebGPU device.
+
+### **Start Building WebGPU Code**
+
+With the WebGPU device, you can now start writing WebGPU code to perform operations like:
+
+* Creating buffers and textures
+* Building pipelines and bind groups
+* Running compute kernels
+* Rendering to a canvas
+
+That's the basic setup! From here you can start writing WebGPU code to leverage the GPU.
+
+
+## **WebGPU - Essential Resources**
+
+To better understand and utilize WebGPU effectively in your projects, here are some useful resources:
+
+* **[WebGPU Documentation](https://gpuweb.github.io/gpuweb)** Comprehensive documentation for WebGPU
+* **[WebGPU Examples](https://github.com/austinEng/webgpu-samples)** A collection of sample applications that use WebGPU.
+* **[WebGPU Specification](https://w3.org/TR/webgpu)** The official WebGPU specification document by W3C.
+* **[Enable everyone to develop, optimize and deploy AI models natively on everyone's devices, including the web](https://github.com/mlc-ai/mlc-llm)**
+
+## **Conclusion**
+
+In conclusion, the advent of WebGPU has revolutionized the way we think about web applications and their capabilities. It's an exciting time to be a developer as we unlock more powerful and efficient ways to leverage GPU power on the web. With WebGPU, the web isn't just about browsing anymore, but an evolving platform for high-performance computing and graphics rendering. It's time to embrace the power of WebGPU and take our web applications to the next level!

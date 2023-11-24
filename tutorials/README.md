@@ -1,8 +1,8 @@
-# Tutorials
+# AI Tutorials
 
 Repo to handle submitting & updating tutorials on lablab.ai
 
-## How to publish a new tutorial on lablab
+## How to publish a new tutorial on lablab.ai
 
 In this guide you will learn how to publish tutorial pages on lablab.
 
@@ -12,9 +12,11 @@ In this guide you will learn how to publish tutorial pages on lablab.
 - Please **don’t** copy the content from other websites!
 - Please **don’t** use AI content generators to create the content for this page!
 - Make sure the tutorial has a **clear structure**. Use a minimum of three H2 headings, including one for the introduction, another for the topic input, and the last one to summarize all previously discussed points. Additionally, use H3 subheadings for every significant point you cover.
-- The tutorial you create must relate to one of the technologies listed in the lablab database.
+- The tutorial you create should relate to one of the technologies listed in the lablab database. Or, make sure to add the technology you are using to the [AI Tech page](https://github.com/lablab-ai/community-content/blob/main/technologies/README.md#technologies), in case it's not there.
 
 ## If you want to publish a new tutorial on lablab.ai, follow these steps:
+
+0. Make sure you have created your profile on [lablab.ai](https://lablab.ai/login?) and filled in the profile information - that will help community readers get to know the author of the tutorial 😉
 
 1. Create an mdx file for the tutorial with the tutorial title in slug format (you can slugify [here](https://slugify.online/)) as the filename in this GitHub repository: [https://github.com/lablab-ai/community-content/tree/main/tutorials](https://github.com/lablab-ai/community-content/tree/main/tutorials)
 
@@ -30,6 +32,7 @@ In this guide you will learn how to publish tutorial pages on lablab.
 Upload images to [this service](https://freeimage.host/) and provide a like that looks like: `https://iili.io/HPaF59p.png`
 
 4. You can use one of our tutorial page as a template or the [template](https://github.com/lablab-ai/community-content/tree/main/tutorials/template.mdx) file in this repo to create your own tutorial page.
+
 5. To add image use the `<Img src={path_to_your_img}, alt={img_alt}, caption={short_img_caption_below_it}/>` component.
 
 6. After you create a PR we will check the tutorial content and merge it if everything is fine.
@@ -42,3 +45,14 @@ Finally, visit our GitHub repo and add AI tutorials here, get inspiration from t
 2. Create two pull requests:
    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
    - to `main` branch
+
+## Adding as sponsored content/Adding sponsored image
+
+1. To add sponsor as author and link to the sponsor website add to the top of the file under the mandatory fields:
+
+   - **sponsor**: Sponsored by ...
+   - **sponsorUrl**: https://...
+
+Keep in mind still you have to add a valid authorUsername!
+
+2. To place a sponsor image inside the post --> add `<SponsoredContentImage url="https://linktosponsor.com" imageUrl="https://sponsor/linktosponsorlogo.jpg"/>` somewhere in the tutorial
