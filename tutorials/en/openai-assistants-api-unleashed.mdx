@@ -11,11 +11,11 @@ I'm Poojan Vig, and in this guide, I'll walk you through utilizing OpenAI's Assi
 Unveiled at the OpenAI Dev Day, the Assistants API represents a monumental advancement in AI, revolutionizing how we create and interact with AI-powered assistants. Its ability to simplify complex assistant-like experiences, combined with powerful built-in capabilities like Code Interpretation and Retrieval, makes it a game-changer. With the capacity to integrate more than 100 tools, each customizable for specific tasks, it opens a vast landscape for developers to build more dynamic, responsive, and intelligent applications.     
 This tutorial delves into harnessing this innovative API for developing a Streamlit application, focusing on creating a Financial Assistant for in-depth financial analysis and a PDF Analyzer adept at extracting and interpreting dense document information, aiming to provide practical understanding and hands-on experience with the Assistants API.
 
-# What Is OpenAI Assistants API?
+### What Is OpenAI Assistants API?
 
 The OpenAI Assistants API is a transformative feature introduced by OpenAI, designed to significantly enhance the way developers create and manage AI-powered assistants. This API is not just an incremental update to existing technologies; it represents a major leap forward in the realm of artificial intelligence.
 
-## Advanced Capabilities of OpenAI Assistants API
+### Advanced Capabilities of OpenAI Assistants API
 
 ### 1. Code Interpreter
 - **Functionality**: 
@@ -44,8 +44,11 @@ The OpenAI Assistants API is a transformative feature introduced by OpenAI, desi
 - **Benefits**: 
   - This feature significantly expands the versatility of the assistant, enabling it to cater to a wide array of specialized tasks. It can be customized to fit the specific needs and workflows of different industries or user requirements.
 
+For an in-depth understanding of these tools and to explore additional functionalities offered by the OpenAI Assistants API, refer to the comprehensive [Assistants API Tools Documentation](https://platform.openai.com/docs/assistants/tools). This resource provides detailed information on each tool's capabilities, potential applications, and guidelines for effective use, making it essential for those looking to fully leverage the API in their projects.
 
-# How Assistants API Works ?
+
+
+### How Assistants API Works ?
 <Img src="https://i.postimg.cc/nVdgbcrY/Key-Steps.png" alt="key Components" caption="Key components" />
 
 #### 1. Creating an Assistant
@@ -59,7 +62,11 @@ To generate responses, the Assistant is 'run' on the Thread, where it processes 
 #### 5. Retrieving and Displaying Responses
 Once the Assistant has processed the Messages, its responses are retrieved and displayed to the user.
 
-## Implementing AI Financial Analyst Using Assistance API
+For a more detailed explanation of each step and to explore the full capabilities of the Assistants API, including its intricate mechanics and advanced features, please refer to the [OpenAI Assistants API - How It Works](https://platform.openai.com/docs/assistants/how-it-works) documentation. This resource provides comprehensive insights and guidance, making it an invaluable tool for both new and experienced users of the API.
+
+
+
+### Implementing AI Financial Analyst Using Assistance API
 
 This demo app is created to demonstrate the abilities and usefulness of the assistance API.
 
@@ -92,7 +99,7 @@ The setup process for an Assistant is straightforward. You'll need to define sev
 - **Tools** : Choose the tools for your Assistant. For this example, we'll use the Retrieval and Code Interpreter tools.
 - **Model Name** : Select the AI model you wish to use
 
-Here's how you can do it in Python:
+Here's how you can do it in python:
 
 
 ```python
@@ -199,7 +206,7 @@ def pretty_print(messages):
 
 In this step, we'll set up the Streamlit User Interface (UI) for our application, which includes configuring the sidebar for API key input and creating options to select between different assistants.
 
-```Python
+```python
 # Streamlit UI for sidebar configuration
 st.sidebar.title("Configuration")
 entered_api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
@@ -239,7 +246,7 @@ Create a selection box with ``assistant_option = st.sidebar.selectbox("Select an
 
 This step involves integrating the Financial Assistant feature into our Streamlit application. We'll set up a user-friendly interface and process user queries to provide financial insights using the OpenAI Assistants API.
 
-```Python
+```python
 if assistant_option == "Financial Assistant":
     st.title("Financial Assistants :bar_chart:")
 
