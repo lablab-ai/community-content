@@ -70,6 +70,17 @@ For a more detailed explanation of each step and to explore the full capabilitie
 
 This demo app is created to demonstrate the abilities and usefulness of the assistance API.
 
+### Import Necessary Libraries
+
+Before we dive into the implementation details, it's important to import all the necessary libraries that our application will require. This includes libraries for basic file and time handling, the OpenAI API, and Streamlit for building our application interface. Add the following import statements at the beginning of your Python script:
+
+```python
+import os
+import time
+import openai
+import streamlit as st
+```
+
 ### Step 1: Installing Dependencies and Setting Up OpenAI API Key
 To get started, you'll need to install the latest version of the OpenAI package. Run the following command in your terminal or command prompt to ensure you have the most up-to-date package:
 
@@ -108,7 +119,7 @@ client = OpenAI(api_key=OPENAI_KEY)
 
 assistant = client.beta.assistants.create(
     name = "Finance Insight Analyst",
-    instructions = "YouYou are a helpful  financial analyst expert and, focusing on management discussions and financial results. help people learn about financial needs and guid them towards fincial literacy.",
+    instructions = "You are a helpful  financial analyst expert and, focusing on management discussions and financial results. help people learn about financial needs and guid them towards fincial literacy.",
     tools = [{"type":"code_interpreter"}, {"type": "retrieval"}],
     model = "gpt-4-1106-preview"
 )
@@ -118,7 +129,7 @@ Once you’ve done this, your Assistant is created! Let’s have a look.
 import json
 
 def show_json(obj):
-    display(json.loads(obj.model_dump_json()))
+    print(json.dumps(json.loads(obj.model_dump_json()), indent=4))
 
 show_json(assistant)
 ```
