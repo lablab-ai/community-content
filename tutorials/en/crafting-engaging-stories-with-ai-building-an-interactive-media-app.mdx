@@ -1,6 +1,7 @@
 ---
 title: "Crafting Engaging Stories with AI: Building an Interactive Media App"
 description: "Step into the world of AI-driven storytelling in this tutorial where we create a captivating Interactive Media App using Streamlit, Clarifai, and OpenAI. Perfect for hackathons, this guide covers everything from setting up your environment to integrating advanced AI models for image generation, text-to-speech, and story creation."
+image: "https://i.postimg.cc/9Xy8CTB4/03-Tutorial-image-template.png"
 authorUsername: "Nimbus_Grove1q0u"
 ---
 
@@ -191,7 +192,6 @@ def generate_image(user_description, api_key):
     with open("generated_image.png", "wb") as f:
         f.write(output_base64)
     return "generated_image.png"
-        ...
 ```
 
 In this function, we take what the user describes and use it to create an image. It's like telling an artist (in this case, the DALL-E model) what to paint, and then the artist whips up a beautiful image for us.
@@ -212,7 +212,6 @@ def understand_image(base64_image, api_key):
     def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
-    ...
 ```
 
 After we have our image, this function steps in. It looks at the picture and tells us a story about it. We're using another AI model here to turn images into creative stories.
@@ -229,7 +228,6 @@ def text_to_speech(input_text, api_key):
     )
     audio_base64 = model_prediction.outputs[0].data.audio.base64
     return audio_base64
-    ...
 ```
 
 Now, we take the story that our AI model wrote for us and turn it into speech. It's like turning a book into an audiobook so you can listen to the story instead of reading it.
@@ -272,7 +270,6 @@ def main():
                 audio_base64 = text_to_speech(understood_text, openai_api_key)
                 st.audio(audio_base64, format="audio/mp3")
                 st.success("Audio generated from image understanding!")
-    ...
 ```
 
 This is where we build our app's interface and put everything together. We set up a space for users to type in their descriptions, a button to make the magic happen, and areas to display the generated image and story.
@@ -288,7 +285,7 @@ And finally, this little bit of code is what starts everything off. It's like th
 
 ### Save your code in main.py and run it
 
-```
+```bash
 
 streamlit run main.py
 
@@ -302,11 +299,11 @@ streamlit run main.py
 
 ### Generations of Image
 
-<Img src="https://i.postimg.cc/05mxprPy/Screenshot-2023-12-03-at-3-56-21-PM.png" caption="Generating Image"/>
+<Img src="https://i.postimg.cc/05mxprPy/Screenshot-2023-12-03-at-3-56-21-PM.png" alt="Generations of Image" caption="Generating Image"/>
 
 ### Image and Story Generated
 
-<Img src="https://i.postimg.cc/nccRnwRf/Screenshot-2023-12-03-at-4-07-22-PM.png" caption="Image Generated Successfully"/>
+<Img src="https://i.postimg.cc/nccRnwRf/Screenshot-2023-12-03-at-4-07-22-PM.png" alt="Image and Story Generated" caption="Image Generated Successfully"/>
 
 ---
 
