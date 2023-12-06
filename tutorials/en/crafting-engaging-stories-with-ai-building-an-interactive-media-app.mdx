@@ -1,7 +1,7 @@
 ---
 title: "Crafting Engaging Stories with AI: Building an Interactive Media App"
 description: "Step into the world of AI-driven storytelling in this tutorial where we create a captivating Interactive Media App using Streamlit, Clarifai, and OpenAI. Perfect for hackathons, this guide covers everything from setting up your environment to integrating advanced AI models for image generation, text-to-speech, and story creation."
-authorUsername: "adam rayed"
+authorUsername: "Nimbus_Grove1q0u"
 ---
 
 # Harnessing AI for Creative Brilliance: A Hackathon Guide to Building an Interactive Media App
@@ -29,9 +29,9 @@ Hello, future hackathon winners! In this tutorial, I'm excited to show you how t
 - **Key Features**: Highly sophisticated in conversation and content creation.
 - **Practical Applications**: Ideal for chatbots, content generation, and intricate data interpretation.
 
-## Building the Showcase Application: Interactive Media Creator
+### Building the Showcase Application: Interactive Media Creator
 
-### Concept Overview
+#### Concept Overview
 
 We're crafting an app that allows users to input a description, generates comic art, creates a story from the image, and narrates this story. A complete AI-driven storytelling experience!
 
@@ -69,19 +69,40 @@ Alright, let's take a closer look at how the Interactive Media App works. I'll w
 
 Before we dive into the fun part of coding our Interactive Media App, there are a few important setup steps we need to follow. This involves getting some access keys and installing necessary packages. Don't worry, I'll guide you through each step!
 
-## Step 1: Grab Your Access Tokens
+### Step 1: Grab Your Access Tokens
 
-### Clarifai Personal Access Token
+#### Clarifai Personal Access Token
 
 1. **Visit Clarifai**: Head over to [Clarifai's security settings page](https://clarifai.com/settings/security).
 2. **Get Your Token**: Here, you'll find your personal access token. This is like a special password that lets your app talk to Clarifai's services. Copy this token.
 
-### OpenAI API Key
+#### OpenAI API Key
 
 1. **Go to OpenAI**: Visit the OpenAI website and log into your account.
 2. **Retrieve Your Key**: Find where they list your API key. This key is what allows your app to interact with OpenAI's powerful AI models.
 
-## Step 2: Set Up Your Environment File
+## Step 1: Set Up a Virtual Environment
+
+Before starting with your project, it's important to create a virtual environment. This ensures that your project has an isolated space to manage dependencies, preventing conflicts between different projects.
+
+1. **Navigate to Your Project Directory**:
+   - Use your terminal or command prompt to go to your project's folder.
+
+2. **Create the Virtual Environment**:
+   - Run the command: 
+
+        ```bash
+            python -m venv env
+        ```
+
+   - This will create a new folder named `env` in your project directory, which contains the virtual environment.
+
+3. **Activate the Virtual Environment**:
+   - For Windows, run: `.\env\Scripts\activate`
+   - For macOS/Linux, run: `source env/bin/activate`
+   - Your command prompt should now show the name of the virtual environment, indicating that it's active.
+
+### Step 2: Set Up Your Environment File
 
 Now that you have your keys, you need to store them safely in your project.
 
@@ -95,7 +116,10 @@ Now that you have your keys, you need to store them safely in your project.
 
    Replace `Your_Clarifai_Personal_Access_Token` and `Your_OpenAI_API_Key` with the actual keys you copied.
 
-## Step 3: Installing Necessary Packages
+
+
+
+### Step 3: Installing Necessary Packages
 
 Finally, you'll need to install a couple of Python packages.
 
@@ -111,7 +135,13 @@ Finally, you'll need to install a couple of Python packages.
    pip install python-dotenv
    ```
 
-## Ready to Code!
+3. **Install streamlit**: Install streamlit for faster creation of our app.
+
+    ```bash
+    pip install streamlit
+    ```
+
+### Ready to Code!
 
 With these steps completed, you're all set to start building the app. You have your access tokens safely stored and the necessary packages installed. Next up, I'll walk you through the code for creating your Interactive Media App. Let's get coding! 🚀👩‍💻👨‍💻
 
@@ -137,7 +167,7 @@ This block is like gathering all the tools we need before we start building some
 - **dotenv and os**: These two work together to keep our secret keys (API keys) safe and sound.
 - **PIL (Python Imaging Library) and BytesIO**: These are our image wizards, helping us to handle and manipulate pictures.
 
-## Keeping Secrets: Environment Variables
+### Keeping Secrets: Environment Variables
 
 ```python
 clarifai_pat = os.getenv("CLARIFAI_PAT")
@@ -146,7 +176,7 @@ openai_api_key = os.getenv("OPEN_AI")
 
 Here, we're retrieving the secret keys that we need to talk to Clarifai and OpenAI's services. It's like getting a special passcode to enter an exclusive club.
 
-## The Magic of Making Images: `generate_image`
+### The Magic of Making Images: `generate_image`
 
 ```python
 def generate_image(user_description, api_key):
@@ -166,7 +196,7 @@ def generate_image(user_description, api_key):
 
 In this function, we take what the user describes and use it to create an image. It's like telling an artist (in this case, the DALL-E model) what to paint, and then the artist whips up a beautiful image for us.
 
-## Understanding the Picture: `understand_image`
+### Understanding the Picture: `understand_image`
 
 ```python
 def understand_image(base64_image, api_key):
@@ -187,7 +217,7 @@ def understand_image(base64_image, api_key):
 
 After we have our image, this function steps in. It looks at the picture and tells us a story about it. We're using another AI model here to turn images into creative stories.
 
-## Speaking the Story: `text_to_speech`
+### Speaking the Story: `text_to_speech`
 
 ```python
 def text_to_speech(input_text, api_key):
@@ -204,7 +234,7 @@ def text_to_speech(input_text, api_key):
 
 Now, we take the story that our AI model wrote for us and turn it into speech. It's like turning a book into an audiobook so you can listen to the story instead of reading it.
 
-## Bringing It All to Life: `main`
+### Bringing It All to Life: `main`
 
 ```python
 def main():
@@ -247,7 +277,7 @@ def main():
 
 This is where we build our app's interface and put everything together. We set up a space for users to type in their descriptions, a button to make the magic happen, and areas to display the generated image and story.
 
-## Running the Show
+### Running the Show
 
 ```python
 if __name__ == "__main__":
@@ -256,7 +286,7 @@ if __name__ == "__main__":
 
 And finally, this little bit of code is what starts everything off. It's like the "Open for Business" sign that gets everything rolling.
 
-## Save your code in main.py and run it
+### Save your code in main.py and run it
 
 ```
 
@@ -268,15 +298,15 @@ streamlit run main.py
 
 # Sneak Peek into the app
 
-<Img src="https://i.postimg.cc/43y0f2BS/Screenshot-2023-12-03-at-3-56-03-PM.png" alt="Home Page" caption="All the elemenbts" />
+<Img src="https://i.postimg.cc/43y0f2BS/Screenshot-2023-12-03-at-3-56-03-PM.png" alt="Home Page" caption="Homepage" />
 
-## Generations of Image
+### Generations of Image
 
-<Img src="https://i.postimg.cc/05mxprPy/Screenshot-2023-12-03-at-3-56-21-PM.png" />
+<Img src="https://i.postimg.cc/05mxprPy/Screenshot-2023-12-03-at-3-56-21-PM.png" caption="Generating Image"/>
 
-## Image and Story Generated
+### Image and Story Generated
 
-<Img src="https://i.postimg.cc/nccRnwRf/Screenshot-2023-12-03-at-4-07-22-PM.png" />
+<Img src="https://i.postimg.cc/nccRnwRf/Screenshot-2023-12-03-at-4-07-22-PM.png" caption="Image Generated Successfully"/>
 
 ---
 
