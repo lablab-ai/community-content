@@ -1,10 +1,13 @@
-# Wow - We've Reached 100,000 lablab.ai Community Members! 🎉
-
-[https://lh7-us.googleusercontent.com/jPQ_bc_EYDOJy8T1N-x4RMsq-MzarI_9IuXOFGFwllMO58OcA9ZgBKBPMW-yGM1Gl5WMaES3OPgwh7B8vn8rQe4ibRCGqvueVVGkT52MSPh1-yIaYHEf-dhnB85-0f7huaugGDm8DI5kuNaWDFwKi9s](https://lh7-us.googleusercontent.com/jPQ_bc_EYDOJy8T1N-x4RMsq-MzarI_9IuXOFGFwllMO58OcA9ZgBKBPMW-yGM1Gl5WMaES3OPgwh7B8vn8rQe4ibRCGqvueVVGkT52MSPh1-yIaYHEf-dhnB85-0f7huaugGDm8DI5kuNaWDFwKi9s)
+---
+title: "Wow - We've Reached 100,000 lablab.ai Community Members!"
+description: "lablab.ai Community have officially hit 100,000 members!"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/721b45c1-cfbc-4bbd-dd0e-f36579c59900/full"
+authorUsername: "Olesia"
+---
 
 We are thrilled to announce that **we have officially hit 100,000 members in the lablab.ai community**! This exciting milestone would not have been possible without the passion, creativity, and collaboration from each and every one of you.
 
-[https://lh7-us.googleusercontent.com/NrvQkgdo4hNx9VXBpGkvJVYzPoE1fVs2wg_I1YlNlG-oKkhmRFaNlvMeQtNG0vsOXukP4VTJnkkeZj69ajruexKT6VAft8LsKcOKubBs87S1mw6X7nRRT15E-mlvLqg6goDid3o5gW6udDcA5f7atKc](https://lh7-us.googleusercontent.com/NrvQkgdo4hNx9VXBpGkvJVYzPoE1fVs2wg_I1YlNlG-oKkhmRFaNlvMeQtNG0vsOXukP4VTJnkkeZj69ajruexKT6VAft8LsKcOKubBs87S1mw6X7nRRT15E-mlvLqg6goDid3o5gW6udDcA5f7atKc)
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/57517a55-5f0e-4977-17b2-b2fee8f8ba00/full" alt="100 000 members in lablab.ai community" />
 
 First and foremost, we want to extend our heartfelt thanks to our partners: [LlamaIndex](https://lablab.ai/tech/llamaindex), [Clarifai](https://lablab.ai/tech/clarifai), [Google Cloud](https://lablab.ai/tech/google/generative-ai-studio), [Vectara](https://lablab.ai/tech/vectara), [TruEra](https://lablab.ai/tech/truera/trulens), [Cohere](https://lablab.ai/tech/cohere/cohere), [AI21 Labs](https://lablab.ai/tech/ai21-labs), [LangChain](https://lablab.ai/tech/langchain/langchain), [Weaviate](https://lablab.ai/tech/weaviate), [Zilliz](https://lablab.ai/tech/zilliz), [AutoGPT](https://lablab.ai/tech/autogpt), [MetaGPT](https://lablab.ai/tech/metagpt), [Open Interpreter](https://lablab.ai/tech/open-interpreter), [ElevenLabs](https://lablab.ai/tech/elevenlabs), [Anthropic](https://lablab.ai/tech/anthropic/claude), [monday.com](https://lablab.ai/tech/monday/mondaycom), [BabyAGI](https://lablab.ai/tech/babyagi), [Stability AI](https://lablab.ai/tech/stability-ai), [Qdrant](https://lablab.ai/tech/qdrant), [SuperAGI](https://lablab.ai/tech/superagi), [Redis](https://lablab.ai/tech/redis), [Arize](https://lablab.ai/tech/arize), and [Vercel](https://lablab.ai/tech/vercel). We sincerely appreciate everything you have done and continue to do to support our mission!
 
@@ -12,7 +15,7 @@ We also want to give a huge shoutout to all of the talented builders, hackers, e
 
 A heartfelt thank you to our dedicated team of community mentors who generously volunteer their time to guide and support our members. We want to recognize just a few of these valuable leaders: Donald Nwokoro, Paulo Almeida, Theodoros Levant Ampas, Dimitrije Pešić, Muhammad Inaamullah, Walaa Nasr Elghitany Shebagi, and Mitra. Your guidance in hackathon projects, willingness to give feedback and advice, and efforts to foster an inclusive, collaborative environment have been invaluable. lablab.ai would not be the same without your hard work and dedication.
 
-[https://lh7-us.googleusercontent.com/UGMFQ71hnYXbGy9zPNMPSib65KrOaJv3ol8kxJ2Hj5U3jWqjmueZMLVIzhLHV55RZ9qw8uuCTtB-H7q7SzrYv9QD2K-yQzPWtBw9FF0-jrckXdeV9Iif4_3rT_ZiWZ2HN5p_9LzrbY7IoGQEhclzpME](https://lh7-us.googleusercontent.com/UGMFQ71hnYXbGy9zPNMPSib65KrOaJv3ol8kxJ2Hj5U3jWqjmueZMLVIzhLHV55RZ9qw8uuCTtB-H7q7SzrYv9QD2K-yQzPWtBw9FF0-jrckXdeV9Iif4_3rT_ZiWZ2HN5p_9LzrbY7IoGQEhclzpME)
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8da9ba0a-0819-4560-7b8b-c3193b9e0300/full" alt="lablab.ai community mentor leads" />
 
 We also want to thank the incredible lablab.ai team working behind the scenes to make this community possible. Their dedication to our mission, support of members, and continual platform improvements have been vital to reaching 100,000 members. We are grateful for all of their efforts in building a collaborative home for AI innovation.
 
