@@ -93,6 +93,15 @@ This code constructs a web application where users can upload images or PDFs, in
 
 Github link with working code: https://github.com/Raghavan1988/talk_to_images_with_gemini/
 
+## Demo screenshots
+Contrastive Chain of thought is a popular prompt engineering technique. [5] After uploading a survey paper about various prompt engineering techniques, let's ask the question "How much did Contrastive COT score in Arithematic Reasoning?"
+We can see that application was able to extract the image and answer the question using Gemini Vision Pro.
+Answer:  The image shows a table with the results of the Contrastive COT model on the Arithmetic Reasoning task. The table shows that the model achieves a score of 79.0, which is significantly higher than the score of 27.4 achieved by the standard prompting method. This demonstrates that the Contrastive COT model is better able to solve arithmetic reasoning problems than the standard prompting method.
+
+It's important to note, LLMs may hallucinate.
+
+
+
 ### Conclusion
 In summary, Gemini-pro-vision provides a powerful capability to understand images. If we can extract images from PDFs and building a wide range of multimodal RAG applications for healthcare, researchers becomes easy to implement.
 
@@ -102,3 +111,5 @@ In summary, Gemini-pro-vision provides a powerful capability to understand image
 [2] https://python.langchain.com/docs/templates/rag-chroma-multi-modal
 [3] https://blog.llamaindex.ai/llamaindex-gemini-8d7c3b9ea97e
 [4] https://github.com/Raghavan1988/talk_to_images_with_gemini/
+[5] https://arxiv.org/abs/2311.09277
+
