@@ -98,9 +98,10 @@ Contrastive Chain of thought is a popular prompt engineering technique. [5] Afte
 We can see that application was able to extract the image and answer the question using Gemini Vision Pro.
 Answer:  The image shows a table with the results of the Contrastive COT model on the Arithmetic Reasoning task. The table shows that the model achieves a score of 79.0, which is significantly higher than the score of 27.4 achieved by the standard prompting method. This demonstrates that the Contrastive COT model is better able to solve arithmetic reasoning problems than the standard prompting method.
 
+![Question](https://freeimage.host/i/JRdxrxt "Optional Title")
+![Answer](https://freeimage.host/i/JRdxUbI "Optional Title")
+
 It's important to note, LLMs may hallucinate.
-
-
 
 ### Conclusion
 In summary, Gemini-pro-vision provides a powerful capability to understand images. If we can extract images from PDFs and building a wide range of multimodal RAG applications for healthcare, researchers becomes easy to implement.
