@@ -1,0 +1,119 @@
+title: "Improving GPT's instruction following ability of non english prompts"
+description: "Learn how to improve response quality of GPT 3.5 for non english prompts."
+authorUsername: "raghavan848"
+
+Here's a concise summary to start the article:
+
+---
+
+# GPT-3.5 and Language Limitations: A Study in Multilingual Adaptation
+
+## Introduction
+The advent of large language models (LLMs) like GPT-3.5 has revolutionized the field of natural language processing. However, their proficiency predominantly lies in English, creating a gap in multi-language accessibility. Let's take a simple example of "Write 3 paragraphs of 4 lines each about the solar system" in english.
+
+## GPT-3.5's Abilities in English
+GPT-3.5 shows remarkable understanding and generation capabilities in English, adept in various tasks from creative writing to technical problem-solving. It writes 3 paragraphs and 4 lines.
+
+```GPT Response
+The solar system, a marvel of cosmic architecture, is home to a diverse family of celestial bodies. At its heart lies the Sun, a glowing furnace of nuclear fusion, providing light and warmth to its planetary offspring. Orbiting it are the planets, each unique in its composition and appearance, from the rocky inner worlds to the gas giants further out. This celestial dance is set against the backdrop of the Milky Way, with asteroids, comets, and distant stars completing the stunning vista.
+
+Mercury, Venus, Earth, and Mars make up the inner solar system, characterized by their solid surfaces and closer proximity to the Sun. Earth, with its life-supporting conditions, stands out as a blue jewel among its neighbors. Beyond Mars lies the asteroid belt, a region of rocky debris that marks the boundary to the outer solar system. Here, the gas giants Jupiter and Saturn, with their impressive rings and moons, dominate, followed by the more distant and enigmatic Uranus and Neptune.
+
+At the fringes of the solar system, the Kuiper Belt and Oort Cloud are regions filled with icy bodies and remnants from the solar system's formation. Dwarf planets like Pluto reside here, challenging our definitions of what constitutes a planet. The solar system is not just a collection of planets and moons; it's a dynamic and evolving system, constantly shaped by gravitational forces, solar winds, and cosmic events. As we explore further, we continue to uncover the mysteries and wonders of this cosmic neighborhood we call home.
+```
+Without judging the quality, we can see that GPT 3.5 has generated 3 paragraphs and 4 lines each as mentioned in the prompt.
+However, if we do the same in other languages, this is not guaranteed.
+
+[https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09](English response)
+
+## Performance in Non-English Languages
+When dealing with languages other than English, GPT-3.5's performance drops significantly. For example, prompts in South Asian or Middle Eastern languages often result in less accurate or coherent responses.
+| Language | GPT 3.5 Link | Instruction followed? |
+| :--------|:-------------|:----------------------|
+| Arabic | [https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4] (link) | More than 3 paragraphs and different lines in each paragraph |
+| Hindi | [https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6](link) | Got the 3 paragraphs right but line counts are wrong |
+| Tamil | [https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd](link) | 3 bullet points, got both paragraphs & line count wrong |
+
+This pattern can be reproduced for south asian and middle eastern languages that have lesser representation in the training data.
+
+## Why is this the case ?
+
+### Training data disparity - 
+Quoting directly from wikipedia, common crawl dataset which is used by GPT series models has 46% english, followed by german, russian, japanese, french, spanish and chinese each less than 6%
+With less examples to learn from, GPT’s understanding of non-English semantics and collective knowledge is poorer.
+
+
+### Grammatical complexity 
+South Asian and middle eastern languages have complex morphology, case systems, tense rules etc. These are harder for models to handle properly in non-English languages. Language specific enhancements can help. 
+We may need a language specific tokenizer.
+
+## Scaling Challenges of Training Multilingual LLMs
+Training a separate LLM for each language is not scalable due to immense data and computational requirements.
+Fine tuning also requires capital investment although orders of magnitude lesser than training a separate LLM.
+
+## Proposed Solution: Translation Layer
+A practical solution involves implementing a translation layer. This layer translates non-English prompts to English, processes them through GPT-3.5, and then translates the responses back to the original language.
+
+### Pseudocode
+1. Check if the input prompt is english
+2. If not, translate the prompt to english using GPT 3.5 itself or Google Translate API
+3. Send the english prompt to GPT 3.5 for response
+4. Reverse Translate the response to original language 
+5. Return the response
+
+This improves the response quality (anecdotally) significantly and LLM response follows instructions as expected
+### Code Implementation
+### necessary packages
+flask==3.0.0
+googletrans==3.1.0a0
+langchain==0.0.0237
+openai==0.28.1
+
+#### option-1 use Google Translate
+```python
+# Example Python snippet for translation implementation using Google Trans
+from googletrans import Translator
+
+translator = Translator()
+translated_text = translator.translate('Your non-English text', dest='en').text
+# Process with GPT-3.5
+# Translate response back to original language
+response = translator.translate('GPT-3.5 response in English', dest='original language code').text
+
+```
+#### option-2 use GPT 3.5 itself to translate
+```python
+## Translate to English
+    template = """
+        Take a deep breath
+        You are a language translator. You are going to translate the following text into English.
+        Identify the language of the input {text}
+        Output the language code in JSON format using the SCHEMA in TYPESCRIPT
+        SCHEMA:
+            language: string,
+            code: string,
+            english_translation: string
+
+        If the language matches one of the following in the list, use the code.
+        Language - Code
+    Afrikaans - af
+    Albanian - sq
+    Amharic - am
+    ...<truncated>
+    """
+```
+## Conclusion
+This approach enables users to leverage the power of GPT-3.5 in their native languages, democratizing access to advanced AI technologies.
+Complete code is available on Github: [https://github.com/Raghavan1988/googletrans_GPT](link)
+
+## Reference
+1. https://en.wikipedia.org/wiki/Common_Crawl
+2. https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09
+3. https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4
+4. https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6
+5. https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd
+
+Author: Raghavan Muthuregunathan
+Linkedin: https://www.linkedin.com/in/raghavanmit/
+
+
