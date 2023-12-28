@@ -61,7 +61,7 @@ AI Summarized Text:
 
 **Demo:**
 
-[https://lh7-us.googleusercontent.com/FH3jcSiAB9N1Ngc6Yt6aRpaeNHlGWewWbGmLtOOtP_t8BXAiDjrUUx8Cq9WiJelDY8NhwDXoQ6SViChOn-y-bYMgQIhSd9qUSqdNGdkakTs38C-VJpfQ_Wj0BTTmZN2miO-drJqBhoM23isA5sRkhhQ](https://lh7-us.googleusercontent.com/FH3jcSiAB9N1Ngc6Yt6aRpaeNHlGWewWbGmLtOOtP_t8BXAiDjrUUx8Cq9WiJelDY8NhwDXoQ6SViChOn-y-bYMgQIhSd9qUSqdNGdkakTs38C-VJpfQ_Wj0BTTmZN2miO-drJqBhoM23isA5sRkhhQ)
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5a844cbd-d019-4c9d-4c4a-c2c653773a00/full" />
 
 ## **What Is AI Paraphrasing?**
 
@@ -170,7 +170,8 @@ Let’s take a real-time example of AI paraphrasing utilizing Editpad’s AI Par
 
 ***Demo:***
 
-[https://lh7-us.googleusercontent.com/X4Q5kXLx_wMdIAkqNsOx6YTp7OdSizMGWhEE4N-Zo59-KOz8KJWwUonBBWycjtHmk9LUQbaQYY7hsk4M9RyqgLo4MIdmhEydPgMKKH4pTLWGWf79RdGO0xt-CrKZABXQZTut5EoezHKswOa1w9tqyc8](https://lh7-us.googleusercontent.com/X4Q5kXLx_wMdIAkqNsOx6YTp7OdSizMGWhEE4N-Zo59-KOz8KJWwUonBBWycjtHmk9LUQbaQYY7hsk4M9RyqgLo4MIdmhEydPgMKKH4pTLWGWf79RdGO0xt-CrKZABXQZTut5EoezHKswOa1w9tqyc8)
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5ee8825a-df0e-4204-8fe5-db581ddcf400/full" />
+
 
 ## **Conclusion**
 
