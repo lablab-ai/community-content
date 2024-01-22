@@ -1,0 +1,672 @@
+---
+title: "The Art of Intelligent Browsing: Mastering Selenium with GPT Vision API"
+description: "Dive into the world of automated web interactions and AI-powered analysis with our comprehensive tutorial. You'll learn how to build an Interactive Media App using Streamlit, Clarifai, and OpenAI's GPT Vision API. This guide covers everything from setting up your environment to integrating advanced AI for tasks such as image recognition, and text-to-speech, culminating in the creation of engaging, intelligent browsing experiences."
+authorUsername: "sanchayt743"
+---
+# Build an App with GPT-4 (Vision) Using Clarifai Platform: A Beginner-Friendly Tutorial 🌟
+
+Welcome to the exciting world of GPT-4 Vision! I am Sanchay Thalnerkar and I will guide you through building an app with the remarkable capabilities of GPT-4's vision features, using the Clarifai platform. 🚀
+
+## Introduction to GPT-4 Vision 👁️‍🗨️
+
+GPT-4, the latest iteration in OpenAI's series of models, has taken a giant leap by integrating vision capabilities. This means it can now process and understand visual information, like recognizing objects, interpreting scenes, and even deciphering text within images.
+
+### Why is GPT-4 Vision a Game-Changer?
+
+1. **Multimodal Understanding**: Combines language processing with visual comprehension.
+2. **Dynamic Interaction**: Enhances AI conversations with context-rich visual inputs.
+3. **Broader Applications**: Opens new avenues in various fields like academic research, web development, data interpretation, and creative content creation.
+
+## Setting Up Your App 🛠️
+
+Before diving into the app-building process, let's ensure you have the essentials:
+
+- Access to GPT-4 Vision API (Ensure it's enabled in your ChatGPT or chosen platform).
+- Familiarity with basic programming and API integration.
+- Creativity and a willingness to experiment!
+
+### Step-by-Step Guide
+
+1. **Enable GPT-4 Vision**: Ensure you're working with a GPT-4 enabled platform that supports vision features.
+2. **Clarifai Integration**: Use the Clarifai platform for image recognition and processing. This adds an extra layer of visual understanding to your app.
+3. **Combine with GPT-4**: Feed the processed visual data from Clarifai into GPT-4 for rich, context-aware responses.
+
+## Practical Use-Cases 🌐
+
+- **Academic Research**: Deciphering historical manuscripts or analyzing visual data.
+- **Web Development**: Converting visual designs into code for websites.
+- **Creative Content Creation**: Generating social media posts or marketing content based on visual prompts.
+
+## Tips for Optimizing Your App 🎯
+
+- **Provide Clear Visual Context**: When using images, ensure they are relevant and clear.
+- **Ask Specific Questions**: Tailor your queries to get the most out of GPT-4’s vision capabilities.
+- **Iterate for Clarity**: Refine your prompts based on initial responses to improve accuracy.
+
+## Limitations and Responsible Use ⚠️
+
+While GPT-4 Vision is a powerful tool, it has its limitations. It's crucial to be aware of these to use the technology responsibly:
+
+- **Accuracy**: The model can be unreliable at times; always verify important information.
+- **Privacy and Bias**: Be mindful of biases in the model and avoid sharing sensitive data.
+- **Risky Tasks**: Avoid using GPT-4 Vision for tasks requiring high precision, like medical advice or scientific analysis.
+
+---
+
+Great! Let's get started on setting up your project environment for building an app with GPT-4 Vision and Clarifai. Here's a step-by-step guide:
+
+### Step 1: Create a Project Directory
+
+1. **Open your Terminal or Command Prompt**.
+2. **Navigate to the location** where you want to create your project directory. You can use the `cd` command for this.
+3. **Create a new directory** for your project. You can name it something relevant, like `gpt4_vision_app`. Use the command `mkdir gpt4_vision_app`.
+4. **Navigate into your project directory** with `cd gpt4_vision_app`.
+
+### Step 2: Set Up Required Files
+
+In your `gpt4_vision_app` directory, you'll need to create three files:
+
+- A `.env` file: This will store environment variables, like API keys.
+- An `app.py` file: This will be your main Python application file.
+- A `knowledge.py` file: This can be used to handle specific logic or data.
+
+You can create these files using a text editor or via the command line using `touch .env app.py knowledge.py`.
+
+### Step 3: Create a Virtual Environment
+
+A virtual environment is crucial for managing dependencies specific to your project without affecting other Python projects or your system-wide Python setup.
+
+1. **Install virtualenv** if you haven't already: Run `pip install virtualenv`.
+2. **Create a virtual environment** in your project directory: Run `virtualenv venv`.
+3. **Activate the virtual environment**:
+   - On Windows, use `venv\Scripts\activate`.
+   - On macOS and Linux, use `source venv/bin/activate`.
+
+### Step 4: Install Required Libraries
+
+Now, install the necessary libraries for your project using pip, Python's package installer. Run the following command in your virtual environment:
+
+```bash
+pip install selenium requests python-dotenv clarifai
+```
+
+- `selenium`: For automating web browsers.
+- `requests`: For making HTTP requests.
+- `python-dotenv`: For loading environment variables from your `.env` file.
+- `clarifai`: For accessing the Clarifai API.
+
+### Recap
+
+You now have a structured project directory with a virtual environment and all the necessary libraries installed. This setup forms the foundation for building your app using GPT-4 Vision and the Clarifai platform.
+
+In the next steps, you'll start writing the logic for your application in `app.py` and possibly handle specific functionalities or data in `knowledge.py`. Remember to keep your API keys and sensitive information in the `.env` file for security purposes. Happy coding! 🌟👨‍💻👩‍💻
+
+---
+
+Great! Now that you have your project structure set up, the next step is to obtain the necessary API keys and configure your `.env` file. This file will store sensitive information like API keys, keeping them secure and separate from your main codebase. Here’s how to obtain these keys:
+
+### 1. Clarifai Personal Access Token
+
+- **Navigate to Clarifai's Security Settings**: Go to [Clarifai Security Settings](https://clarifai.com/settings/security).
+- **Get Your Personal Access Token**: In the Clarifai settings, you should find an option to create or view your Personal Access Tokens (PATs). Follow the instructions to generate a new token if you don't have one already.
+- **Add to `.env` File**: Save this token in your `.env` file as `CLARIFAI_PAT=your_clarifai_token_here`.
+
+### 2. OpenAI API Key
+
+- **Visit OpenAI's API Key Page**: Head over to [OpenAI API Keys](https://platform.openai.com/api-keys).
+- **Generate or Copy Your API Key**: If you haven't created an API key yet, you can generate a new one on this page. If you already have an existing key, simply copy it.
+- **Update `.env` File**: Add this key to your `.env` file like so: `OPEN_AI=your_openai_api_key_here`.
+
+### 3. SerpApi Key
+
+- **Go to SerpApi**: Visit [SerpApi](https://serper.dev/api-key) to get your API key.
+- **Create or Copy the API Key**: If you're a new user, sign up and generate an API key. If you're an existing user, log in to copy your existing key.
+- **Include in `.env` File**: Add this key to your `.env` file as `SERP_API_KEY=your_serpapi_key_here`.
+
+### Configuring the `.env` File
+
+Your `.env` file should now have three lines, each with its respective API key:
+
+```
+CLARIFAI_PAT=your_personal_access_token
+OPEN_AI=your_openai_api_key
+SERP_API_KEY=your_serpapi_key
+```
+
+Replace `your_personal_access_token`, `your_openai_api_key`, and `your_serpapi_key` with the actual keys you obtained from Clarifai, OpenAI, and SerpApi, respectively.
+
+### Final Steps
+
+Once your `.env` file is set up with these keys, your application will be able to securely access the functionalities provided by Clarifai, OpenAI, and SerpApi. Make sure you never share your `.env` file or disclose its contents, as it contains sensitive information.
+
+Now, you're all set to start coding your app with these powerful APIs! 🚀👩‍💻👨‍💻
+
+---
+
+## Building Your `app.py` for a GPT-4 Vision App
+
+### Step 1: Importing Libraries
+
+Your first coding step in `app.py` is to import all the necessary libraries. This includes:
+
+- **Streamlit (`import streamlit as st`)**: This library will power the frontend of your application. It's crucial for creating interactive web interfaces.
+- **OS (`import os`)**: Used for interacting with the operating system, especially for retrieving environment variables where your API keys are stored.
+- **PIL (`from PIL import Image`)**: A vital library for image processing tasks. It allows you to manipulate and process the images uploaded to your application.
+
+```python
+import streamlit as st
+import os
+from PIL import Image
+import base64
+from clarifai.client.model import Model
+from dotenv import load_dotenv
+import argparse
+from io import BytesIO
+import time
+import pandas as pd
+```
+
+### Step 3: Loading Environment Variables
+
+Next, use the `dotenv` library to load the API keys from your `.env` file. This step is crucial for maintaining the security of your application:
+
+```python
+load_dotenv()
+clarifai_pat = os.getenv("CLARIFAI_PAT")
+SERP_API_KEY = os.getenv("SERP_API_KEY")
+openai_api_key = os.getenv("OPEN_AI")
+```
+
+This code snippet loads the Clarifai Personal Access Token, SERP API Key, and OpenAI API key from the `.env` file.
+
+### Step 4: Defining Utility Functions
+
+After setting up the necessary imports and environment variables, it's time to define several utility functions that will drive the core functionality of your GPT-4 Vision app. Let’s delve into each function and its role in the app:
+
+#### 1. `construct_prompt` Function
+
+This function is pivotal for generating prompts for GPT-4 based on user input. Here's a breakdown of its code and purpose:
+
+```python
+def construct_prompt(user_input):
+    # Read from the model_responses.txt file
+    with open("model_responses.txt", "r") as file:
+        file_contents = file.read()
+
+    # Combine file contents with user input
+    final_prompt = f"""
+    You have the capabilities to understand images in great detail.
+    Based on the images you need to {user_input}.
+    Your output will be a markdown table with clear differentiation between the knowledge given image.
+
+    These are the knowledge content you will need to answer the question:
+
+    REQUIRED KNOWLEDGE :
+    {file_contents}
+
+    Question that you need to answer:
+    {user_input}
+    """
+    return final_prompt
+```
+
+- **Purpose**: The function constructs a detailed prompt that combines user input with predefined responses (read from `model_responses.txt`). This structured prompt is then used to guide the GPT-4 model in generating relevant and context-specific responses.
+- **Process**: It reads a file, which presumably contains pre-determined model responses or knowledge base, concatenates this with the user's query, and structures it in a format that is most conducive for GPT-4's understanding.
+
+#### 2. User Interface Functions
+
+These functions are designed to enhance user interaction with the Streamlit app. Each function plays a specific role in managing the UI components:
+
+- **`show_processing_ui` Function**:
+
+  ```python
+  def show_processing_ui():
+      with st.spinner("Processing the image..."):
+          time.sleep(2)  # Simulate a processing delay
+  ```
+
+  - **Purpose**: Shows a spinner on the UI while the app is processing the image, enhancing user experience by indicating that a background task is in progress.
+
+- **`show_success_message` Function**:
+
+  ```python
+  def show_success_message():
+      st.success("Successfully processed the image!")
+  ```
+
+  - **Purpose**: Displays a success message upon successful image processing, providing positive feedback to the user.
+
+- **`show_expander_with_details` Function**:
+
+  ```python
+  def show_expander_with_details():
+      with st.expander("See processing details"):
+          # Example data for the table
+          data = {
+              "Parameter": ["Param 1", "Param 2", "Param 3"],
+              "Value": ["Value 1", "Value 2", "Value 3"],
+          }
+          df = pd.DataFrame(data)
+          st.table(df)
+  ```
+
+  - **Purpose**: Creates an expandable UI section that shows additional details in a table format, offering users deeper insights into the processing steps or results.
+
+- **`show_progress_bar` Function**:
+  ```python
+  def show_progress_bar():
+      progress_bar = st.progress(0)
+      for i in range(100):
+          time.sleep(0.01)
+          progress_bar.progress(i + 1)
+  ```
+  - **Purpose**: Introduces a progress bar to the UI, which visually represents the progression of a task, enhancing the interactive nature of the app.
+
+These utility functions collectively contribute to a smoother, more engaging user experience, making your application not just functional but also user-friendly.
+
+### Step 5: Implementing Model Prediction and Screenshot Functions
+
+#### A. Model Prediction Function (`get_model_prediction`)
+
+The `get_model_prediction` function is a critical component of your app, responsible for integrating the GPT-4 model's capabilities with image processing.
+
+```python
+def get_model_prediction(image, prompt, openai_api_key):
+    try:
+        buffered = BytesIO()
+        image.save(buffered, format="PNG")
+        base64_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        # Replace with the correct model URL
+        model_prediction = Model(
+            "https://clarifai.com/openai/chat-completion/models/gpt-4-vision"
+        ).predict_by_bytes(
+            prompt.encode(),
+            input_type="text",
+            inference_params={
+                "temperature": 0.2,
+                "api_key": openai_api_key,
+                "image_base64": base64_image,
+            },
+        )
+        return model_prediction.outputs[0].data.text.raw
+    except Exception as e:
+        print(f"Error in get_model_prediction function: {e}")
+        return "Error getting prediction"
+```
+
+- **Functionality**: This function takes an image, the constructed prompt, and the OpenAI API key as inputs. It first converts the image to a Base64 encoded format, which is necessary for the API request. Then, it makes a call to the Clarifai model (using the specified model URL) with the encoded image and prompt.
+- **Error Handling**: The function includes a try-except block to handle any exceptions that might occur during the image processing or API request, ensuring that the app can gracefully manage errors.
+
+#### B. Screenshot Loading Function (`load_screenshots`)
+
+The `load_screenshots` function is designed to display a series of images (screenshots) from a specific folder, enhancing the app's interactivity and visual appeal.
+
+```python
+def load_screenshots():
+    st.subheader("Scraping and Gathering Screenshots")
+    screenshots_folder = "screenshots"
+    images = [
+        Image.open(os.path.join(screenshots_folder, img))
+        for img in os.listdir(screenshots_folder)
+        if img.endswith(".png")
+    ]
+    num_columns = 3
+    num_rows = (len(images) + num_columns - 1) // num_columns
+
+    for i in range(num_rows):
+        cols = st.columns(num_columns)
+        for j in range(num_columns):
+            idx = i * num_columns + j
+            if idx < len(images):
+                cols[j].image(images[idx], use_column_width=True)
+```
+
+- **Purpose**: This function dynamically loads and displays screenshots stored in a designated folder (`screenshots`), offering a visual representation of data or results.
+- **Implementation**: It uses Streamlit's layout features to organize the images in a grid format. The number of columns (`num_columns`) can be adjusted based on the desired layout.
+
+Together, these functions form the backbone of your application's data processing and visualization capabilities. The `get_model_prediction` function leverages GPT-4's advanced AI to interpret and respond to images, while `load_screenshots` provides a user-friendly way to display relevant visual data within the app.
+
+### Step 6: Crafting the Main Function (`main`)
+
+The `main` function is the heart of your `app.py` script, where all the components come together to create a functional and interactive application. This function orchestrates the user interface, handles user input, and invokes the model prediction and screenshot display functionalities. Let's dissect this function to understand its workflow.
+
+```python
+def main():
+    st.title("Interactive Knowledge Base and Screenshots Display")
+
+    user_prompt = st.text_area(
+        "Enter additional details for the prompt:", placeholder="Type here..."
+    )
+
+    uploaded_kb_image = st.file_uploader(
+        "Upload an image for your knowledge base", type=["png", "jpg", "jpeg"]
+    )
+
+    if st.button("Submit") and uploaded_kb_image:
+        with st.spinner("Processing the image..."):
+            uploaded_kb_image = Image.open(uploaded_kb_image)
+            st.image(uploaded_kb_image, caption="Uploaded Image", use_column_width=True)
+
+            final_prompt = construct_prompt(user_prompt)
+            prediction = get_model_prediction(
+                uploaded_kb_image, final_prompt, openai_api_key
+            )
+
+            # Simulate a delay to mimic processing time (remove if actual processing takes time)
+            time.sleep(2)
+
+            st.write("Model Prediction:")
+            st.markdown(prediction)
+
+    if "loaded_screenshots" not in st.session_state:
+        st.session_state["loaded_screenshots"] = True
+        load_screenshots()  # Assumes this function is defined to load and display screenshots
+```
+
+- **Setting Up the Title**: The function begins by setting a title for the web app using Streamlit's `st.title` method.
+- **User Prompt Input**: It employs `st.text_area` for users to enter details for the GPT-4 prompt, enhancing the interactivity of the app.
+
+- **Image Uploading**: The `st.file_uploader` method allows users to upload an image. This image will be processed and used in conjunction with the GPT-4 model.
+
+- **Handling Submit Action**:
+
+  - When the user clicks the "Submit" button (captured using `st.button`) and an image is uploaded, the app proceeds with processing.
+  - The uploaded image is opened and displayed using PIL and Streamlit.
+  - The `construct_prompt` function is called with the user's input to form a final prompt for the model.
+  - `get_model_prediction` is invoked with the uploaded image, the final prompt, and the OpenAI API key to get the prediction from the model.
+
+- **Displaying Model Prediction**: The prediction result is displayed as markdown in the Streamlit app using `st.markdown`.
+
+- **Loading and Displaying Screenshots**:
+
+  - The app checks if the screenshots are already loaded in the session state. If not, it calls `load_screenshots` to display the screenshots.
+
+- **Streamlit Session State Management**: The use of `st.session_state` ensures that screenshots are loaded once per session, optimizing the app's performance.
+
+---
+
+### Overview of `knowledge.py`
+
+Create `knowledge.py` file. It plays a critical role in the backend of your GPT-4 Vision application. It handles tasks such as web scraping, screenshot capturing, and processing these screenshots through the GPT-4 model. Here’s a detailed breakdown:
+
+#### Importing Libraries and Loading Environment Variables
+
+```python
+# Import necessary libraries
+from selenium import webdriver
+import time
+import requests
+import os
+import json
+import base64
+from dotenv import load_dotenv
+from clarifai.client.model import Model
+import argparse
+import subprocess
+import asyncio
+import concurrent.futures
+
+# Load environment variables
+load_dotenv()
+
+clarifai_pat = os.getenv("CLARIFAI_PAT")
+SERP_API_KEY = os.getenv("SERP_API_KEY")
+openai_api_key = os.getenv("OPEN_AI")
+```
+
+- The script starts by importing required libraries. `selenium` is used for web scraping, `requests` for making HTTP requests, and others for various utility purposes.
+- `load_dotenv()` is crucial as it loads the API keys set in your `.env` file, essential for secure API interactions.
+
+#### Command-Line Argument Parsing
+
+```python
+def get_arguments():
+    parser = argparse.ArgumentParser(description="Process some inputs.")
+    parser.add_argument("query", type=str, help="Search query")
+    return parser.parse_args()
+```
+
+- `get_arguments` sets up command-line argument parsing. This function allows the script to accept a search query as an input, providing flexibility and user interactivity.
+
+#### Web Scraping with SERP API
+
+```python
+def search(query, serp_api_key):
+    try:
+        print("Starting search...")
+        url = "https://google.serper.dev/search"
+        payload = json.dumps({"q": query})
+        headers = {"X-API-KEY": serp_api_key, "Content-Type": "application/json"}
+        response = requests.post(url, headers=headers, data=payload)
+        response_data = response.json()
+        urls = [
+            result.get("link")
+            for result in response_data.get("organic", [])
+            if "link" in result
+        ][:5]
+        print(f"Found {len(urls)} URLs")
+        return urls
+    except Exception as e:
+        print(f"Error in search function: {e}")
+        return []
+
+```
+
+- The `search` function is where the web scraping action happens. Using the SERP API, it fetches URLs related to the user’s search query. This automation is key to gathering web content for subsequent analysis.
+
+#### Screenshot Capturing with Selenium
+
+```python
+def take_screenshots(urls, screenshots_dir):
+    try:
+        print("Starting to take screenshots...")
+        chrome_profile_path = (
+            "/Users/sanchaythalnerkar/Library/Application Support/Google/Chrome"
+        )
+        options = webdriver.ChromeOptions()
+        options.add_argument(f"user-data-dir={chrome_profile_path}")
+        driver = webdriver.Chrome(options=options)
+
+        if not os.path.exists(screenshots_dir):
+            os.makedirs(screenshots_dir)
+
+        screenshot_paths = []
+        for i, url in enumerate(urls):
+            try:
+                print(f"Accessing URL: {url}")
+                driver.get(url)
+                time.sleep(5)  # Adjust sleep time as needed
+                screenshot_path = os.path.join(screenshots_dir, f"screenshot{i}.png")
+                driver.save_screenshot(screenshot_path)
+                screenshot_paths.append(screenshot_path)
+            except Exception as e:
+                print(f"Error accessing {url}: {e}")
+        driver.quit()
+        return screenshot_paths
+    except Exception as e:
+        print(f"Error in take_screenshots function: {e}")
+        return []
+
+```
+
+- In `take_screenshots`, Selenium WebDriver is employed to visit each URL and capture a screenshot. These screenshots are crucial as they serve as the visual data for the GPT-4 model to analyze.
+
+#### GPT-4 Model Interaction for Image Analysis
+
+```python
+def get_model_prediction(
+    image_path=None,
+    prompt="You have the capabilites to understand images in great detail.Based on the images you need to write in great description prefarably in JSON only.Your output will be highly deatiled json structured output",
+    openai_api_key=openai_api_key,
+):
+    try:
+        print(f"Getting model prediction for {image_path}")
+        with open(image_path, "rb") as f:
+            base64_image = base64.b64encode(f.read()).decode("utf-8")
+
+        model_prediction = Model(
+            "https://clarifai.com/openai/chat-completion/models/gpt-4-vision"
+        ).predict_by_bytes(
+            prompt.encode(),
+            input_type="text",
+            inference_params={
+                "temperature": 0.2,
+                "api_key": openai_api_key,
+                "image_base64": base64_image,
+            },
+        )
+        return model_prediction.outputs[0].data.text.raw
+    except Exception as e:
+        print(f"Error in get_model_prediction function: {e}")
+        return "Error getting prediction"
+
+```
+
+- `get_model_prediction` is a vital function where the actual interaction with the GPT-4 model happens. It takes a screenshot's path, encodes the image, and sends it to the GPT-4 model for prediction.
+
+#### Asynchronous Model Prediction
+
+```python
+async def get_model_prediction_async(image_path, prompt, openai_api_key):
+    loop = asyncio.get_running_loop()
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        result = await loop.run_in_executor(
+            pool, get_model_prediction, image_path, prompt, openai_api_key
+        )
+    return result
+
+```
+
+- To enhance efficiency, `get_model_prediction` is wrapped in an asynchronous function `get_model_prediction_async`. This allows the script to handle multiple images concurrently, speeding up the overall process.
+
+#### Orchestrating the Entire Process in Main Function
+
+```python
+def main():
+    try:
+        args = get_arguments()
+        query = args.query
+        serp_api_key = SERP_API_KEY
+        urls = search(query, serp_api_key)
+
+        if urls:
+            screenshots_dir = "screenshots"
+            screenshot_paths = take_screenshots(urls, screenshots_dir)
+
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            tasks = [
+                loop.create_task(
+                    get_model_prediction_async(
+                        path,
+                        "Write a detailed description of what you see in the image , as seen through human eyes and a human navigating the internet",
+                        openai_api_key,
+                    )
+                )
+                for path in screenshot_paths
+            ]
+            loop.run_until_complete(asyncio.wait(tasks))
+
+            # Write responses to file
+            with open("model_responses.txt", "w") as file:
+                for task, url in zip(tasks, urls):
+                    response = task.result()
+                    file.write(f"URL: {url}\n")
+                    file.write(f"Response: {response}\n\n")
+
+            loop.close()
+
+        else:
+            print("No URLs found, skipping screenshot and prediction steps.")
+    except Exception as e:
+        print(f"Error in main function: {e}")
+
+    subprocess.run(["streamlit", "run", "app.py"])
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+- The `main` function orchestrates the entire process: capturing the query, performing web scraping, taking screenshots, and getting predictions from the GPT-4 model.
+- Finally, it runs the Streamlit app (`app.py`) using a subprocess, thus linking the backend script with the frontend application.
+
+---
+
+To run your application using the `knowledge.py` script with a specific query, you will use the command:
+
+```bash
+python knowledge.py <"Your query goes here">
+```
+
+Here's an overview of what happens when you run this command:
+
+#### 1. Processing the Command-Line Argument:
+
+- The script `knowledge.py` is executed with the provided argument "Top machine learning jobs in Mumbai".
+- The `get_arguments` function in the script parses this command-line argument to use it as the search query.
+
+#### 2. Web Scraping and Screenshot Capturing:
+
+- The script uses the parsed query to perform web scraping. It sends the query to the SERP API and retrieves relevant URLs.
+- Selenium WebDriver then navigates to these URLs. It is essentially automating a web browser to visit each page.
+- For each visited URL, the script captures screenshots. These screenshots are crucial as they provide the visual data that will be analyzed later.
+
+#### 3. Image Analysis with GPT-4:
+
+- The captured screenshots are then processed for image analysis. This involves encoding the images and preparing prompts for the GPT-4 model.
+- The script sends these images and prompts to the GPT-4 model, leveraging its vision capabilities to generate insights or analyses based on the visual content.
+
+#### 4. Launching the Streamlit Interface:
+
+<Img src="https://i.postimg.cc/PrMWM0yp/Screenshot-2024-01-20-at-5-24-16-AM.png" alt="Initial App Interface" caption="The home screen of the application invites users to input their queries and upload relevant images for analysis." />
+
+- After processing the screenshots with GPT-4, the script initiates the Streamlit application (`app.py`).
+
+<Img src="https://i.postimg.cc/mDrJbQrV/Screenshot-2024-01-20-at-5-24-37-AM.png" alt="Processing State" caption="After uploading, the application confirms the image and begins processing, as indicated by the on-screen notification." />
+
+- The Streamlit app provides a user interface where the results (screenshots and GPT-4's analyses) are displayed.
+
+<Img src="https://i.postimg.cc/4dmG8CpJ/Screenshot-2024-01-20-at-5-25-19-AM.png" alt="AI Analysis Output" caption="The AI returns a comprehensive analysis, matching the resume's qualifications with job requirements and offering actionable advice." />
+
+- Users can interact with this interface, possibly to view different screenshots, read the analyses, or input additional information for further processing.
+
+---
+
+## Conclusion: Embracing the Future of AI-Enhanced Web Interaction
+
+**As we wrap up our journey through "The Art of Intelligent Browsing: Mastering Selenium with GPT Vision API," it's clear that the intersection of AI and web automation is not just a technological advancement, but a paradigm shift in how we interact with the digital world.**
+
+---
+
+### Key Takeaways:
+
+- **Innovative Integration**: Combining Selenium with GPT Vision API has unlocked new horizons in web browsing and data processing.
+- **Practical Skills**: The tutorial has equipped you with essential skills to build interactive and intelligent applications.
+- **Creative Possibilities**: This experience opens up endless possibilities for both practical applications and creative explorations.
+
+---
+
+### Moving Forward:
+
+- **Experiment and Explore**: The tools and techniques you've learned are just the beginning. There’s a whole world of possibilities waiting for you to explore.
+- **Stay Curious**: As AI technology continues to evolve, staying updated and experimenting with new features will keep you ahead of the curve.
+- **Share Your Creations**: Don’t forget to share your projects and insights with the community. Your journey could inspire others!
+
+---
+
+### Further Resources:
+
+- For a visual guide and more insights, check out our [YouTube video](https://www.youtube.com/watch?v=GTK2pl93VJ0) for a detailed walkthrough.
+
+### Connect:
+
+- Have questions or want to share your experience? Connect with me, @sanchayt743, and join the conversation around AI and web automation.
+
+---
+
+*Thank you for joining me on this enlightening journey. Here's to many more discoveries and innovations as we continue to explore the vast capabilities of AI together!*
+
+---
