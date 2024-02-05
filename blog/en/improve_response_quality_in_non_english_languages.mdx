@@ -1,8 +1,8 @@
+---
 title: "Improving GPT's instruction following ability of non english prompts"
 description: "Learn how to improve response quality of GPT 3.5 for non english prompts."
+image: "" 
 authorUsername: "raghavan848"
-
-
 ---
 
 ## GPT-3.5 and Language Limitations: A Study in Multilingual Adaptation
@@ -15,23 +15,21 @@ GPT-3.5 shows remarkable understanding and generation capabilities in English, a
 
 ```GPT Response
 The solar system, a marvel of cosmic architecture, is home to a diverse family of celestial bodies. At its heart lies the Sun, a glowing furnace of nuclear fusion, providing light and warmth to its planetary offspring. Orbiting it are the planets, each unique in its composition and appearance, from the rocky inner worlds to the gas giants further out. This celestial dance is set against the backdrop of the Milky Way, with asteroids, comets, and distant stars completing the stunning vista.
-
 Mercury, Venus, Earth, and Mars make up the inner solar system, characterized by their solid surfaces and closer proximity to the Sun. Earth, with its life-supporting conditions, stands out as a blue jewel among its neighbors. Beyond Mars lies the asteroid belt, a region of rocky debris that marks the boundary to the outer solar system. Here, the gas giants Jupiter and Saturn, with their impressive rings and moons, dominate, followed by the more distant and enigmatic Uranus and Neptune.
-
 At the fringes of the solar system, the Kuiper Belt and Oort Cloud are regions filled with icy bodies and remnants from the solar system's formation. Dwarf planets like Pluto reside here, challenging our definitions of what constitutes a planet. The solar system is not just a collection of planets and moons; it's a dynamic and evolving system, constantly shaped by gravitational forces, solar winds, and cosmic events. As we explore further, we continue to uncover the mysteries and wonders of this cosmic neighborhood we call home.
 ```
 Without judging the quality, we can see that GPT 3.5 has generated 3 paragraphs and 4 lines each as mentioned in the prompt.
 However, if we do the same in other languages, this is not guaranteed.
 
-[https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09](English response)
+[English response](https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09)
 
 ## Performance in Non-English Languages
 When dealing with languages other than English, GPT-3.5's performance drops significantly. For example, prompts in South Asian or Middle Eastern languages often result in less accurate or coherent responses.
 | Language | GPT 3.5 Link | Instruction followed? |
 | :--------|:-------------|:----------------------|
-| Arabic | [https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4] (link) | More than 3 paragraphs and different lines in each paragraph |
-| Hindi | [https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6](link) | Got the 3 paragraphs right but line counts are wrong |
-| Tamil | [https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd](link) | 3 bullet points, got both paragraphs & line count wrong |
+| Arabic | [link](https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4) | More than 3 paragraphs and different lines in each paragraph |
+| Hindi | [link](https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6) | Got the 3 paragraphs right but line counts are wrong |
+| Tamil | [link](https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd) | 3 bullet points, got both paragraphs & line count wrong |
 
 This pattern can be reproduced for south asian and middle eastern languages that have lesser representation in the training data.
 
@@ -72,7 +70,6 @@ openai==0.28.1
 
 ```python
 from googletrans import Translator
-
 def translate_prompt_from_language_x_to_english(prompt_text_from_user, language):
     translator = Translator()
     translated_text = translator.translate(prompt_text_from_user, dest='en', src=language).text
@@ -85,7 +82,6 @@ def translate_prompt_from_language_x_to_english(prompt_text_from_user, language)
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-
 def send_translated_english_prompt_to_gpt3(prompt_text):
     llmGPT = OpenAI(openai_api_key=<Your OPEN_AI_KEY>, model_name= "gpt-3.5-turbo")
     prompt = PromptTemplate(template=prompt_text, input_variables=["text"])
@@ -96,12 +92,10 @@ def send_translated_english_prompt_to_gpt3(prompt_text):
 ```
 ### method to translate english response from GPT To original input language
 ```python
-
 def translate_english_response_to_input_language_x(gpt_response_in_english, language):
     translator = Translator()
     translated_response = translator.translate(gpt_response_in_english, dest=language, src='en').text
     return translated_response
-
 ```
 
 There are two options to achieve the translation. One option is to use Google Translate API while other option is to use GPT 3.5 itself to translate.
@@ -110,13 +104,11 @@ There are two options to achieve the translation. One option is to use Google Tr
 ```python
 # Example Python snippet for translation implementation using Google Trans
 from googletrans import Translator
-
 translator = Translator()
 translated_text = translator.translate('Your non-English text', dest='en').text
 # Process with GPT-3.5
 # Translate response back to original language
 response = translator.translate('GPT-3.5 response in English', dest='original language code').text
-
 ```
 #### option-2 use GPT 3.5 itself to translate
 ```python
@@ -130,7 +122,6 @@ response = translator.translate('GPT-3.5 response in English', dest='original la
             language: string,
             code: string,
             english_translation: string
-
         If the language matches one of the following in the list, use the code.
         Language - Code
     Afrikaans - af
@@ -155,5 +146,3 @@ Complete code is available on Github: [https://github.com/Raghavan1988/googletra
 
 Author: Raghavan Muthuregunathan
 Linkedin: https://www.linkedin.com/in/raghavanmit/
-
-
