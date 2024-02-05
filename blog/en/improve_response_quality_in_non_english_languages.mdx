@@ -2,11 +2,10 @@ title: "Improving GPT's instruction following ability of non english prompts"
 description: "Learn how to improve response quality of GPT 3.5 for non english prompts."
 authorUsername: "raghavan848"
 
-Here's a concise summary to start the article:
 
 ---
 
-# GPT-3.5 and Language Limitations: A Study in Multilingual Adaptation
+## GPT-3.5 and Language Limitations: A Study in Multilingual Adaptation
 
 ## Introduction
 The advent of large language models (LLMs) like GPT-3.5 has revolutionized the field of natural language processing. However, their proficiency predominantly lies in English, creating a gap in multi-language accessibility. Let's take a simple example of "Write 3 paragraphs of 4 lines each about the solar system" in english.
@@ -69,6 +68,44 @@ googletrans==3.1.0a0
 langchain==0.0.0237
 openai==0.28.1
 
+### method to translate prompt to english
+
+```python
+from googletrans import Translator
+
+def translate_prompt_from_language_x_to_english(prompt_text_from_user, language):
+    translator = Translator()
+    translated_text = translator.translate(prompt_text_from_user, dest='en', src=language).text
+    return translated_text
+```
+
+### method to call GPT 3.5 and get the LLM response
+
+```python
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
+def send_translated_english_prompt_to_gpt3(prompt_text):
+    llmGPT = OpenAI(openai_api_key=<Your OPEN_AI_KEY>, model_name= "gpt-3.5-turbo")
+    prompt = PromptTemplate(template=prompt_text, input_variables=["text"])
+    llm_chain = LLMChain(prompt=prompt, llm=llmGPT)
+    ## Take a deep breath is a recommended prompt engineering technique   
+    english_response = llm_chain.run(text="Take a deep breath") 
+    return english_response
+```
+### method to translate english response from GPT To original input language
+```python
+
+def translate_english_response_to_input_language_x(gpt_response_in_english, language):
+    translator = Translator()
+    translated_response = translator.translate(gpt_response_in_english, dest=language, src='en').text
+    return translated_response
+
+```
+
+There are two options to achieve the translation. One option is to use Google Translate API while other option is to use GPT 3.5 itself to translate.
+
 #### option-1 use Google Translate
 ```python
 # Example Python snippet for translation implementation using Google Trans
@@ -102,9 +139,11 @@ response = translator.translate('GPT-3.5 response in English', dest='original la
     ...<truncated>
     """
 ```
+
 ## Conclusion
 This approach enables users to leverage the power of GPT-3.5 in their native languages, democratizing access to advanced AI technologies.
 Complete code is available on Github: [https://github.com/Raghavan1988/googletrans_GPT](link)
+
 
 ## Reference
 1. https://en.wikipedia.org/wiki/Common_Crawl
@@ -112,6 +151,7 @@ Complete code is available on Github: [https://github.com/Raghavan1988/googletra
 3. https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4
 4. https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6
 5. https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd
+6. https://dzone.com/articles/lost-in-translation-gaps-of-gpt-35-in-south-asian
 
 Author: Raghavan Muthuregunathan
 Linkedin: https://www.linkedin.com/in/raghavanmit/
