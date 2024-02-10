@@ -86,4 +86,24 @@ Install the necessary libraries using pip:
 
 ```bash
 pip install streamlit langchain trulens-eval openai
+## Set Up Streamlit Secrets
+
+To incorporate your OpenAI API key and HuggingFace Access Token into Streamlit secrets, follow these steps:
+
+1. Create a `.streamlit/secrets.toml` file within your project directory:
+
+```bash
+touch .streamlit/secrets.toml
+## Configure API Keys
+
+To configure your API keys for OpenAI and HuggingFace, follow these steps:
+
+1. Open the `.streamlit/secrets.toml` file in your project directory.
+
+2. Add the following lines to the file, replacing `"YOUR_API_KEY"` and `"YOUR_ACCESS_TOKEN"` with your respective keys:
+
+```toml
+OPENAI_API_KEY = "YOUR_API_KEY"
+HUGGINGFACE_API_KEY = "YOUR_ACCESS_TOKEN"
+
 
