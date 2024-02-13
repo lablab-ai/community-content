@@ -1,0 +1,136 @@
+---
+title: 'Conversational AI and Personalized Advertising: A New Frontier'
+description: 'Explore the transformative power of personalized ads in conversational AI'
+image: 'https://storage.googleapis.com/lablab-static-eu/images/tutorials/thubmnail-ads-conversational-ai.png'
+authorUsername: 'ezzcodeezzlife'
+---
+
+In the digital age, the intersection of conversational AI and personalized advertising presents a thrilling frontier for both marketers and technologists. This guide illuminates a possible path to integrating personalized ads within generative AI model conversations, a technique that promises to revolutionize user engagement by making interactions not only more relevant but also genuinely helpful. As we navigate through this journey, it's essential to understand that what we cover here is merely the tip of the iceberg. The realms of information extraction, profile building, and ad matching are vast, with much deeper nuances and complexities lying beneath their surfaces. Moreover, it's insightful to draw parallels with the current methodologies employed by search engines like Google, which have mastered the art of personalization through user search history and behavior analysis.
+
+### Introduction to the Art of Personalization in Conversational AI 💡
+
+The essence of delivering personalized ads through conversational AI lies in creating a seamless integration of product recommendations and advertisements that resonate with the user's specific needs and interests, as revealed through conversation. This approach not only enhances the user experience by providing value-aligned suggestions but also opens new avenues for businesses to connect with their audience in a meaningful way. To bring this vision to life, we embark on a three-step process: extracting user interests from conversational text, matching these interests with relevant ads, and elegantly weaving these ads into the conversation.
+
+### Step 1: Extracting Keywords with spaCy 
+
+Our first step into this realm involves employing spaCy, a powerful and accessible NLP library, to analyze conversational text and identify keywords that reflect the user's interests.
+
+#### Installation and Setup
+
+Begin by installing spaCy and downloading the English language model:
+
+```bash
+pip install spacy
+python -m spacy download en_core_web_sm
+```
+
+#### Keyword Extraction Process
+
+With spaCy ready, we proceed to extract keywords from the conversation:
+
+```python
+import spacy
+
+# Load the spaCy English language model
+nlp = spacy.load("en_core_web_sm")
+
+def extract_keywords(text):
+    # Process the conversational text
+    doc = nlp(text)
+    # Extract keywords, avoiding stop words and punctuation
+    keywords = [token.text for token in doc if not token.is_stop and not token.is_punct]
+    return keywords
+
+# Sample conversational text
+text = "I'm really interested in sustainable living and eco-friendly products."
+keywords = extract_keywords(text)
+print(keywords) # ['sustainable', 'living', 'eco-friendly']
+
+# Another sample conversational text
+text_ai = "Artificial intelligence is revolutionizing industries with machine learning and deep learning technologies."
+keywords_ai = extract_keywords(text_ai)
+print(keywords_ai) # ['Artificial', 'intelligence', 'industries', 'machine', 'learning', 'deep', 'learning', 'technologies']
+
+
+```
+
+This function serves as our initial foray into understanding the user's interests/topic of the conversation through the lens of conversational AI.
+
+### Step 2: Matching Ads with OpenAI Embeddings 🔗
+
+Having identified the user's interests, we turn to OpenAI's embeddings to find ads that align with these interests, a process that tries to mirror the complexity and nuance of matching queries with relevant results in search engines.
+
+#### Integrating OpenAI Embeddings
+
+Ensure the OpenAI Python package is installed:
+
+```bash
+pip install openai
+```
+
+Then, match keywords to ads using OpenAI's embeddings:
+
+```python
+def recommendations_from_strings(
+   strings: List[str],
+   index_of_source_string: int,
+   model="text-embedding-3-small",
+) -> List[int]:
+   """Return nearest neighbors of a given string."""
+
+   # get embeddings for all strings
+   embeddings = [embedding_from_string(string, model=model) for string in strings]
+
+   # get the embedding of the source string
+   query_embedding = embeddings[index_of_source_string]
+
+   # get distances between the source embedding and other embeddings (function from embeddings_utils.py)
+   distances = distances_from_embeddings(query_embedding, embeddings, distance_metric="cosine")
+
+   # get indices of nearest neighbors (function from embeddings_utils.py)
+   indices_of_nearest_neighbors = indices_of_nearest_neighbors_from_distances(distances)
+   return indices_of_nearest_neighbors
+```
+
+### Step 3: Generating Conversationally Integrated Ads
+
+The culmination of our journey is the artful integration of the selected ad into the conversation, ensuring it feels like a natural extension of the dialogue rather than an intrusive interruption. We will let the model handle this.
+
+#### Crafting the Integration 🔨
+
+This is what a basic prompt would look like:
+
+```
+<system prompt>
+weave the relevant ad information in the next message. ensure it feels like a natural extension of the dialogue rather than an intrusive interruption
+</system prompt>
+
+... conversation history of older messages ...
+
+Relevant ad information: Build Fast - Deploy Anywhere | The Smart Database for AI, Assess Generative AI Applications at a Large Scale Using Your Own On-Premises Infrastructure or Cloud Service Provider. https://www.xyz.com
+
+User Message: Hey, Im looking for a good database for my ai project
+```
+
+This step underscores the importance of maintaining the conversation's flow, enhancing the user experience with timely and relevant product suggestions.
+
+
+### What the result looks like
+
+Now, when everything is combined, we get a response message that looks like: 
+
+`
+"For your AI project, finding the right database is crucial to manage data efficiently and scale your applications effectively. If you're looking for a solution that allows you to build quickly and deploy anywhere, you might want to consider a smart database designed specifically for AI applications. Such a database can help you assess generative AI applications at a large scale, whether you're working with your own on-premises infrastructure or using a cloud service provider. This flexibility and focus on AI applications can be a game-changer for your project, ensuring that your database can handle the unique demands of AI workloads. For more information on a database that meets these criteria, check out https://www.xyz.com. It could be the perfect fit for your project, offering the right tools and capabilities to support your AI development journey."
+`
+
+### Beyond the Basics: The Depth of Personalization
+
+While this guide offers a foundational understanding of integrating personalized ads into conversational AI, the potential for deeper exploration and innovation remains vast. Advanced techniques in information extraction and profile building can lead to more nuanced understanding of user needs, while sophisticated ad matching algorithms can further refine the relevance of suggestions.
+
+### Reflecting on the Current State of Personalization
+
+It's instructive to consider how these conversational AI strategies compare with the personalization techniques employed by search engines. Platforms like Google analyze a user's search queries and browsing behavior to tailor search results and advertisements. This level of personalization, while effective, is based on accumulated data over time. Conversational AI introduces a dynamic, real-time element to personalization, leveraging the immediate context of the conversation to offer suggestions that feel more spontaneous and directly relevant.
+
+### Conclusion
+
+The integration of personalized ads within conversational AI models opens a new chapter in digital marketing, offering a more engaging, context-aware, and user-centric approach to advertising. As we stand on the brink of this exciting frontier, it's clear that the journey ahead is filled with opportunities for innovation, requiring a blend of technical skill, creative thinking, and a deep understanding of user experience.
