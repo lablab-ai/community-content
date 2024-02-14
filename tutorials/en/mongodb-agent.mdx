@@ -1,0 +1,383 @@
+---
+title: 'Creating Your Advanced AI Companion for MongoDB Management'
+description: 'Harness the power of LangChain to transform MongoDB management with an AI companion that simplifies database operations through intelligent, conversational interfaces.'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/535f76a5-f183-4192-d0f6-22de12318600/full'
+authorUsername: 'EmmanuelIriarte'
+---
+
+# Building Your Friendly AI Assistant for MongoDB with LangChain 🚀
+
+Hey there! 👋 Ready to dive into the world of AI and databases? We're going to craft an AI buddy that'll help you manage a NoSQL database, MongoDB, to be precise. With a sprinkle of LangChain magic and the brainpower of GPT-4, this guide will walk you through creating a smart system for navigating database schemas, inserting data, and fetching info—all through simple chats. Let's get started, and make sure to have some fun along the way!
+
+## Getting Set Up with MongoDB Atlas 🌍
+
+First off, you'll need a MongoDB Atlas account. MongoDB Atlas is a powerful cloud-based database service that's ideal for our project.
+
+### Step 1: Sign Up for MongoDB Atlas
+- Visit [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) to create an account.
+- Choose the Free Tier option when setting up your cluster to keep this project cost-effective.
+
+### Step 2: Pick Your Cluster
+- Choose a cloud provider and region that feels like home.
+- Stick with the default settings or tweak them to suit your needs.
+
+### Step 3: Secure Your Cluster
+- Make a database user with read/write access and remember your login details.
+- Whitelist your IP address so you can connect without a hitch.
+
+### Step 4: Connect to Your Database
+- Grab the connection string MongoDB Atlas gives you. You'll need it for your Python script to talk to your database.
+
+## Crafting the AI Agent 🤖
+
+Our AI agent will be powered by LangChain, MongoDB, and the smarts of OpenAI's GPT-4. It's going to be a data-wrangling wizard!
+
+### What You Need
+- Python 3.6 or newer
+- pymongo for chatting with MongoDB
+- Access to OpenAI's API for that AI magic
+
+### Installation
+Time to install some Python packages:
+
+```bash
+pip install pymongo openai
+```
+
+## Prepping Your Environment
+Set up your OpenAI API key so your script can use GPT-4:
+
+```py
+
+import os
+os.environ["OPENAI_API_KEY"] = "your_openai_api_key_here"
+```
+## Connecting to MongoDB
+Use your connection string to meet your MongoDB database:
+
+```py
+from pymongo import MongoClient
+# Define the database user's username
+DB_USER = "your_db_username"
+# Define the database user's password
+DB_SECRET = "your_db_password"
+# Specify the name of the database to use
+DATABASE_NAME = "your_database_name"
+# Create a MongoClient instance to connect to the MongoDB cluster
+CLIENT = MongoClient(f"mongodb+srv://{DB_USER}:{DB_SECRET}@your_cluster_url/?retryWrites=true&w=majority")
+```
+## Figuring Out Your Database Schema
+The retrieve_schema function takes a peek at your database and tells you what's inside this will allow the agent to understand the ins and outs of your database and be able to manipulate it correctly:
+
+```py
+def retrieve_schema(database_name):
+    # Connect to the specified database
+    db = CLIENT[database_name]
+    # Retrieve a list of all collection names in the database
+    collection_names = db.list_collection_names()
+    # Initialize a dictionary to store the schema of each collection
+    all_schemas = {}
+    # Iterate through each collection in the database
+    for collection_name in collection_names:
+        # Access the specific collection
+        collection = db[collection_name]
+        # Retrieve all documents within the collection
+        documents = collection.find({})
+        # Initialize a dictionary to store the schema of the current collection
+        schema = {}
+        # Iterate through each document in the collection
+        for doc in documents:
+            # Iterate through each key in the document
+            for key in doc:
+                # If the key is not already in the schema dictionary, add it
+                if key not in schema:
+                    # Store the type of the value associated with the key
+                    schema[key] = type(doc[key]).__name__
+        # Assign the schema of the current collection to the all_schemas dictionary
+        all_schemas[collection_name] = schema
+    # Return the schema of all collections in the database
+    return all_schemas
+```
+## Inserting and Extracting Data
+Let's make some tools for the agent to be able to add data to and pull data from our MongoDB collections:
+
+```py
+def perform_insert(insert_data, collection_name):
+    # Access the database using the global CLIENT instance and DATABASE_NAME
+    db = CLIENT[DATABASE_NAME]
+    # Access the specified collection within the database
+    collection = db[collection_name]
+    # Perform the insertion of the provided data into the collection
+    result = collection.insert_one(insert_data)
+    # Return a success message including the ID of the inserted document
+    return f"Insertion successful. Document ID: {result.inserted_id}"
+```
+This function will serve as a tool that will allow our agent to perform insertion tasks into our database
+```py
+def perform_extraction(query, collection_name):
+    # Access the database using the global CLIENT instance and the specified DATABASE_NAME
+    db = CLIENT[DATABASE_NAME]
+    # Access the specified collection within the database
+    collection = db[collection_name]
+    # Perform the query to find documents matching the criteria
+    documents = collection.find(query)
+    # Convert the cursor to a list and return the documents found
+    return list(documents)
+```
+Similarly this function will serve as a tool which will allow our agent to perform extractions and queries to our database
+
+## Making LangChain Do the Heavy Lifting
+Set up LangChain with our data functions and let GPT-4 turbo understand and process natural language:
+
+```py
+# Importing necessary modules from langchain for setting up the AI agent
+from langchain.tools import StructuredTool
+from langchain.chat_models import ChatOpenAI
+from langchain.agents import initialize_agent, AgentType
+
+# Initializing the ChatOpenAI model with specific parameters
+llm = ChatOpenAI(temperature=0, model_name="gpt-4-1106-preview")
+
+# Creating StructuredTool objects for insertion and extraction functions
+tool_insert = StructuredTool.from_function(perform_insert)
+tool_extract = StructuredTool.from_function(perform_extraction)
+
+# Initializing the agent with the tools and model specified, ready to execute tasks
+agent_executor = initialize_agent(
+    [tool_insert, tool_extract],  # Tools for the agent to use
+    llm,  # The language model to use for processing
+    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,  # The type of agent to initialize
+    verbose=True,  # Enables detailed logging
+)
+```
+## Chatting with Your AI Agent
+Now, let's create a loop for you to chat with your AI buddy, asking it to manage the MongoDB database with ease:
+
+```py 
+def run_query_with_user_input():
+    # Retrieve the current database schema for reference
+    schema = retrieve_schema(DATABASE_NAME)
+    # Display the retrieved schema to the user
+    print("Database Schema:", schema)
+    # Initialize an empty string to keep track of the chat history
+    chat_history = ""
+    # Enter an infinite loop to continuously accept user input
+    while True:
+        # Prompt the user for their query and store it
+        user_query = input("Human:    ")
+        # Check if the user wants to end the conversation
+        if user_query.lower() == "end":
+            break  # Exit the loop and end the function if 'end' is entered
+        # Append the user's query to the chat history
+        chat_history += f"Human:    {user_query}\n"
+        # Pass the updated chat history to the AI agent for processing
+        query_result = agent_executor.run(chat_history)
+        # Display the AI agent's response to the user
+        print(f"AI Agent: {query_result}")
+```
+To make your AI friend even smarter, we'll add a simple memory feature. This way, it can remember what you talked about previously, making the conversation flow even smoother.
+
+## Boosting AI Memory
+Here's how to keep the chat history as a memory for more meaningful interactions:
+
+```py
+def run_query_with_user_input():
+
+    schema = retrieve_schema(DATABASE_NAME)
+    print("Database Schema:", schema)
+    
+    # Initialize chat history to keep track of the conversation
+    chat_history = ""
+    while True:
+        # Prompt the user for their query
+        user_query = input("Human:    ")
+        # Check if the user wants to end the conversation
+        if user_query.lower() == "end":
+            print("Goodbye! 👋")
+            break
+        # Append the user's query to the chat history for context
+        chat_history += f"Human:    {user_query}\n"
+        # Enhance the AI's response by providing it with the chat history, the schema, and the current query
+        query_result = agent_executor.run(f"{chat_history}Given the database schema {schema}, your task is to perform operations on a NoSQL database. Before proceeding with the query '{user_query}', consider the data size involved.")
+        print(f"AI Agent: {query_result}")
+        # Prompt the user to continue the conversation or end it
+        print("Got any more questions? Just ask or type 'END' to wrap up.")
+```
+
+This keeps our AI in the loop, making sure it can follow along and provide relevant answers.
+
+## Example: Managing Financial Data 🏦
+Imagine we're working with financial data in MongoDB. Here's how our AI can help with transactions:
+
+Database Setup
+accounts: Info on bank accounts
+transactions: Records of financial movements
+customers: Data on the bank's clients
+AI in Action
+Asking What the AI Can Do:
+```
+Human:    what can you do?
+AI Agent: Querying the database...
+
+
+> Entering new AgentExecutor chain...
+Action:
+
+{
+  "action": "Final Answer",
+  "action_input": "I can perform various operations on a NoSQL database, specifically MongoDB, which include inserting data into collections and extracting data from collections based on specific queries. When inserting data, I can add new documents to the specified collection. When extracting data, I can retrieve documents that match certain criteria from a collection. I am programmed to handle these operations efficiently and to be mindful of the potential data size involved to mitigate performance impacts or excessive resource utilization. This means I will avoid extracting full collections and will attempt to filter queries as much as possible. If you have a specific operation in mind, please provide the details, and I will assist you accordingly."
+}
+
+
+> Finished chain.
+AI Agent: I can perform various operations on a NoSQL database, specifically MongoDB, which include inserting data into collections and extracting data from collections based on specific queries. When inserting data, I can add new documents to the specified collection. When extracting data, I can retrieve documents that match certain criteria from a collection. I am programmed to handle these operations efficiently and to be mindful of the potential data size involved to mitigate performance impacts or excessive resource utilization. This means I will avoid extracting full collections and will attempt to filter queries as much as possible. If you have a specific operation in mind, please provide the details, and I will assist you accordingly.
+Do you have any other questions I can help you with? If not please type END to close the program
+```
+Now let us try with a more specific query
+- Getting the Last 5 USD Transactions:
+```
+Human: Show me the last 5 USD transactions.
+AI Agent: Querying the database...
+
+
+> Entering new AgentExecutor chain...
+Action:
+
+{
+  "action": "perform_extraction",
+  "action_input": {
+    "query": {
+      "transactions.currency": "USD"
+    },
+    "collection_name": "transactions",
+    "sort": {"bucket_end_date": -1},
+    "limit": 5
+  }
+}
+
+Observation: [{'_id': ObjectId('65ccebf9bbc8b73e4d2a5daf'), 'account_id': 123456, 'transaction_count': 1, 'bucket_start_date': '2023-04-01T00:00:00Z', 'bucket_end_date': '2023-04-01T23:59:59Z', 'transactions': [{'transaction_id': 78910, 'amount': 150.0, 'currency': 'USD', 'transaction_date': '2023-04-01T14:30:00Z', 'merchant': 'Sample Store', 'category': 'Retail'}]}]
+Thought:The observation indicates that the extraction tool was used to retrieve the last 5 USD transactions, but only one transaction document is shown in the observation. This could mean that there was only one transaction in USD that matched the query criteria, or it could be a partial view of the results. Since the task is to retrieve the last 5 USD transactions, I need to ensure that the query is correctly retrieving the desired number of transactions.
+
+To provide the last 5 USD transactions, I need to ensure that the query is correctly structured to sort the transactions by their date in descending order and limit the results to 5. The query should also specifically look for transactions in USD currency within the 'transactions' subdocument of the 'transactions' collection.
+
+I will construct a new query to ensure that it retrieves the last 5 transactions in USD currency, sorted by the transaction date in descending order, and limited to 5 results. If the previous query was correct, the observation may indicate that there are less than 5 USD transactions available, in which case I will confirm this to the user. If the previous query was incorrect, I will adjust it accordingly.
+
+Action:
+
+{
+  "action": "perform_extraction",
+  "action_input": {
+    "query": {
+      "transactions.currency": "USD"
+    },
+    "collection_name": "transactions",
+    "sort": {"transactions.transaction_date": -1},
+    "limit": 5
+  }
+}
+
+Observation: [{'_id': ObjectId('65ccebf9bbc8b73e4d2a5daf'), 'account_id': 123456, 'transaction_count': 1, 'bucket_start_date': '2023-04-01T00:00:00Z', 'bucket_end_date': '2023-04-01T23:59:59Z', 'transactions': [{'transaction_id': 78910, 'amount': 150.0, 'currency': 'USD', 'transaction_date': '2023-04-01T14:30:00Z', 'merchant': 'Sample Store', 'category': 'Retail'}]}]
+Thought:The observation shows the same single transaction as before, which suggests that there may only be one USD transaction in the database that matches the query criteria. It's also possible that the query is not correctly structured to retrieve multiple transactions from within the subdocuments. However, given the constraints of the tools available, I cannot modify the query to perform a more complex operation such as unwinding subdocuments or aggregating results from within an array of subdocuments.
+
+Given this limitation, I will inform the user that based on the current query, only one USD transaction is available. If there are indeed more transactions that were not retrieved due to the query structure, I will suggest that they may need to use a more advanced query with aggregation operations, which is beyond the capabilities of the tools provided to me.
+
+Action:
+
+{
+  "action": "Final Answer",
+  "action_input": "Based on the information retrieved, there is only one USD transaction available in the database that matches the criteria. If there are more transactions that were not captured by the query, it may be necessary to use a more advanced query with aggregation operations to accurately retrieve all the last 5 USD transactions. This type of query is beyond the capabilities of the current tools provided to me."
+}
+
+
+> Finished chain.
+AI Agent: Based on the information retrieved, there is only one USD transaction available in the database that matches the criteria. If there are more transactions that were not captured by the query, it may be necessary to use a more advanced query with aggregation operations to accurately retrieve all the last 5 USD transactions. This type of query is beyond the capabilities of the current tools provided to me.
+Do you have any other questions I can help you with? If not please type END to close the program
+```
+We can see how the agent now has determined that there isn't 5 transactions that match the criteria but one, so to follow up on that let's ask the agent what this one transaction is:
+```
+Human:    What is this one usd transaction?
+AI Agent: Querying the database...
+
+
+> Entering new AgentExecutor chain...
+Action:
+
+{
+  "action": "perform_extraction",
+  "action_input": {
+    "query": {
+      "transactions.currency": "USD"
+    },
+    "collection_name": "transactions"
+  }
+}
+
+Observation: [{'_id': ObjectId('65ccebf9bbc8b73e4d2a5daf'), 'account_id': 123456, 'transaction_count': 1, 'bucket_start_date': '2023-04-01T00:00:00Z', 'bucket_end_date': '2023-04-01T23:59:59Z', 'transactions': [{'transaction_id': 78910, 'amount': 150.0, 'currency': 'USD', 'transaction_date': '2023-04-01T14:30:00Z', 'merchant': 'Sample Store', 'category': 'Retail'}]}]
+Thought:The previous extraction operation returned a single USD transaction from the 'transactions' collection. I will now provide the details of this transaction to the user.
+
+Action:
+
+{
+  "action": "Final Answer",
+  "action_input": "The one USD transaction available in the database is as follows: Transaction ID: 78910, Amount: $150.00, Currency: USD, Transaction Date: 2023-04-01T14:30:00Z, Merchant: Sample Store, Category: Retail."
+}
+
+
+> Finished chain.
+AI Agent: The one USD transaction available in the database is as follows: Transaction ID: 78910, Amount: $150.00, Currency: USD, Transaction Date: 2023-04-01T14:30:00Z, Merchant: Sample Store, Category: Retail.
+Do you have any other questions I can help you with? If not please type END to close the program.
+```
+Great! Now let's try adding a New Transaction instead:
+```
+User: Add a new USD transaction with the same details but with today's date
+AI Agent: Querying the database...
+
+
+> Entering new AgentExecutor chain...
+Thought: The user has requested to insert a new mock USD transaction with the same details as the previous one but with today's date. I need to create a new transaction document with the specified details and insert it into the appropriate collection, which is likely 'transactions' based on the provided schema. I will use the perform_insert tool to accomplish this task.
+
+Action:
+
+{
+  "action": "perform_insert",
+  "action_input": {
+    "insert_data": {
+      "account_id": 78910,
+      "transaction_count": 1,
+      "bucket_start_date": "2024-02-01T14:30:00Z",
+      "bucket_end_date": "2024-02-01T14:30:00Z",
+      "transactions": [
+        {
+          "amount": 150.00,
+          "currency": "USD",
+          "transaction_date": "2024-02-01T14:30:00Z",
+          "merchant": "Sample Store",
+          "category": "Retail"
+        }
+      ]
+    },
+    "collection_name": "transactions"
+  }
+}
+
+
+
+Observation: Insertion successful. Inserted document ID: 65ccf1d086c387165251525e
+Thought:The insertion of the new mock USD transaction was successful, and the document ID is 65ccf1d086c387165251525e. Now I need to inform the user about the successful insertion.
+
+Action:
+
+{
+  "action": "Final Answer",
+  "action_input": "The new mock USD transaction has been successfully inserted into the database with today's date. The inserted document ID is 65ccf1d086c387165251525e."
+}
+
+
+> Finished chain.
+AI Agent: The new mock USD transaction has been successfully inserted into the database with today's date. The inserted document ID is 65ccf1d086c387165251525e.
+Do you have any other questions I can help you with? If not please type END to close the program
+```
+
+## Wrapping Up 🎉
+Kudos on the successful development of an AI agent that streamlines the complexities of database management! Through the integration of LangChain and GPT-4 technologies, you have crafted a solution that not only enhances user interaction with MongoDB but also significantly boosts efficiency. As you venture further into the realm of innovation and continue to refine your creation, it becomes increasingly important to ***stay vigilant about the security challenges*** that arise when granting an AI agent the capability to alter database information. It is imperative to proceed with caution and to contemplate the implementation of robust security measures aimed at neutralizing potential threats. This proactive approach will help safeguard your database against vulnerabilities while you navigate the exciting landscape of AI-enhanced database management. Embrace the journey of discovery, but ensure that the integrity and security of your database are never compromised.
+### Remember, technology is your playground. Have fun exploring! 🌟
