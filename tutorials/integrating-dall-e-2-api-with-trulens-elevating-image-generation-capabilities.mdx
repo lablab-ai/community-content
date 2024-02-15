@@ -4,54 +4,56 @@ description: "In this tutorial, we'll delve into the exciting world of AI-powere
 image: 'https://hotpot.ai/images/site/blog/dall_e_2.webp'
 authorUsername: "youknowsthevibes"
 ---
-### DALL·E 2 Overview
+
+
+```markdown
+# Unlocking Creativity: Integrating DALL·E 2 API with TruLens
+
+In this tutorial, we'll delve into the exciting world of AI-powered image generation using DALL·E 2 API and TruLens. From understanding the capabilities of DALL·E 2 to integrating it seamlessly with TruLens for enhanced analysis and improvement of generated images, this tutorial will guide you through the entire app development process for the Hackathon. With step-by-step instructions, real-world examples, and practical tips, you'll gain a comprehensive understanding of how to leverage these cutting-edge technologies to create innovative solutions. Join us on this journey as we explore the full circle of app development with DALL·E 2 and TruLens.
+
+## Introduction
 
 DALL·E 2 is a cutting-edge generative artificial intelligence (AI) system designed to generate images from textual descriptions. Utilizing advanced algorithms, DALL·E 2 transforms text prompts into visually compelling images resembling human-created drawings, paintings, and photographs.
 
-#### How DALL·E 2 Works
+### How DALL·E 2 Works
 
 1. **Input**: Users provide a textual description of a visual scene as a prompt.
 2. **Processing**: DALL·E 2 algorithmically interprets the prompt and generates corresponding imagery.
 3. **Output**: Instantaneously, DALL·E 2 produces an image reflecting the input prompt.
 
-### Key Features
+## Integrating TruLens for Enhanced Image Analysis
 
-- **Generative AI**: DALL·E 2 harnesses generative AI techniques to create diverse and realistic visual representations.
-- **Text-to-Image Transformation**: Seamlessly converts textual descriptions into visually interpretable images.
-- **Human-like Imagery**: Generates images resembling human-made drawings, paintings, and photographs.
+TruLens enhances the DALL-E 2 output by providing additional insights into the generated images. Follow the steps below to integrate TruLens into your DALL-E 2 application.
 
-### Repository for Integration
-
-For integrating DALL·E 2 into your application and leveraging its image generation capabilities, you can refer to the [GitHub repository](https://github.com/feliciien/integrating-dall-e-2-api-with-trulens-elevating-image-generation-capabilities) provided by Feliciien. This repository offers insights and resources to fork and run the application effectively.
-
-
-# Deploying the App Locally
-
-## Step 1: Clone the Repository
+### Step 1: Clone the Repository
 
 Clone the repository containing the Streamlit app to your local machine.
 
 ```bash
 git clone https://github.com/feliciien/integrating-dall-e-2-api-with-trulens-elevating-image-generation-capabilities
 cd dall-e
-# Step 2: Create and Activate a Virtual Environment
+```
+
+### Step 2: Create and Activate a Virtual Environment
 
 Create a virtual environment to isolate the dependencies for the app.
 
 ```bash
 python3.8 -m venv venv
 source venv/bin/activate
-## Step 3: Install Dependencies
+```
+
+### Step 3: Install Dependencies
 
 Install the required Python dependencies from the `requirements.txt` file.
 
 ```bash
 pip install -r requirements.txt
+```
 
+### Step 4: Integrate TruLens Evals
 
-Step 4: Integrate TruLens Evals
-
-Implement TruLens Evals to enhance the DALL-E 2 output. Follow TruLens documentation https://colab.research.google.com/drive/1n77IGrPDO2XpeIVo_LQW0gY78enV-tY9?usp=sharing#scrollTo=Osch8gN27v1s or integration guide for specific instructions.
+Implement TruLens Evals to enhance the DALL-E 2 output. Follow TruLens documentation [here](https://colab.research.google.com/drive/1n77IGrPDO2XpeIVo_LQW0gY78enV-tY9?usp=sharing#scrollTo=Osch8gN27v1s) or integration guide for specific instructions.
 
 ```bash
 import sys
@@ -59,25 +61,31 @@ import sys
 !{sys.executable} -m pip install torchvision
 !{sys.executable} -m pip install matplotlib
 
-## Step 5: Create and Activate a Conda Environment for DALL-E
+### Step 5: Create and Activate a Conda Environment for DALL-E
 
 Create a Conda environment named "dall-e" to isolate the dependencies for the app.
 
 ```bash
 conda create -n dall-e
-## Activate the "dall-e" Environment
+```
+
+### Activate the "dall-e" Environment
 
 Activate the "dall-e" environment using the following command:
 
 ```bash
 conda activate dall-e
-## Install Necessary Libraries
+```
+
+### Install Necessary Libraries
 
 Install the necessary libraries using pip:
 
 ```bash
 pip install streamlit langchain trulens-eval openai
-## Set Up Streamlit Secrets
+```
+
+### Set Up Streamlit Secrets
 
 To incorporate your OpenAI API key and HuggingFace Access Token into Streamlit secrets, follow these steps:
 
@@ -85,28 +93,38 @@ To incorporate your OpenAI API key and HuggingFace Access Token into Streamlit s
 
 ```bash
 touch .streamlit/secrets.toml
-## Configure API Keys
+```
+
+### Configure API Keys
 
 To configure your API keys for OpenAI and HuggingFace, follow these steps:
 
-1. Open the `.streamlit/secrets.toml` file in your project directory.
+1. create `.streamlit/secrets.toml` file in your project directory.
 
 2. Add the following lines to the file, replacing `"YOUR_API_KEY"` and `"YOUR_ACCESS_TOKEN"` with your respective keys:
 
 ```toml
 OPENAI_API_KEY = "YOUR_API_KEY"
 HUGGINGFACE_API_KEY = "YOUR_ACCESS_TOKEN"
-## Step 6: Run the Streamlit App
+```
+
+### Step 6: Run the Streamlit App
 
 Run the Streamlit app using the `streamlit` command.
+```bash
+pip install -r requirements.txt
+```
+
 
 ```bash
 streamlit run main.py
-## Step 7: Access the App
+```
+
+### Step 7: Access the App
 
 Access the Streamlit app in your web browser by navigating to the URL provided by Streamlit, typically [http://localhost:8501](http://localhost:8501).
-image: 'https://i.ibb.co/9g2b9PX/Capture-d-e-cran-2024-02-10-a-17-05-00.png'
-## Step 8: Using the DALL-E Application
+
+### Using the DALL-E Application
 
 1. **Navigate to the Text-to-Image Feature**
    
@@ -135,11 +153,7 @@ image: 'https://i.ibb.co/9g2b9PX/Capture-d-e-cran-2024-02-10-a-17-05-00.png'
    Additionally, you can view the result in the editor, which will display the output of Truelens.
 
    ![Truelens Result in Editor](https://i.ibb.co/TgJnPkV/truelens-result-on-terminal.png)
+
 ## Conclusion
 
-The DALL-E application provides a user-friendly interface for generating images from text prompts. By following the steps outlined above, users can easily navigate to the Text-to-Image feature, enter their prompts, and view the resulting images. The integration with Truelens enhances the experience by providing additional insights into the generated images.
-
-With its intuitive design and powerful capabilities, the DALL-E application empowers users to explore the creative potential of text-based image generation. Whether for artistic expression, design inspiration, or practical applications, DALL-E offers a versatile tool for generating images from textual descriptions.
-
-Explore the possibilities with DALL-E and unleash your imagination!
-
+The DALL-E application provides a user-friendly interface for generating images from text prompts.
