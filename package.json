@@ -1,0 +1,14 @@
+{
+    "name": "embeddings-tutorials",
+    "version": "0.14.301",
+    "description": "A project to update AI chatbot with tutorials using embeddings.",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+      "openai": "^4.28.0",
+      "@pinecone-database/pinecone": "^2.0.1"
+    }
+  }
+  
