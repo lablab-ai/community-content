@@ -18,8 +18,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '0.14.301' # Set this to your project's required Node.js version
-
+          node-version: '16.x' # Use the latest LTS version of Node.js
+          always-auth: false
+          check-latest: true
       - name: Install Dependencies
         run: npm install
 
