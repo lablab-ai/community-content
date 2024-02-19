@@ -10,7 +10,7 @@ on:
 jobs:
   update-ai-chatbot:
     runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -27,4 +27,4 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-        run: node your-script.js
+        run: node scripts/embedTutorials.js
