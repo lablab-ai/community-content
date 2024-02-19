@@ -1,6 +1,7 @@
 const OpenAI = require("openai");
 const Pinecone = require("@pinecone-database/pinecone");
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
 
 // Using environment variables for API keys
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
