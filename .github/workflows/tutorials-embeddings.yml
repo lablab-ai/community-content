@@ -10,7 +10,7 @@ on:
 jobs:
   update-ai-chatbot:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
