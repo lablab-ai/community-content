@@ -8,7 +8,8 @@
     },
     "dependencies": {
       "openai": "^4.28.0",
-      "@pinecone-database/pinecone": "^2.0.1"
+      "@pinecone-database/pinecone": "^2.0.1",
+      "node-fetch": "^3.3.2"
     }
   }
   
