@@ -3,7 +3,6 @@
     "version": "0.14.301",
     "description": "A project to update AI chatbot with tutorials using embeddings.",
     "main": "index.js",
-    "type": "module",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
