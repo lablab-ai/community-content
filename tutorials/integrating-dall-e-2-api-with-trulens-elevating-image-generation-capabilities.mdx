@@ -1,8 +1,6 @@
-
-```markdown
 ---
 title: "Unlocking Creativity: Integrating DALL·E 2 API with TruLens for Enhanced Image Generation"
-description: "In this tutorial, we'll delve into the exciting world of AI-powered image generation using DALL·E 2 API and TruLens. From understanding the capabilities of DALL·E 2 to integrating it seamlessly with TruLens for enhanced analysis and improvement of generated images, this tutorial will guide you through the entire app development process for the Hackathon. With step-by-step instructions, real-world examples, and practical tips, you'll gain a comprehensive understanding of how to leverage these cutting-edge technologies to create innovative solutions. Join us on this journey as we explore the full circle of app development with DALL·E 2 and TruLens"
+description: "This tutorial guides you through building an innovative image generation and analysis application using the powerful DALL·E 2 API and TruLens"
 image: 'https://hotpot.ai/images/site/blog/dall_e_2.webp'
 authorUsername: "youknowsthevibes"
 ---
@@ -152,7 +150,7 @@ Access the Streamlit app in your web browser by navigating to the URL provided b
 ### Using the DALL-E Application
 
 1. **Navigate to the Text-to-Image Feature**
-   
+
    Go to the sidebar and select the "Text to Image" option.
 
    ![Text to Image Sidebar](https://i.ibb.co/60vMbLh/Capture-d-e-cran-2024-02-12-a-21-44-52.png)
@@ -234,13 +232,13 @@ def generate_image(prompt):
 # Define a function to integrate Truelens functionality into your Streamlit app
 def truelens_functionality():
     st.header("Truelens Functionality")
-    
+
     # Example data to analyze
     data = "cat"
-    
+
     # Perform analysis using Truelens
     result = gpt35_turbo_recorder.app(data)  # Use the app method from the TruBasicApp object
-    
+
     # Display the result
     st.write("Truelens analysis result:")
     st.write(result)
@@ -265,4 +263,3 @@ pages[page]()
 by  integrating DALL·E 2 API with TruLens, we've created a powerful tool for generating and analyzing images from textual descriptions. We hope this tutorial has provided you with valuable insights and practical knowledge for your projects.
 
 Now, let's dive into the code and build something amazing!
-```
