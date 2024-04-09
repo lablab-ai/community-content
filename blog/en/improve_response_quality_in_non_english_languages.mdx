@@ -171,19 +171,20 @@ def my_form_post():
 
 There are two options to achieve the translation. One option is to use translate package while other option is to use GPT 3.5 itself to translate. Sometimes GPT 3.5 is not a reliable translator
 
-#### option-1 use Google Translate
+#### option-1 use python translate package
 ```python
-# Example Python snippet for translation implementation using Google Trans
-from googletrans import Translator
-translator = Translator()
-translated_text = translator.translate('Your non-English text', dest='en').text
-# Process with GPT-3.5
-# Translate response back to original language
-response = translator.translate('GPT-3.5 response in English', dest='original language code').text
+# Example Python snippet for translation implementation using translate package (pip install translate=3.6.1) from English to any language
+>>> from translate import Translator
+>>> translator = Translator(to_lang="ta")
+>>> translation = translator.translate("How long does it take for light to travel from the sun to the earth?")
+>>> translation
+'சூரியனிலிருந்து பூமிக்கு ஒளி பயணிக்க எவ்வளவு நேரம் ஆகும்?'
+>>> 
 ```
+
 #### option-2 use GPT 3.5 itself to translate
 ```python
-## Translate to English
+## Translate from any language to English
     template = """
         Take a deep breath
         You are a language translator. You are going to translate the following text into English.
