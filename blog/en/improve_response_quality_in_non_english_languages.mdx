@@ -168,6 +168,20 @@ def my_form_post():
     return HTMLRepsonse  # Return the HTML response 
 ```
 
+### Commands to run the flask application on terminal
+```shell
+$ export FLASK_APP=translate_RAG.py 
+$ export OPENAI_API_KEY=<your OPENAI_API_KEY>
+$ flask run
+ * Serving Flask app 'translate_RAG.py'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+```
+
+
+```
 
 There are two options to achieve the translation. One option is to use translate package while other option is to use GPT 3.5 itself to translate. Sometimes GPT 3.5 is not a reliable translator
 
@@ -209,7 +223,7 @@ Let's ask "How long does it take for light to travel from the sun to the earth?"
 Prompt: சூரியனில் இருந்து பூமிக்கு ஒளி பயணிக்க எவ்வளவு நேரம் ஆகும் 
 Without translation, the raw GPT 3.5 response is not accurate. It did not get the answer of 8 min 20 seconds
 With translation layer, GPT 3.5 response is accurate. It got the answer of 8 minutes 20 seconds
-![Screenshot](https://github.com/Raghavan1988/translation_augmented_generation/assets/493090/c58a1d7f-0ac8-4287-bb6f-812260ad69f6)
+![tamil example screenshot](https://github.com/Raghavan1988/translation_augmented_generation/assets/493090/dc7fdd87-7f9d-4f62-ac52-6a3cb8ed2424)
 
 ## Conclusion
 This approach enables users to leverage the power of GPT-3.5 in their native languages, democratizing access to advanced AI technologies.
