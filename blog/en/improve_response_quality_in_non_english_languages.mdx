@@ -61,44 +61,113 @@ A practical solution involves implementing a translation layer. This layer trans
 This improves the response quality (anecdotally) significantly and LLM response follows instructions as expected
 ### Code Implementation
 ### necessary packages
-flask==3.0.0
-googletrans==3.1.0a0
-langchain==0.0.0237
+flask==3.0.3
 openai==0.28.1
+translate=3.6.1
 
 ### method to translate prompt to english
 
 ```python
-from googletrans import Translator
-def translate_prompt_from_language_x_to_english(prompt_text_from_user, language):
-    translator = Translator()
-    translated_text = translator.translate(prompt_text_from_user, dest='en', src=language).text
-    return translated_text
-```
+# Define a function to translate text to English using GPT-3.5
+def translate_to_english(text):
+    # Template prompt for language translation. The prompt outlines the task for GPT-3.5.
+    template = """
+         Identify the language of the input input_text: {}
+        Output the language, code and english_translation in JSON format using the SCHEMA
+        ...<prompt clipped>
+    """
+    prompt = template.format(text)  # Format the template with the input text
 
+    # Call the OpenAI API with the formatted prompt
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful translator."},
+            {"role": "user", "content": prompt}
+        ]
+      )
+    
+    print (template)  # Print the template (might not be necessary for production)
+    print(response)  # Print the API response (might not be necessary for production)
+    return response.choices[0].message.content  # Return the translation from the API response
+
+```
+See the full prompt here [link](https://github.com/Raghavan1988/translation_augmented_generation/blob/6450672bc069015a8565a72a9357fd9425153ce8/translate_RAG.py#L11)
 ### method to call GPT 3.5 and get the LLM response
 
 ```python
-from langchain.llms import OpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-def send_translated_english_prompt_to_gpt3(prompt_text):
-    llmGPT = OpenAI(openai_api_key=<Your OPEN_AI_KEY>, model_name= "gpt-3.5-turbo")
-    prompt = PromptTemplate(template=prompt_text, input_variables=["text"])
-    llm_chain = LLMChain(prompt=prompt, llm=llmGPT)
-    ## Take a deep breath is a recommended prompt engineering technique   
-    english_response = llm_chain.run(text="Take a deep breath") 
-    return english_response
-```
-### method to translate english response from GPT To original input language
-```python
-def translate_english_response_to_input_language_x(gpt_response_in_english, language):
-    translator = Translator()
-    translated_response = translator.translate(gpt_response_in_english, dest=language, src='en').text
-    return translated_response
+# Function to get a generic response from GPT-3.5 based on the text
+def get_GPT_35_response(text):
+    # Call the OpenAI API with the input text
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": text}
+        ]
+      )
+    return response.choices[0].message.content  # Return the response from the API
 ```
 
-There are two options to achieve the translation. One option is to use Google Translate API while other option is to use GPT 3.5 itself to translate.
+
+### method to translate english response from GPT To original input language using translate package
+```python
+# Function to translate text from English to a specified language
+def translate_from_english_to_input_language(text, code):
+    translator = Translator(to_lang=code)  # Initialize the Translator with the target language code
+    translation = translator.translate(text)  # Translate the text
+    return translation  # Return the translated text
+```
+
+### Flask application
+Complete code is available on Github: [https://github.com/Raghavan1988/translation_augmented_generation](link)
+```python
+# Define a route for the root URL, displaying a form
+@app.route('/')
+def my_form():
+    return render_template('my-form.html')  # Return the HTML form for user input
+
+# Define a route for processing form submissions
+@app.route('/', methods=['POST'])
+def my_form_post():
+    text = request.form['text']  # Extract the submitted text from the form
+
+    # Get a raw response from GPT-3.5 for comparison
+    raw_response = get_GPT_35_response(text)
+
+    # Attempt to translate the submitted text to English
+    try:
+      translated_response = translate_to_english(text)
+      # Clean up the translation output
+      translated_response = translated_response.replace("```", "").replace("json", "").strip()
+
+      json_dict = json.loads(translated_response)  # Parse the translation into a dictionary
+      code = json_dict['code']  # Extract the language code
+      english_translation = json_dict['english_translation']  # Extract the English translation
+    except Exception as e:  # Handle errors during translation
+      print(e)
+      return "Error translating to English"
+
+    # Get a GPT-3.5 response for the English translation
+    gpt35_response_english_translation = get_GPT_35_response(english_translation)
+
+    # Translate the GPT-3.5 response back to the original language
+    translation_augmented_response = translate_from_english_to_input_language(gpt35_response_english_translation, code)
+    
+    # Build an HTML response to display the results
+    HTMLRepsonse = "<html>" \
+                   "<table border=5>" \
+                   "<tr><td>Input</td><td>" + text + "</td></tr>" \
+                   "<tr><td> raw response </td><td>" + raw_response + "</td></tr>" \
+                   "<tr><td> translation augmented response  </td><td>" + translation_augmented_response + "</td></tr>" \
+                   "</table>" \
+                   "</html>"
+
+    return HTMLRepsonse  # Return the HTML response 
+```
+
+
+There are two options to achieve the translation. One option is to use translate package while other option is to use GPT 3.5 itself to translate. Sometimes GPT 3.5 is not a reliable translator
 
 #### option-1 use Google Translate
 ```python
@@ -131,9 +200,17 @@ response = translator.translate('GPT-3.5 response in English', dest='original la
     """
 ```
 
+## Example flask demo in Tamil
+
+Let's ask "How long does it take for light to travel from the sun to the earth?"  in Tamil
+Prompt: சூரியனில் இருந்து பூமிக்கு ஒளி பயணிக்க எவ்வளவு நேரம் ஆகும் 
+Without translation, the raw GPT 3.5 response is not accurate. It did not get the answer of 8 min 20 seconds
+With translation layer, GPT 3.5 response is accurate. It got the answer of 8 minutes 20 seconds
+![Screenshot](https://github.com/Raghavan1988/translation_augmented_generation/assets/493090/c58a1d7f-0ac8-4287-bb6f-812260ad69f6)
+
 ## Conclusion
 This approach enables users to leverage the power of GPT-3.5 in their native languages, democratizing access to advanced AI technologies.
-Complete code is available on Github: [https://github.com/Raghavan1988/googletrans_GPT](link)
+Complete code is available on Github: [https://github.com/Raghavan1988/translation_augmented_generation](link)
 
 
 ## Reference
