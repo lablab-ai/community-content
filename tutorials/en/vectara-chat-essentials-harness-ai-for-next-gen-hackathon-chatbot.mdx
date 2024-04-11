@@ -1,6 +1,7 @@
 ---
 title: "Vectara Chat Essentials: Harness AI for Next-Gen Hackathon Chatbots"
 description: "Join us on a journey through Vectara Chat Essentials where we explore building intelligent chatbots poised to revolutionize customer support and legal tech at your next hackathon."
+image: 'https://fast.image.delivery/tcgynet.jpg'
 authorUsername: "sanchayt743"
 ---
 
@@ -42,7 +43,6 @@ Ready to unlock the power of Vectara Chat? Follow these steps to obtain your API
 With your API keys in hand, you're now equipped to create amazing chatbot experiences using Vectara Chat. Let's dive in and bring your chatbot ideas to life! 🚀🤖
 
 > **Note**: This guide is based on the standard process described on platforms like Vectara, combined with best practices for account creation and API key management. For more detailed instructions specific to Vectara, consult their [official documentation](https://docs.vectara.com) and support resources.
-
 ### Step 1: Sign Up for Vectara 🌐📝
 
 1. **Head to Vectara**: Start by visiting the Vectara website. Look for a sign-up button – it’s usually front and center, hard to miss! 🖥️👀
@@ -112,7 +112,7 @@ And voilà! You're all set with your Vectara account and API keys. 🎉💫 With
    - Install them via pip:
 
      ```python
-     pip install requests beautifulsoup4 streamlit
+     pip install requests beautifulsoup4 streamlit streamlit-chat
      ```
 
 ### Tips and Best Practices 🌟
@@ -195,15 +195,15 @@ import json
   ```python
 
   def save_to_dir(uploaded_file):
-  if upload_file is not None:
-      temp_dir = "temp"
-      os.makedirs(temp_dir, exist_ok=True)
-      file_path = os.path.join(temp_dir, uploaded_file.name)
+    if uploaded_file is not None:
+        temp_dir = "temp"
+        os.makedirs(temp_dir, exist_ok=True)
+        file_path = os.path.join(temp_dir, uploaded_file.name)
 
-      with open(file_path, "wb") as f:
-          f.write(uploaded_file.getbuffer())
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
 
-      return file_path
+        return file_path
 
 
   ```
@@ -219,18 +219,18 @@ import json
   ```python
 
   def upload_file(api_key, customer_id, corpus_number, file_path):
-  url = f"https://api.vectara.io/v1/upload?c={customer_id}&o={corpus_number}"
+    url = f"https://api.vectara.io/v1/upload?c={customer_id}&o={corpus_number}"
 
-  with open(file_path, "rb") as f:
-      files = {
-          "file": (os.path.basename(file_path), f),
-      }
+    with open(file_path, "rb") as f:
+        files = {
+            "file": (os.path.basename(file_path), f),
+        }
 
-      headers = {"Accept": "application/json", "x-api-key": api_key}
+        headers = {"Accept": "application/json", "x-api-key": api_key}
 
-      response = requests.post(url, headers=headers, files=files)
+        response = requests.post(url, headers=headers, files=files)
 
-  return response.text
+    return response.text
 
 
   ```
@@ -304,21 +304,12 @@ st.title("Vectara Chat Essentials 🤖")
 
 # Using markdown for a welcoming message with emojis for visual appeal
 st.markdown("""
-
     Welcome to 'Vectara Chat Essentials: A Developer's Guide to Next-Gen Chatbots' 🌟.
-
     This tutorial offers a deep dive into building and enhancing chatbots using the innovative Vectara platform,
-
     equipped with the latest in AI and conversational intelligence. 🧠💬
-
-
-
     Whether you are a beginner or an advanced developer, this guide will take you through all the steps
-
     from creating your first chatbot to deploying sophisticated AI-driven conversational agents.
-
     Let's embark on this exciting journey! 🚀
-
     """)
 
 # Adding an interactive element
@@ -347,7 +338,7 @@ if "corpus_number" not in st.session_state:
 
 with st.sidebar:
     st.session_state["vectara_api_key"] = st.text_input("Vectara API Key")
-    st.session_state["serper_api_key"] (optional) = st.text_input("Serper API Key (for research)")
+    st.session_state["serper_api_key"] = st.text_input("Serper API Key (for research)") # Optional
     vectara_customer_id = st.text_input("Vectara Customer ID")
     corpus_name = st.text_input("Corpus Name (optional)")
     corpus_description = st.text_input("Corpus Description (optional)")
@@ -375,7 +366,7 @@ with st.sidebar:
             st.error("Failed to create corpus. Please check your inputs.")
 ```
 
-This section creates a sidebar where users can input their
+This section creates a sidebar where users can input their sensitive credentials
 
 **4. Chat Functionality**
 
@@ -601,6 +592,8 @@ Here's how it functions step-by-step:
    - `for idx, msg in enumerate(st.session_state.messages)`: This line sets up a loop to go through each message in the chat history.
      - `idx`: Provides an index number for each message, starting from 0.
      - `msg`: Represents an individual message object.
+
+Run `streamlit run app.py` to view your app locally.
 
 ---
 
