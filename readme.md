@@ -1,7 +1,7 @@
 [![Open Bounties](https://img.shields.io/endpoint?url=https%3A%2F%2Fconsole.algora.io%2Fapi%2Fshields%2Flablab-ai%2Fbounties%3Fstatus%3Dopen)](https://console.algora.io/org/lablab-ai/bounties?status=open)
 [![Rewarded Bounties](https://img.shields.io/endpoint?url=https%3A%2F%2Fconsole.algora.io%2Fapi%2Fshields%2Flablab-ai%2Fbounties%3Fstatus%3Dcompleted)](https://console.algora.io/org/lablab-ai/bounties?status=completed)
 
-# Community powered content on lablab.ai
+# Community powered content on lablab.ai 
 
 Welcome to the lablab.ai Community Content Repository! This repository serves as a platform for our community members to publish blogs, tutorials, and technology pages related to artificial intelligence. Our goal is to create a collaborative and engaging environment where individuals can contribute to the development of content on our website.
 
