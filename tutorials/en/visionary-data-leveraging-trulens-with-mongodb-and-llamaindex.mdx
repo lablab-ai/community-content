@@ -1,12 +1,13 @@
 ---
 title: "Visionary Data: Leveraging Trulens with MongoDB & LlamaIndex"
 description: "Learn how to leverage Trulens with MongoDB & LlamaIndex to build an advanced resume shortlisting and candidate selection system."
+image: 'https://fast.image.delivery/ufhnoxx.jpg'
 authorUsername: "sanchayt743"
 ---
 
 
 
-# Visionary Data: Leveraging Trulens with MongoDB & LlamaIndex
+## Visionary Data: Leveraging Trulens with MongoDB & LlamaIndex
 
 Hello everyone! 👋 I'm Sanchay Thalnerkar, an engineering student with a passion for creating in-depth and engaging tutorials. Today, we're going to build a **Query and Feedback System for Customer Care**. This system will help businesses efficiently manage customer queries and feedback, ensuring a smoother and more responsive customer service experience. 🚀
 
@@ -25,7 +26,7 @@ We'll be using a modern tech stack including **TruLens**, **LlamaIndex**, **Mong
 
 ---
 
-# Setting Up the Project Directory for the Query and Feedback System
+## Setting Up the Project Directory for the Query and Feedback System
 
 Great, now that you understand the tech stack and have your environment ready, it's time to set up the project directory! Let's start by creating the project directory and adding the necessary files for our Query and Feedback System. This setup will provide a structured foundation for developing our application. 📂✨
 
@@ -79,7 +80,7 @@ Serving as the entry point of the Flask application, this file sets up the web s
 This module manages interactions with MongoDB Atlas. The `DataManager` class includes methods for connecting to the database, as well as for inserting, updating, and retrieving data. This abstraction allows other parts of the application to interact with the database without needing to know the specifics of the database operations.
 
 ### **Ecommerce_FAQ_Chatbot_dataset.json**
-This JSON file, downloaded from Kaggle, serves as the initial dataset for training our model and populating the database with sample queries and responses. It provides a realistic set of data that helps in developing and testing the query processing and feedback mechanisms.
+This JSON file, downloaded from Kaggle, serves as the initial dataset for training our model and populating the database with sample queries and responses. It provides a realistic set of data that helps in developing and testing the query processing and feedback mechanisms. If you want to follow along with me you can download the dataset I used here: [Download eCommerce FAQ Chatbot Dataset from Kaggle](https://www.kaggle.com/datasets/saadmakhdoom/ecommerce-faq-chatbot-dataset/download?datasetVersionNumber=1)
 
 ## Integrating TruLens with FeedbackManager
 
@@ -100,7 +101,7 @@ Now your project structure is set up, and you're ready to start coding! In the n
 
 ---
 
-# Step 3: Setting Up the Virtual Environment and Installing Dependencies
+## Step 3: Setting Up the Virtual Environment and Installing Dependencies
 
 Now that we have our project structure in place, the next crucial step is to set up a virtual environment. This will isolate our project dependencies from the global Python environment, preventing conflicts and ensuring consistency across different setups. After setting up the environment, we'll install the necessary libraries and prepare our environment variables.
 
@@ -183,7 +184,7 @@ By setting up your `.env` file with the OpenAI API key, you are ready to leverag
 
 ---
 
-# Configuring the Application with `config.py`
+## Configuring the Application with `config.py`
 
 Now that we have our environment variables set up, the next step is to establish the application configurations in the `config.py` file. This file plays a crucial role in setting up and integrating the essential components for our project, specifically focusing on how we handle OpenAI's embeddings and models via LlamaIndex.
 
@@ -205,10 +206,10 @@ class Configuration:
         print("Loading environment variables...")
         load_dotenv()  # Loads the environment variables from the .env file.
         self.openai_api_key = os.getenv('OPENAI_API_KEY')  # Retrieves the OpenAI API key from the environment.
-        
+
         if not self.openai_api_key:
             print("ERROR: OpenAI API key not found.")  # Error handling if API key is not found.
-        
+
         self.embed_model = OpenAIEmbedding(model="text-embedding-3-small", dimensions=256)  # Setting up the embedding model.
         self.llm = OpenAI(api_key=self.openai_api_key)  # Initializing the OpenAI model with the API key.
         self.configure()  # Apply the configurations to the settings.
@@ -222,7 +223,7 @@ class Configuration:
 ### Key Components
 
 - **Environment Variables**: The use of `load_dotenv()` at the start of the initialization ensures that the environment variables from the `.env` file are loaded into the system’s environment.
-  
+
 - **API Key Management**: It retrieves the `OPENAI_API_KEY` using `os.getenv()`. Proper management and retrieval of this key are crucial for authenticating requests to OpenAI.
 
 - **OpenAI Embeddings and Model**: Initializes `OpenAIEmbedding` with specific model details and dimensions, and `OpenAI` with the retrieved API key. This setup is vital for processing queries as it allows us to utilize powerful text embedding capabilities for vectorizing queries.
@@ -231,7 +232,7 @@ class Configuration:
 
 ---
 
-# Understanding and Setting Up `data_manager.py`
+## Understanding and Setting Up `data_manager.py`
 
 Certainly! Let's delve deeper into the `data_manager.py` script, breaking down its components and functionalities with proper explanations and code formatting. This will help to understand how each part contributes to the overall functionality of managing data operations in the project.
 
@@ -352,7 +353,7 @@ Each component of the script works in harmony to manage the application’s data
 
 ---
 
-# Understanding the FeedbackManager Class and implementing feedback_manager.py
+## Understanding the FeedbackManager Class and implementing feedback_manager.py
 
 The `FeedbackManager` class in your project plays a critical role in enhancing the quality of the customer care system by integrating feedback mechanisms. This class utilizes the TruLens library to provide detailed insights into how well the system is handling queries. Below, I'll explain the key components of the `FeedbackManager` class and highlight the importance of TruLens in evaluating the system's responses.
 
@@ -434,7 +435,7 @@ This class is a pivotal component of your system, leveraging advanced feedback a
 
 ---
 
-# Exploring the QueryManager Class and implementing query_manager.py
+## Exploring the QueryManager Class and implementing query_manager.py
 
 The `QueryManager` class is designed to handle query operations within your customer care system. It utilizes the LlamaIndex library to perform efficient search operations based on vector similarity. Below, I'll break down the functionality of the `QueryManager` class, detailing each component and its purpose in the system.
 
@@ -481,7 +482,7 @@ The `QueryManager` class plays a critical role in the functionality of the custo
 
 ---
 
-# Setting Up MongoDB Atlas and Initializing the Project with setup.py
+## Setting Up MongoDB Atlas and Initializing the Project with setup.py
 
 Before you can run the `setup.py` script in your project, you need to set up a MongoDB Atlas account and configure your database cluster. MongoDB Atlas serves as a robust platform for both operational and vector database operations, offering streamlined database maintenance, management, and cost-efficiency. Here's a step-by-step guide on setting up your MongoDB Atlas account and retrieving your connection URI, which is essential for the `setup.py` script.
 
@@ -570,7 +571,7 @@ This setup establishes the necessary components for your Query and Feedback Syst
 
 ---
 
-# Setting Up Vector Index in MongoDB Atlas
+## Setting Up Vector Index in MongoDB Atlas
 
 Creating a vector search index within your MongoDB collection is essential for enabling efficient document retrieval based on vector similarities. This process is particularly important in applications involving large datasets and the need for quick search functionalities, such as in your customer care system where responses are retrieved based on query similarities.
 
@@ -707,7 +708,6 @@ def main():
         st.write('Feedback Records:', st.session_state.records)
 
     manage_dashboard()
-    ...
 ```
 
 The `main` function is the entry point of the application. It's responsible for setting up the Streamlit interface and handling user interactions. It does this by calling other functions that handle specific tasks, such as initializing the TRU Dashboard, managing the sidebar, handling query submissions, and managing the dashboard.
@@ -731,7 +731,6 @@ def manage_dashboard():
         if 'dashboard_process' in st.session_state and st.session_state.dashboard_process is not None:
             st.session_state.dashboard_process.terminate()
             st.success("Dashboard has been stopped. 🛑")
-    ...
 ```
 
 The `manage_dashboard` function provides controls for managing the TRU Dashboard. It includes buttons for launching and stopping the dashboard. It also handles any exceptions that might occur during these operations.
@@ -767,7 +766,7 @@ This command will start the Streamlit server and your application should be acce
 
 ---
 
-# System Walkthrough
+## System Walkthrough
 
 Let's wrap up our walkthrough with a showcase of the system's capabilities and features through a sequence of user interface snapshots.
 
@@ -781,7 +780,8 @@ Users are welcomed by a straightforward prompt to enter their questions. This si
 
 ### Step 3: Query Response
 After a query is submitted, the system swiftly generates a response, showcasing the effectiveness of our backend processes in real-time.
-<Img src="https://i.postimg.cc/9FmSzPr7/Clean-Shot-2024-04-26-at-05-09-04-2x.png" alt="Query Response" />
+<Img src="https://iili.io/JU5Euv1.md.png" alt="Query Response" />
+**View high resolution of this image here: https://drive.google.com/file/d/1DEBEIRuCRTmKVet4Vs5KPFbUPVYyf8kx/view?usp=sharing**
 
 ### Step 4: Response Analysis
 A deeper look into the given answer and the associated data reveals the system's decision-making process and the quality of feedback provided.
@@ -808,9 +808,3 @@ With each module, we’ve not only created a tool but also an ecosystem that thr
 For a deep dive into the code and to explore the full capabilities of the Query and Feedback System, be sure to visit the [GitHub repository](https://github.com/Sanchay-T/LlamaIndex-MongoDB-TruLens). There, you'll find all the resources you need to customize and deploy a system that aligns perfectly with your operational needs.
 
 Embark on this technological adventure, and watch as your customer care system transforms into a bastion of efficiency and user satisfaction. 🌟
-
-
-
-
-
-
