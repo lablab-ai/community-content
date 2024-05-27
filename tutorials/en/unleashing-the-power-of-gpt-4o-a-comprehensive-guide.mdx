@@ -1,0 +1,465 @@
+---
+title: "Unleashing the Power of GPT-4o: A Comprehensive Guide"
+description: "Dive deep into the capabilities of OpenAI's GPT-4o model. Learn about its features, performance, and how to harness its power in your projects."
+authorUsername: "sanchayt743"
+---
+
+# Unleashing the Power of GPT-4o
+
+Welcome to this comprehensive guide on OpenAI's GPT-4o model. I'm Sanchay Thalnerkar, your guide for this tutorial. By the end of this tutorial, you will have a thorough understanding of GPT-4o and how to leverage its capabilities in your projects.
+
+### 🎉 Getting Started
+
+In this tutorial, we will explore the features and capabilities of GPT-4o, a state-of-the-art language model from OpenAI. We'll delve into its applications, performance, and how you can integrate it into your projects.
+
+### 🌟 Why GPT-4o?
+
+GPT-4o represents a significant advancement in natural language processing, offering enhanced understanding, context retention, and generation capabilities. Let's explore why GPT-4o is a game-changer.
+
+## Understanding GPT-4o
+
+GPT-4o is one of the latest language models from OpenAI, offering advanced capabilities in natural language understanding and generation. Let's look at some key features and comparisons with other models.
+
+### Key Features of GPT-4o
+
+- **Advanced Language Understanding**: GPT-4o can understand and generate human-like text, making it ideal for chatbots and virtual assistants.
+- **Enhanced Contextual Awareness**: It can maintain context over long conversations, providing more coherent and relevant responses.
+- **Scalable**: Suitable for various applications, from simple chatbots to complex conversational agents.
+
+### Comparing GPT-4o with Other Models
+
+| Feature        | GPT-3.5         | GPT-4       | GPT-4o-2024-05-13 |
+| -------------- | --------------- | ----------- | ----------------- |
+| Model Size     | Medium          | Large       | Large             |
+| Context Length | 2048 tokens     | 4096 tokens | 4096 tokens       |
+| Performance    | Good            | Better      | Best              |
+| Use Cases      | General Purpose | Advanced AI | Advanced AI       |
+
+## 🛠️ Setting Up the Environment
+
+Before we dive into using GPT-4o, let's ensure we have everything set up correctly.
+
+### 1. **System Requirements**
+
+- **OS**: Windows, macOS, or Linux.
+- **Python**: Version 3.7 or higher.
+
+### 2. **Downloading the Requirements File**
+
+To get started, download the `requirements.txt` file from the link below:
+
+[Download requirements.txt](https://github.com/Sanchay-T/GPT4O/blob/master/requirements.txt)
+
+### 3. **Adding `requirements.txt` to Your Project Directory**
+
+Once you've downloaded the `requirements.txt` file, place it in your project directory. The `requirements.txt` file contains all the necessary dependencies to work with GPT-4o.
+
+### 4. **Installing Dependencies**
+
+Navigate to your project directory and install the required dependencies using the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Leveraging GPT-4o in Your Projects
+
+Now that we have everything set up, let's create a simple Python script to utilize GPT-4o.
+
+### 1. **Importing Necessary Libraries**
+
+We start by importing the required libraries:
+
+```python
+import openai
+import os
+import dotenv
+
+dotenv.load_dotenv()
+```
+
+- **openai**: To interact with OpenAI's API.
+- **os**: To interact with the operating system.
+- **dotenv**: To load environment variables.
+
+### 2. **Setting Up the OpenAI API Key**
+
+Ensure that your OpenAI API key is stored in a `.env` file in your project directory:
+
+```
+OPENAI_API_KEY=your_openai_api_key
+```
+
+---
+
+## Coding the Chatbot Application
+
+Now, let's break down the code needed to build our chatbot application using OpenAI's GPT-4o model. We'll go through each function and explain its role in the overall application.
+
+### Importing Necessary Libraries
+
+We start by importing the required libraries:
+
+```python
+import streamlit as st
+from openai import OpenAI
+import dotenv
+import os
+from PIL import Image
+from audio_recorder_streamlit import audio_recorder
+import base64
+from io import BytesIO
+
+dotenv.load_dotenv()
+```
+
+Here, we import `streamlit` to create our web interface, and `OpenAI` to interact with OpenAI's API. We also use `dotenv` to load environment variables from a `.env` file, and `os` for interacting with the operating system. The `PIL` library is used for image processing, while `audio_recorder_streamlit` allows us to record audio within our Streamlit app. The `base64` module helps with encoding and decoding data, and `io` provides core tools for working with streams.
+
+### Function to Query and Stream the Response from the LLM
+
+This function interacts with the GPT-4o model to generate responses in real-time. It streams the response in chunks to provide a seamless user experience:
+
+```python
+def stream_llm_response(client, model_params):
+    response_message = ""
+
+    for chunk in client.chat.completions.create(
+        model=model_params["model"] if "model" in model_params else "gpt-4o-2024-05-13",
+        messages=st.session_state.messages,
+        temperature=(
+            model_params["temperature"] if "temperature" in model_params else 0.3
+        ),
+        max_tokens=4096,
+        stream=True,
+    ):
+        response_message += (
+            chunk.choices[0].delta.content if chunk.choices[0].delta.content else ""
+        )
+        yield chunk.choices[0].delta.content if chunk.choices[0].delta.content else ""
+
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": response_message,
+                }
+            ],
+        }
+    )
+
+```
+
+The `stream_llm_response` function sends a chat completion request to the OpenAI model. It accumulates the response in a variable called `response_message`. Using the `client.chat.completions.create()` method, the function calls the OpenAI API to generate a response. The response is streamed in chunks, which ensures that the user gets real-time updates. Finally, the function stores the conversation history in `st.session_state.messages`.
+
+### Function to Convert Image to Base64
+
+This function converts an image to a base64-encoded string, making it easy to transmit image data:
+
+```python
+def get_image_base64(image_raw):
+    buffered = BytesIO()
+    image_raw.save(buffered, format=image_raw.format)
+    img_byte = buffered.getvalue()
+
+    return base64.b64encode(img_byte).decode("utf-8")
+
+
+```
+
+In the `get_image_base64` function, we first create a `BytesIO` object to hold the image data. The image is saved to this buffer using the `image_raw.save()` method. We then retrieve the byte data from the buffer with `buffered.getvalue()` and encode it to base64 using `base64.b64encode()`. This function is useful for handling image uploads in our application.
+
+---
+
+### Main Function
+
+The main function sets up the Streamlit app, handles user interactions, and integrates all the functionalities. It includes configuration settings, UI elements, and logic for interacting with the GPT-4o model:
+
+```python
+def main():
+    # --- Page Config ---
+    st.set_page_config(
+        page_title="GPT-4o Chatbot Experience",
+        page_icon="🤖",
+        layout="centered",
+        initial_sidebar_state="expanded",
+    )
+```
+
+First, we configure the page using `st.set_page_config`, setting the title, icon, layout, and initial sidebar state. This ensures that our application looks professional and is easy to navigate.
+
+```python
+    # --- Header ---
+    st.markdown(
+        """
+        <div style="text-align: center; padding: 10px;">
+            <h1 style="color: #4CAF50;">🌟 The Ultimate GPT-4o Chatbot Experience 🌟</h1>
+            <p style="font-size: 20px; color: #888;">Unleash the power of AI with our advanced assistant!</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+```
+
+Next, we create a header for our application using `st.html`. This displays a title and a subtitle in a visually appealing way.
+
+```python
+    # --- Side Bar ---
+    with st.sidebar:
+        default_openai_api_key = (
+            os.getenv("OPENAI_API_KEY")
+            if os.getenv("OPENAI_API_KEY") is not None
+            else ""
+        )
+        with st.popover("🔐 OpenAI API Key"):
+            openai_api_key = st.text_input(
+                "Paste your OpenAI API Key (https://platform.openai.com/)",
+                value=default_openai_api_key,
+                type="password",
+            )
+```
+
+In the sidebar, we prompt the user to enter their OpenAI API key. We use `os.getenv` to check if an API key is already set in the environment variables. If not, we provide an input box for the user to enter their API key.
+
+```python
+    # --- Main Content ---
+    if openai_api_key == "" or openai_api_key is None or "sk-" not in openai_api_key:
+        st.write("#")
+        st.warning(
+            "⬅️ Please introduce your OpenAI API Key (make sure to have funds) to continue..."
+        )
+
+        with st.sidebar:
+            st.write("#")
+            st.write("#")
+
+```
+
+If the API key is missing or invalid, we display a warning message and provide additional resources for the user to get their API key.
+
+```python
+    else:
+        client = OpenAI(api_key=openai_api_key)
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+```
+
+If a valid API key is provided, we initialize the OpenAI client with this key. We also check if there are any previous messages stored in `st.session_state.messages`. If not, we initialize an empty list for storing the messages.
+
+```python
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                for content in message["content"]:
+                    if content["type"] == "text":
+                        st.write(content["text"])
+                    elif content["type"] == "image_url":
+                        st.image(content["image_url"]["url"])
+```
+
+We then loop through any existing messages and display them using `st.chat_message`. This ensures that the conversation history is preserved and displayed to the user.
+
+```python
+        with st.sidebar:
+
+            st.divider()
+
+            model = st.selectbox(
+                "Select a model:",
+                [
+                    "gpt-4o-2024-05-13",
+                    "gpt-4-turbo",
+                ],
+                index=0,
+            )
+
+            with st.popover("⚙️ Model parameters"):
+                model_temp = st.slider(
+                    "Temperature", min_value=0.0, max_value=2.0, value=0.3, step=0.1
+                )
+
+            audio_response = st.toggle("Audio response", value=False)
+            if audio_response:
+                cols = st.columns(2)
+                with cols[0]:
+                    tts_voice = st.selectbox(
+                        "Select a voice:",
+                        ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+                    )
+                with cols[1]:
+                    tts_model = st.selectbox(
+                        "Select a model:", ["tts-1", "tts-1-hd"], index=1
+                    )
+
+            model_params = {
+                "model": model,
+                "temperature": model_temp,
+            }
+```
+
+In the sidebar, we provide options for the user to select the model and adjust the model parameters such as temperature. We also offer the option to enable audio responses. If audio responses are enabled, we provide additional settings for selecting the voice and model for text-to-speech conversion.
+
+```python
+            def reset_conversation():
+                if (
+                    "messages" in st.session_state
+                    and len(st.session_state.messages) > 0
+                ):
+                    st.session_state.pop("messages", None)
+
+            st.button(
+                "🗑️ Reset conversation",
+                on_click=reset_conversation,
+            )
+
+            st.divider()
+```
+
+We define a `reset_conversation` function to clear the conversation history. This function is triggered when the user clicks the "Reset conversation" button.
+
+```python
+            if model in ["gpt-4o-2024-05-13", "gpt-4-turbo"]:
+
+                st.write("### **🖼️ Add an image:**")
+
+                def add_image_to_messages():
+                    if st.session_state.uploaded_img or (
+                        "camera_img" in st.session_state and st.session_state.camera_img
+                    ):
+                        img_type = (
+                            st.session_state.uploaded_img.type
+                            if st.session_state.uploaded_img
+                            else "image/jpeg"
+                        )
+                        raw_img = Image.open(
+                            st.session_state.uploaded_img or st.session_state.camera_img
+                        )
+                        img = get_image_base64(raw_img)
+                        st.session_state.messages.append(
+                            {
+                                "role": "user",
+                                "content": [
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:{img_type};base64,{img}"
+                                        },
+                                    }
+                                ],
+                            }
+                        )
+
+                cols_img = st.columns(2)
+
+                with cols_img[0]:
+                    with st.popover("📁 Upload"):
+                        st.file_uploader(
+                            "Upload an image",
+                            type=["png", "jpg", "jpeg"],
+                            accept_multiple files=False,
+                            key="uploaded_img",
+                            on_change=add_image_to_messages,
+                        )
+
+                with cols_img[1]:
+                    with st.popover("📸 Camera"):
+                        activate_camera = st.checkbox("Activate camera")
+                        if activate_camera:
+                            st.camera_input(
+                                "Take a picture",
+                                key="camera_img",
+                                on_change=add_image_to_messages,
+                            )
+```
+
+For image uploads, we provide options for the user to upload an image file or take a picture using their camera. The uploaded or captured image is then converted to a base64 string and added to the conversation.
+
+```python
+            st.write("#")
+            st.write("### **🎤 Add an audio:**")
+
+            audio_prompt = None
+            if "prev_speech_hash" not in st.session_state:
+                st.session_state.prev_speech_hash = None
+
+            speech_input = audio_recorder(
+                "Press to talk:",
+                icon_size="3x",
+                neutral_color="#6ca395",
+            )
+            if speech_input and st.session_state.prev_speech_hash != hash(speech_input):
+                st.session_state.prev_speech_hash = hash(speech_input)
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=("audio.wav", speech_input),
+                )
+
+                audio_prompt = transcript.text
+
+            st.divider()
+```
+
+For audio inputs, we use `audio_recorder` to record the user's speech. The recorded audio is then transcribed using OpenAI's Whisper model, and the transcription is added to the conversation as a prompt.
+
+```python
+        if prompt := st.chat_input("Hi! I am the latest omnimodel from OpenAI , ask me anything! ") or audio_prompt:
+            st.session_state.messages.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt or audio_prompt,
+                        }
+                    ],
+                }
+            )
+
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+                st.write_stream(stream_llm_response(client, model_params))
+
+            if audio_response:
+                response = client.audio.speech.create(
+                    model=tts_model,
+                    voice=tts_voice,
+                    input=st.session_state.messages[-1]["content"][0]["text"],
+                )
+                audio_base64 = base64.b64encode(response.content).decode("utf-8")
+                audio_html = f"""
+                <audio controls autoplay>
+                    <source src="data:audio/wav;base64,{audio_base64}" type="audio/mp3">
+                </audio>
+                """
+                st.html(audio_html)
+```
+
+Finally, we handle the user input through a chat input box. The user's message or the transcribed audio prompt is added to the conversation and displayed. The assistant's response is generated using the `stream_llm_response` function and displayed in real-time. If audio responses are enabled, the response is also converted to speech and played back to the
+
+user.
+
+```python
+if __name__ == "__main__":
+    main()
+```
+
+The `main` function is called when the script is executed. By following these steps, we can build a fully functional chatbot application using OpenAI's GPT-4o model. This application can handle text and audio inputs, display images, and provide real-time responses, making it a powerful tool for various conversational AI applications.
+
+---
+
+### 🎉 Conclusion
+
+Congratulations! You've successfully built a fully functional chatbot application using OpenAI's GPT-4o model. Here's what we covered:
+
+1. **Setting Up**: We set up the environment and imported necessary libraries.
+2. **Creating Functions**: We created functions to handle responses and image processing.
+3. **Building the Interface**: We used Streamlit to build an interactive user interface.
+4. **Integrating GPT-4o**: We integrated the GPT-4o model to generate real-time responses.
+
+Feel free to customize and expand your chatbot with additional features. The sky's the limit with what you can do with OpenAI's powerful models! 🚀
+
+Happy coding! 💻✨
