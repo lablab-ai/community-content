@@ -1,6 +1,7 @@
 ---
 title: "Unleashing the Power of GPT-4o: A Comprehensive Guide"
 description: "Dive deep into the capabilities of OpenAI's GPT-4o model. Learn about its features, performance, and how to harness its power in your projects."
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a70589c4-15f1-41c9-dbfd-0a229e252000/full'
 authorUsername: "sanchayt743"
 ---
 
@@ -31,7 +32,7 @@ GPT-4o is one of the latest language models from OpenAI, offering advanced capab
 | Feature        | GPT-3.5         | GPT-4       | GPT-4o-2024-05-13 |
 | -------------- | --------------- | ----------- | ----------------- |
 | Model Size     | Medium          | Large       | Large             |
-| Context Length | 2048 tokens     | 4096 tokens | 4096 tokens       |
+| Context Window | 16,385 tokens	     | 128,000 tokens | 128,000 tokens       |
 | Performance    | Good            | Better      | Best              |
 | Use Cases      | General Purpose | Advanced AI | Advanced AI       |
 
@@ -44,17 +45,29 @@ Before we dive into using GPT-4o, let's ensure we have everything set up correct
 - **OS**: Windows, macOS, or Linux.
 - **Python**: Version 3.7 or higher.
 
-### 2. **Downloading the Requirements File**
+### 2. **Setup Virtual environment**
+
+Make sure `virtualenv` is installed, if it isn't installed run:
+```bash
+pip install virtualenv
+```
+
+Then Create a Virtual Environment:
+```bash
+virtualenv env
+```
+
+### 3. **Downloading the Requirements File**
 
 To get started, download the `requirements.txt` file from the link below:
 
 [Download requirements.txt](https://github.com/Sanchay-T/GPT4O/blob/master/requirements.txt)
 
-### 3. **Adding `requirements.txt` to Your Project Directory**
+### 4. **Adding `requirements.txt` to Your Project Directory**
 
 Once you've downloaded the `requirements.txt` file, place it in your project directory. The `requirements.txt` file contains all the necessary dependencies to work with GPT-4o.
 
-### 4. **Installing Dependencies**
+### 5. **Installing Dependencies**
 
 Navigate to your project directory and install the required dependencies using the following command:
 
@@ -62,27 +75,7 @@ Navigate to your project directory and install the required dependencies using t
 pip install -r requirements.txt
 ```
 
-## Leveraging GPT-4o in Your Projects
-
-Now that we have everything set up, let's create a simple Python script to utilize GPT-4o.
-
-### 1. **Importing Necessary Libraries**
-
-We start by importing the required libraries:
-
-```python
-import openai
-import os
-import dotenv
-
-dotenv.load_dotenv()
-```
-
-- **openai**: To interact with OpenAI's API.
-- **os**: To interact with the operating system.
-- **dotenv**: To load environment variables.
-
-### 2. **Setting Up the OpenAI API Key**
+### 6. **Setting Up the OpenAI API Key**
 
 Ensure that your OpenAI API key is stored in a `.env` file in your project directory:
 
@@ -358,7 +351,7 @@ We define a `reset_conversation` function to clear the conversation history. Thi
                         st.file_uploader(
                             "Upload an image",
                             type=["png", "jpg", "jpeg"],
-                            accept_multiple files=False,
+                            accept_multiple_files=False,
                             key="uploaded_img",
                             on_change=add_image_to_messages,
                         )
@@ -448,6 +441,16 @@ if __name__ == "__main__":
 ```
 
 The `main` function is called when the script is executed. By following these steps, we can build a fully functional chatbot application using OpenAI's GPT-4o model. This application can handle text and audio inputs, display images, and provide real-time responses, making it a powerful tool for various conversational AI applications.
+
+To test the project run:
+```bash
+streamlit run <your_filename.py>
+```
+
+For example if I created a `main.py` file, the command would be:
+```bash
+streamlit run main.py
+```
 
 ---
 
