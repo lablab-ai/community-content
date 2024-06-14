@@ -1,6 +1,7 @@
 ---
 title: "Streamline Your Trello Workflow with Synapse Copilot"
 description: "Learn how to automate and enhance your Trello management using Synapse Copilot, an AI-powered assistant for seamless API interactions."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e4b0d9cf-f05c-4108-f0a6-b9d98240c500/full"
 authorUsername: "sanchayt743"
 ---
 
@@ -68,6 +69,14 @@ python3 -m venv env
 
 # Activate the virtual environment
 source env/bin/activate
+
+# Or for windows users, make sure the virtualenv package is installed
+
+# Create a virtual environment
+virtualenv env
+
+# Activate the virtual environment
+env\Scripts\activate
 ```
 
 #### Step 3: Install the Required Packages
@@ -100,14 +109,14 @@ To interact with the Trello API, you'll need to generate an API key and token. F
    - Create a Trello Power-Up if you haven't already. Refer to the [Managing Power-Ups documentation](https://developer.atlassian.com/cloud/trello/power-ups/publishing-and-managing-power-ups/) for guidance.
    - Visit the [Trello Power-Ups admin page](https://trello.com/power-ups/admin), access your Power-Up, navigate to the API Key tab, and select the option to generate a new API Key.
 
-   <Img src="https://i.postimg.cc/288q0XNv/Clean-Shot-2024-06-13-at-13-14-01-2x.png" alt="API Key Generation"/>
+   <img src="https://i.postimg.cc/288q0XNv/Clean-Shot-2024-06-13-at-13-14-01-2x.png" alt="API Key Generation" />
 
 2. **Generate an API Token**:
 
    - On the same page where you found your API key, click the "Token" hyperlink next to the API key.
    - You will be prompted to authorize your app and generate a token. Click "Allow" to grant your app access to your Trello account.
 
-   <Img src="https://i.postimg.cc/CL11GBbs/Clean-Shot-2024-06-13-at-13-02-54-2x.png" alt="Token Generation">
+   <img src="https://i.postimg.cc/yYK4NTcd/Clean-Shot-2024-06-13-at-13-02-54-2x.png" alt="Token Generation" />
    - Keep this token secret as it grants access to your Trello data.
 
 For detailed information on generating API keys and tokens, refer to the [Trello API documentation](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/).
