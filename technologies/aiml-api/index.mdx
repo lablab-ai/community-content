@@ -1,0 +1,53 @@
+---
+title: "AI/ML API"
+description: "The AI/ML API provides advanced features like text completion, image inference, speech-to-text, and text-to-speech with seamless integration and secure API key management."
+---
+
+# AI/ML API
+The AI/ML API offers a comprehensive suite of advanced AI functionalities designed to meet a variety of needs, including text completion, image inference, speech-to-text, and text-to-speech capabilities. The API is engineered for seamless integration, exceptional performance, and secure API key management, ensuring a smooth and reliable user experience. 
+
+| General  |  |
+| --- | --- |
+| Company | [AI/ML API](https://aimlapi.com/)  |
+| Repository | https://github.com/aimlapi |
+| Documentation | https://docs.aimlapi.com/ |
+
+## Key Features
+
+* **Inference**: Effortlessly evaluate and deploy models for a range of tasks including text generation, image analysis, and more. This feature allows users to leverage the power of advanced AI to draw meaningful inferences from various data types.
+* **API Key Management**: Securely generate, manage, and monitor API keys to ensure the safety and integrity of interactions with the API. This feature provides robust security measures to protect data and operations.
+* **Broad Model Selection**: Gain access to a diverse array of models tailored to various AI applications, allowing selection of the most appropriate model for specific tasks. This extensive model library supports a wide range of functionalities to address different AI challenges.
+
+## Start building with AI/ML API
+To start using the AI/ML API, follow the detailed Quickstart guide which provides step-by-step instructions to set up the development environment and initiate the first API call. This guide is designed to help users quickly familiarize themselves with the API's capabilities and start leveraging its powerful features.
+
+## Authentication
+
+### API Key Management
+To use the AI/ML API, an API key is required. This key is essential for authenticating requests to the API. API keys can be easily generated and managed through the account dashboard, ensuring secure access to the API services.
+
+## Sending Your First Request
+After setting up the environment and obtaining an API key, proceed to send the first request. The API documentation provides detailed instructions and examples to help craft requests and understand responses, enabling full utilization of the AI/ML API's functionalities.
+
+```
+Authorization: Bearer YOUR_API_KEY
+
+curl --location --globoff 'api.aimlapi.com/chat/completions' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer YOUR_API_KEY' \
+--data '{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+        {
+            "role": "user",
+            "content": "What's API?"
+        },
+    ],
+    "max_tokens": 512,
+    "stream": false,
+    
+}'
+```
+
+👉 Read the documentation to find out more: https://docs.aimlapi.com/
+
