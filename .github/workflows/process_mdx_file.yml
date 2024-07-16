@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -22,28 +25,51 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+        sudo apt-get install jq
+
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install gh
+
+    - name: Get list of changed .mdx files
+      id: changed_files
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_NUMBER=$(jq -r .pull_request.number < "$GITHUB_EVENT_PATH")
+        CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files | .[] | select(.path | endswith(".mdx")) | .path')
+        echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
+        echo "Changed files: $CHANGED_FILES"
 
     - name: Run image processing script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      run: python scripts/process_images.py
+        CHANGED_FILES: ${{ env.CHANGED_FILES }}
+      run: |
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No .mdx files changed."
+        else
+          echo "Running script with files: $CHANGED_FILES"
+          python scripts/process_images.py $CHANGED_FILES
+        fi
 
     - name: Check for changes
       id: git_status
       run: |
         if [[ -z $(git status --porcelain) ]]; then
-          echo "::set-output name=changes::false"
+          echo "changes=false" >> $GITHUB_ENV
         else
-          echo "::set-output name=changes::true"
+          echo "changes=true" >> $GITHUB_ENV
         fi
 
     - name: Commit and push changes
-      if: steps.git_status.outputs.changes == 'true'
+      if: env.changes == 'true'
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git push
+        git push origin HEAD:${{ github.head_ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
