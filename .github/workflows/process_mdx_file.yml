@@ -12,8 +12,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -28,16 +26,22 @@ jobs:
     - name: Get list of changed .mdx files
       id: changed_files
       run: |
-        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- '*.mdx')
-        echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+        PR_NUMBER=$(jq -r .pull_request.number < "$GITHUB_EVENT_PATH")
+        CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files | .[] | select(.path | endswith(".mdx")) | .path')
+        echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
     - name: Run image processing script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CHANGED_FILES: ${{ env.CHANGED_FILES }}
       run: |
-        echo "Running script with files: $CHANGED_FILES"
-        python scripts/process_images.py $CHANGED_FILES
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No .mdx files changed."
+        else
+          echo "Running script with files: $CHANGED_FILES"
+          python scripts/process_images.py $CHANGED_FILES
+        fi
 
     - name: Check for changes
       id: git_status
