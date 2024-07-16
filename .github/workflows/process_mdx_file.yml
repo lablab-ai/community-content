@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -23,10 +25,17 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests
 
+    - name: Get list of changed .mdx files
+      id: changed_files
+      run: |
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- '*.mdx')
+        echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+
     - name: Run image processing script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      run: python scripts/process_images.py
+      run: |
+        python scripts/process_images.py $CHANGED_FILES
 
     - name: Check for changes
       id: git_status
