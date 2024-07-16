@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -49,24 +52,23 @@ jobs:
         else
           echo "Running script with files: $CHANGED_FILES"
           python scripts/process_images.py $CHANGED_FILES
-        fi
 
     - name: Check for changes
       id: git_status
       run: |
         if [[ -z $(git status --porcelain) ]]; then
-          echo "::set-output name=changes::false"
+          echo "changes=false" >> $GITHUB_ENV
         else
-          echo "::set-output name=changes::true"
+          echo "changes=true" >> $GITHUB_ENV
         fi
 
     - name: Commit and push changes
-      if: steps.git_status.outputs.changes == 'true'
+      if: env.changes == 'true'
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git push
+        git push origin HEAD:${{ github.head_ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
