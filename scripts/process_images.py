@@ -2,6 +2,7 @@ import requests
 import re
 import json
 import os
+import sys
 
 CLOUDFLARE_DOMAIN = "imagedelivery.net"
 
@@ -56,21 +57,13 @@ def process_image_links(file_path):
     with open(file_path, 'w') as new_file:
         new_file.write(content)
 
-    print("Successful")
+    print(f"Successfully processed file: {file_path}")
 
-def get_changed_files():
-    event_path = os.environ['GITHUB_EVENT_PATH']
-    with open(event_path, 'r') as f:
-        event = json.load(f)
-    files = event['pull_request']['files']
-    changed_files = [file['filename'] for file in files if file['status'] in ['added', 'modified']]
-    return changed_files
-
-def process_all_mdx_files():
-    changed_files = get_changed_files()
+def process_changed_files(changed_files):
     for file_path in changed_files:
         if file_path.endswith(".mdx"):
             process_image_links(file_path)
 
 if __name__ == "__main__":
-    process_all_mdx_files()
+    changed_files = sys.argv[1:]
+    process_changed_files(changed_files)
