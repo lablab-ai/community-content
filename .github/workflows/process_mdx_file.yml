@@ -1,75 +1,75 @@
-import requests
-import re
-import json
-import os
-import sys
+name: Process MDX Files
 
-CLOUDFLARE_DOMAIN = "imagedelivery.net"
+on:
+  pull_request:
+    paths:
+      - '**/*.mdx'
 
-def upload_image(image_path):
-    url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
-    headers = {
-        "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
-    }
-    files = {
-        'file': open(image_path, 'rb')
-    }
-    response = requests.post(url, headers=headers, files=files)
-    data = json.loads(response.text)
-    if response.status_code == 200:
-        variants = data.get('result', {}).get('variants', [])
-        if variants:
-            return variants[0]
-    return None
+jobs:
+  process-mdx:
+    runs-on: ubuntu-latest
 
-def process_image_links(file_path):
-    print(f"Processing file: {file_path}")
-    
-    with open(file_path, 'r') as file:
-        content = file.read()
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.head_ref }}
 
-    pattern = re.compile(r'<Img[^<>]*\ssrc="(.*?)"\s[^<>]*?/?>')
-    matches = pattern.findall(content)
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-    for image_url in matches:
-        if CLOUDFLARE_DOMAIN in image_url:
-            print(f"Image already on Cloudflare: {image_url}")
-            continue
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        sudo apt-get install jq
 
-        image_name = os.path.basename(image_url)
-        image_path = f"images/{image_name}"
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install gh
 
-        # Ensure the images directory exists
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+    - name: Get list of changed .mdx files
+      id: changed_files
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_NUMBER=$(jq -r .pull_request.number < "$GITHUB_EVENT_PATH")
+        CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files | .[] | select(.path | endswith(".mdx")) | .path')
+        echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
+        echo "Changed files: $CHANGED_FILES"
 
-        # Download image to disk
-        r = requests.get(image_url)
-        with open(image_path, 'wb') as image_file:
-            image_file.write(r.content)
+    - name: Run image processing script
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CHANGED_FILES: ${{ env.CHANGED_FILES }}
+      run: |
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No .mdx files changed."
+        else
+          echo "Running script with files: $CHANGED_FILES"
+          python scripts/process_images.py $CHANGED_FILES
+        fi
 
-        new_image_url = upload_image(image_path)
-        if new_image_url:
-            content = content.replace(image_url, new_image_url)
-            print(f"Replaced image with new URL: {new_image_url}")
-        else:
-            print(f"Failed to upload image")
+    - name: Check for changes
+      id: git_status
+      run: |
+        if [[ -z $(git status --porcelain) ]]; then
+          echo "changes=false" >> $GITHUB_ENV
+        else
+          echo "changes=true" >> $GITHUB_ENV
+        fi
 
-        # Delete downloaded image from disk
-        os.remove(image_path)
-
-    with open(file_path, 'w') as new_file:
-        new_file.write(content)
-
-    print(f"Successfully processed file: {file_path}")
-
-def process_changed_files(changed_files):
-    if not changed_files:
-        print("No .mdx files to process.")
-        return
-    for file_path in changed_files:
-        if file_path.endswith(".mdx"):
-            process_image_links(file_path)
-
-if __name__ == "__main__":
-    changed_files = sys.argv[1:]
-    process_changed_files(changed_files)
+    - name: Commit and push changes
+      if: env.changes == 'true'
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add .
+        git commit -m "Processed images in MDX files"
+        git push origin HEAD:${{ github.head_ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
