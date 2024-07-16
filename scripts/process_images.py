@@ -5,6 +5,7 @@ import os
 import sys
 
 CLOUDFLARE_DOMAIN = "imagedelivery.net"
+VARIANT = "full"  # This is the variant part of the URL
 
 def upload_image(image_path):
     url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
@@ -17,9 +18,12 @@ def upload_image(image_path):
     response = requests.post(url, headers=headers, files=files)
     data = json.loads(response.text)
     if response.status_code == 200:
-        variants = data.get('result', {}).get('variants', [])
-        if variants:
-            return variants[0]
+        # Extract the base URL from the response
+        base_url = data.get('result', {}).get('id', '')
+        if base_url:
+            # Construct the full-size URL
+            full_size_url = f"https://{CLOUDFLARE_DOMAIN}/{base_url}/{VARIANT}"
+            return full_size_url
     return None
 
 def process_image_links(file_path):
