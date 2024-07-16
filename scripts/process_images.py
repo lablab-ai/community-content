@@ -8,7 +8,7 @@ CLOUDFLARE_DOMAIN = "imagedelivery.net"
 def upload_image(image_path):
     url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
     headers = {
-        "Authorization": "Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
+        "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
     }
     files = {
         'file': open(image_path, 'rb')
@@ -22,6 +22,8 @@ def upload_image(image_path):
     return None
 
 def process_image_links(file_path):
+    print(f"Processing file: {file_path}")
+    
     with open(file_path, 'r') as file:
         content = file.read()
 
@@ -56,11 +58,19 @@ def process_image_links(file_path):
 
     print("Successful")
 
+def get_changed_files():
+    event_path = os.environ['GITHUB_EVENT_PATH']
+    with open(event_path, 'r') as f:
+        event = json.load(f)
+    files = event['pull_request']['files']
+    changed_files = [file['filename'] for file in files if file['status'] in ['added', 'modified']]
+    return changed_files
+
 def process_all_mdx_files():
-    for root, _, files in os.walk("."):
-        for file in files:
-            if file.endswith(".mdx"):
-                process_image_links(os.path.join(root, file))
+    changed_files = get_changed_files()
+    for file_path in changed_files:
+        if file_path.endswith(".mdx"):
+            process_image_links(file_path)
 
 if __name__ == "__main__":
     process_all_mdx_files()
