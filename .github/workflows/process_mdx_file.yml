@@ -30,11 +30,13 @@ jobs:
       run: |
         CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- '*.mdx')
         echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+        echo "Changed files: $CHANGED_FILES"
 
     - name: Run image processing script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       run: |
+        echo "Running script with files: $CHANGED_FILES"
         python scripts/process_images.py $CHANGED_FILES
 
     - name: Check for changes
