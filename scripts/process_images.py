@@ -39,6 +39,9 @@ def process_image_links(file_path):
         image_name = os.path.basename(image_url)
         image_path = f"images/{image_name}"
 
+        # Ensure the images directory exists
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+
         # Download image to disk
         r = requests.get(image_url)
         with open(image_path, 'wb') as image_file:
