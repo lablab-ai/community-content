@@ -22,9 +22,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+        sudo apt-get install jq
+
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-get update
+        sudo apt-get install gh
 
     - name: Get list of changed .mdx files
       id: changed_files
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         PR_NUMBER=$(jq -r .pull_request.number < "$GITHUB_EVENT_PATH")
         CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files | .[] | select(.path | endswith(".mdx")) | .path')
