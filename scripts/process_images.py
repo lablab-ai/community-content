@@ -8,7 +8,7 @@ CLOUDFLARE_DOMAIN = "imagedelivery.net"
 def upload_image(image_path):
     url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
     headers = {
-        "Authorization": "Bearer CLOUDFLARE_API_TOKEN"
+        "Authorization": "Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
     }
     files = {
         'file': open(image_path, 'rb')
