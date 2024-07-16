@@ -2,13 +2,15 @@ import requests
 import re
 import json
 import os
+import sys
 
 CLOUDFLARE_DOMAIN = "imagedelivery.net"
+VARIANT = "full"  # The specific variant name you want to use
 
 def upload_image(image_path):
     url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
     headers = {
-        "Authorization": "Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
+        "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
     }
     files = {
         'file': open(image_path, 'rb')
@@ -16,12 +18,16 @@ def upload_image(image_path):
     response = requests.post(url, headers=headers, files=files)
     data = json.loads(response.text)
     if response.status_code == 200:
+        # Look for the specific full-size variant in the list of variants
         variants = data.get('result', {}).get('variants', [])
-        if variants:
-            return variants[0]
+        full_size_variant = next((variant for variant in variants if VARIANT in variant), None)
+        if full_size_variant:
+            return full_size_variant
     return None
 
 def process_image_links(file_path):
+    print(f"Processing file: {file_path}")
+    
     with open(file_path, 'r') as file:
         content = file.read()
 
@@ -35,6 +41,9 @@ def process_image_links(file_path):
 
         image_name = os.path.basename(image_url)
         image_path = f"images/{image_name}"
+
+        # Ensure the images directory exists
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
 
         # Download image to disk
         r = requests.get(image_url)
@@ -54,13 +63,16 @@ def process_image_links(file_path):
     with open(file_path, 'w') as new_file:
         new_file.write(content)
 
-    print("Successful")
+    print(f"Successfully processed file: {file_path}")
 
-def process_all_mdx_files():
-    for root, _, files in os.walk("."):
-        for file in files:
-            if file.endswith(".mdx"):
-                process_image_links(os.path.join(root, file))
+def process_changed_files(changed_files):
+    if not changed_files:
+        print("No .mdx files to process.")
+        return
+    for file_path in changed_files:
+        if file_path.endswith(".mdx"):
+            process_image_links(file_path)
 
 if __name__ == "__main__":
-    process_all_mdx_files()
+    changed_files = sys.argv[1:]
+    process_changed_files(changed_files)
