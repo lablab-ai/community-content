@@ -60,6 +60,9 @@ def process_image_links(file_path):
     print(f"Successfully processed file: {file_path}")
 
 def process_changed_files(changed_files):
+    if not changed_files:
+        print("No .mdx files to process.")
+        return
     for file_path in changed_files:
         if file_path.endswith(".mdx"):
             process_image_links(file_path)
