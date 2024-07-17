@@ -68,11 +68,13 @@ jobs:
 
     - name: Commit and push changes
       if: env.changes == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git push origin HEAD:${{ github.head_ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }}
+        git push origin HEAD:${{ github.event.pull_request.head.ref }}
