@@ -33,6 +33,7 @@ def process_image_links(file_path):
 
     pattern = re.compile(r'<Img[^<>]*\ssrc="(.*?)"\s[^<>]*?/?>')
     matches = pattern.findall(content)
+    changes_made = False
 
     for image_url in matches:
         if CLOUDFLARE_DOMAIN in image_url:
@@ -54,25 +55,33 @@ def process_image_links(file_path):
         if new_image_url:
             content = content.replace(image_url, new_image_url)
             print(f"Replaced image with new URL: {new_image_url}")
+            changes_made = True
         else:
             print(f"Failed to upload image")
 
         # Delete downloaded image from disk
         os.remove(image_path)
 
-    with open(file_path, 'w') as new_file:
-        new_file.write(content)
-
-    print(f"Successfully processed file: {file_path}")
+    if changes_made:
+        with open(file_path, 'w') as new_file:
+            new_file.write(content)
+        print(f"Successfully processed file: {file_path}")
+    return changes_made
 
 def process_changed_files(changed_files):
+    changes_detected = False
     if not changed_files:
         print("No .mdx files to process.")
-        return
+        return changes_detected
     for file_path in changed_files:
         if file_path.endswith(".mdx"):
-            process_image_links(file_path)
+            if process_image_links(file_path):
+                changes_detected = True
+    return changes_detected
 
 if __name__ == "__main__":
     changed_files = sys.argv[1:]
-    process_changed_files(changed_files)
+    if process_changed_files(changed_files):
+        print("CHANGES_MADE")
+    else:
+        print("NO_CHANGES")
