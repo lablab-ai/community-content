@@ -10,11 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout code from same repository
+      if: github.event.pull_request.head.repo.full_name == github.repository
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-        ref: ${{ github.head_ref }}
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Checkout code from fork
+      if: github.event.pull_request.head.repo.full_name != github.repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        repository: ${{ github.event.pull_request.head.repo.full_name }}
+        ref: ${{ github.event.pull_request.head.ref }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -52,7 +61,6 @@ jobs:
         else
           echo "Running script with files: $CHANGED_FILES"
           python scripts/process_images.py $CHANGED_FILES
-        fi
 
     - name: Check for changes
       id: git_status
