@@ -67,6 +67,12 @@ jobs:
           echo "Detected changes made by the script."
         fi
 
+    - name: Print changes made by the script
+      if: env.script_changes == 'true'
+      run: |
+        echo "Printing changes made by the script:"
+        git diff
+
     - name: Commit and push changes
       if: env.script_changes == 'true'
       env:
