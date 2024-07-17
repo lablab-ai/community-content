@@ -55,6 +55,7 @@ jobs:
         else
           echo "Running script with files: $CHANGED_FILES"
           python scripts/process_images.py $CHANGED_FILES
+        fi
 
     - name: Check for changes
       id: git_status
