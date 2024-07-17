@@ -46,9 +46,10 @@ jobs:
         REPO_FULL_NAME=$(jq -r .pull_request.head.repo.full_name < "$GITHUB_EVENT_PATH")
         echo "PR Number: $PR_NUMBER"
         echo "Repository: $REPO_FULL_NAME"
-        CHANGED_FILES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/files" \
-          | jq -r '.[] | select(.filename | endswith(".mdx")) | .filename')
+        RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/files")
+        echo "GitHub API response: $RESPONSE"
+        CHANGED_FILES=$(echo "$RESPONSE" | jq -r '.[] | select(.filename | endswith(".mdx")) | .filename')
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
