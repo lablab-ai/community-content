@@ -36,18 +36,19 @@ jobs:
         pip install requests
         sudo apt-get install jq
 
-    - name: Install GitHub CLI
-      run: |
-        sudo apt-get update
-        sudo apt-get install gh
-
     - name: Get list of changed .mdx files
       id: changed_files
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        PR_NUMBER=$(jq -r .pull_request.number < "$GITHUB_EVENT_PATH")
-        CHANGED_FILES=$(gh pr view $PR_NUMBER --json files --jq '.files | .[] | select(.path | endswith(".mdx")) | .path')
+        echo "Fetching PR details..."
+        PR_NUMBER=$(jq -r .number < "$GITHUB_EVENT_PATH")
+        REPO_FULL_NAME=$(jq -r .pull_request.head.repo.full_name < "$GITHUB_EVENT_PATH")
+        echo "PR Number: $PR_NUMBER"
+        echo "Repository: $REPO_FULL_NAME"
+        CHANGED_FILES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/files" \
+          | jq -r '.[] | select(.filename | endswith(".mdx")) | .filename')
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
