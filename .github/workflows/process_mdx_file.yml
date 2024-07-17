@@ -45,11 +45,8 @@ jobs:
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
-    - name: Record baseline commit
-      id: record_baseline
-      run: echo "BASELINE_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
-
-    - name: Run image processing script
+    - name: Run image processing script and check for changes
+      id: run_script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
@@ -58,24 +55,24 @@ jobs:
           echo "No .mdx files changed."
         else
           echo "Running script with files: $CHANGED_FILES"
-          python scripts/process_images.py $CHANGED_FILES
+          python scripts/process_images.py $CHANGED_FILES | tee script_output.txt
         fi
+      continue-on-error: true
 
-    - name: Check for new changes made by the script
-      id: check_script_changes
+    - name: Set change detection flag
+      id: set_changes_flag
       run: |
-        if git diff --exit-code ${BASELINE_COMMIT} > /dev/null; then
-          echo "script_changes=false" >> $GITHUB_ENV
-        else
+        if grep -q "CHANGES_MADE" script_output.txt; then
           echo "script_changes=true" >> $GITHUB_ENV
-          echo "Detected changes made by the script."
+        else
+          echo "script_changes=false" >> $GITHUB_ENV
         fi
 
     - name: Print changes made by the script
       if: env.script_changes == 'true'
       run: |
         echo "Printing changes made by the script:"
-        git diff ${BASELINE_COMMIT}
+        git diff
 
     - name: Commit and push changes
       if: env.script_changes == 'true'
@@ -85,4 +82,5 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
-        git commit -m "Processed images in MD​⬤
+        git commit -m "Processed images in MDX files"
+        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }} HEAD:${{ github.event.pull_request.head.ref }}
