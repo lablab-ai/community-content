@@ -60,7 +60,7 @@ jobs:
     - name: Check for changes
       id: git_status
       run: |
-        if [[ -z $(git status --porcelain) ]]; then
+        if git diff --exit-code > /dev/null; then
           echo "changes=false" >> $GITHUB_ENV
         else
           echo "changes=true" >> $GITHUB_ENV
@@ -70,11 +70,9 @@ jobs:
       if: env.changes == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }}
-        git push origin HEAD:${{ github.event.pull_request.head.ref }}
+        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }} HEAD:${{ github.event.pull_request.head.ref }}
