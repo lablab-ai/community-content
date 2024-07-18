@@ -45,7 +45,8 @@ jobs:
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
-    - name: Run image processing script
+    - name: Run image processing script and check for changes
+      id: run_script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
@@ -54,25 +55,32 @@ jobs:
           echo "No .mdx files changed."
         else
           echo "Running script with files: $CHANGED_FILES"
-          python scripts/process_images.py $CHANGED_FILES
+          python scripts/process_images.py $CHANGED_FILES | tee script_output.txt
+        fi
+      continue-on-error: true
+
+    - name: Set change detection flag
+      id: set_changes_flag
+      run: |
+        if grep -q "CHANGES_MADE" script_output.txt; then
+          echo "script_changes=true" >> $GITHUB_ENV
+        else
+          echo "script_changes=false" >> $GITHUB_ENV
         fi
 
-    - name: Check for changes
-      id: git_status
+    - name: Print changes made by the script
+      if: env.script_changes == 'true'
       run: |
-        if [[ -z $(git status --porcelain) ]]; then
-          echo "changes=false" >> $GITHUB_ENV
-        else
-          echo "changes=true" >> $GITHUB_ENV
-        fi
+        echo "Printing changes made by the script:"
+        git diff
 
     - name: Commit and push changes
-      if: env.changes == 'true'
+      if: env.script_changes == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git push origin HEAD:${{ github.head_ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }} HEAD:${{ github.event.pull_request.head.ref }}
