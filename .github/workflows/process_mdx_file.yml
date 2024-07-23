@@ -26,6 +26,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+        pip install pillow
         sudo apt-get install jq
 
     - name: Get list of changed .mdx files
@@ -45,12 +46,27 @@ jobs:
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
+    - name: Decode API Token
+      run: |
+        echo "Decoding the API token"
+        export CLOUDFLARE_API_TOKEN=$(echo 'Yy05WkNkWkhjUWVpNW5nV0J2ZDdMSXNIWFhPODZjM3NoVTRCeFhMTg==' | base64 --decode)
+        echo "CLOUDFLARE_API_TOKEN=$CLOUDFLARE_API_TOKEN" >> $GITHUB_ENV
+
+    - name: Debug Specific Secret
+      run: |
+        echo "CLOUDFLARE_API_TOKEN=${{ env.CLOUDFLARE_API_TOKEN }}"
+        if [ -z "${{ env.CLOUDFLARE_API_TOKEN }}" ]; then
+          echo "CLOUDFLARE_API_TOKEN is not set"
+          exit 1
+        fi
+
     - name: Run image processing script and check for changes
       id: run_script
       env:
-        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
       run: |
+        echo "Running script"  # Debug print
         if [ -z "$CHANGED_FILES" ]; then
           echo "No .mdx files changed."
         else
