@@ -10,20 +10,36 @@ VARIANT = "full"  # The specific variant name you want to use
 def upload_image(image_path):
     url = "https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1"
     headers = {
-        "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}"
+        "Authorization": f"Bearer {os.environ.get('CLOUDFLARE_API_TOKEN', '')}"
     }
-    files = {
-        'file': open(image_path, 'rb')
-    }
-    response = requests.post(url, headers=headers, files=files)
-    data = json.loads(response.text)
-    if response.status_code == 200:
-        # Look for the specific full-size variant in the list of variants
-        variants = data.get('result', {}).get('variants', [])
-        full_size_variant = next((variant for variant in variants if VARIANT in variant), None)
-        if full_size_variant:
-            return full_size_variant
-    return None
+
+    if not headers["Authorization"]:
+        print("Error: CLOUDFLARE_API_TOKEN environment variable is not set.")
+        return None
+
+    try:
+        with open(image_path, 'rb') as file:
+            files = {'file': file}
+            response = requests.post(url, headers=headers, files=files)
+            print(f"Response Status Code: {response.status_code}")
+            print(f"Response Text: {response.text}")
+            
+            if response.status_code != 200:
+                print(f"Failed to upload image. Status code: {response.status_code}")
+                return None
+
+            data = response.json()
+            # Look for the specific full-size variant in the list of variants
+            variants = data.get('result', {}).get('variants', [])
+            full_size_variant = next((variant for variant in variants if VARIANT in variant), None)
+            if full_size_variant:
+                return full_size_variant
+            else:
+                print("Full-size variant not found in the response.")
+                return None
+    except Exception as e:
+        print(f"Exception occurred while uploading image: {e}")
+        return None
 
 def process_image_links(file_path):
     print(f"Processing file: {file_path}")
@@ -47,9 +63,13 @@ def process_image_links(file_path):
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
 
         # Download image to disk
-        r = requests.get(image_url)
-        with open(image_path, 'wb') as image_file:
-            image_file.write(r.content)
+        try:
+            r = requests.get(image_url)
+            with open(image_path, 'wb') as image_file:
+                image_file.write(r.content)
+        except Exception as e:
+            print(f"Failed to download image: {image_url}, Error: {e}")
+            continue
 
         new_image_url = upload_image(image_path)
         if new_image_url:
