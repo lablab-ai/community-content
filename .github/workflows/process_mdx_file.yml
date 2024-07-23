@@ -48,11 +48,16 @@ jobs:
     - name: Debug Environment Variables
       run: |
         echo "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
-        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
         if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
           echo "CLOUDFLARE_API_TOKEN is not set"
           exit 1
         fi
+        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
+
+    - name: Pass Secret via Environment Variable
+      run: |
+        echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
+        echo "Token value set in GITHUB_ENV"
 
     - name: Run image processing script and check for changes
       id: run_script
@@ -60,7 +65,7 @@ jobs:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
       run: |
-        echo "Token value: $CLOUDFLARE_API_TOKEN"  # Debug print
+        echo "Running script with token: $CLOUDFLARE_API_TOKEN"  # Debug print
         if [ -z "$CHANGED_FILES" ]; then
           echo "No .mdx files changed."
         else
