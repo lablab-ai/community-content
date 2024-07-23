@@ -45,19 +45,17 @@ jobs:
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
-    - name: Debug Environment Variables
+    - name: List Environment Variables
       run: |
-        echo "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+        printenv
+
+    - name: Debug Specific Secret
+      run: |
+        echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}"
         if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
           echo "CLOUDFLARE_API_TOKEN is not set"
           exit 1
         fi
-        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
-
-    - name: Pass Secret via Environment Variable
-      run: |
-        echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> $GITHUB_ENV
-        echo "Token value set in GITHUB_ENV"
 
     - name: Run image processing script and check for changes
       id: run_script
