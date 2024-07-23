@@ -1,0 +1,8 @@
+Processing file: tutorials/en/ai71-platform-guide.mdx
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/83e55166-303b-4dfb-c34d-94dd4300f300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/64c12a53-914f-41e8-9cba-f0d992de7800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/71a2f9ca-d19f-423b-c7eb-15fc044ed200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb56b695-ab8b-4ade-0e8a-daac1f088000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6a421450-08cb-49df-e921-1e4df230d300/full
+Successfully processed file: tutorials/en/ai71-platform-guide.mdx
+CHANGES_MADE
