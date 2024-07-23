@@ -1,7 +1,7 @@
 name: Process MDX Files
 
 on:
-  pull_request:
+  pull_request_target:
     paths:
       - '**/*.mdx'
 
@@ -86,3 +86,12 @@ jobs:
         git add .
         git commit -m "Processed images in MDX files"
         git push https://github-actions:${{ secrets.PAT_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }} HEAD:${{ github.event.pull_request.head.ref }}
+      continue-on-error: true
+
+    - name: Debugging Upload Failure
+      if: failure()
+      run: |
+        echo "Upload failed. Debugging information:"
+        git status
+        git log -1
+        echo "End of debugging information."
