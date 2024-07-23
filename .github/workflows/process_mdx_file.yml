@@ -60,6 +60,10 @@ jobs:
           exit 1
         fi
 
+    - name: Print PAT_TOKEN length
+      run: |
+        echo "PAT_TOKEN length: ${#PAT_TOKEN}"
+
     - name: Run image processing script and check for changes
       id: run_script
       env:
