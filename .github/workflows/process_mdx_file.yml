@@ -45,6 +45,11 @@ jobs:
         echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
         echo "Changed files: $CHANGED_FILES"
 
+    - name: Debug Environment Variables
+      run: |
+        echo "CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+        echo "CHANGED_FILES: ${{ env.CHANGED_FILES }}"
+
     - name: Run image processing script and check for changes
       id: run_script
       env:
