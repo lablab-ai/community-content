@@ -32,7 +32,7 @@ AI71 offers several powerful models to choose from:
 - Falcon 7B Instruct
 - Falcon 11B
 
-**Note**: Currently, only `tiiuae/falcon-180b-chat` and `tiiuae/falcon-11b` models are operational. The other models will be available soon. In the meantime, you can test the `tiiuae/falcon-180b-chat` model to get a feel for the platform.
+**Note**: Currently, only `tiiuae/falcon-180b-chat` and `tiiuae/falcon-11b` models are operational. The other models will be available soon. In the meantime, you can test `tiiuae/falcon-180b-chat` and `tiiuae/falcon-11b` models to get a feel for the platform.
 
 You can select any of these models right from the home page, making it easy to start your AI project with the right tools.
 
@@ -206,7 +206,7 @@ client = OpenAI(
 )
 
 completion = client.chat.completions.create(
-  model="tiiuae/falcon-180b-chat",
+  model="tiiuae/falcon-11b",
   messages=[
     {"role": "system", "content": "You are EduTutor, an AI designed to assist with educational questions. Provide clear and helpful explanations."},
     {"role": "user", "content": "Hi Tutor, explain pythagoras theorem"}
