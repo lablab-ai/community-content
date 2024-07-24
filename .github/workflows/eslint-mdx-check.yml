@@ -86,7 +86,7 @@ jobs:
           echo "No .mdx files changed."
         else
           echo "Running ESLint with files: $CHANGED_FILES"
-          npx eslint $CHANGED_FILES --config eslint.config.mjs
+          npx eslint $CHANGED_FILES --config eslint.config.mjs -f codeframe
         fi
 
     - name: Run ESLint with auto-fix
@@ -130,7 +130,7 @@ jobs:
       continue-on-error: true
       run: |
         echo "Running ESLint again to verify"
-        npx eslint $CHANGED_FILES --config eslint.config.mjs
+        npx eslint $CHANGED_FILES --config eslint.config.mjs -f codeframe
 
     - name: Print ESLint results
       if: failure() || env.changes == 'false'
