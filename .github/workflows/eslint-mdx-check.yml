@@ -1,4 +1,4 @@
-name: Check ESLint for MDX Files
+name: Check and Fix ESLint for MDX Files
 
 on:
   pull_request_target:
@@ -86,6 +86,40 @@ jobs:
           echo "Running ESLint with files: $CHANGED_FILES"
           npx eslint $CHANGED_FILES --config eslint.config.mjs
         fi
+
+    - name: Run ESLint with auto-fix
+      id: eslint_fix
+      env:
+        CHANGED_FILES: ${{ env.CHANGED_FILES }}
+      run: |
+        echo "Running ESLint with auto-fix"
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No .mdx files changed."
+        else
+          echo "Running ESLint with auto-fix on files: $CHANGED_FILES"
+          npx eslint $CHANGED_FILES --config eslint.config.mjs --fix
+        fi
+
+    - name: Check for changes
+      id: git_diff
+      run: |
+        if git diff --quiet; then
+          echo "No changes to commit"
+          echo "changes=false" >> $GITHUB_ENV
+        else
+          echo "Changes detected"
+          echo "changes=true" >> $GITHUB_ENV
+
+    - name: Commit and push changes
+      if: env.changes == 'true'
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add .
+        git commit -m "Auto-fixed ESLint issues in MDX files"
+        git push "https://${GITHUB_TOKEN}@github.com/${{ github.repository }}" HEAD:${{ github.head_ref }}
 
     - name: Print ESLint results
       if: failure()
