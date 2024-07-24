@@ -32,34 +32,30 @@ jobs:
 
     - name: Configure ESLint
       run: |
-        echo '{
-          "extends": [
-            "eslint:recommended",
-            "plugin:react/recommended",
-            "plugin:@typescript-eslint/recommended",
-            "plugin:jsx-a11y/recommended",
-            "plugin:import/errors",
-            "plugin:import/warnings",
-            "plugin:import/typescript",
-            "plugin:mdx/recommended"
-          ],
-          "plugins": ["mdx"],
-          "settings": {
-            "react": {
-              "version": "detect"
-            }
-          },
-          "parser": "@typescript-eslint/parser",
-          "parserOptions": {
-            "ecmaFeatures": {
-              "jsx": true
-            }
-          },
-          "rules": {
-            "react/prop-types": "off",
-            "@typescript-eslint/no-unused-vars": "error"
-          }
-        }' > .eslintrc.json
+        echo 'import js from "@eslint/js";
+              import mdx from "eslint-plugin-mdx";
+              import typescriptParser from "@typescript-eslint/parser";
+              import typescriptPlugin from "@typescript-eslint/eslint-plugin";
+
+              export default [
+                js.configs.recommended,
+                {
+                  files: ["**/*.mdx"],
+                  plugins: {
+                    mdx,
+                    "@typescript-eslint": typescriptPlugin,
+                  },
+                  languageOptions: {
+                    parser: typescriptParser,
+                  },
+                  rules: {
+                    ...mdx.configs.recommended.rules,
+                    ...typescriptPlugin.configs.recommended.rules,
+                    "react/prop-types": "off",
+                    "@typescript-eslint/no-unused-vars": "error"
+                  },
+                },
+              ];' > eslint.config.js
 
     - name: Get list of changed .mdx files
       id: changed_files
