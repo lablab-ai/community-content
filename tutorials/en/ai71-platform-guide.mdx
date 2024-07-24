@@ -6,8 +6,7 @@ authorUsername: "adebisi_oluwatomiwa878"
 ---
 
 # 🚀 Comprehensive Guide to AI71's API Hub
-Welcome, everyone!  Whether you're an AI developer, software engineer, or just starting your coding journey, this tutorial is designed to help you navigate AI71's new API Hub. We'll explore how to interact with the powerful Falcon models, customize their settings, and manage your projects efficiently.
-
+Welcome, everyone! Whether you're an AI developer, software engineer, or just starting your coding journey, this tutorial is designed to help you navigate AI71's new API Hub. We'll explore how to interact with the powerful Falcon models, customize their settings, and manage your projects efficiently.
 
 Let's dive in and unlock the full potential of the Falcon models together!
 
@@ -18,7 +17,7 @@ Let's dive in and unlock the full potential of the Falcon models together!
 ### Home Page Overview
 When you first land on the AI71 platform's home page, you'll see three main options to interact with the API:
 
-1. AI71 Python SDk
+1. AI71 Python SDK
 2. OpenAI Python SDK
 3. Curl
 
@@ -26,13 +25,10 @@ When you first land on the AI71 platform's home page, you'll see three main opti
 AI71 offers several powerful models to choose from:
 
 - Falcon 180B
-- Falcon 40B
-- Falcon 40B Instruct
-- Falcon 7B
-- Falcon 7B Instruct
 - Falcon 11B
+- Falcon 11B VLM
 
-**Note**: Currently, only `tiiuae/falcon-180b-chat` and `tiiuae/falcon-11b` models are operational. The other models will be available soon. In the meantime, you can test `tiiuae/falcon-180b-chat` and `tiiuae/falcon-11b` models to get a feel for the platform.
+**Note**: Currently, only `tiiuae/falcon-180b-chat`, `tiiuae/falcon-11b`, and `tiiuae/falcon-11b-vlm` models are operational. The other models will be available soon. In the meantime, you can test `tiiuae/falcon-180b-chat`, `tiiuae/falcon-11b`, and `tiiuae/falcon-11b-vlm` models to get a feel for the platform.
 
 You can select any of these models right from the home page, making it easy to start your AI project with the right tools.
 
@@ -41,22 +37,25 @@ You'll find a handy token calculator at the right of the home page. Simply input
 
 Each option includes an example to help you get started quickly. You can choose the method that best fits your workflow. Here's a quick look at the home page options:
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/83e55166-303b-4dfb-c34d-94dd4300f300/full" alt="Welcome to AI71 Platform" caption="Explore the Homepoage of AI71 platform" />
-
-
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/83e55166-303b-4dfb-c34d-94dd4300f300/full" alt="Welcome to AI71 Platform" caption="Explore the Home Page of AI71 platform" />
 
 ## 🛠️ Sandbox Page
 The sandbox page is where you can interact with all the **Falcon** models in real-time. Here, you can:
 
 1. **Select a Model**: Choose from the available models.
 2. **Customize the System Prompt**: Tailor the prompt to fit your needs.
-3. **Adjust Maximum Output Length**: Set the output length between 3 and 2048 tokens.
+3. **Adjust Maximum Output Length**: Set the output length between 3 and 2048 tokens, depending on the model.
 4. **Tweak the Temperature**: Adjust the temperature between 0 and 2 to control the randomness of the output.
+5. **Adjust Top P**: Control the cumulative probability of token sequences.
+6. **Adjust Top K**: Limit the next token selection to the top K tokens.
+7. **Set Frequency Penalty**: Penalize new tokens based on their existing frequency in the text.
+8. **Define Stop Sequences**: Specify sequences where the output should stop.
+
+*Maximum output length will differ based on each model.*
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/64c12a53-914f-41e8-9cba-f0d992de7800/full" alt="AI71 Sandbox" caption="Explore the Sandbox of AI71 platform" />
 
 This flexibility allows you to experiment and find the best settings for your specific use case.
-
 
 ## 📄 Documentation Page
 The documentation page provides detailed instructions on how to use the supported models via different methods:
@@ -65,7 +64,8 @@ The documentation page provides detailed instructions on how to use the supporte
 2. OpenAI SDK
 3. LangChain SDK
 4. Curl
-Each method comes with a brief description and a usage example to help you get started quickly.
+
+Each method comes with a brief description and a usage example to help you get started quickly. Other OpenAI-supported SDKs may work if there is an option to change the Base URL and API key.
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/71a2f9ca-d19f-423b-c7eb-15fc044ed200/full" alt="AI71 Documentation" caption="Explore the Sandbox of AI71 platform" />
 
@@ -73,10 +73,8 @@ Each method comes with a brief description and a usage example to help you get s
 AI71 supports several models, each with its specific use case and API call format:
 
 - **tiiuae/falcon-180B-chat**: A 180B parameters causal decoder-only model fine-tuned on Ultrachat, Platypus, and Airoboros datasets.
-- **tiiuae/falcon-40b**-instruct: A 40B parameters causal decoder-only model fine-tuned on Baize.
-- **tiiuae/falcon-40b**: A 40B parameters causal decoder-only model trained on RefinedWeb.
-- **tiiuae/falcon-7b-instruct**: A 7B parameters causal decoder-only model fine-tuned on chat/instruct datasets.
-- **tiiuae/falcon-7b**: A 7B parameters causal decoder-only model trained on RefinedWeb.
+- **tiiuae/falcon-11b**: A 11B parameters causal decoder-only model.
+- **tiiuae/falcon-11b-vlm**: A 11B parameters visual language model.
 
 For more details, you can refer to the [AI71 Documentation](https://marketplace.ai71.ai/documentation).
 
@@ -88,7 +86,7 @@ The organization page allows you to create and manage your organization. Here, y
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb56b695-ab8b-4ade-0e8a-daac1f088000/full" alt="Organization" caption="Create an Organization" />
 
 - Manage API Keys: Create and manage API keys.
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6a421450-08cb-49df-e921-1e4df230d300/full" alt="API keys" caption="Create API Key" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b428fbcb-625e-44f1-f40c-a0eeb5531200/full" alt="API keys" caption="Create API Key" />
 
 - Support: Create and manage support tickets.
 - Usage: View the usage of created API keys.
