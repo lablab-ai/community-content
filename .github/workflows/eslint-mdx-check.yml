@@ -20,7 +20,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '20.14.0'
 
     - name: Install dependencies
       run: |
@@ -28,7 +28,7 @@ jobs:
 
     - name: Install ESLint and plugins
       run: |
-        npm install eslint eslint-plugin-mdx @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-plugin-import --save-dev
+        npm install eslint@9.7.0 eslint-plugin-mdx @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-plugin-import --save-dev
 
     - name: Configure ESLint
       run: |
@@ -40,7 +40,8 @@ jobs:
             "plugin:jsx-a11y/recommended",
             "plugin:import/errors",
             "plugin:import/warnings",
-            "plugin:import/typescript"
+            "plugin:import/typescript",
+            "plugin:mdx/recommended"
           ],
           "plugins": ["mdx"],
           "settings": {
