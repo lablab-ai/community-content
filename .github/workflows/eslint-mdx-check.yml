@@ -48,6 +48,7 @@ jobs:
                   languageOptions: {
                     parser: typescriptParser,
                   },
+                  processor: "mdx/remark",
                   rules: {
                     ...mdx.configs.recommended.rules,
                     ...typescriptPlugin.configs.recommended.rules,
@@ -121,7 +122,15 @@ jobs:
         git commit -m "Auto-fixed ESLint issues in MDX files"
         git push "https://${GITHUB_TOKEN}@github.com/${{ github.repository }}" HEAD:${{ github.head_ref }}
 
-    - name: Print ESLint results
-      if: failure()
+    - name: Run ESLint again to verify
+      if: env.changes == 'true'
+      env:
+        CHANGED_FILES: ${{ env.CHANGED_FILES }}
       run: |
-        echo "ESLint check failed. See above for details."
+        echo "Running ESLint again to verify"
+        npx eslint $CHANGED_FILES --config eslint.config.mjs
+
+    - name: Print ESLint results
+      if: failure() || env.changes == 'false'
+      run: |
+        echo "ESLint check failed or no changes were needed. See above for details."
