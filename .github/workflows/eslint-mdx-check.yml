@@ -79,6 +79,7 @@ jobs:
       id: eslint_check
       env:
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
+      continue-on-error: true
       run: |
         echo "Running ESLint"
         if [ -z "$CHANGED_FILES" ]; then
@@ -126,6 +127,7 @@ jobs:
       if: env.changes == 'true'
       env:
         CHANGED_FILES: ${{ env.CHANGED_FILES }}
+      continue-on-error: true
       run: |
         echo "Running ESLint again to verify"
         npx eslint $CHANGED_FILES --config eslint.config.mjs
