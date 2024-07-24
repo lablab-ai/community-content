@@ -55,7 +55,7 @@ jobs:
                     "@typescript-eslint/no-unused-vars": "error"
                   },
                 },
-              ];' > eslint.config.js
+              ];' > eslint.config.mjs
 
     - name: Get list of changed .mdx files
       id: changed_files
@@ -84,7 +84,7 @@ jobs:
           echo "No .mdx files changed."
         else
           echo "Running ESLint with files: $CHANGED_FILES"
-          npx eslint $CHANGED_FILES
+          npx eslint $CHANGED_FILES --config eslint.config.mjs
         fi
 
     - name: Print ESLint results
