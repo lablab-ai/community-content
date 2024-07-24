@@ -26,9 +26,9 @@ jobs:
       run: |
         npm install
 
-    - name: Install ESLint and plugins
+    - name: Install ESLint, TypeScript, and plugins
       run: |
-        npm install eslint@9.7.0 eslint-plugin-mdx @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-plugin-import --save-dev --legacy-peer-deps
+        npm install eslint@9.7.0 typescript eslint-plugin-mdx @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y eslint-plugin-import --save-dev --legacy-peer-deps
 
     - name: Configure ESLint
       run: |
