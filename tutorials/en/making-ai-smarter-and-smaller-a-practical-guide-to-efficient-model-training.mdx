@@ -1,0 +1,752 @@
+---
+title: "Making AI Smarter and Smaller: A Practical Guide to Efficient Model Training"
+description: "Learn how to train smaller, efficient AI models using larger models for data generation"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6a370625-a67b-48c0-55a4-3cbc54695f00/full"
+authorUsername: "sanchayt743"
+---
+
+
+# **Making AI Smarter and Smaller: A Practical Guide to Efficient Model Training**
+
+
+Hi, I’m Sanchay Thalnerkar, an AI Engineer. I’ve been exploring ways to make AI more efficient, and I’m excited to share an interesting approach I’ve been working on. In the world of artificial intelligence, bigger models often steal the spotlight, but what if you could get similar results without the hefty price tag and massive computing power? This guide walks you through a clever approach: using a large AI model to create top-notch training data, then using that data to train a smaller, more manageable model.
+
+---
+
+## **My Method: Efficient AI in Three Steps**
+
+First, we leverage a large model like Meta-Llama-3.1-405B, made accessible by **Together AI**, to generate a dataset of marketing scenarios. Together AI’s platform allows us to tap into the vast knowledge of this powerful model, creating the perfect study guide for our smaller model. This data is then formatted using the “alpaca prompt” structure, making it easy for a smaller model to learn effectively. Finally, we use a tool called Unsloth to efficiently train our smaller model, starting with Meta-Llama-3.1-8B, on this data.
+
+The outcome? A model that’s smaller, faster, and capable of producing high-quality outputs for specific marketing tasks, comparable to what you’d expect from a much larger model. For instance, when prompted with “Create a marketing campaign to promote a chocolate bar for Cadbury, targeting adults and boomers,” the results can be surprisingly good.
+
+
+
+This method offers several benefits. It allows for creating AI models specialized in specific tasks, making it accessible even to small companies or individual developers without the need for expensive hardware or massive budgets. By focusing on generating diverse, high-quality training data and carefully fine-tuning your smaller model, you can create powerful and efficient AI tools tailored to your needs.
+
+---
+
+## **Step 1: Setting Up the Environment**
+
+Before we begin, let's set up our development environment:
+
+1. Install Python: If you haven't already, download and install Python from https://www.python.org/downloads/windows/
+
+2. Create a virtual environment:
+   - Open Command Prompt
+   - Navigate to your project directory
+   - Run the following commands:
+     ```
+     python -m venv myenv
+     myenv\Scripts\activate
+     ```
+
+3. Install required packages:
+   Run the following commands in your activated virtual environment:
+
+   ```
+   pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+   pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes together ratelimit
+   pip install torch transformers datasets rich
+   ```
+
+4. Additional dependencies:
+   Based on the code in the tutorial, you'll also need to install:
+   ```
+   pip install ipython
+   ```
+
+## Start by importing libraries 
+
+```python
+import json
+from typing import List, Dict
+from together import Together
+import time
+import re
+from ratelimit import limits, sleep_and_retry
+from collections import Counter
+```
+
+### **Step 2: Creating Data Generation Function**
+
+Let's walk through the entire process of how the data generation function works, step by step.
+
+First, we define a function called **`generate_multiple_marketing_samples`**. This function’s job is to create several marketing scenarios that we can later use to train a smaller, more efficient AI model. Here's how it starts:
+
+```python
+def generate_multiple_marketing_samples(num_samples: int = 5) -> List[str]:
+    system_message = f"""You are an elite marketing AI, tasked with generating {num_samples} exceptional, diverse, and innovative marketing scenarios. Each scenario must be unique and push the boundaries of creative marketing. Your goal is to create a dataset that will revolutionize AI-assisted marketing when used for fine-tuning.
+
+    For each sample, provide:
+
+    1. Instruction: A specific, challenging marketing task that requires creativity and expertise.
+    2. Input: Detailed context, including company info, target audience, constraints, and goals.
+    3. Response: An outstanding, creative solution that addresses the instruction and input.
+
+    Guidelines:
+    - Cover a wide range of industries: tech, fashion, food, finance, entertainment, healthcare, education, travel, etc.
+    - Include various marketing channels: social media, email, content marketing, influencer partnerships, guerrilla marketing, AR/VR campaigns, etc.
+    - Address different marketing objectives: brand awareness, lead generation, customer retention, product launch, crisis management, etc.
+    - Incorporate current trends: sustainability, AI, personalization, interactive content, social causes, etc.
+    - Consider various audience segments: Gen Z, millennials, seniors, B2B executives, niche hobbyists, global markets, etc.
+    - Include challenging scenarios: limited budgets, tight deadlines, highly competitive markets, rebranding efforts, etc.
+    - Explore innovative formats: interactive stories, user-generated content campaigns, multi-platform narratives, gamification, etc.
+
+    Format each sample as follows:
+    ### Instruction:
+    [Concise, specific marketing task]
+
+    ### Input:
+    [Detailed context and requirements]
+
+    ### Response:
+    [Creative, comprehensive marketing solution]
+
+    Separate each sample with ---
+
+    Remember: Quality, creativity, and diversity are crucial. Each sample should be a masterclass in innovative marketing that would challenge and inspire even seasoned professionals."""
+
+    user_message = f"Generate {num_samples} cutting-edge, diverse marketing scenarios that showcase the future of AI-assisted marketing creativity. Use the specified format, separating each sample with ---."
+
+    messages = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": user_message},
+    ]
+
+    response = get_model_response(messages)
+    return [sample.strip() for sample in response.split("---") if sample.strip()]
+
+```
+
+In this first part, we create two messages. The `system_message` sets the stage, telling the AI that it’s supposed to act like a top-tier marketing expert. The `user_message` gives specific instructions: it tells the AI how many scenarios to generate (based on the `num_samples` we input) and how to format each scenario. The format includes three parts: an instruction, some background information, and a response, which will be the solution to the marketing task.
+
+### Example  Content Generated
+
+Below are some examples of the marketing content generated. The outputs include Facebook ads, sales pages, and Twitter threads tailored to specific audiences and objectives.
+
+---
+
+<details>
+<summary><strong>Example 1: Facebook Ad for a Fitness Program</strong></summary>
+
+**Instruction:**  
+Create a Facebook ad for a new fitness program targeting busy professionals, with the objective of generating leads.
+
+**Response:**  
+**Hook:** "Get Fit, Not Frustrated: Unlock Your Dream Body in Just 15 Minutes a Day!"  
+**Narrative:** "As a busy professional, you know how hard it is to find time for the gym. But what if you could achieve your fitness goals without sacrificing your sanity? Our program is designed to help you get results in just 15 minutes a day, no matter your schedule."  
+**Climax:** "Join our community of like-minded individuals and get instant access to our proven workout routines, nutrition plans, and expert coaching."  
+**Resolution:** "Sign up now and take the first step towards a healthier, happier you!"
+
+**Persuasion Matrix:**  
+Primary Technique: Problem-Agitate-Solve (PAS)  
+Psychological Triggers: Scarcity, Social Proof, Authority  
+Linguistic Patterns: Embedded commands, metaphors  
+Objection Handling: "I don't have time" (addressed in the narrative)
+
+**Optimization Insights:**  
+A/B Test Suggestion: Test a variant with a different hook, focusing on the benefits of increased energy.  
+Key Performance Indicators: Conversion rate, cost per lead, click-through rate  
+Omnichannel Synergy: Share user-generated content on Instagram to create social proof.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Example 2: Sales Page for an E-book on Entrepreneurship</strong></summary>
+
+**Instruction:**  
+Write a sales page for a new e-book on entrepreneurship, targeting aspiring business owners, with the objective of generating sales.
+
+**Response:**  
+**Hook:** "Unlock the Secrets to Building a 6-Figure Business from Scratch"  
+**Narrative:** "Are you tired of living paycheck to paycheck? Do you dream of building a business that generates wealth and freedom? Our e-book reveals the exact strategies and mindset shifts you need to succeed as an entrepreneur."  
+**Climax:** "Get instant access to our comprehensive guide, packed with actionable advice and real-life examples from successful entrepreneurs."  
+**Resolution:** "Buy now and start building the business of your dreams!"
+
+**Persuasion Matrix:**  
+Primary Technique: Before-After-Bridge (BAB)  
+Psychological Triggers: Greed, Curiosity, Authority  
+Linguistic Patterns: Storytelling, rhetorical questions  
+Objection Handling: "I don't know where to start" (addressed in the narrative)
+
+**Optimization Insights:**  
+A/B Test Suggestion: Test a variant with a different narrative, focusing on the benefits of lifestyle freedom.  
+Key Performance Indicators: Conversion rate, revenue, average order value  
+Omnichannel Synergy: Share a free chapter on LinkedIn to generate buzz.
+
+</details>
+
+---
+
+<details>
+<summary><strong>Example 3: Twitter Thread for a Sustainable Fashion Brand</strong></summary>
+
+**Instruction:**  
+Create a Twitter thread for a new sustainable fashion brand, targeting environmentally conscious consumers, with the objective of increasing brand awareness.
+
+**Response:**  
+**1/6** "The fashion industry is one of the largest polluters in the world. But what if you could look great and do good at the same time? Introducing our new sustainable fashion brand, dedicated to reducing waste and promoting eco-friendly practices."  
+**2/6** "Our mission is to make sustainable fashion accessible to everyone, without sacrificing style or quality. From organic cotton to recycled materials, we're committed to reducing our environmental footprint."  
+**3/6** "But it's not just about us – it's about the impact we can have together. By choosing sustainable fashion, you're supporting a movement towards a more conscious and responsible industry."  
+**4/6** "We're not just talking the talk – we're walking the walk. Our supply chain is transparent, and we're committed to continuous improvement and innovation."  
+**5/6** "So what are you waiting for? Join the sustainable fashion revolution and shop our latest collection now!"  
+**6/6** "Together, we can make a difference. Share this thread with a friend and help spread the word about the power of sustainable fashion!"
+
+**Persuasion Matrix:**  
+Primary Technique: Social Proof  
+Psychological Triggers: Guilt, Social Identity, Scarcity  
+Linguistic Patterns: Repetition, metaphors  
+Objection Handling: "I don't know if I can afford it" (addressed in the thread)
+
+**Optimization Insights:**  
+A/B Test Suggestion: Test a variant with a different call-to-action, focusing on encouraging engagement.  
+Key Performance Indicators: Engagement rate, follower growth, website traffic  
+Omnichannel Synergy: Share user-generated content on Instagram to create social proof.
+
+</details>
+
+---
+
+And so on, up to 50 pieces of marketing content.
+
+Next, these messages are combined into a list called `messages`, which is then sent to the AI model to generate the content:
+
+```python
+    messages = [
+        {"role": "system", "content": system_message},
+        {"role": "user", "content": user_message},
+    ]
+
+    response = get_model_response(messages)
+```
+
+Here, the `messages` list is like a conversation with the AI. The first message sets the context, and the second one asks for the specific task. We then use a function called `get_model_response` (which you would define elsewhere in your code) to send these messages to the AI model and get back the generated scenarios.
+
+After we receive the AI’s response, we need to clean it up and prepare it for use:
+
+```python
+    return [sample.strip() for sample in response.split("---") if sample.strip()]
+```
+
+The response from the AI is usually a long string with each scenario separated by `---`. This part of the function splits the response into individual scenarios, trims any extra spaces, and removes any empty entries. The result is a list of clean, well-structured marketing scenarios.
+
+### **Output Example:**
+
+Let's see what this function outputs. Suppose we ask for a few marketing scenarios:
+
+1. **Instruction**: Create a Facebook ad for a new fitness program targeting busy professionals.
+   - **Input**: The program is designed for people with limited time but who still want to achieve their fitness goals.
+   - **Response**: A detailed ad with a hook, narrative, and call to action, designed to attract leads from busy professionals.
+
+2. **Instruction**: Write a sales page for an e-book on entrepreneurship.
+   - **Input**: The e-book is targeted at aspiring business owners.
+   - **Response**: A compelling sales pitch that outlines the benefits of the e-book and persuades the reader to purchase.
+
+These scenarios are formatted in a way that makes them directly usable as training data for a smaller AI model.
+
+### **Why This Method Works**
+
+This function is simple yet powerful. It allows us to harness the capabilities of a large AI model to generate high-quality, diverse training data. This data is then perfectly formatted to train a smaller model that can perform specific marketing tasks. By controlling the number of samples and the format, we ensure that the generated data is both relevant and easy to use, making the overall process more efficient and effective.
+
+### **Step 3: Quality Control**
+
+After generating our samples, it's crucial to ensure that they meet a certain standard of quality. This is where our quality control function comes into play. The goal here is to filter out any samples that might not be good enough for training our AI model. Let's break down how this function works.
+
+Here's the code for our quality control function:
+
+```python
+def quality_check(sample: dict) -> bool:
+    min_length = 50
+    max_repetition = 0.3
+
+    for key in ["instruction", "input", "response"]:
+        text = sample[key]
+        if len(text) < min_length:
+            return False
+
+        words = re.findall(r"\w+", text.lower())
+        unique_words = set(words)
+        if len(unique_words) / len(words) < (1 - max_repetition):
+            return False
+
+    return True
+```
+
+
+### Output
+
+<Img src=https://i.postimg.cc/tJBB0vy1/temp-Imageiqw-K5-S.avif, alt={quality_check}, caption={quality_check_output}>
+
+
+
+
+#### **How the Function Works**
+
+This function performs two main checks: a length check and a repetition check.
+
+1. **Length Check**: The function begins by setting a minimum length (`min_length`) that each part of the sample (instruction, input, and response) must meet. The idea here is straightforward: if any part of the sample is too short (less than 50 characters), it likely doesn't contain enough information to be useful. If this is the case, the function immediately returns `False`, meaning the sample fails the quality check.
+
+2. **Repetition Check**: The next check is a bit more involved. This check ensures that the text isn't too repetitive. First, the function finds all the words in the text and converts them to lowercase to ensure consistency. It then calculates the ratio of unique words to the total number of words. If too many words are repeated (more than 30%), the function returns `False`. This check is important because excessive repetition can indicate low-quality or shallow content, which might not be helpful for training.
+
+#### **Why This Is Important**
+
+By passing each sample through these two checks, we make sure that only high-quality data is used to train our model. The length check ensures that the samples are detailed enough, while the repetition check ensures that the content is varied and rich in vocabulary. This process helps maintain the integrity of our dataset, ensuring that our AI model learns from diverse and informative examples.
+
+If a sample passes both checks, the function returns `True`, indicating that the sample is good enough to be included in our training data. This step is essential because high-quality training data leads to a more reliable and effective AI model.
+
+#### **Visualizing the Process**
+
+
+This quality control step is a safeguard, ensuring that the data fed into our model is robust and well-rounded. It’s like a filter that only lets through the best examples, setting the foundation for a model that can perform at a high level. Plus, the function is flexible enough to be updated with additional checks if needed, allowing us to refine our quality standards as we go.
+
+
+### **Step 4: Ensuring Diversity**
+
+To build a well-rounded and effective AI model, it's essential that our training data covers a broad range of marketing scenarios. This is where our diversity tracking function comes into play. Its purpose is to monitor how well our dataset represents different industries, marketing channels, and objectives, ensuring that our model is trained on a diverse set of examples.
+
+Here’s the code for our diversity tracking function:
+
+```python
+industry_keywords = ["tech", "fashion", "food", "finance", "entertainment", "healthcare", "education", "travel"]
+channel_keywords = ["social media", "email", "content marketing", "influencer", "guerrilla", "AR", "VR"]
+objective_keywords = ["brand awareness", "lead generation", "customer retention", "product launch", "crisis management"]
+
+def track_diversity(dataset: List[dict]) -> None:
+    industries = Counter()
+    channels = Counter()
+    objectives = Counter()
+
+    for sample in dataset:
+        text = " ".join([sample["instruction"], sample["input"], sample["response"]]).lower()
+        industries.update(word for word in industry_keywords if word in text)
+        channels.update(word for word in channel_keywords if word in text)
+        objectives.update(word for word in objective_keywords if word in text)
+
+    print("Dataset Diversity:")
+    print(f"Industries: {dict(industries)}")
+    print(f"Channels: {dict(channels)}")
+    print(f"Objectives: {dict(objectives)}")
+```
+
+### Output
+
+<Img src=https://i.postimg.cc/65QHVKLC/temp-Image2z-Kmg-D.avif, alt={analysis}, caption={analysis}>
+
+
+#### **How the Function Works**
+
+This function is designed to give us a clear picture of how diverse our dataset is, by checking if we're covering enough ground across different industries, marketing channels, and objectives.
+
+1. **Keyword Lists**: We start by defining three lists of keywords. These keywords represent important categories:
+   - **Industries**: Examples include "tech," "fashion," and "food."
+   - **Channels**: This list covers various marketing methods like "social media," "email," and "content marketing."
+   - **Objectives**: These are the goals of the marketing campaigns, such as "brand awareness," "lead generation," and "customer retention."
+
+2. **Counting Occurrences**: We then create a `Counter` for each category. A `Counter` is like a tally system that counts how many times each keyword appears in our dataset. The function loops through each sample in the dataset, combining the instruction, input, and response into one long string. This string is converted to lowercase to ensure that our keyword matching is case-insensitive.
+
+3. **Tracking Keywords**: For each sample, the function checks if any of the keywords from our lists appear in the text. If a keyword is found, it gets added to the respective `Counter`. This process helps us see how often each industry, channel, or objective is represented in our dataset.
+
+4. **Reporting Results**: Finally, the function prints out a summary of how well each category is represented. This output shows us the distribution of industries, channels, and objectives in our dataset. It’s a quick way to spot any gaps—if a certain industry or marketing method is underrepresented, we can go back and generate more samples to balance things out.
+
+#### **Why This Matters**
+
+Ensuring diversity in our dataset is crucial because it leads to a more versatile and capable AI model. If the training data only focuses on a few industries or marketing channels, the model might struggle with scenarios outside of those areas. By tracking and maintaining diversity, we make sure that our model can handle a wide variety of tasks, making it much more useful in real-world applications.
+
+For example, if we notice that "tech" and "fashion" are well-represented but "healthcare" is not, we can specifically generate more healthcare-related marketing scenarios. This approach ensures that our AI model is not biased towards any particular industry and is capable of performing well across the board.
+
+#### **Visualizing the Process**
+
+
+By actively tracking and ensuring diversity in our training data, we're setting up our AI model for success in a variety of marketing contexts. This step is key to building a robust, flexible model that can adapt to different challenges, ultimately making it a valuable tool for marketing professionals across different sectors.
+
+
+### **Step 5: Fine-Tuning Dataset Creation**
+
+In this step, we aim to create a dataset specifically designed for fine-tuning a language model to generate marketing and social media content. The `create_finetuning_dataset` function manages this process, generating and compiling a set of high-quality samples.
+
+The function works by setting a target of 1,000 samples and making multiple API calls to fetch batches of marketing scenarios. It continues until the target is reached or the maximum number of API calls is made. Each sample is broken down into its key components—instruction, input, and response—and stored in a dictionary.
+
+Before adding a sample to the dataset, it undergoes a quality check. If it passes, it's included; if not, it's skipped. Progress is saved after each API call to avoid data loss.
+
+The entire dataset creation took about 25-30 minutes, mainly due to API rate limits. This process could be sped up by relaxing the quality checks or using asynchronous API requests, which would require upgrading to a paid version of the Together API for faster data retrieval.
+
+Here’s the code:
+
+```python
+def create_finetuning_dataset(target_samples: int, output_file: str):
+    console.print(
+        Panel(
+            f"Creating fine-tuning dataset for [bold]Marketing & Social Media Content[/bold]",
+            expand=False,
+        )
+    )
+
+    dataset = []
+    samples_per_call = 50  # Reduced to respect token limits
+    calls_made = 0
+    max_calls = 200  # Increased to allow for more total samples
+
+    with console.status("[bold green]Generating samples...") as status:
+        while len(dataset) < target_samples and calls_made < max_calls:
+            calls_made += 1
+            status.update(
+                f"API call {calls_made} (Dataset size: {len(dataset)}/{target_samples})"
+            )
+
+            samples = generate_multiple_marketing_samples(samples_per_call)
+
+            for sample in samples:
+                if len(dataset) >= target_samples:
+                    break
+
+                parts = sample.split("###")
+                if len(parts) == 4:
+                    instruction = parts[1].replace("Instruction:", "").strip()
+                    input_text = parts[2].replace("Input:", "").strip()
+                    response = parts[3].replace("Response:", "").strip()
+
+                    sample_dict = {
+                        "instruction": instruction,
+                        "input": input_text,
+                        "response": response,
+                    }
+
+                    if quality_check(sample_dict):
+                        dataset.append(sample_dict)
+                    else:
+                        console.print("[yellow]Skipped low-quality sample")
+                else:
+                    console.print(
+                        f"[yellow]Skipped malformed sample: {sample[:100]}..."
+                    )
+
+            # Save progress after each API call
+            with open(output_file, "w") as f:
+                json.dump(dataset, f, indent=2)
+
+    console.print(
+        f"[bold green]Dataset creation complete! Total samples: {len(dataset)}"
+    )
+    track_diversity(dataset)
+
+create_finetuning_dataset(
+    target_samples=1000,
+    output_file="marketing_social_media_dataset_v1.json",
+)
+```
+
+The result is a dataset of 1,000 well-crafted marketing scenarios, each formatted with clear instructions, relevant input, and detailed responses. This approach ensures that the dataset is rich and diverse, providing a solid foundation for fine-tuning the language model. 
+
+**Output:**
+
+<Img src=https://i.postimg.cc/GhSXqfqV/temp-Image-Wnz-JFG.avif, alt={final_dataset}, caption={finaldataset}>
+
+This dataset, while time-consuming to create, is essential for developing a model that can effectively generate high-quality marketing and social media content.
+
+
+
+
+### **Step 6: Model Preparation and Quantization**
+
+With the dataset ready, the next crucial step is to prepare the language model for fine-tuning. This involves using the Unsloth library to load a pre-trained model while applying certain optimizations that make the process more efficient. One of the key techniques used here is 4-bit quantization, which helps to significantly reduce memory usage and improve the model's performance.
+
+The function `FastLanguageModel.from_pretrained` is central to this process. It loads the pre-trained model from a selection of pre-quantized models that are designed to download quickly and avoid out-of-memory errors, which is particularly important when working with large models. This method also includes settings like maximum sequence length and automatic support for RoPE scaling, which helps the model handle longer sequences without performance issues.
+
+Here’s how the code looks:
+
+```python
+from unsloth import FastLanguageModel  
+import torch
+
+max_seq_length = 800  # Adjust based on your needs
+dtype = None  # None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
+load_in_4bit = True  # Use 4bit quantization to reduce memory usage. Can be set to False.
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "unsloth/Meta-Llama-3.1-8B",
+    max_seq_length = max_seq_length,
+    dtype = dtype,
+    load_in_4bit = load_in_4bit,
+)
+```
+
+This code effectively prepares the model for the fine-tuning process. By setting `load_in_4bit` to `True`, we enable 4-bit quantization, which is a method to compress the model's weights, reducing the overall memory footprint and allowing for faster processing. This is particularly useful when working on hardware with limited memory capacity.
+
+The `dtype` parameter is also adjustable, depending on the specific GPU you’re using. For instance, if you’re using a Tesla T4 or V100 GPU, you might choose `Float16`, while newer Ampere GPUs would use `Bfloat16`. If you leave it as `None`, the code will automatically detect and set the most appropriate data type for your hardware.
+
+This setup ensures that the model is both loaded and optimized for the fine-tuning task with the dataset you’ve created. By managing resources efficiently and enhancing performance, this preparation step is critical for successfully fine-tuning the model to generate high-quality marketing and social media content.
+
+
+### **Step 7: Applying LoRA Adapters to the Model**
+
+In this step, we improve the base model by applying LoRA (Low-Rank Adaptation) adapters. LoRA allows us to fine-tune the model more efficiently by only updating a small portion of its parameters, which reduces both computational demands and memory usage. This is especially useful when working with large models or limited resources.
+
+The process involves configuring the model with specific settings, such as the rank (`r`), `lora_alpha`, and `lora_dropout`, to ensure optimal performance. The rank determines how much of the model's capacity is used for fine-tuning, while `lora_alpha` controls the impact of the updates. We also set `lora_dropout` to zero, meaning no dropout is applied, which helps retain as much of the original model's knowledge as possible.
+
+Additionally, we enable gradient checkpointing to handle long sequences more efficiently and reduce memory usage. This is particularly helpful when fine-tuning models that need to process large amounts of data without overwhelming the system.
+
+Here’s the code that applies these settings:
+
+```python
+model = FastLanguageModel.get_peft_model(
+    model,
+    r = 16,
+    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj", 
+                      "gate_proj", "up_proj", "down_proj"],
+    lora_alpha = 16,
+    lora_dropout = 0,
+    bias = "none",
+    use_gradient_checkpointing = "unsloth",
+    random_state = 3407,
+    use_rslora = False,
+    loftq_config = None,
+)
+```
+
+This setup fine-tunes the model by focusing on specific parts of the model, such as the projection layers (`q_proj`, `k_proj`, `v_proj`, etc.), which are critical for the model's performance. By adjusting these components, the model can be efficiently tuned to perform well on the specific tasks of generating marketing and social media content. The use of gradient checkpointing further ensures that the model can handle long sequences without using excessive memory, making the fine-tuning process both effective and resource-efficient.
+
+
+### **Step 8: Formatting Dataset for Training**
+
+In this step, we prepare the dataset for training by formatting it into a structure that the model can easily process. This involves creating a function that applies a specific prompt template to each example in the dataset, ensuring that the data is structured in a consistent and clear way for the model to understand.
+
+We start by defining a prompt template, called `alpaca_prompt`, which organizes each example into three parts: the instruction, the input, and the expected response. The template ensures that each example provides clear guidance on the task at hand and the context required to complete it. Additionally, we append an end-of-sequence token (`EOS_TOKEN`) to each entry, signaling the model when the generated text should end.
+
+Here’s the code that sets up the template and processes the dataset:
+
+```python
+alpaca_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+
+### Instruction:  
+{}
+
+### Input:  
+{}
+
+### Response:  
+{}"""
+
+EOS_TOKEN = tokenizer.eos_token
+
+def formatting_prompts_func(examples):
+    instructions = examples["instruction"]
+    inputs       = examples["input"]
+    outputs      = examples["response"]
+    texts = []
+    for instruction, input, output in zip(instructions, inputs, outputs):
+        text = alpaca_prompt.format(instruction, input, output) + EOS_TOKEN
+        texts.append(text)
+    return { "text" : texts, }
+```
+
+This function, `formatting_prompts_func`, takes each example from the dataset and applies the `alpaca_prompt` format. It combines the instruction, input, and response into a single text block and then adds the `EOS_TOKEN` to mark the end of the sequence. The function returns a list of formatted texts, which are then ready for training.
+
+To apply this formatting to the entire dataset, we load the dataset and use the `map` function to process it with our formatting function:
+
+```python
+dataset = load_dataset('json', data_files='/content/advanced_marketing_dataset_v5.json', split='train')
+dataset = dataset.map(formatting_prompts_func, batched=True)
+```
+
+This code loads the dataset from a JSON file and applies the formatting function to each example in the dataset. The result is a dataset that is fully prepared for training, with each entry formatted consistently according to the template. This preparation is crucial for ensuring that the model can learn effectively from the data, as it provides clear and structured examples of the tasks it will be trained to perform.
+
+### **Step 9: Training the Model**
+
+In this step, we move on to the crucial phase of training the model using the `SFTTrainer` from the Hugging Face TRL library. This involves setting up the training environment with various parameters that will guide the model's learning process. These parameters include the batch size, gradient accumulation steps, learning rate, and other optimization settings that are crucial for effective training.
+
+We start by configuring the `SFTTrainer` with the model, tokenizer, and the formatted dataset we prepared earlier. The training arguments are carefully chosen to balance the efficiency and performance of the training process. For instance, we use a small batch size with gradient accumulation to make better use of memory, while the learning rate is set to ensure steady progress in model optimization. The training process is designed to update the model parameters based on the dataset, gradually improving the model's ability to generate accurate and contextually appropriate responses.
+
+Here’s the code that sets up and executes the training:
+
+```python
+trainer = SFTTrainer(
+    model = model,
+    tokenizer = tokenizer,
+    train_dataset = dataset,
+    dataset_text_field = "text",
+    max_seq_length = max_seq_length,
+    dataset_num_proc = 2,
+    packing = False,
+    args = TrainingArguments(
+        per_device_train_batch_size = 2,
+        gradient_accumulation_steps = 4,
+        warmup_steps = 5,
+        max_steps = 60,
+        learning_rate = 2e-4,
+        fp16 = not is_bfloat16_supported(),
+        bf16 = is_bfloat16_supported(),
+        logging_steps = 1,
+        optim = "adamw_8bit",
+        weight_decay = 0.01,
+        lr_scheduler_type = "linear",
+        seed = 3407,
+        output_dir = "outputs",
+    ),
+)
+
+trainer_stats = trainer.train()
+```
+
+This code sets up the training process where the model parameters are adjusted to better fit the data. After the setup, the `trainer.train()` method starts the training process, optimizing the model based on the dataset we’ve prepared.
+
+### Output:
+
+
+<Img src=https://i.postimg.cc/13nJTKdt/temp-Imagep9ip-Hr.avif, alt={model_training}, caption={model_training}>
+
+<Img src=https://i.postimg.cc/gcsS6jRY/temp-Imager-Xmq-Cd.avif, alt={model_training}, caption={model_training}>
+
+### **Step 10: Generating and Parsing Output**
+
+After the model has been trained, the next step is to generate text based on a given prompt and then parse this output into a structured format. We use the trained model to generate text by providing it with a specific instruction. The output is then decoded and parsed into a dictionary format to make it easier to analyze and understand.
+
+Here’s how we generate the output and parse it:
+
+```python
+from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
+from rich.markdown import Markdown
+from IPython.display import display, Markdown
+import json
+
+FastLanguageModel.for_inference(model)
+inputs = tokenizer(
+    [
+        alpaca_prompt.format(
+            "Best marketing post for sneaker company",
+            "",
+            "",
+        )
+    ], return_tensors = "pt").to("cuda")
+
+text_streamer = TextStreamer(tokenizer)
+output = model.generate(**inputs, streamer = text_streamer)
+
+# Decode the output
+output_text = tokenizer.decode(output[0], skip_special_tokens=True)
+
+# Parse output to dictionary
+def parse_output_to_dict(output_text):
+    result = {}
+    current_section = None
+    lines = output_text.split('\n')
+    for line in lines:
+        line = line.strip()
+        if line.startswith('###'):
+            current_section = line.strip('# ').lower().replace(' ', '_')
+            result[current_section] = {}
+        elif ':' in line:
+            key, value = line.split(':', 1)
+            key = key.lower().replace(' ', '_').strip()
+            result[current_section][key] = value.strip()
+        elif line and current_section:
+            if 'content' not in result[current_section]:
+                result[current_section]['content'] = []
+            result[current_section]['content'].append(line)
+
+    return result
+
+parsed_output = parse_output_to_dict(output_text)
+
+# Display parsed output as JSON
+display(Markdown("## Parsed JSON Output\n\n```json\n" + json.dumps(parsed_output, indent=2) + "\n```"))
+```
+
+This code first sets up the model for inference, then generates a response to a prompt about a "regional local Mumbai clothing brand." The generated output is decoded from the tokenized format back into readable text. To make the output more manageable, we parse it into a dictionary, organizing the information into structured sections. Finally, the parsed output is displayed as a formatted JSON object, providing a clear and organized view of the generated content.
+
+This process of generating and parsing ensures that the output from the model is not only usable but also easy to interpret and integrate into further applications.
+
+
+### **Step 11: Saving and Reloading the Model**
+
+In this final step, we focus on saving the fine-tuned model and tokenizer so that they can be used later without needing to retrain the model from scratch. This is an essential part of the workflow, as it allows you to preserve the work done and quickly reload the model whenever needed for future tasks.
+
+We start by saving both the model and the tokenizer to a local directory named "lora_model". This directory will store all the necessary files that allow the model to be restored later. Once saved, we proceed to reload the model and tokenizer from this directory to ensure everything was stored correctly and can be retrieved without issues.
+
+Here’s the code to save and reload the model:
+
+```python
+# Uncomment to load the saved model
+model.save_pretrained("lora_model")
+tokenizer.save_pretrained("lora_model")
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "lora_model",
+    max_seq_length = max_seq_length,
+    dtype = dtype,
+    load_in_4bit = load_in_4bit,
+)
+FastLanguageModel.for_inference(model)
+```
+
+After reloading the model, we set it up for inference to generate text based on new prompts. This allows us to test the model’s ability to handle different instructions and inputs, verifying that it produces coherent and contextually appropriate responses.
+
+Here’s how you can generate text with the reloaded model:
+
+```python
+inputs = tokenizer(
+    [
+        alpaca_prompt.format(
+            "Create a marketing campaign to promote the chocolate bar",
+            "Company: Cadbury, target audience: adults/boomers",
+            "",
+        )
+    ], return_tensors = "pt").to("cuda")
+
+text_streamer = TextStreamer(tokenizer)
+_ = model.generate(**inputs, streamer = text_streamer, max_new_tokens = 128)
+```
+
+In this example, we provide the model with a prompt to create a marketing campaign for a chocolate bar targeting adults and boomers. The model processes this input and generates a relevant marketing campaign response. This process demonstrates that the model can effectively use the knowledge it has gained through fine-tuning to produce high-quality, targeted content.
+
+By saving and reloading the model, you ensure that all the work invested in fine-tuning is not lost and can be easily reused. This completes the training and testing of the model, confirming that it is ready to generate text based on specific instructions and that the results are formatted and saved correctly for any future use.
+
+
+### **Comparison between 405B and 8B for the Same Prompt**
+
+When comparing the outputs of the original 405B model with those from the fine-tuned 8B model, the differences are clear and significant. The fine-tuned model demonstrates a more refined and practical approach, making it a standout tool for real-world applications. Below is a comparison of both models on the same prompts, followed by an analysis of the fine-tuned model's strengths.
+
+
+---
+
+### **Comparison between 405B and 8B for the Same Prompt**
+
+#### **Example Prompts and Outputs**
+
+| **Instruction** | **Original 405B Model Output** | **Fine-Tuned 8B Model Output** |
+|-----------------|--------------------------------|--------------------------------|
+| **Create a Facebook ad for a fitness program targeting women aged 25-45, aiming to drive sign-ups for a free trial.** | "Here's a sample Facebook ad for a fitness program targeting women aged 25-45: Headline: Transform Your Body, Unlock Your Strength Text: Get ready to feel empowered, confident, and unstoppable! Call-to-Action (CTA) Button: Sign Up for Free Trial Targeting Options: Demographics: Women aged 25-45, Interests: Fitness, health, wellness, weight loss, nutrition, exercise, women's empowerment Additional Tips: Use social proof, emphasize the benefits, and use a clear and direct CTA." | **Instruction:** Create a Facebook ad for a fitness program targeting women aged 25-45, aiming to drive sign-ups for a free trial. **Response:** Hook: Get Fit and Feel Amazing! Narrative: Are you tired of feeling sluggish and unmotivated? Our fitness program is designed to help you achieve your goals and boost your energy levels. Climax: Join our free trial and experience the transformative power of our program for yourself! Resolution: Sign up now and start your journey to a healthier, happier you! |
+| **Create a Twitter thread for a fashion brand, showcasing their new sustainable clothing line.** | "Here's a Twitter thread for a fashion brand showcasing their new sustainable clothing line: 1/8 BIG NEWS! We're thrilled to introduce our new sustainable clothing line, 'EcoCycle'! 4/8 Meet the designers behind EcoCycle! 8/8 Thanks for joining us on this journey! At [Brand Name], we're committed to creating fashion that's not only beautiful, but also sustainable." | **Instruction:** Create a Twitter thread for a fashion brand, showcasing their new sustainable clothing line. **Response:** Hook: "Introducing our new sustainable clothing line: Made with love, not landfill." Narrative: "At [Brand Name], we believe fashion should be a force for good. That's why we've created a new line of clothing made from 100% recycled materials..." Climax: "Our new line features a range of stylish pieces..." Resolution: "Shop now and make a statement with [Brand Name]..." |
+| **Design an email campaign for an e-commerce store promoting a new product line, aiming to increase sales by 20%.** | "Here's a comprehensive email campaign design to promote a new product line and increase sales by 20%: Email Campaign Structure: 1. Teaser Email (sent 1 week before launch) 2. Launch Email (sent on launch day) 3. Special Offer Email (sent 3 days after launch) 4. Social Proof Email (sent 1 week after launch) 5. Reminder Email (sent 2 weeks after launch) 6. Win-Back Email (sent 3 weeks after launch)" | **Instruction:** Design an email campaign for an e-commerce store promoting a new product line, aiming to increase sales by 20%. **Response:** Content Anatomy: A. Hook: "Introducing Our Newest Collection: Modern Meets Minimalism" B. Narrative: "We're excited to introduce our latest collection, featuring sleek designs and high-quality materials..." C. Climax: "Get ready to elevate your style..." D. Resolution: "Shop Now and discover your new favorite pieces!" |
+| **Create a Facebook ad for a fitness program targeting busy professionals, aiming to drive sign-ups for a free trial.** | "Here's a sample Facebook ad for a fitness program targeting busy professionals: Headline: Get Fit, Not Overwhelmed: Free Trial for Busy Professionals Text: Are you tired of sacrificing your health and wellness for the demands of your career? Call-to-Action (CTA) Button: Sign Up for Free Trial Targeting: Demographics: Adults 25-50 years old, Interests: Fitness, health, wellness, career development, entrepreneurship, productivity" | **Instruction:** Create a Facebook ad for a fitness program targeting busy professionals, aiming to drive sign-ups for a free trial. **Input:** Market research: 70% of target audience prefers video content **Response:** Content Anatomy: A. Hook: "Get Fit, Feel Amazing - in Just 20 Minutes a Day!" B. Narrative: "As a busy professional, finding time for the gym can be tough..." C. Climax: "Try our program for FREE..." D. Resolution: "Sign up now..." |
+| **Write a sales email for a B2B software solution targeting marketing managers, with the primary objective of scheduling a demo.** | "Here is a sample sales email for a B2B software solution targeting marketing managers: Subject: Boost Marketing Efficiency with [Software Name] Body: Dear [Marketing Manager's Name], Call-to-Action: Click this link to schedule a demo... Best regards, [Your Name]" | **Instruction:** Write a sales email for a B2B software solution targeting marketing managers, with the primary objective of scheduling a demo. **Response:** Hook: "Unlock Your Marketing Potential with Our Software Solution" Narrative: "Are you tired of relying on manual processes..." Climax: "Schedule a demo with our expert team..." Resolution: "Book your demo today..." |
+
+---
+
+
+#### **Analysis of Fine-Tuned Model's Strengths**
+
+When you look at the outputs from the original 405B model and the fine-tuned 8B model, the difference is pretty striking. The fine-tuned model is more aligned with practical, real-world applications. Here’s why it stands out:
+
+1. **Focused and On-Point**: The fine-tuned model delivers exactly what you need without unnecessary details. This makes it highly practical, as you get content that’s ready to use right away.
+2. **Clear and Concise**: The fine-tuned model excels in clear and simple communication. Whether it’s crafting an ad, a social media post, or an email, the output is always straightforward and effective, which is crucial for capturing attention quickly.
+3. **Tailored to the Task**: The fine-tuned model provides responses that are specifically suited to the task at hand. It doesn’t give generic outputs but rather offers content that fits the exact situation, making it incredibly useful for targeted marketing efforts.
+4. **Time-Saving**: The efficiency of the fine-tuned model means you spend less time editing or adjusting the content. It’s nearly ready to go as soon as it’s generated, which is a huge advantage when you’re managing multiple tasks.
+
+#### **Real-Life Applications**
+
+- **For Marketers**: This model acts like a reliable assistant who understands what kind of messaging will resonate with your audience. It helps create content that’s not just effective but also precisely targeted.
+- **For Content Creators**: The fine-tuned model is a time-saver, providing responses that are nearly ready to be used, streamlining the content creation process.
+- **For Busy Professionals**: The model’s ability to cut through the noise and deliver exactly what you need makes it an invaluable tool, allowing you to focus on more critical tasks.
+
+
+### **Conclusion**
+
+In conclusion, the fine-tuned 8B model proves to be a powerful and practical tool for anyone needing to create content that’s focused, effective, and ready to use. It eliminates the excess and delivers clear, precise results that save time and effort. Whether you’re crafting a marketing campaign, writing an email, or generating social media content, this model is not just an improvement—it’s a game-changer that enhances your daily workflow and boosts the quality of your outputs.
+
+*The entire process of fine-tuning and generating content using the 8B model was achieved at a cost of approximately $3-5, making it an affordable and efficient solution for high-quality content creation.*
+
+---
