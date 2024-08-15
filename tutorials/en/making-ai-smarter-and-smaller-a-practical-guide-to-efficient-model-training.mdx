@@ -15,7 +15,7 @@ Hi, I’m Sanchay Thalnerkar, an AI Engineer. I’ve been exploring ways to make
 
 ## **My Method: Efficient AI in Three Steps**
 
-First, we leverage a large model like Meta-Llama-3.1-405B, made accessible by **Together AI**, to generate a dataset of marketing scenarios. Together AI’s platform allows us to tap into the vast knowledge of this powerful model, creating the perfect study guide for our smaller model. This data is then formatted using the “alpaca prompt” structure, making it easy for a smaller model to learn effectively. Finally, we use a tool called Unsloth to efficiently train our smaller model, starting with Meta-Llama-3.1-8B, on this data.
+First, we leverage a large model like Meta-Llama-3.1-405B, made accessible by AI/ML API, to generate a dataset of marketing scenarios. AI/ML API’s platform allows us to tap into the vast capabilities of this powerful model, creating the perfect study guide for our smaller model. This data is then formatted using the “alpaca prompt” structure, making it easy for a smaller model to learn effectively. Finally, we use a tool called Unsloth to efficiently train our smaller model, starting with Meta-Llama-3.1-8B, on this data.
 
 The outcome? A model that’s smaller, faster, and capable of producing high-quality outputs for specific marketing tasks, comparable to what you’d expect from a much larger model. For instance, when prompted with “Create a marketing campaign to promote a chocolate bar for Cadbury, targeting adults and boomers,” the results can be surprisingly good.
 
@@ -45,7 +45,7 @@ Before we begin, let's set up our development environment:
 
    ```
    pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
-   pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes together ratelimit
+   pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes  ratelimit
    pip install torch transformers datasets rich
    ```
 
@@ -60,7 +60,6 @@ Before we begin, let's set up our development environment:
 ```python
 import json
 from typing import List, Dict
-from together import Together
 import time
 import re
 from ratelimit import limits, sleep_and_retry
@@ -86,10 +85,10 @@ You'll need to use this API key to authenticate your requests and access the var
 Once you have your API key, you can set up the client in your environment. This client will be used to interact with the AI/ML API for making various AI-related requests. Here’s how you can do it:
 
 ```python
-from aimlapi import AIMLAPI
+from openai import OpenAI
 
 # Initialize the AI/ML API client with your API key and base URL
-client = AIMLAPI(
+client = OpenAI(
     api_key="your_api_key_here",
     base_url="https://api.aimlapi.com",
 )
@@ -437,7 +436,7 @@ The function works by setting a target of 1,000 samples and making multiple API 
 
 Before adding a sample to the dataset, it undergoes a quality check. If it passes, it's included; if not, it's skipped. Progress is saved after each API call to avoid data loss.
 
-The entire dataset creation took about 25-30 minutes, mainly due to API rate limits. This process could be sped up by relaxing the quality checks or using asynchronous API requests, which would require upgrading to a paid version of the Together API for faster data retrieval.
+The entire dataset creation took about 25-30 minutes, mainly due to API rate limits.
 
 Here’s the code:
 
