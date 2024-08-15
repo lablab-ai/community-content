@@ -34,7 +34,7 @@ Before we begin, let's set up our development environment:
    - Open Command Prompt
    - Navigate to your project directory
    - Run the following commands:
-     ```
+     ```python
      python -m venv myenv
      myenv\Scripts\activate
      ```
@@ -42,7 +42,7 @@ Before we begin, let's set up our development environment:
 3. Install required packages:
    Run the following commands in your activated virtual environment:
 
-   ```
+   ```python
    pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
    pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes  ratelimit
    pip install torch transformers datasets rich
@@ -50,7 +50,7 @@ Before we begin, let's set up our development environment:
 
 4. Additional dependencies:
    Based on the code in the tutorial, you'll also need to install:
-   ```
+   ```python
    pip install ipython
    ```
 
