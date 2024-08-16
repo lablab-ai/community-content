@@ -1,0 +1,194 @@
+---
+title: "No-Code phi3 Fine-Tuning: A Hands-On Guide Using LlamaFactory"
+description: "Learn to fine tune the Phi3 model without writing any code using LlamaFactory"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0ff953c7-95b2-47c3-faed-7eabbcf95000/full"
+authorUsername: "adebisi_oluwatomiwa878"
+---
+
+# No-Code phi3 Fine-Tuning: A Hands-On Guide Using LlamaFactory
+
+## Introduction
+
+Hello!👋🏽 I'm Tommy, and today I'm excited to show you how to fine-tune the powerful **Phi3** model without writing any code. Whether you're a software developer, AI enthusiast, or just someone curious about machine learning, this tutorial will guide you through the process using the intuitive **LlamaFactory** interface.
+
+Fine-tuning models like **Phi3** might seem complex, but with LlamaFactory, it's straightforward and accessible. In just a few steps, you'll be able to customize **Phi3** to fit your specific needs, all through a simple, no-code platform. Let's get started and unleash the potential of AI together!
+
+## Prerequisites
+
+Before we begin, ensure you have the following:
+
+* A Google account to access Google Colab  
+* Basic understanding of LLMs and fine-tuning concepts  
+* Familiarity with Hugging Face (optional, for model export)
+
+## Setting Up the Environment
+
+### Google Colab
+
+To get started, open [Google Colab](https://colab.research.google.com/) and create a new notebook. Make sure to enable GPU support for faster training. You can do this by navigating to `Edit` > `Notebook settings` and selecting T4 GPU as the hardware accelerator. Ensure you select **T4 GPU** for optimal performance.
+
+### Installing Dependencies
+
+Run the following commands in your Google Colab notebook to install the necessary dependencies:
+
+```bash  
+%cd /content/  
+%rm -rf LLaMA-Factory  
+!git clone https://github.com/hiyouga/LLaMA-Factory.git  
+%cd LLaMA-Factory  
+%ls  
+!pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"  
+!pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate  
+!pip install .[bitsandbytes]
+```
+
+Check  environment to ensure that a GPU is connected:
+
+```bash
+import torch  
+try:  
+ assert torch.cuda.is_available() is True  
+except AssertionError:  
+ print("Please set up a GPU before using LLaMA Factory”)
+```
+
+## Adding Your Own Dataset to LlamaFactory
+
+To customize the phi3 model with your own data, you'll need to add your dataset to LlamaFactory. Here's how you can do it, whether your data is stored locally or on the Hugging Face Hub.
+
+1. **Navigate to the Data Folder**:  
+   * In the LlamaFactory repository, locate and open the **LLaMa-Factory > data** directory.  
+   * This is where you'll define and initialize your datasets for use within the LlamaFactory UI.  
+2. **Adding a Local Dataset**:  
+   - If you have a dataset stored locally, save it in the **data** folder. The file should be named in a format like `name-of-dataset.json`.  
+   * Next, open the `dataset_info.json` file within the same **data** folder.  
+   * Add an entry for your dataset using the following format:
+
+```json
+"name-for-the-dataset": {
+    "file_name": "name-of-dataset.json"
+}
+```
+
+3.  **Adding a Dataset from the Hugging Face Hub**:  
+    * If your dataset is hosted remotely on the Hugging Face Hub, you can also link it through the `dataset_info.json` file.  
+    * Add an entry for your dataset with the following format:
+
+```json
+"name-for-the-dataset": {
+    "hf_hub_url": "dataset-path-from-hub",
+    "ms_hub_url": "dataset-path-from-hub"
+}
+```
+
+4. **Initialize Your Dataset**:  
+   * Once you’ve added your dataset to `dataset_info.json`, it will be initialized and available for selection within the LlamaFactory UI.
+
+## Start the LlamaFactory Web UI
+
+After installing the necessary dependencies, run the code snippet below to start the LlamaFactory web UI
+
+```bash
+%cd /content/LLaMA-Factory/  
+!GRADIO_SHARE=True llamafactory-cli webui
+```
+
+A public url will be generated after running the snippet above. Click the url to get into the llamafactory interface, where we will fine tuning our Phi3 model  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819062/live-link_auxeor.png" alt="Live Link" caption="LlamaFactory Public url" />
+
+## Fine Tuning the Phi3 Model
+
+Upon opening the Public URL, you'll find several sections. We wiil go through the steps to start training our Phi3 model.
+
+### Step 1: Select the Phi3 Model
+
+Click on the dropdown in **Model Name** and select the **Phi3-4b-4k-Chat** model. The model path automatically updates when the Model Name is selected.
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819056/model-pick_njcqmj.png" alt="Pick a Model" caption="Pick Phi3 model" />
+
+### Step 2: Setup Advanced Configurations
+
+In this section, select **4** from the **Quantization bit** dropdown, the **Quantization method** as bitsandbytes and prompt template should be **phi.**   
+For the booster, Set this to `Unsloth` for efficient training. However, if you encounter issues during testing, switch this to `Auto`.
+
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819052/advanced_config_lyp4jq.png" alt="Advanced Configuration" caption="Set Advanced Configuration" />
+
+### Step 3: Configure the Train Section
+
+Next, click on the **Dataset** dropdown and select the dataset of your choice or the one you added. In this case, **alpaca_gpt4_en** is selected to be used to fine tune the Phi3 model.
+
+Enusre the selections in the red rectangles tallies with yours. You can also feel free to change any parameter/selection.  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819062/train-section_om93b1.png" alt="Train Section" caption="Set Train Section" />
+
+### Step 4: Setup LoRA Configuration
+
+Set the **LoRA Rank** to a higher rank if you're using smaller models like `Phi3` - In my case, I set the rank to 64, but feel free to experiment based on your specific use case.
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819057/lora-config_d3mf1q.png" alt="Lora Configuration" caption="Set Lora Configuration" />
+
+### Step 5: Start the Training Process
+
+You can change the **Output dir** and the **Config path** which store the training checkpoints and saving argument respectively.
+
+Click on Start to kick off the training process. The training lasted for approximately 20 mins before finish. During training, a line graph of the loss to step is shown to give us insight on our Phi3 model being fine tuned.
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819063/train-insight_pgu6kd.png" alt="Training Process" caption="Start Training Process" />
+
+## Testing the Fine Tuned Phi3 Model
+
+Now that our model has been successfully fine tuned, it is time to test the model. Follow the steps below to test the fine tuned model:
+
+### Step 1: Update Checkpoint Path
+
+Under **Checkpoint Path** select the **output dir** name earlier “**train_phi3**” and click on the chat sub section.  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819058/checkpoint_irhush.png" alt="Checkpoint Path" caption="Update Checkpoint Path" />
+
+### Step 2: Load the Fine Tuned Model
+
+With the Defaults untouched, Click on **Load Model** to begin testing the fine tuned model. This might take 2-5minutes to load depending on the GPU in use.  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819057/load_model_r1h86g.png" alt="Load Model" caption="Load Model to Test" />
+
+
+### Step 3: Test the Fine Tuned Model
+
+After the model has been loaded, you can test your model with different prompts and gauge if the response suits your taste or not.
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819061/chat-test_lmqjag.png" alt="Test Model" caption="Test Model with Input" />
+
+## Exporting the Fine Tuned Phi3 Model
+
+Haing tested the Fine tuned model, you can export it either locally or remotely to huggingface hub. Select the **Expor**t sub section beside **Chat** to start the export process.
+
+Change the name of the **Export dir** to where you want the model to be saved locally. To save the model to the hub, add your HuggingFace Hub ID to **HF Hub ID**
+
+Click on **Export** to start the process  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819058/export_model_xtafxd.png" alt="Export Model" caption="Export the tested Model" />
+
+Once the Export is complete, you can find the model in **LLaMa-Factory > saves > Phi3-4B-4k-Chat > lora**  
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723819058/export-dir_rlmwnc.png" alt="Locate Exported Model" caption="Locate Exported Model" />
+
+## Practical Tips
+
+1. **Start Small**:  
+   * Begin with a smaller subset of your dataset for initial fine-tuning. This allows you to quickly test and iterate on configurations without long wait times.  
+2. **Optimize LoRA Rank**:  
+   * For smaller models like phi3, experiment with higher LoRA ranks. A LoRA rank of 64 worked well during testing, but feel free to adjust based on your dataset size and GPU capacity.  
+3. **Use T4 GPU Wisely**:  
+   * Leverage the T4 GPU’s 16 GB memory efficiently by adjusting batch size and learning rate to prevent out-of-memory errors. Monitor your GPU usage to optimize performance.  
+4. **Booster Settings**:  
+   * Use `Unsloth` for training to maximize speed and efficiency. However, if you encounter issues while testing, switch to `Auto` to ensure smooth operation.  
+5. **Dataset Integration**:  
+   * When adding your dataset, double-check the format in `dataset_info.json` to ensure it appears correctly in the LlamaFactory UI. Consistent naming and paths are key to avoiding integration errors.
+
+## Conclusion
+
+Great job! You’ve successfully fine-tuned the **phi3** model using LlamaFactory’s no-code interface. From adding your dataset and training the model, to testing and exporting it, you've mastered each step. Now, you can harness the power of a customized **phi3** model tailored to your specific needs.
+
+Keep experimenting with different datasets and configurations to see just how versatile phi3 can be. Your journey with AI is just beginning—continue exploring, fine-tuning, and creating with confidence. **Happy fine-tuning**!
