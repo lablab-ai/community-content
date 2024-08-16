@@ -1,8 +1,8 @@
 ---
 title: "IBM Watsonx.ai guide"
 description: "Comprehensive Guide to IBM Watsonx.ai platform"
-image: ""
-authorUsername: ""
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/641581c6-140b-46c5-232e-015a0cfea700/full"
+authorUsername: "emmanueliriarte"
 ---
 
 # **Tutorial: What is generative AI and how can it be applied?**
@@ -34,7 +34,8 @@ Let's start with:
 * **Prompt text**: I am thinking of traveling to Thailand.
 
 This produces the following output when we call the model (in other words, click on the "**Generate**" button):  
-![step 2](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step2_yq34dm.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step2_yq34dm.jpg" alt="Prompt Lab" caption="Exploring the Prompt Lab IBM's platform" />
 
 This however returns a response which is not very useful, as we don't get any information on Thailand. This is analogous to questioning a person about a particular topic. The more open-ended the questions, then the more generic the answers will be. However, the more closed the questions, then the more specific the answers. We therefore need to try again and provide more specific context in the prompt to help direct the model to generate information about Thailand.
 
@@ -45,7 +46,8 @@ Let's be more direct in our prompt this time:
 * **Prompt text**: I am thinking of traveling to Thailand. Tell me about Thailand.
 
 This produces the following output when we call the model:  
-![Step 3](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652810/step3_aucbcg.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652810/step3_aucbcg.jpg" alt="Step 3" caption="Step 3" />
 
 This is more promising as we are now getting some information on Thailand. However, it seems to finish mid-sentence. The summary of the number of tokens (on the bottom- left) provides the following reason: Stop reason: Max tokens parameter reached.
 
@@ -54,21 +56,24 @@ This means we do not have enough tokens to process the request. Tokens represent
 ### **Step 4. Tinkering with model parameters**
 
 When we increase Max tokens to 200 and run with the same prompt again, we will get output similar to the following:  
-![Step4](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step4_tymsv9.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step4_tymsv9.jpg" alt="Step 4" caption="Step 4" />
 
 This time it finished the sentence and the summary of the number of tokens reason reads as follows: Stop reason: End of sequence token encountered. All good from that aspect.
 
 Every time we query the model however, it will return the same answer. This is because we are using Greedy decoding. This style of decoding asks the model to return what it thinks is the best or statistically the most accurate response always. Let's change Decoding to Sampling and see what the model returns with the same prompt each time.
 
 You will now see different responses similar to the following:  
-![Step 4 pt 2](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step4_pt2_aeacpm.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step4_pt2_aeacpm.jpg" alt="Step 4 pt 2" caption="Step 4 pt 2" />
 
 Variety is the spice of life! There are more parameters which you can configure the model differently with but we will not cover them in this lab. See [watsonx prompt](https://github.com/IBM/watsonx-prompt-lab) [lab](https://github.com/IBM/watsonx-prompt-lab) for more details on parameters and how to use them.
 
 ### **Step 5. Getting more specific**
 
 We have played around with the prompt text and the model parameters which has guided the model to return information on Thailand. It is however generic information and for the design of our travel app we would like to be able to provide information tailored to users interests. Let's therefore update the prompt text as follows to show information on water sports and food: **I am thinking of traveling to Thailand. I like water sports and food. Tell me about Thailand.**  
-![Step 5](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step5_aer3gj.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step5_aer3gj.jpg" alt="Step 5" caption="Step 5" />
 
 This response is very limited and it should be more informative to be useful in your application. We have tried different prompts and parameters, but we still don't have the relevant information we require. Maybe the model we are using has limitations for our requirements. Is it time therefore to check out a different model?
 
@@ -87,13 +92,17 @@ This response is very limited and it should be more informative to be useful in 
 * Bias, risks, and limitations
 
 You can access the information on the models by clicking on the dropdown alongside the model name and selecting "**View all foundation models**" as follows:  
-![Step 6](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_znmvlp.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_znmvlp.jpg" alt="Step 6" caption="Step 6" />
 
 Here is list of the models currently supported on the free tier prompt lab:
-![llama-2-70b-chat model](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt2_hwxfec.jpg)
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt2_hwxfec.jpg" alt="Step 6 pt 2" caption="llama-2-70b-chat model" />
+
 
 Click on the `llama-2-70b-chat` model to look at its information card: 
-![Step 6 pt 3](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt3_pqbx98.jpg) 
+
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt3_pqbx98.jpg" alt="Step 6 pt 3" caption="Step 6 pt 3" />
 
 There is an interesting piece of information highlighted which states that the model is "optimized for dialogue use cases". As we are trying to find a model to question for information, it looks like this model might be a good fit. Click on "**Select model**" button and let's try the model out to see if it returns more information on Thailand.
 
@@ -101,7 +110,7 @@ There is an interesting piece of information highlighted which states that the m
 
 We have now selected the `llama-2-70b-chat model`, and using the same prompt and parameters, let's see what it returns.
 
-![step 7](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step7_pv7o2p.jpg)
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step7_pv7o2p.jpg" alt="Step 7" caption="Step 7" />
 
 This definitely looks like an improvement but it looks like the response was cut off, similar to a previous step. This is confirmed by Stop reason: Max tokens parameter  
 reached comment in the summary of the number of tokens. As tokens increase, so does the cost of calling a model. This time, instead of just increasing the token size, it would be great if we had a less expensive alternative. This is what we will try in the next section.
@@ -109,6 +118,7 @@ reached comment in the summary of the number of tokens. As tokens increase, so d
 ### **Step 8. Adding limits to the prompt**
 
 We will alter the prompt text by adding a limit to the response returned. In this way, we tell the model to return the response within the limit we define. The prompt text will now be altered to look like this: **I am thinking of traveling to Thailand. I like water sports and food. Give me 5 sentences on Thailand.**
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step8_lxayex.jpg" alt="Step 8" caption="Step 8" />
 
 Finally, we have a response from our query on Thailand that is useful, informative and tailored to a user's preferences. It is also within our max token size. We have a result!
 
@@ -120,6 +130,10 @@ a simple example we are using but the same principles apply to other scenarios. 
 
 It was mentioned previously that the models are hosted on IBM Cloud and are inferenced/called when we click the "Generate" button. You can check out the REST API that is called on the model by clicking on the "**View code**" dropdown as shown:
 
-![conclusion](https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/conclusion_lhrk3i.jpg)
+<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/conclusion_lhrk3i.jpg" alt="Conclusion" caption="Conclusion" />
 
-Click on "View code". You will see output which shows all the details of the API call including model name, prompt text, and parameters.
+Click on "**View code**". You will see output which shows all the details of the API call including model name, prompt text, and parameters.
+
+---
+
+**Disclaimer:** The content presented here was written by IBM. All rights, trademarks, and copyrights belong to IBM. Any reproduction, distribution, or use of this content without proper attribution or permission from IBM may violate applicable laws and regulations.
