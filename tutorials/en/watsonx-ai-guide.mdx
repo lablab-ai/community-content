@@ -1,139 +1,105 @@
 ---
 title: "Getting Started with watsonx.ai Prompt Lab"
 description: "Comprehensive Guide to IBM Watsonx.ai platform"
-image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/641581c6-140b-46c5-232e-015a0cfea700/full"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2b1b466e-0b00-4a98-b1fd-8fc34657ac00/full"
 authorUsername: "emmanueliriarte"
 ---
 
-# **Tutorial: What is generative AI and how can it be applied?**
+# Build a generative AI application for a use case improving productivity with watsonx.ai
 
-## **Using Prompt Engineering to Identify the LLM for your Application**
+IBM **watsonx.ai** is a powerful platform that brings together the capabilities of IBM's Watson services, including natural language processing, machine learning, and automation, to create intelligent solutions tailored to your business needs. You can utilize watsonx generative AI technology to improve productivity by quickly extracting knowledge and insights from vast amounts of data across multiple documents.
 
-[Generative AI](https://research.ibm.com/blog/what-is-generative-AI) refers to deep-learning models that can generate high-quality text, images, and other content based on the data they were trained on. A [Large Language](https://en.wikipedia.org/wiki/Large_language_model) [Model (LLM)](https://en.wikipedia.org/wiki/Large_language_model) is a type of language model notable for its ability to achieve general- purpose language understanding and generation.
+In this hackathon, you will use **watsonx.ai Prompt Lab** to build and deploy an intelligent solution that can significantly improve productivity and streamline an everyday activity.   
+The Prompt Lab is a powerful tool within watsonx.ai that enables you to interactively explore the capabilities of AI models and generate human-like text or code snippets. Here are some ways the watsonx.ai Prompt Lab can enhance day-to-day tasks:
 
-The goal of this lab is to show how you can use [prompt engineering](https://en.wikipedia.org/wiki/Prompt_engineering) with LLMs in order to elicit more accurate, relevant, and context-aware responses related to travel information on countries. We'll then leverage that information when building the application in Lab 2\.
+* **Interactive exploration**: The Prompt Lab allows you to experiment with different AI models and parameters, giving you a deeper understanding of how they work and how they can be applied to your specific use cases.
 
-**Note:** The following images show actual results from [watsonx.ai](https://www.ibm.com/products/watsonx-ai) prompt lab. The slight gray text is what we provided to the model. The blue highlighted text is how the model responded. Be aware that the outputs shown here may not exactly resemble the outputs you receive when using the prompt lab.
+* **Human-like text generation**: You can use the Prompt Lab to generate human-like text, for things like responses to customer inquiries or draft emails, saving you time and effort.
 
-## **Steps**
+* **Code snippet generation**: The Prompt Lab can also generate code snippets for various programming languages, enabling you to automate tasks and integrate AI models into your workflows more efficiently.
 
-### **Step 1. Getting started**
+* **Training assistance**: The Prompt Lab can help you train AI models by providing feedback on your input and suggesting improvements, making it easier to optimize your models for your specific needs.
 
-When you open up **watsonx.ai** prompt lab and click the Freeform mode-option, this is what you will be shown. The large central text area is the prompt editor. On the right- side, you can display the model parameters that you can use to optimize how the model responds to your prompt. On the bottom-left is a summary of the number of tokens used by your prompt during execution. For more information on prompt engineering, see [watsonx prompt lab](https://github.com/IBM/watsonx-prompt-lab).
+## Before you begin
 
-**Note:** The models provided in the prompt lab are [foundation models](https://research.ibm.com/topics/foundation-models) which are hosted on IBM cloud so we can [inference](https://research.ibm.com/blog/AI-inference-explained) or call them. LLMs are a type of foundation model which we will use in this lab.
+### **IBM Cloud account set up**  
+Follow the [instructions to set up your IBM Cloud account](https://lablab-watsonx-hackathon-2024.s3.eu-es.cloud-object-storage.appdomain.cloud/lablab_watsonx_hackathon_ibm_cloud_setup.pdf) for the hackathon.  
+### **Note on available services**  
+The IBM Cloud and the watsonx.ai platform are pre-configured with all the required services to complete the hackathon. If you notice a permission/access issue for any service, then they are not required/available for this hackathon.  
+### **Data sets**  
+As you collect data for your project, you’ll want to use best practices. Here are helpful tips:
 
-### **Step 2. First prompt**
+* Teams are responsible for ensuring data is compliant.
 
-When starting with the initial prompt, it's best to just try something quickly and if it doesn't give you the result you want, then go ahead and improve it over time. We will do this in a step-by-step process.
+* Data from public websites may be used, if the terms allow for commercial use, but please keep a list of the websites you use.
 
-Let's start with:
+* Do not use data or assets containing company confidential data, or any other data without permission from the data owner. Teams are responsible for getting approval.
 
-* **Model**: `flan-t5-xxl-11b`
+* Do not use any client data.
 
-* **Prompt text**: I am thinking of traveling to Thailand.
+* Do not use any data containing personal information (PI).
 
-This produces the following output when we call the model (in other words, click on the "**Generate**" button):  
+* Do not use data obtained from social media.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step2_yq34dm.jpg" alt="Prompt Lab" caption="Exploring the Prompt Lab IBM's platform" />
+## Get started with Prompt Lab
 
-This however returns a response which is not very useful, as we don't get any information on Thailand. This is analogous to questioning a person about a particular topic. The more open-ended the questions, then the more generic the answers will be. However, the more closed the questions, then the more specific the answers. We therefore need to try again and provide more specific context in the prompt to help direct the model to generate information about Thailand.
+The watsonx.ai Prompt Lab is an easy-to-use interface that helps you experiment with foundation models and build prompts.
 
-### **Step 3. Being more direct**
+In the Prompt Lab in IBM watsonx.ai, you can experiment with prompting different foundation models, explore sample prompts, and save and share your best prompts. Before you start using Prompt Lab, you will first need to Create a Project.
 
-Let's be more direct in our prompt this time:
+1. Log in to watsonx.ai platform ([https://dataplatform.cloud.ibm.com/wx/home?context=wx](https://dataplatform.cloud.ibm.com/wx/home?context=wx)) with the email you use to access your IBM Cloud account.  
+2. From the navigation menu at the top-left corner, select **View all projects.**  
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/70f96e93-27ff-4f12-5107-e639a2578b00/full" alt="Navigation Menu" caption="The Navigation Menu" />
+3. Select **New Project > Create an empty project**.  
+4. Give the project any name. In the **Storage** panel, “watsonx – Challenge COS” will be selected for you by default.
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5fecfa19-8031-44c9-2dca-fba8fe74a800/full" alt="project page" caption="The Project Page" />
 
-* **Prompt text**: I am thinking of traveling to Thailand. Tell me about Thailand.
+5. Click **Create**. You will be taken to the project’s overview dashboard. 
 
-This produces the following output when we call the model:  
+6. Select the **Manage** tab on the dashboard, select the **Services & integrations** on the left pane, and click **Associate service +**.
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c30999a6-674f-4b24-6a95-ac053037d100/full" alt="Manage Tab" caption="The Manage Tab" />
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652810/step3_aucbcg.jpg" alt="Step 3" caption="Step 3" />
+7. From the list of services, select the “**watsonx-Challenge WML**” Watson Machine Learning instance and then click **Associate**.
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2e028c59-7e42-4bda-d117-3c48ebdcdf00/full" alt="Associate Service Page" caption="Associate Service Page" />
 
-This is more promising as we are now getting some information on Thailand. However, it seems to finish mid-sentence. The summary of the number of tokens (on the bottom- left) provides the following reason: Stop reason: Max tokens parameter reached.
+8. Select the **Assets** tab, click **New asset +**, and search for “prompt”.   
+9. Select the “**Chat and build prompts with foundational models**” tile.
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3324859a-8fef-403c-d12e-82ab43c86000/full" alt="Prompt Lab Editor" caption="Prompt Lab Editor" />
 
-This means we do not have enough tokens to process the request. Tokens represent the smallest entity which is handled by the model architecture. For our discussion in this lab, we will view tokens as equivalent to words (see [Tokens and tokenization](https://www.ibm.com/docs/en/watsonx-as-a-service?topic=models-tokens) for a more exact definition). We therefore need to increase our "Max tokens".
+10. The Prompt Lab Editor opens with a chat window to get you started with the prompt session. 
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eff29f83-f2a2-41c9-361a-9d52abf07200/full" alt="Chat Window" caption="Chat Window" />
 
-### **Step 4. Tinkering with model parameters**
+## AI model  
+For this hackathon, participants are encouraged to use the **granite** series model available on the watsonx.ai platform. To select different granite model:
 
-When we increase Max tokens to 200 and run with the same prompt again, we will get output similar to the following:  
+1. Select the AI Model drop-down menu and select **View all foundation models**.  
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e8b93a34-0945-4f29-36c9-d9b9804e3b00/full" alt="Foundational Models" caption="View Foundational Models"/>
+2. The **Select a foundational model** widget will appear. Clear all the filters and enter “granite” in the search bar. All the granite series models will be displayed. You can select any granite model tile to learn about the model and use it for your prompting session. 
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5599921e-594b-4582-d792-f3a480c7cd00/full" alt="Select Granite Model" caption="Select Granite Model" /> 
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step4_tymsv9.jpg" alt="Step 4" caption="Step 4" />
+## Saving your prompt  
+You can save your prompt lab session for later use.
 
-This time it finished the sentence and the summary of the number of tokens reason reads as follows: Stop reason: End of sequence token encountered. All good from that aspect.
+1. On the top of the Prompt Lab, select the **Save work** dropdown button and then select the **Save as** option.
 
-Every time we query the model however, it will return the same answer. This is because we are using Greedy decoding. This style of decoding asks the model to return what it thinks is the best or statistically the most accurate response always. Let's change Decoding to Sampling and see what the model returns with the same prompt each time.
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2be4a5bb-63d3-4a65-0ad0-148400c2ad00/full" alt="Save Work" caption="Save Work" />
 
-You will now see different responses similar to the following:  
+2. A **Save your work** widget will appear. Select **Prompt session** under the **Asset type** option. Enter a **name** and check the **View in project after saving** option under the **Define details** section. Finally, click the **Save** button.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step4_pt2_aeacpm.jpg" alt="Step 4 pt 2" caption="Step 4 pt 2" />
+   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/242831f7-7164-4a53-32d9-628f94987c00/full" alt="Save Button" caption="Save Button" />
 
-Variety is the spice of life! There are more parameters which you can configure the model differently with but we will not cover them in this lab. See [watsonx prompt](https://github.com/IBM/watsonx-prompt-lab) [lab](https://github.com/IBM/watsonx-prompt-lab) for more details on parameters and how to use them.
+3. Once you save, you will see the saved work under the **Assets** tab.  
+4. You can also save your work as:  
+   1. **Prompt template** to save only the current prompt without its history and selecting a **Task** suitable for your prompting.  
+   2. **Notebook** to continue working on your prompting on a Jupyter Notebook environment.
 
-### **Step 5. Getting more specific**
+Useful resources
 
-We have played around with the prompt text and the model parameters which has guided the model to return information on Thailand. It is however generic information and for the design of our travel app we would like to be able to provide information tailored to users interests. Let's therefore update the prompt text as follows to show information on water sports and food: **I am thinking of traveling to Thailand. I like water sports and food. Tell me about Thailand.**  
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step5_aer3gj.jpg" alt="Step 5" caption="Step 5" />
-
-This response is very limited and it should be more informative to be useful in your application. We have tried different prompts and parameters, but we still don't have the relevant information we require. Maybe the model we are using has limitations for our requirements. Is it time therefore to check out a different model?
-
-### **Step 6. Checking out other models**
-
-**watsonx.ai** prompt lab provides information cards on the models it supports. The card can provide information like:
-
-* Provider and source of the model
-
-* Tasks the model is best suited to
-
-* How to tune the model
-
-* White paper it is based on
-
-* Bias, risks, and limitations
-
-You can access the information on the models by clicking on the dropdown alongside the model name and selecting "**View all foundation models**" as follows:  
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_znmvlp.jpg" alt="Step 6" caption="Step 6" />
-
-Here is list of the models currently supported on the free tier prompt lab:
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt2_hwxfec.jpg" alt="Step 6 pt 2" caption="llama-2-70b-chat model" />
-
-
-Click on the `llama-2-70b-chat` model to look at its information card: 
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652812/step6_pt3_pqbx98.jpg" alt="Step 6 pt 3" caption="Step 6 pt 3" />
-
-There is an interesting piece of information highlighted which states that the model is "optimized for dialogue use cases". As we are trying to find a model to question for information, it looks like this model might be a good fit. Click on "**Select model**" button and let's try the model out to see if it returns more information on Thailand.
-
-### **Step 7. Using a different model**
-
-We have now selected the `llama-2-70b-chat model`, and using the same prompt and parameters, let's see what it returns.
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step7_pv7o2p.jpg" alt="Step 7" caption="Step 7" />
-
-This definitely looks like an improvement but it looks like the response was cut off, similar to a previous step. This is confirmed by Stop reason: Max tokens parameter  
-reached comment in the summary of the number of tokens. As tokens increase, so does the cost of calling a model. This time, instead of just increasing the token size, it would be great if we had a less expensive alternative. This is what we will try in the next section.
-
-### **Step 8. Adding limits to the prompt**
-
-We will alter the prompt text by adding a limit to the response returned. In this way, we tell the model to return the response within the limit we define. The prompt text will now be altered to look like this: **I am thinking of traveling to Thailand. I like water sports and food. Give me 5 sentences on Thailand.**
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/step8_lxayex.jpg" alt="Step 8" caption="Step 8" />
-
-Finally, we have a response from our query on Thailand that is useful, informative and tailored to a user's preferences. It is also within our max token size. We have a result!
-
-## **Conclusion and next steps**
-
-There is an alternative to training and creating a new model to fit your needs, and that is prompt tuning of a LLM. As you have seen in the lab we just did, it requires iterative testing and tweaking to find the model and prompt that suits your requirements. This is
-
-a simple example we are using but the same principles apply to other scenarios. It may require more context in the prompt, including using examples (i.e. shot prompting) to guide the response.
-
-It was mentioned previously that the models are hosted on IBM Cloud and are inferenced/called when we click the "Generate" button. You can check out the REST API that is called on the model by clicking on the "**View code**" dropdown as shown:
-
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1723652811/conclusion_lhrk3i.jpg" alt="Conclusion" caption="Conclusion" />
-
-Click on "**View code**". You will see output which shows all the details of the API call including model name, prompt text, and parameters.
-
----
-
-**Disclaimer:** The content presented here was written by IBM. All rights, trademarks, and copyrights belong to IBM. Any reproduction, distribution, or use of this content without proper attribution or permission from IBM may violate applicable laws and regulations.
+* [Getting started with watsonx.ai Prompt Lab](https://www.ibm.com/docs/en/watsonx/saas?topic=solutions-prompt-lab)  
+* [Saving prompts](https://www.ibm.com/docs/en/watsonx/saas?topic=lab-saving-prompts)  
+* [Tuning model parameters](https://www.ibm.com/docs/en/watsonx/saas?topic=lab-model-parameters-prompting)  
+* [Coding generative AI solutions](https://www.ibm.com/docs/en/watsonx/saas?topic=solutions-coding-generative-ai)  
+* [Sample prompts](https://www.ibm.com/docs/en/watsonx/saas?topic=lab-sample-prompts)  
+* [Grounding foundation model prompts in contextual information](https://www.ibm.com/docs/en/watsonx/saas?topic=lab-grounding-prompts-in-contextual-information)  
+* [Prompt tips](https://www.ibm.com/docs/en/watsonx/saas?topic=lab-prompt-tips)  
+* [Retrievel-augmented generation (RAG)](https://www.ibm.com/docs/en/watsonx/saas?topic=solutions-retrieval-augmented-generation)
