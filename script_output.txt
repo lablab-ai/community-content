@@ -1,37 +1,23 @@
 Processing file: tutorials/en/using_flux_in_replicate.mdx
-Downloading image from URL: https://iili.io/dWIQTQf.webp
-Successfully downloaded image to: images/dWIQTQf.webp
-Uploading image: images/dWIQTQf.webp
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba26d724-ba12-4ebf-7b05-210b05714300/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba26d724-ba12-4ebf-7b05-210b05714300/full
-Deleted local image: images/dWIQTQf.webp
-Downloading image from URL: https://freeimage.host/i/dVcEkHg
-Successfully downloaded image to: images/dVcEkHg
-Uploading image: images/dVcEkHg
-Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
-Response Text: No response
-Failed to upload image to Cloudflare.
-Deleted local image: images/dVcEkHg
-Downloading image from URL: https://freeimage.host/i/dVcaDdb
-Successfully downloaded image to: images/dVcaDdb
-Uploading image: images/dVcaDdb
-Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
-Response Text: No response
-Failed to upload image to Cloudflare.
-Deleted local image: images/dVcaDdb
-Downloading image from URL: https://freeimage.host/i/dVco5dP
-Successfully downloaded image to: images/dVco5dP
-Uploading image: images/dVco5dP
-Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
-Response Text: No response
-Failed to upload image to Cloudflare.
-Deleted local image: images/dVco5dP
-Downloading image from URL: https://freeimage.host/i/dVco5dP
-Successfully downloaded image to: images/dVco5dP
-Uploading image: images/dVco5dP
-Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
-Response Text: No response
-Failed to upload image to Cloudflare.
-Deleted local image: images/dVco5dP
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba26d724-ba12-4ebf-7b05-210b05714300/full
+Downloading image from URL: https://iili.io/dVcEkHg.png
+Successfully downloaded image to: images/dVcEkHg.png
+Uploading image: images/dVcEkHg.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/65d02e62-4350-4db4-7fc8-dcd60b1f0200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/65d02e62-4350-4db4-7fc8-dcd60b1f0200/full
+Deleted local image: images/dVcEkHg.png
+Downloading image from URL: https://iili.io/dVcaDdb.webp
+Successfully downloaded image to: images/dVcaDdb.webp
+Uploading image: images/dVcaDdb.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae6177b4-235a-429d-935e-8c3b3c073d00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae6177b4-235a-429d-935e-8c3b3c073d00/full
+Deleted local image: images/dVcaDdb.webp
+Downloading image from URL: https://iili.io/dVco5dP.webp
+Successfully downloaded image to: images/dVco5dP.webp
+Uploading image: images/dVco5dP.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9431c273-23e3-4553-7c5c-c7adf37e0200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9431c273-23e3-4553-7c5c-c7adf37e0200/full
+Deleted local image: images/dVco5dP.webp
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d047d7f5-a3fa-4107-d5ba-16da4bfcb900/full
 Successfully processed file: tutorials/en/using_flux_in_replicate.mdx
 CHANGES_MADE
