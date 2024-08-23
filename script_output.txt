@@ -1,0 +1,37 @@
+Processing file: tutorials/en/using_flux_in_replicate.mdx
+Downloading image from URL: https://iili.io/dWIQTQf.webp
+Successfully downloaded image to: images/dWIQTQf.webp
+Uploading image: images/dWIQTQf.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba26d724-ba12-4ebf-7b05-210b05714300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba26d724-ba12-4ebf-7b05-210b05714300/full
+Deleted local image: images/dWIQTQf.webp
+Downloading image from URL: https://freeimage.host/i/dVcEkHg
+Successfully downloaded image to: images/dVcEkHg
+Uploading image: images/dVcEkHg
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dVcEkHg
+Downloading image from URL: https://freeimage.host/i/dVcaDdb
+Successfully downloaded image to: images/dVcaDdb
+Uploading image: images/dVcaDdb
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dVcaDdb
+Downloading image from URL: https://freeimage.host/i/dVco5dP
+Successfully downloaded image to: images/dVco5dP
+Uploading image: images/dVco5dP
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dVco5dP
+Downloading image from URL: https://freeimage.host/i/dVco5dP
+Successfully downloaded image to: images/dVco5dP
+Uploading image: images/dVco5dP
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dVco5dP
+Successfully processed file: tutorials/en/using_flux_in_replicate.mdx
+CHANGES_MADE
