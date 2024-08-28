@@ -1,0 +1,44 @@
+Processing file: blog/en/the_new_features_in_grok_2.mdx
+Downloading image from URL: https://iili.io/djFZZyN.jpg
+Successfully downloaded image to: images/djFZZyN.jpg
+Uploading image: images/djFZZyN.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/448fe632-596a-4b22-ba8b-10defd77e100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/448fe632-596a-4b22-ba8b-10defd77e100/full
+Deleted local image: images/djFZZyN.jpg
+Downloading image from URL: https://freeimage.host/i/dj3RsiF
+Successfully downloaded image to: images/dj3RsiF
+Uploading image: images/dj3RsiF
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dj3RsiF
+Downloading image from URL: https://freeimage.host/i/djFLd3Q
+Successfully downloaded image to: images/djFLd3Q
+Uploading image: images/djFLd3Q
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/djFLd3Q
+Downloading image from URL: https://freeimage.host/i/dj37L8J
+Successfully downloaded image to: images/dj37L8J
+Uploading image: images/dj37L8J
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dj37L8J
+Downloading image from URL: https://freeimage.host/i/djFPSSI
+Successfully downloaded image to: images/djFPSSI
+Uploading image: images/djFPSSI
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/djFPSSI
+Downloading image from URL: https://freeimage.host/i/dj31fBp
+Successfully downloaded image to: images/dj31fBp
+Uploading image: images/dj31fBp
+Error uploading image: 415 Client Error: Unsupported Media Type for url: https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1
+Response Text: No response
+Failed to upload image to Cloudflare.
+Deleted local image: images/dj31fBp
+Successfully processed file: blog/en/the_new_features_in_grok_2.mdx
+CHANGES_MADE
