@@ -432,31 +432,31 @@ Once the `kickoff` method is invoked, the crew begins executing the tasks. The `
 
 You should see the Data Retrieval Specialist begin the retrieval task with detailed logs and outputs  
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781262/begin_ez412z.png" alt="Begin First Task" caption="First Task starting" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7a91c7cd-2626-4d30-5942-342d485e1000/full" alt="Begin First Task" caption="First Task starting" />
 
 A minor error occurs when using the custom tool we defined earlier. Since CrewAI helps us to handle errors gracefully it didn’t affect the execution and made the agent pass in the right variable which gave us the customer details we wanted.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781262/error-failover_wbcqcd.png" alt="Using custom tool" caption="Custom Tool in use" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/19f796cd-0a41-4f38-a0b9-c21a2959d600/full" alt="Using custom tool" caption="Custom Tool in use" />
 
 After the agent is done working, It returns the finished output and gives it to the next agent who will be taking on the next task  
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781267/finish-retrival_h9hbsu.png" alt="Data Retrieval Response" caption="Data Retrieval Final Response" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bc1ddefe-e143-4515-e4db-f8be9cdb0900/full" alt="Data Retrieval Response" caption="Data Retrieval Final Response" />
 
 The Support Agent starts and makes use of the directory and file tools to read all the files and prepare a response for a customer query
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781273/support_start_ht8134.png" alt="Support Agent" caption="Support Agent working" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bf761d56-1bf0-453c-e3ba-e8ca8564ca00/full" alt="Support Agent" caption="Support Agent working" />
 
 After the Support Agent has given its response the next task kicks off and the QA agent starts. It then delegates a task to the Support agent again to review its response.  
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781272/qa-agent_sur7hl.png" alt="Suport QA Agent" caption="Support QA Agent working" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6022a792-e376-4da7-7591-6134a12a2200/full" alt="Suport QA Agent" caption="Support QA Agent working" />
 
 Then QA agent receives the feedback from the Support Agent and now seeks our feedback for a better response if need be.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781263/feedback_tpn3u8.png" alt="Feedback from QA Agent" caption="Feedback from QA Agent" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5331803e-fdbc-4c4f-0a29-d91ee9121100/full" alt="Feedback from QA Agent" caption="Feedback from QA Agent" />
 
 The QA agent then receives the feedback and works on its response based on what was said and gives a suitable response.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781274/final-answer-qa_ofemuw.png" alt="Final Answer from QA Agent" caption="Final Answer from QA Agent" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a069650d-cd14-4cd3-332f-397a0123a600/full" alt="Final Answer from QA Agent" caption="Final Answer from QA Agent" />
 
 #### **Final Output in Markdown Format**
 
@@ -464,11 +464,11 @@ After the crew completes all tasks, it generates the final result in a markdown 
 
 Since we set an output_file for our QA task the file containing the response will be in our current directory
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781257/output-file_nlepgk.png" alt="Locate Output file" caption="Locate the Output file" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7b6cdff4-11e2-4c67-19d7-331e370a4700/full" alt="Locate Output file" caption="Locate the Output file" />
 
 The content of the output file holds the final response from the Support QA agent.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1724781265/final-response_xcvruq.png" alt="Content of Output file" caption="Content of Output file" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dff4be04-1032-4f7b-dfc4-f480eb33a800/full" alt="Content of Output file" caption="Content of Output file" />
 
 You can view the **Google Colab Notebook** used for this tutorial [HERE](https://colab.research.google.com/drive/1jjMUTQwa6k8RUxq-N4rnjS0Gw0jV4z3t?usp=sharing).
 
