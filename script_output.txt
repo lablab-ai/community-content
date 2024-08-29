@@ -1,0 +1,34 @@
+Processing file: blog/en/the_new_features_in_grok_2.mdx
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/448fe632-596a-4b22-ba8b-10defd77e100/full
+Downloading image from URL: https://iili.io/dj3RsiF.webp
+Successfully downloaded image to: images/dj3RsiF.webp
+Uploading image: images/dj3RsiF.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/598f6e62-4fa2-4cf2-8d3f-83c3c108b700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/598f6e62-4fa2-4cf2-8d3f-83c3c108b700/full
+Deleted local image: images/dj3RsiF.webp
+Downloading image from URL: https://iili.io/djFLd3Q.png
+Successfully downloaded image to: images/djFLd3Q.png
+Uploading image: images/djFLd3Q.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/63961780-17db-41e8-ac62-18e73ea59500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/63961780-17db-41e8-ac62-18e73ea59500/full
+Deleted local image: images/djFLd3Q.png
+Downloading image from URL: https://iili.io/dj37L8J.png
+Successfully downloaded image to: images/dj37L8J.png
+Uploading image: images/dj37L8J.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dbdce206-eba3-479b-a142-2863d3ce8b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dbdce206-eba3-479b-a142-2863d3ce8b00/full
+Deleted local image: images/dj37L8J.png
+Downloading image from URL: https://iili.io/djFPSSI.jpg
+Successfully downloaded image to: images/djFPSSI.jpg
+Uploading image: images/djFPSSI.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/06a939e9-d194-42ca-74a9-587d2a9b4700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/06a939e9-d194-42ca-74a9-587d2a9b4700/full
+Deleted local image: images/djFPSSI.jpg
+Downloading image from URL: https://iili.io/dj31fBp.webp
+Successfully downloaded image to: images/dj31fBp.webp
+Uploading image: images/dj31fBp.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5849c40-ef95-43cb-0a1a-755026e2f500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5849c40-ef95-43cb-0a1a-755026e2f500/full
+Deleted local image: images/dj31fBp.webp
+Successfully processed file: blog/en/the_new_features_in_grok_2.mdx
+CHANGES_MADE
