@@ -1,0 +1,492 @@
+---
+title: "Developing a Multi-Agent System with CrewAI"
+description: "Build a multi-agent system using crewai, focusing on automating customer support tasks with specialized agents, custom tools, and collaborative task execution"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/66db1169-0827-4070-b9bf-997bf8e75e00/full"
+authorUsername: "adebisi_oluwatomiwa878"
+---
+
+# Advanced AI Collaboration: Developing a Multi-Agent System with CrewAI
+
+## Introduction
+
+Hello!👋🏽 I'm Tommy, we’ll be navigating the advanced realm of **Multi-Agent Systems** — a topic that extends the capabilities of individual AI agents into powerful, cooperative units that can tackle complex, real-world problems. 
+
+In this guide, we'll explore how to coordinate multiple AI agents to solve complex tasks, emphasizing scalability, orchestration, and collaboration. Whether you're developing autonomous customer support systems or complex problem-solving applications, this tutorial will provide you with the tools and knowledge you need to succeed. Stick around to see it all come together with a hands-on implementation in Google Colab at the end! 🚀
+
+## Overview of Multi-Agent System and Framework
+
+**Multi-agent systems** represent a significant leap from traditional AI paradigms. Instead of relying on a single AI entity to manage all tasks, **Multi-Agent Systems** allows for specialized agents, each designed for specific roles. This specialization enables more efficient processing, parallel task execution, and the ability to tackle more complex problems.
+
+**Benefits**:
+
+* **Scalability**: Each agent can be optimized and scaled independently, allowing the system to handle increasing workloads by adding more agents.  
+* **Robustness**: If one agent fails, others can continue functioning, providing a failover mechanism that enhances system reliability.  
+* **Efficiency**: Agents can work in parallel or hierarchy, speeding up the overall task completion time, particularly in scenarios where tasks are independent or can be broken down into smaller subtasks.  
+* **Modularity**: The modular nature of Multi-Agent Systems means that agents can be reused across different systems, reducing development time for new projects.
+
+**Challenges**:
+
+* **Coordination Complexity**: Ensuring that agents work together seamlessly can be difficult, especially as the number of agents increases.  
+* **Communication Overhead**: The need for agents to communicate adds overhead, particularly if they rely on different models or frameworks.  
+* **Error Handling**: Failures in one agent can propagate or cause issues in others, requiring sophisticated error-handling mechanisms.
+
+## Introduction to CrewAI
+
+CrewAI is an excellent framework for managing and orchestrating multiple agents. It simplifies the complex concepts of Multi-Agent Systems into manageable structures, providing tools for building, deploying, and managing multi-agent systems in production environments.
+
+Some key features of CrewAI include:
+
+- **Sequential, Parallel, and Hierarchical Task Execution**: By default, tasks are processed sequentially, but CrewAI also supports parallel and hierarchical execution, which is crucial for large-scale systems.  
+- **Custom Tool Integration**: CrewAI allows developers to create and integrate custom tools tailored to specific agent tasks, enhancing the versatility and effectiveness of the system for their use case.  
+- **Memory Management**: CrewAI provides mechanisms for short-term, long-term, and entity memory, enabling agents to learn from past experiences and improve over time.  
+- **Role-Based Agent Configuration**: By focusing agents on specific roles and goals, CrewAI ensures that each agent is optimized for its task, improving overall system efficiency.
+
+## Setup and Dependencies
+
+Before defining the agents, let's ensure that your environment is correctly set up. For this tutorial, we'll be using Google Colab. Follow these steps to install the necessary dependencies and set up your environment variables:
+
+### **Install Dependencies:**  
+Since we're working on Google Colab, installing dependencies is straightforward. We'll be using the `crewai`, `crewai_tools`, `langchain_community`, and `pymongo` packages. These libraries provide the core functionality for creating and managing AI agents, integrating external tools like those from LangChain, and connecting to a MongoDB database.
+
+```bash
+! pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29 pymongo
+```
+
+The command above was run in a Google Colab notebook, but if you are running it locally,  remove the exclamation mark (**!**) at the beginning.
+
+### **Set Environment Variables:**  
+Next, you'll need to set up your environment variables. For this tutorial, we'll use the `gpt-3.5-turbo` model from OpenAI, as it's widely accessible. If you have access to GPT-4, you can skip this step or modify the environment variable accordingly. 
+
+
+Add the following code to your Colab notebook:
+
+```bash
+os.environ["OPENAI_MODEL_NAME"] = 'gpt-3.5-turbo'
+os.environ["OPENAI_API_KEY"] = userdata.get('OPENAI_API_KEY')
+os.environ["DB_USERNAME"] = userdata.get('DB_USERNAME')
+os.environ["DB_PASSWORD"] = userdata.get('DB_PASSWORD')
+os.environ["DB_NAME"] = 'crewai'
+```
+
+Replace the placeholder values with your actual API keys and credentials. This setup allows your agents to interact with external services and databases securely.
+
+## Designing a Multi-Agent System
+
+Designing a multi-agent system begins with clearly defining the roles and responsibilities of each agent. Let’s walk through a practical example: building a **Customer Support System** where different agents handle distinct tasks such as data retrieval, inquiry resolution, and quality assurance review.
+
+### STEP 1: Define the Agents
+
+When creating AI agents, it's crucial to establish a strong mental framework. Start by asking yourself key questions that mirror the thought process of a manager:
+
+* **Goal Orientation:** What is the agent's primary objective? What processes will the agent need to accomplish this goal effectively?  
+* **Team Building Analogy:** If this were a human task, what type of people would you hire to get the job done? Consider the roles and expertise needed, then map these qualities onto the AI agent's capabilities.
+
+Each agent can run on a different language model (LLM) in a multi-agent system. Since we're using CrewAI for this tutorial, it's worth noting that agents can also integrate models from Hugging Face Hub. This flexibility lets you fine-tune the agents to meet specific needs, providing more customized responses.
+
+For example, you can fine-tune models like **phi-3**, **tinyLLama**, or **Llama-3** to better suit your use case. If you're unfamiliar with this process, you can refer to my previous tutorials on fine-tuning these models:
+
+* [Fine-tuning Phi-3](https://lablab.ai/t/fine-tuning-phi3)  
+* [Fine-tuning tinyllama](https://lablab.ai/t/fine-tuning-tinyllama)  
+* [Fine-tuning Llama-3](https://lablab.ai/t/fine-tuning-llama3)
+
+To use a model from Hugging Face Hub, you can load it into your agent as follows:
+
+```python
+from langchain_community.llms import HuggingFaceHub
+
+llm = HuggingFaceHub(
+    repo_id="HuggingFaceH4/zephyr-7b-beta",
+    huggingfacehub_api_token="<HF_TOKEN_HERE>",
+    task="text-generation",
+)
+
+### you will pass "llm" to your agent function
+```
+
+Now, let's look at a practical example of defining an agent for a specific role. 
+
+The first agent we’ll define is the **Data Retrieval Specialist**. This agent’s main responsibility is to fetch all relevant information about a customer from the database, ensuring the support team has the data they need to provide accurate responses.
+
+Here’s how you can define the **Data Retrieval Specialist**:
+
+```python
+data_retrieval_agent = Agent(
+    role='Data Retrieval Specialist',
+    goal='Be the best at getting all relevant info of {customer} from the database to help your team',
+    backstory=dedent("""\
+      You are a meticulous Data Retrieval specialist working at lablabAI (https://lablab.ai/)
+      ensuring accurate and up-to-date data gotten from the database
+      is available for solving customers queries.
+      """),
+    verbose=True,
+    allow_delegation=False
+    # llm=llm
+)
+```
+
+#### **Understanding the Data Retrieval Agent**
+
+**`role`:** This agent is defined as a "Data Retrieval Specialist," focused on fetching data.
+
+**`goal`:** The agent’s objective is to retrieve all relevant information about a customer from the database.
+
+**`backstory`:** The backstory provides context, helping the agent understand its role within the broader system.
+
+**`allow_delegation`:** Set to `False`, meaning this agent will not delegate its tasks to others.
+
+**`verbose`:** Enables detailed logging of the agent’s actions.
+
+Next, we have the **Senior Support Representative**, whose goal is to provide the most friendly and helpful support using the data provided by the Data Retrieval Specialist.
+
+```python
+support_agent = Agent(
+    role="Senior Support Representative",
+	goal="Be the most friendly and helpful "
+        "support representative in your team",
+	backstory=dedent("""\
+		You work at lablabAI (https://lablab.ai/) and
+    are now working on providing
+		support to {customer} which information provided by the data retrival specialist,
+		a super important customer for your company.
+		You need to make sure that you provide the best support!
+		Make sure to provide full clear and complete answers,
+    and make no assumptions.
+	"""),
+	allow_delegation=False,
+	verbose=True
+)
+```
+
+#### **Understanding the Support Agent**
+
+* **`role`**: The "**Senior Support Representative**" is responsible for delivering exceptional customer support.  
+* **`goal`**: The agent aims to provide friendly and helpful support.  
+* **`backstory`**: This agent uses the data provided by the Data Retrieval Specialist to assist the customer.  
+* **`allow_delegation`**: Set to False to keep the responsibility of the task within this agent.  
+* **`verbose`**: Detailed logging helps you track how this agent performs.
+
+Finally, we’ll create the **Support Quality Assurance Specialist**, who ensures that the support provided by the Senior Support Representative meets the highest standards. 
+
+Here is how to define this agent:
+
+```python
+# allow delegation is true by default
+
+support_quality_assurance_agent = Agent(
+	role="Support Quality Assurance Specialist",
+	goal="Get recognition for providing the "
+    "best support quality assurance in your team",
+	backstory=dedent("""\
+		You work at lablabAI (https://lablab.ai/) and
+    are now working with your team
+		on a request from {customer} ensuring that
+    the support representative is
+		providing the best support possible.\n
+		You need to make sure that the support representative
+    is providing full clear and
+		complete answers, and make no assumptions.
+		"""),
+	verbose=True
+)
+```
+
+#### **Understanding the Support QA Agent**
+
+* **`role`:** The "**Support Quality Assurance Specialist**" ensures the quality of the support provided.  
+* **`goal`:** This agent’s goal is to achieve recognition for maintaining high support quality.  
+* **`backstory`:** It focuses on ensuring the Senior Support Representative’s responses are thorough and accurate.  
+* **`verbose`:** As with the other agents, verbose logging is enabled to monitor the agent’s activities.
+
+### **Step 2: Define the Tasks**
+
+With our agents defined, the next step is to create the tasks they will perform. Tasks are central to how agents operate, providing a clear set of actions to be carried out using specific tools. The `tools` parameter is key, as it dictates which resources or utilities the agent will use to accomplish the task. There are various tools available, including those from LangChain, but it's important to select the one that best suits the agent’s role and objective. Avoid overloading your agents with too many tools—focus on those that are most effective for the task at hand.
+
+**Key Elements of Effective Tools:**
+
+* **Versatility:** The tool should handle different types of inputs from the agent, adapting to various scenarios.  
+* **Fault Tolerance:** It should fail gracefully, possibly by querying further, sending error messages, or prompting specific input ranges.  
+* **Caching:** This prevents unnecessary repeated requests by using a cross-agent caching layer, optimizing efficiency even when the same query is used by different agents.
+
+Before we define the tasks, let's initialize the tool we’ll use.
+
+#### **Tool Initialization**
+
+Tools can be built-in or custom-made, depending on the task's requirements. In this tutorial, we’ll use several tools, including `DirectoryReadTool` and `FileReadTool` for reading files from a specified directory, and a custom tool for database retrieval.
+
+First, let's initialize the built-in tools:
+
+```python
+from crewai_tools import DirectoryReadTool, FileReadTool
+
+directory_read_tool = DirectoryReadTool(directory='/content/tutorials')
+file_read_tool = FileReadTool()
+```
+
+Next, we'll define a custom tool for retrieving data from a MongoDB database. While creating this tool, I encountered an issue where initializing the MongoDB client in the usual `__init__` constructor caused errors. After some research, I found that initializing it as a class variable with the appropriate type annotation resolved the issue.
+
+Here’s the code for our custom database retrieval tool:
+
+```python
+from typing_extensions import ClassVar
+from crewai_tools import BaseTool
+import json
+
+
+class DatabaseRetrivalTool(BaseTool):
+  name: str = "Database Retrival Tool"
+  description: str = "Gets the all information of a customer from the database"
+  myclient: ClassVar = pymongo.MongoClient(f"mongodb+srv://{os.getenv('DB_USERNAME')}:{os.getenv('DB_PASSWORD')}@cluster0.ijtgnu3.mongodb.net/")
+  mydb: ClassVar = myclient[os.getenv('DB_NAME')]
+
+  def _run(self, text: str) -> str:
+    docs: object = self.mydb["customer_detail"].find_one({'full_name': text})
+
+    if docs is not None:
+      del docs['_id'] # ObejectId is not serializable so remove it
+      return json.dumps(docs)
+
+    # failover incase name is not found
+    return "No customer found"
+
+retrival_tool = DatabaseRetrivalTool()
+```
+
+With our tools initialized, we can now move on to defining the tasks.
+
+#### **Defining the Tasks**
+
+Tasks represent specific objectives that agents must achieve. Each task is defined by a `description`, an `expected_output`, the `tools` it will use, and the agent responsible for carrying out the task.
+
+1. **Data Retrieval Task**
+   
+   This task is assigned to our `data_retrieval_agent`, whose job is to gather all relevant information about the customer from the database. The data collected here will be crucial for addressing the customer's inquiry in subsequent tasks.
+
+   ```python
+   data_retrieval_task = Task(
+      description=dedent("""\
+         Gather all relevant {customer} data from the database, focusing
+         on crucial data which will be great to know when addressing the
+         customer's inquiry.
+         """),
+      expected_output=dedent("""\
+         A comprehensive dataset of the customer's information.
+         Highlighting key info of the customer that will be helpful
+         to the team when addressing the customer's inquiry.
+         """),
+      tools=[retrival_tool],
+      agent=data_retrieval_agent,
+   )
+   ```
+
+   In this task, the `retrival_tool` fetches the necessary data from the database, which the agent will then process to ensure it's relevant and complete.
+
+2.  **Inquiry Resolution Task**
+
+      Once the data is retrieved, the `support_agent` will use this information to address the customer’s inquiry. This task involves searching through relevant files and generating a detailed response.
+
+      ```python
+      inquiry_resolution = Task(
+         description=dedent("""\
+            {customer} just reached out with a super important ask:\n
+            {inquiry}\n\n
+            {customer} is the one that reached out.
+            Make sure to use everything you know
+            to provide the best support possible.
+            You must strive to provide a complete, clear
+            and accurate response to the customer's inquiry.
+            """),
+         expected_output=dedent("""\
+            A detailed, informative response to the
+            customer's inquiry that addresses
+            all aspects of their question.\n
+            The response should include references
+            to everything you used to find the answer,
+            including external data or solutions.
+            Ensure the answer is complete,
+            leaving no questions unanswered, and maintain a helpful and friendly
+            tone throughout.
+            """),
+         tools=[directory_read_tool, file_read_tool],
+         agent=support_agent,
+      )
+      ```
+
+      Here, the `directory_read_tool` and `file_read_tool` help the `support_agent` sift through stored documentation, ensuring that the response to the customer is well-informed and accurate.
+
+   
+
+3. **Quality Assurance Review Task**  
+
+   Finally, the `support_quality_assurance_agent` reviews the response generated by the support agent. This task ensures that the response meets the high standards of the company, is comprehensive, and is customer-friendly.
+
+   ```python
+   quality_assurance_review = Task(
+      description=dedent("""\
+         Review the response drafted by the Senior Support Representative for {customer}'s inquiry.
+         Ensure that the answer is comprehensive, accurate, and adheres to the
+         high-quality standards expected for customer support.\n
+         Verify that all parts of the customer's inquiry
+         have been addressed
+         thoroughly, with a helpful and friendly tone.\n
+         Check for references and sources used to
+         find the information,
+         ensuring the response is well-supported and
+         leaves no questions unanswered.
+         """),
+      expected_output=dedent("""\
+         A final, detailed, and informative response
+         ready to be sent to the customer.\n
+         This response should fully address the
+         customer's inquiry, incorporating all
+         relevant feedback and improvements.\n
+         Don't be too formal, we are a chill and cool company
+         but maintain a professional and friendly tone throughout.
+         """),
+      agent=support_quality_assurance_agent,
+      output_file="response.md",
+      human_input=True
+   )
+   ```
+
+   This task adds a layer of quality control, ensuring that the customer's needs are fully met and that the response aligns with the company's standards.
+
+   This task includes two new parameters:
+
+   * **`human_input`**: This allows you to provide feedback or additional input before the task is completed.  
+   * **`output_file`**: This saves the final response to a Markdown file in the current directory.
+
+
+### **Step 3: Initialize the Crew**
+
+Now that we've defined our agents and tasks, it's time to bring everything together by initializing a `Crew`. The `Crew` is the central entity that manages the execution of tasks by the agents. It orchestrates how tasks are processed and whether agents can remember previous interactions.
+
+#### **Process Options**
+
+The `process` parameter controls how tasks are executed by the crew. The options include:
+
+* **Sequential (Default):** Tasks are performed one after the other in a specific order.  
+* **Hierarchical:** One agent acts as a manager, delegating tasks to other agents while maintaining an overarching memory of the tasks.  
+* **Parallel:** Tasks are executed concurrently, allowing multiple tasks to run at the same time.
+
+#### **Memory Types**
+
+Memory enhances the ability of agents to recall past interactions, improving the quality of responses over time. The `memory` parameter, when set to `True`, activates various types of memory:
+
+* **Short Memory:** Only available during the crew's runtime. Once the crew finishes, this memory is cleared and won't be accessible in subsequent runs.  
+* **Long Memory:** Stores responses in persistent storage, allowing the crew to recall past interactions even after the session has ended.  
+* **Entity Memory:** Groups and recognizes entities (e.g., customer names, products) within the conversation to provide more contextual and meaningful responses. It's also short-lived and cleared after the session ends.
+
+By default, memory is set to `False`, but when enabled (`memory=True`), all types of memory are activated for better performance.
+
+Here's how we initialize the crew with our agents, tasks, and memory configuration:
+
+```python
+crew = Crew(
+  agents=[data_retrieval_agent, support_agent, support_quality_assurance_agent],
+  tasks=[data_retrieval_task, inquiry_resolution, quality_assurance_review],
+  verbose=2,
+  memory=True
+)
+```
+
+#### Key Parameters Explained
+
+* **`agents`**: A list of agents that will participate in the crew. Each agent is assigned to specific tasks based on their defined roles and goals.  
+* **`tasks`**: A list of tasks that the agents need to complete. These tasks are designed to be executed sequentially by default, but you can customize the execution flow by changing the `process` parameter.  
+* **`verbose`**: Setting this to `2` enables detailed logging, so you can monitor how the agents interact with each other and how they progress through the tasks.  
+* **`memory`:** By setting `memory=True`, we enable all types of memory, ensuring the agents can recall previous interactions and provide more informed responses.
+
+#### Execution Flow
+
+With this configuration, the crew will execute the tasks in sequence:
+
+1. **Data Retrieval**: The `data_retrieval_agent` retrieves relevant customer information from the database.  
+2. **Inquiry Resolution**: The `support_agent` uses the retrieved data, along with additional information from directories and files, to provide a comprehensive response to the customer's inquiry.  
+3. **Quality Assurance Review**: The `support_quality_assurance_agent` reviews the response, ensuring it meets quality standards, and then saves it to a file.
+
+### **Step 4: Kick Off the Crew**
+
+After initializing the crew with your agents and tasks, the next step is to kick it off by providing the necessary inputs. These inputs will guide the agents as they work through their assigned tasks.
+
+In this example, we'll be using the following inputs:
+
+* **`customer`**: The name of the customer inquiring.  
+* **`inquiry`**: The specific question or issue the customer wants to be addressed.
+
+```python
+inputs = {
+    "customer": "Tommy Ade",
+    "inquiry": "How can I properly fine tune llama3? Also tell me a bit about the llm"
+}
+result = crew.kickoff(inputs=inputs)
+```
+
+#### **Explanation of the Inputs**
+
+* **`customer`**: `"Tommy Ade"` is the customer whose information will be retrieved and whose inquiry will be addressed by the agents. This is also used to personalize the responses and interactions.  
+* **`inquiry`**: The customer is asking about how to fine-tune the Llama 3 model and also requesting some background information about the large language model (LLM). This input will drive the tasks performed by the agents, from data retrieval to inquiry resolution and quality assurance.
+
+### **Step 5: Reviewing the Crew's Execution**
+
+Once the `kickoff` method is invoked, the crew begins executing the tasks. The `verbose` setting ensures detailed logs are produced, showing how the agents collaborate to achieve the goal. This is particularly useful for understanding the decision-making process and how each agent contributes to the final result.
+
+You should see the Data Retrieval Specialist begin the retrieval task with detailed logs and outputs  
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7a91c7cd-2626-4d30-5942-342d485e1000/full" alt="Begin First Task" caption="First Task starting" />
+
+A minor error occurs when using the custom tool we defined earlier. Since CrewAI helps us to handle errors gracefully it didn’t affect the execution and made the agent pass in the right variable which gave us the customer details we wanted.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/19f796cd-0a41-4f38-a0b9-c21a2959d600/full" alt="Using custom tool" caption="Custom Tool in use" />
+
+After the agent is done working, It returns the finished output and gives it to the next agent who will be taking on the next task  
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bc1ddefe-e143-4515-e4db-f8be9cdb0900/full" alt="Data Retrieval Response" caption="Data Retrieval Final Response" />
+
+The Support Agent starts and makes use of the directory and file tools to read all the files and prepare a response for a customer query
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bf761d56-1bf0-453c-e3ba-e8ca8564ca00/full" alt="Support Agent" caption="Support Agent working" />
+
+After the Support Agent has given its response the next task kicks off and the QA agent starts. It then delegates a task to the Support agent again to review its response.  
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6022a792-e376-4da7-7591-6134a12a2200/full" alt="Suport QA Agent" caption="Support QA Agent working" />
+
+Then QA agent receives the feedback from the Support Agent and now seeks our feedback for a better response if need be.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5331803e-fdbc-4c4f-0a29-d91ee9121100/full" alt="Feedback from QA Agent" caption="Feedback from QA Agent" />
+
+The QA agent then receives the feedback and works on its response based on what was said and gives a suitable response.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a069650d-cd14-4cd3-332f-397a0123a600/full" alt="Final Answer from QA Agent" caption="Final Answer from QA Agent" />
+
+#### **Final Output in Markdown Format**
+
+After the crew completes all tasks, it generates the final result in a markdown format. This format is particularly useful for documentation purposes or for sharing the results in a structured and readable way. 
+
+Since we set an output_file for our QA task the file containing the response will be in our current directory
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7b6cdff4-11e2-4c67-19d7-331e370a4700/full" alt="Locate Output file" caption="Locate the Output file" />
+
+The content of the output file holds the final response from the Support QA agent.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dff4be04-1032-4f7b-dfc4-f480eb33a800/full" alt="Content of Output file" caption="Content of Output file" />
+
+You can view the **Google Colab Notebook** used for this tutorial [HERE](https://colab.research.google.com/drive/1jjMUTQwa6k8RUxq-N4rnjS0Gw0jV4z3t?usp=sharing).
+
+
+## **Generalizing Across Use Cases**
+
+### **Adaptation to Multiple Domains**
+
+While this tutorial focuses on customer support examples, the principles of multi-agent systems can be adapted to various industries, from supply chain management to personalized AI-driven services.
+
+### **Modular and Reusable Design**
+
+When designing your system, prioritize modularity. Structure agents and their interactions so that they can be easily adapted or reused in different projects, saving time and resources in future developments.
+
+## Conclusion
+
+In this tutorial, we've built a sophisticated multi-agent system using `Crewai`, demonstrating how to automate customer support tasks effectively. We started by setting up the environment, defining specialized agents, and creating tasks that leverage various tools, including a custom `DatabaseRetrivalTool`. By initializing and kicking off the crew, we saw how agents collaborate to retrieve data, draft responses, and ensure quality, all while utilizing memory and human input to produce a refined final output.
+
+To dive deeper into the capabilities and possibilities of multi-agent systems, check out the [crewai documentation](https://docs.crewai.com/).
+
+Mastering multi-agent systems is a journey that requires both theoretical knowledge and practical experience. As you continue to build and refine these systems, remember to focus on clear communication between agents, robust error-handling mechanisms, and scalability. The future of AI is in collaboration—not just among humans, but among the intelligent agents we create. **Happy coding!**
