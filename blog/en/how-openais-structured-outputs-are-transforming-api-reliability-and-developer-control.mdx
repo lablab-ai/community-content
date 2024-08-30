@@ -50,8 +50,9 @@ In practice, this means that when an AI model generates output, it doesn’t jus
 
 For example, consider a scenario where a user wants to retrieve all orders fulfilled in May of the previous year but delivered late. The AI model can generate the following request using function calling in strict mode:
 
+`POST /v1/chat/completions`
 ```json
-POST /v1/chat/completions
+
 {
   "model": "gpt-4o-2024-08-06",
   "messages": [
@@ -158,9 +159,9 @@ The ability to specify the response format directly within the API call simplifi
 
 For example, consider a scenario where a user asks the AI to solve a simple algebraic equation. The AI can generate a response using the `json_schema` option to ensure that the solution is provided in a clear, step-by-step format:
 
+`POST /v1/chat/completions`
 ```json
-// Request Example
-POST /v1/chat/completions
+
 {
   "model": "gpt-4o-2024-08-06",
   "messages": [
