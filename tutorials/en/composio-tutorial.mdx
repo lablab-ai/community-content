@@ -397,35 +397,35 @@ Once you run your Python file, the logs for each agent and tool should be visibl
 
 You should see all the tools available in FILETOOL, with the Data Insights Specialist Agent suggesting tool actions to perform based on the task.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064539/start-inisight-suggest_g68nit.png" alt="start inisight suggest" caption="Insights Specialist starts" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2d396216-188c-4f1e-aeb7-1b263b67ab00/full" alt="start inisight suggest" caption="Insights Specialist starts" />
 
 The agent then delegates the execution to the FILE PARSER and EXTRACTOR agent, which we defined earlier as the executor for the FILETOOL.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064551/executing-tool-file_bvckrb.png" alt="File Parser in action" caption="Executing suggested tool calls" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4cb39c5-c813-49ca-3c8a-d460310def00/full" alt="File Parser in action" caption="Executing suggested tool calls" />
 
 After the Extractor agent executes all the suggested tool calls by the Data Specialist agent, it returns all the fields in the CSV file in a formatted way.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064535/file-parser-response_r05ahl.png" alt="file parser response" caption="File parser response" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/57ac46de-265d-42b3-30fc-448138e63900/full" alt="file parser response" caption="File parser response" />
 
 Then it gives the data to the Data Specialist Agent to generate a detailed report summary based on it. The Data Specialist Agent then generates the report summary.  
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064545/generate-summary_huygch.png" alt="generate summary" caption="Data Insights summary" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3011017b-f7cd-41d3-2b42-5a7e1eaaf500/full" alt="generate summary" caption="Data Insights summary" />
 
 Next, the User Agent kicks off by passing the summary report provided by the Data Specialist Agent to the Group Chat Manager, which then calls the Document Writer Agent.  
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064549/pass-summary-agent_vkgxwd.png" alt="pass summary to next group chat" caption="pass summary to next group chat" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/91841e98-a86b-4f13-31a7-325fc9442100/full" alt="pass summary to next group chat" caption="pass summary to next group chat" />
 
 The Document Writer agent, armed with all actions for interacting with Google Docs, now suggests tool calls for the Content Writer Agent to perform.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064549/suggested-call-document-writer_dtrgvf.png" alt="Document Agent suggesting tool call" caption="Document Agent suggesting tool call" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f47d0934-3238-49e0-945f-8fb48438e300/full" alt="Document Agent suggesting tool call" caption="Document Agent suggesting tool call" />
 
 The Content Writer Agent then starts execution and writes the summary to the Google document as defined by the Document Writer Agent.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064553/executing-tool-content-writer_vupocr.png" alt="Writer Agent executing tool call" caption="Writer Agent executing tool call" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/35500f03-2204-4dd7-ee3b-c72ca24cd400/full" alt="Writer Agent executing tool call" caption="Writer Agent executing tool call" />
 
 After execution, check your Google Drive recents, and you should see the file named 'User Feedback Report' with the summary report.
 
-<Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1726064553/user-feedback-report_ry6htz.png" alt="Final Report" caption="Report in Google docs" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2e536a71-a9a7-4dd4-2f41-8a0faee57600/full" alt="Final Report" caption="Report in Google docs" />
 
 
 ## Next Steps: Expanding Your Use of Composio

@@ -1,8 +1,11 @@
-Processing file: blog/en/llama-3.1-unleashing-the-open-source-ai-revolution.mdx
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/16d7d91e-6802-474e-19e2-1e4a326f1b00/full
-Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a97f6575-eaf8-4962-0c7a-a0deae510600/full
-Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1842b805-075b-4b98-8d86-f2e3b9272300/full
-Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/89359119-19fc-41db-c04c-d40374c59500/full
-Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/34fc1d58-0e0d-47b8-80a2-e332381dd500/full
-Successfully processed file: blog/en/llama-3.1-unleashing-the-open-source-ai-revolution.mdx
+Processing file: tutorials/en/composio-tutorial.mdx
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2d396216-188c-4f1e-aeb7-1b263b67ab00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4cb39c5-c813-49ca-3c8a-d460310def00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/57ac46de-265d-42b3-30fc-448138e63900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3011017b-f7cd-41d3-2b42-5a7e1eaaf500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/91841e98-a86b-4f13-31a7-325fc9442100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f47d0934-3238-49e0-945f-8fb48438e300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/35500f03-2204-4dd7-ee3b-c72ca24cd400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2e536a71-a9a7-4dd4-2f41-8a0faee57600/full
+Successfully processed file: tutorials/en/composio-tutorial.mdx
 CHANGES_MADE
