@@ -1,0 +1,45 @@
+Processing file: tutorials/en/agentops-tutorial.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062815/agentops-init-start_q6o3ca.png
+Successfully downloaded image to: images/agentops-init-start_q6o3ca.png
+Uploading image: images/agentops-init-start_q6o3ca.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/96af5db7-3176-444e-7921-c8a758a84e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/96af5db7-3176-444e-7921-c8a758a84e00/full
+Deleted local image: images/agentops-init-start_q6o3ca.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062831/select-session_iphhkh.png
+Successfully downloaded image to: images/select-session_iphhkh.png
+Uploading image: images/select-session_iphhkh.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eb84dcb4-779a-4a83-fee5-62f56cd6e800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/eb84dcb4-779a-4a83-fee5-62f56cd6e800/full
+Deleted local image: images/select-session_iphhkh.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062828/session-top-section_kmzk0m.png
+Successfully downloaded image to: images/session-top-section_kmzk0m.png
+Uploading image: images/session-top-section_kmzk0m.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae6a8844-02e7-44d9-b1c3-a5591ce96700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae6a8844-02e7-44d9-b1c3-a5591ce96700/full
+Deleted local image: images/session-top-section_kmzk0m.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062820/select-checkpoint_hrhp7r.png
+Successfully downloaded image to: images/select-checkpoint_hrhp7r.png
+Uploading image: images/select-checkpoint_hrhp7r.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b37c1e72-c25e-4f72-fc99-8fb6d77fe000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b37c1e72-c25e-4f72-fc99-8fb6d77fe000/full
+Deleted local image: images/select-checkpoint_hrhp7r.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062816/second-section-left_pgon2t.png
+Successfully downloaded image to: images/second-section-left_pgon2t.png
+Uploading image: images/second-section-left_pgon2t.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/97bb8895-77b3-4dba-c751-a8739646fa00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/97bb8895-77b3-4dba-c751-a8739646fa00/full
+Deleted local image: images/second-section-left_pgon2t.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062828/second-section-right_opqwdk.png
+Successfully downloaded image to: images/second-section-right_opqwdk.png
+Uploading image: images/second-section-right_opqwdk.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/159088cd-5af8-4d74-1688-b5b87e6ec000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/159088cd-5af8-4d74-1688-b5b87e6ec000/full
+Deleted local image: images/second-section-right_opqwdk.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726062830/session-replay-third-section_nkg4mp.png
+Successfully downloaded image to: images/session-replay-third-section_nkg4mp.png
+Uploading image: images/session-replay-third-section_nkg4mp.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8bc1f61f-fa1e-4ca9-cd98-6655ade2d100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8bc1f61f-fa1e-4ca9-cd98-6655ade2d100/full
+Deleted local image: images/session-replay-third-section_nkg4mp.png
+Successfully processed file: tutorials/en/agentops-tutorial.mdx
+CHANGES_MADE
