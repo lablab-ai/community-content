@@ -299,7 +299,8 @@ In Part Two, we'll extend the system built in Part One to write the summary repo
 We start by defining the agents responsible for writing the summary report to a Google Document.
 
 1. **Document Writer Agent**: This agent initiates the write operation to the Google Document.  
-   ```python
+
+```python
    doc_writer_agent = AssistantAgent(  
        "Document Writer",  
        description=dedent("""  
@@ -312,10 +313,11 @@ We start by defining the agents responsible for writing the summary report to a 
                                """),  
        max_consecutive_auto_reply=2  
    ) 
-   ```
+```
 
 2. **Content Writer Agent**: This agent is responsible for writing the content to the Google Document.  
-   ```python
+
+```python
    content_writer = UserProxyAgent(
     "Content Writer",
     description="Writes content to a Google Document",
@@ -323,10 +325,11 @@ We start by defining the agents responsible for writing the summary report to a 
     code_execution_config={"use_docker": False},
     max_consecutive_auto_reply=5
     )
-   ```
+```
 
-3. **User Agent**: This agent ensures the summary report is correctly written to the Google Document.  
-   ```python
+3. **User Agent**: This agent ensures the summary report is correctly written to the Google Document. 
+
+```python
    user_agent = UserProxyAgent(
     "User",
     description=dedent("""\
@@ -336,7 +339,7 @@ We start by defining the agents responsible for writing the summary report to a 
     code_execution_config={"use_docker": False},
     max_consecutive_auto_reply=5
     )
-   ```
+```
 
 #### **Step 2: Set Up Group Chat and Manager**
 
