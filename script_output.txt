@@ -1,0 +1,21 @@
+Processing file: tutorials/en/ai-ml-tutorial.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726061740/response-spanish_bntznj.png
+Successfully downloaded image to: images/response-spanish_bntznj.png
+Uploading image: images/response-spanish_bntznj.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b483b3ed-f2d8-421a-64b9-d65087003c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b483b3ed-f2d8-421a-64b9-d65087003c00/full
+Deleted local image: images/response-spanish_bntznj.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726060810/research-agent_xyom2s.png
+Successfully downloaded image to: images/research-agent_xyom2s.png
+Uploading image: images/research-agent_xyom2s.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/530cf569-c031-48e2-74a0-fa89945c5800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/530cf569-c031-48e2-74a0-fa89945c5800/full
+Deleted local image: images/research-agent_xyom2s.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1726060810/blog-agent_nc4rmi.png
+Successfully downloaded image to: images/blog-agent_nc4rmi.png
+Uploading image: images/blog-agent_nc4rmi.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b2869d44-e88c-4928-f44f-a47f6a2f9000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b2869d44-e88c-4928-f44f-a47f6a2f9000/full
+Deleted local image: images/blog-agent_nc4rmi.png
+Successfully processed file: tutorials/en/ai-ml-tutorial.mdx
+CHANGES_MADE
