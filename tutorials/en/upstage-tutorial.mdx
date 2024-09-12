@@ -90,22 +90,22 @@ This code fetches your API key securely from Google Colab's user data.
 
     Then, in your Python script, add:
 
-    ```python
+```python
     from dotenv import load_dotenv
     import os
 
     load_dotenv()
     api_key = os.getenv('UPSTAGE_API_KEY')
-    ```
+```
 
 2. Directly in your script:
 
-    ```python
+```python
     import os
 
     # Directly setting the API key
     os.environ["UPSTAGE_API_KEY"] = "your_api_key_here"
-    ```
+```
 
 ## Practical Use Cases for Solar LLM
 
