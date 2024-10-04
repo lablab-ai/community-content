@@ -57,37 +57,6 @@ Access to the o1 models is restricted based on **subscription tiers**, **API usa
 
    This makes AI/ML API a valuable alternative for developers looking for cost-effective ways to use the o1 models. Below are examples of how to access these models using via AI/ML's API.
 
-#### Example in JavaScript:
-
-```javascript
-const { OpenAI } = require('openai');
-
-const api = new OpenAI({
-  baseURL: 'https://api.aimlapi.com',
-  apiKey: '<YOUR_API_KEY>',
-});
-
-const main = async () => {
-  const result = await api.chat.completions.create({
-    model: 'o1-preview',
-    messages: [
-      {
-        role: 'system',
-        content: 'You are an AI assistant who knows everything.',
-      },
-      {
-        role: 'user',
-        content: 'Tell me, why is the sky blue?'
-      }
-    ],
-  });
-
-  const message = result.choices[0].message.content;
-  console.log(`Assistant: ${message}`);
-};
-
-main();
-```
 
 ### Example in Python
 
@@ -95,28 +64,28 @@ main();
 import os
 from openai import OpenAI
 
+user_content = """
+how many Rs are there in the word strawberry
+think step by step
+"""
+
 client = OpenAI(
-    api_key="<YOUR_API_KEY>",
-    base_url="https://api.aimlapi.com",
+    api_key=aiml_api_key,
+    base_url="https://api.aimlapi.com/",
 )
 
-response = client.chat.completions.create(
-    model="o1-preview",
+chat_completion = client.chat.completions.create(
+    model="o1-mini",
     messages=[
-        {
-            "role": "system",
-            "content": "You are an AI assistant who knows everything.",
-        },
-        {
-            "role": "user",
-            "content": "Tell me, why is the sky blue?"
-        },
+        {"role": "user", "content": user_content},
     ],
+    max_tokens=2000,
 )
 
-message = response.choices[0].message.content
-print(f"Assistant: {message}")
+response = chat_completion.choices[0].message.content
+print("Response:\n", response)
 ```
+
 ## Important Considerations: Reasoning Tokens
 
 When working with the o1 models, it’s important to note the concept of reasoning tokens. These are tokens that are processed during the model’s internal reasoning but are not visible in the API responses. However, these tokens still count towards the output token limit. In the ChatGPT interface, you may see these intermediate reasoning steps, but they remain invisible in API calls, which is crucial to keep in mind when budgeting for token usage.
