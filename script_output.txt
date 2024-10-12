@@ -1,0 +1,117 @@
+Processing file: tutorials/en/How_to_Use_AI_to_Create_Components_for_Figma:_A_Beginner’s_Guide.mdx
+Downloading image from URL: https://iili.io/dZfRbjt.png
+Successfully downloaded image to: images/dZfRbjt.png
+Uploading image: images/dZfRbjt.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/59085f85-f851-4575-41a5-97f0da648b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/59085f85-f851-4575-41a5-97f0da648b00/full
+Deleted local image: images/dZfRbjt.png
+Downloading image from URL: https://iili.io/dZf7ce2.jpg
+Successfully downloaded image to: images/dZf7ce2.jpg
+Uploading image: images/dZf7ce2.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e498a83-a25e-4fcb-387f-d23cefced700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e498a83-a25e-4fcb-387f-d23cefced700/full
+Deleted local image: images/dZf7ce2.jpg
+Downloading image from URL: https://iili.io/dZfcg1e.png
+Successfully downloaded image to: images/dZfcg1e.png
+Uploading image: images/dZfcg1e.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/108e73e5-4608-44f9-7381-bc148a6ee800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/108e73e5-4608-44f9-7381-bc148a6ee800/full
+Deleted local image: images/dZfcg1e.png
+Downloading image from URL: https://iili.io/dZflYG9.png
+Successfully downloaded image to: images/dZflYG9.png
+Uploading image: images/dZflYG9.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3d176c07-b839-45a6-65b5-3d46c9e38500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3d176c07-b839-45a6-65b5-3d46c9e38500/full
+Deleted local image: images/dZflYG9.png
+Downloading image from URL: https://iili.io/dZf1VqP.png
+Successfully downloaded image to: images/dZf1VqP.png
+Uploading image: images/dZf1VqP.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/33f343f4-ce2f-4433-c876-270e7243e600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/33f343f4-ce2f-4433-c876-270e7243e600/full
+Deleted local image: images/dZf1VqP.png
+Downloading image from URL: https://iili.io/dZfGfAG.png
+Successfully downloaded image to: images/dZfGfAG.png
+Uploading image: images/dZfGfAG.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/438ecb65-cbec-44d2-002e-ca0b7463c600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/438ecb65-cbec-44d2-002e-ca0b7463c600/full
+Deleted local image: images/dZfGfAG.png
+Downloading image from URL: https://iili.io/dZfMW1S.png
+Successfully downloaded image to: images/dZfMW1S.png
+Uploading image: images/dZfMW1S.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bc95e8ad-0814-4c59-7bc5-941e8feb3400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bc95e8ad-0814-4c59-7bc5-941e8feb3400/full
+Deleted local image: images/dZfMW1S.png
+Downloading image from URL: https://iili.io/dZfXYdP.png
+Successfully downloaded image to: images/dZfXYdP.png
+Uploading image: images/dZfXYdP.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6f94c4e5-b9e1-4f6b-0ce8-b6d9a9bd7f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6f94c4e5-b9e1-4f6b-0ce8-b6d9a9bd7f00/full
+Deleted local image: images/dZfXYdP.png
+Downloading image from URL: https://iili.io/dZfXp4V.png
+Successfully downloaded image to: images/dZfXp4V.png
+Uploading image: images/dZfXp4V.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc007bb8-6e45-4223-29e5-4a9bbc970a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc007bb8-6e45-4223-29e5-4a9bbc970a00/full
+Deleted local image: images/dZfXp4V.png
+Downloading image from URL: https://iili.io/dZfPel1.png
+Successfully downloaded image to: images/dZfPel1.png
+Uploading image: images/dZfPel1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a5024c54-adc2-4adf-aecb-8a25dcc01e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a5024c54-adc2-4adf-aecb-8a25dcc01e00/full
+Deleted local image: images/dZfPel1.png
+Downloading image from URL: https://iili.io/dZq9wsn.png
+Successfully downloaded image to: images/dZq9wsn.png
+Uploading image: images/dZq9wsn.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/55a24bc4-7205-48f8-0d19-232e9a6c3b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/55a24bc4-7205-48f8-0d19-232e9a6c3b00/full
+Deleted local image: images/dZq9wsn.png
+Downloading image from URL: https://iili.io/dZfQEqQ.png
+Successfully downloaded image to: images/dZfQEqQ.png
+Uploading image: images/dZfQEqQ.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff518e38-0d8e-4384-d0c9-45d74bb32f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff518e38-0d8e-4384-d0c9-45d74bb32f00/full
+Deleted local image: images/dZfQEqQ.png
+Downloading image from URL: https://iili.io/dZfZL91.png
+Successfully downloaded image to: images/dZfZL91.png
+Uploading image: images/dZfZL91.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5b3889cb-9ead-4b0c-023d-ddeb829a5500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5b3889cb-9ead-4b0c-023d-ddeb829a5500/full
+Deleted local image: images/dZfZL91.png
+Downloading image from URL: https://iili.io/dZfmoKv.png
+Successfully downloaded image to: images/dZfmoKv.png
+Uploading image: images/dZfmoKv.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5db9f4a-d016-4c3b-6397-04ef032e6000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b5db9f4a-d016-4c3b-6397-04ef032e6000/full
+Deleted local image: images/dZfmoKv.png
+Downloading image from URL: https://iili.io/dZfLANa.png
+Successfully downloaded image to: images/dZfLANa.png
+Uploading image: images/dZfLANa.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ab56379b-4748-4a79-1f57-24fe586dbb00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ab56379b-4748-4a79-1f57-24fe586dbb00/full
+Deleted local image: images/dZfLANa.png
+Downloading image from URL: https://iili.io/dZqKECB.png
+Successfully downloaded image to: images/dZqKECB.png
+Uploading image: images/dZqKECB.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5251f996-659f-4724-3fae-a6684f3f6400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5251f996-659f-4724-3fae-a6684f3f6400/full
+Deleted local image: images/dZqKECB.png
+Downloading image from URL: https://iili.io/dZqCYKB.png
+Successfully downloaded image to: images/dZqCYKB.png
+Uploading image: images/dZqCYKB.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7a9f47cb-ded5-46bf-3a4a-e7b3d3a30200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7a9f47cb-ded5-46bf-3a4a-e7b3d3a30200/full
+Deleted local image: images/dZqCYKB.png
+Downloading image from URL: https://iili.io/dZqnsBR.png
+Successfully downloaded image to: images/dZqnsBR.png
+Uploading image: images/dZqnsBR.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/75b483e8-fdba-4744-74a5-94e296898e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/75b483e8-fdba-4744-74a5-94e296898e00/full
+Deleted local image: images/dZqnsBR.png
+Downloading image from URL: https://iili.io/dZfAObt.jpg
+Successfully downloaded image to: images/dZfAObt.jpg
+Uploading image: images/dZfAObt.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/68b3608b-fb36-4614-2ff9-156ae055ea00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/68b3608b-fb36-4614-2ff9-156ae055ea00/full
+Deleted local image: images/dZfAObt.jpg
+Successfully processed file: tutorials/en/How_to_Use_AI_to_Create_Components_for_Figma:_A_Beginner’s_Guide.mdx
+CHANGES_MADE
