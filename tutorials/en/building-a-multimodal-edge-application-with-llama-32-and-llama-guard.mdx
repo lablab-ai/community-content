@@ -8,7 +8,7 @@ authorUsername: "sanchayt743"
 
 # Building a Multimodal Edge Application with Llama 3.2 and Llama Guard
 
-Over the past several years, I've had the opportunity to work extensively with AI models across a range of platforms, from powerful cloud servers to resource-constrained edge devices. The evolution of artificial intelligence has been nothing short of remarkable, and one of the most exciting developments I've encountered recently is Meta's release of Llama 3.2 and Llama Guard. These tools have opened new horizons for building sophisticated, efficient, and secure AI applications that can run universally, including on devices with limited computational resources.
+Over the past several years, I've had the opportunity to work extensively with AI models across a range of platforms, from powerful cloud servers to resource-constrained edge devices. The evolution of artificial intelligence has been nothing short of remarkable, and one of the most exciting developments I've encountered recently is Meta's release of [Llama 3.2](https://lablab.ai/tech/meta/llama-3.2) and [Llama Guard](https://ai.meta.com/research/publications/llama-guard-llm-based-input-output-safeguard-for-human-ai-conversations/). These tools have opened new horizons for building sophisticated, efficient, and secure AI applications that can run universally, including on devices with limited computational resources.
 
 In this article, I'd like to share my experiences and insights on how to create a multimodal edge application using Llama 3.2 and Llama Guard. We'll explore the different models within the Llama 3.2 family, understand their capabilities, and discuss how to select the one that best fits your needs. We'll delve into setting up these models on various hardware platforms, integrating vision capabilities, implementing Llama Guard for secure interactions, and leveraging agentic functionalities to enhance your application.
 
@@ -28,35 +28,7 @@ In this article, I'd like to share my experiences and insights on how to create 
 | Llama 3.2 11B | Multimodal (text \+ image) | Server-side image analysis and captioning |
 | Llama 3.2 90B | Multimodal (text \+ image) | Enterprise applications, research, high-performance tasks |
 
-## Understanding the Llama 3.2 Model Family
-
-The Llama 3.2 family consists of four primary models: **1B**, **3B**, **11B**, and **90B**, where the numbers denote the number of parameters in billions. Each model is designed to cater to specific use cases, balancing performance with resource requirements.
-
-### Llama 3.2 1B and 3B Lightweight Models
-
-The 1B and 3B models are lightweight and optimized for deployment on edge devices with limited computational power. The 1B model, with its one billion parameters, is ideal for basic conversational AI tasks, language understanding, and simple text generation. It's impressively efficient, making it suitable for devices with as little as 4GB of RAM. However, it does have limitations when it comes to handling complex tasks that require deep context or advanced reasoning.
-
-The 3B model, on the other hand, strikes a balance between performance and resource consumption. With three billion parameters, it offers improved capabilities in language understanding and generation, handling moderately complex interactions more effectively than the 1B model. I've found the 3B model to be a sweet spot for applications that need more nuance without significantly increasing resource demands. Devices with around 8GB of RAM can typically handle the 3B model comfortably.
-
-To run inference for these lightweight models efficiently on edge devices, the recommended approach is to use the PyTorch ExecuTorch framework. ExecuTorch is an end-to-end solution for enabling on-device inference across mobile and edge devices, including wearables, embedded devices, and microcontrollers. It is part of the PyTorch Edge ecosystem and supports efficient deployment of various PyTorch models, including vision, speech, and generative AI, to edge devices. Additionally, ExecuTorch now supports BFloat16 with the XNNPack backend in both Android and iOS, making it a robust choice for deploying Llama 3.2 lightweight models.
-
-### Llama 3.2 11B and 90B Vision Models
-
-For applications that require visual processing alongside text, the 11B and 90B models bring multimodal capabilities to the table. The 11B model, with eleven billion parameters, enables image captioning, visual question answering, and detailed image analysis. While it requires more robust hardware, it's feasible to deploy on high-end devices or servers. In one of my projects, integrating the 11B model allowed us to develop an application that provided rich, context-aware descriptions of images, enhancing user engagement significantly.
-
-The 90B model is the heavyweight champion of the Llama 3.2 family, boasting ninety billion parameters. It's designed for the most demanding AI applications that involve complex reasoning and extensive context. This model excels in both language and vision tasks, delivering exceptional performance. However, its resource requirements are substantial, often necessitating specialized hardware or distributed computing environments. I've found that the 90B model is best suited for research or enterprise applications where the highest level of performance is critical, and resource constraints are less of a concern.
-
-### Selecting the Right Model for Your Needs
-
-Choosing the appropriate model from the Llama 3.2 family depends on a careful assessment of your application's requirements and the hardware resources at your disposal. For basic text-based interactions on devices with limited memory and processing power, the 1B model is an excellent choice. If your application demands more advanced language capabilities and your hardware can accommodate slightly higher resource consumption, the 3B model offers a good balance.
-
-When it comes to multimodal applications that involve image processing, the decision becomes more nuanced. The 11B model is suitable for applications that require advanced image understanding but can be deployed on servers or high-end devices. If your application is in a domain where cutting-edge performance is essential and you have access to significant computational resources, the 90B model might be the way to go.
-
-In my experience, it's crucial to prototype with different models to see how they perform with your specific use case. Sometimes, the smaller models deliver sufficient performance, allowing you to conserve resources without compromising on user experience.
-
-## Setting Up Llama 3.2 Lightweight Models on Edge Devices
-
-Deploying AI models on edge devices presents unique challenges, primarily due to limited computational resources and memory constraints. However, with careful optimization and the right approach, it's entirely feasible to run sophisticated models like Llama 3.2's lightweight variants on such devices.
+For a deeper dive into the Llama 3.2 family you can check out [this blog](https://lablab.ai/blog/llama3.2-blog) we wrote for you
 
 ### Preparing Your Environment
 
