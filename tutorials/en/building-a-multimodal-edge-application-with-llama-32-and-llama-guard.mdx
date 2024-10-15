@@ -1,0 +1,348 @@
+---
+title: "Building a Multimodal Edge Application with Llama 3.2 and Llama Guard"
+description: "This tutorial guides you through building a multimodal edge application using Meta's Llama 3.2 and Llama Guard, focusing on model selection, hardware setup, vision integration, and secure interactions."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2914848e-aa4e-4b90-9f25-1c1e38084900/full"
+authorUsername: "sanchayt743"
+---
+
+
+# Building a Multimodal Edge Application with Llama 3.2 and Llama Guard
+
+Over the past several years, I've had the opportunity to work extensively with AI models across a range of platforms, from powerful cloud servers to resource-constrained edge devices. The evolution of artificial intelligence has been nothing short of remarkable, and one of the most exciting developments I've encountered recently is Meta's release of [Llama 3.2](https://lablab.ai/tech/meta/llama-3.2) and [Llama Guard](https://ai.meta.com/research/publications/llama-guard-llm-based-input-output-safeguard-for-human-ai-conversations/). These tools have opened new horizons for building sophisticated, efficient, and secure AI applications that can run universally, including on devices with limited computational resources.
+
+In this article, I'd like to share my experiences and insights on how to create a multimodal edge application using Llama 3.2 and Llama Guard. We'll explore the different models within the Llama 3.2 family, understand their capabilities, and discuss how to select the one that best fits your needs. We'll delve into setting up these models on various hardware platforms, integrating vision capabilities, implementing Llama Guard for secure interactions, and leveraging agentic functionalities to enhance your application.
+
+## Llama 3.2 Model Family Comparison
+
+| Model | Parameters (Billion) | Best Use Case | Hardware Requirements |
+| :---- | :---- | :---- | :---- |
+| Llama 3.2 1B | 1 | Basic conversational AI, simple tasks | 4GB RAM, edge devices |
+| Llama 3.2 3B | 3 | Moderate complexity, nuanced interactions | 8GB RAM, high-end smartphones |
+| Llama 3.2 11B | 11 | Image captioning, visual question answering | High-end devices or servers |
+| Llama 3.2 90B | 90 | Complex reasoning, advanced multimodal tasks | Specialized hardware, distributed systems |
+
+| Model | Application Type | Best Fit |
+| :---- | :---- | :---- |
+| Llama 3.2 1B | Text-only | Edge deployment, resource-limited environments |
+| Llama 3.2 3B | Text-only | Applications needing nuanced conversations |
+| Llama 3.2 11B | Multimodal (text \+ image) | Server-side image analysis and captioning |
+| Llama 3.2 90B | Multimodal (text \+ image) | Enterprise applications, research, high-performance tasks |
+
+For a deeper dive into the Llama 3.2 family you can check out [this blog](https://lablab.ai/blog/llama3.2-blog) we wrote for you
+
+### Preparing Your Environment
+
+Before diving into the implementation, ensure your development environment is properly set up. You'll need Python 3.7 or higher, PyTorch, and the Hugging Face Transformers library. If you're dealing with image data, installing Torchvision is also necessary.
+
+### Implementing the 1B Model
+
+To set up the 1B model, you can utilize the Hugging Face Transformers library, which provides a straightforward interface for loading and interacting with pre-trained models. For on-device inference, particularly on mobile and edge devices, it is recommended to use the PyTorch ExecuTorch framework. ExecuTorch is designed to optimize inference for lightweight models on resource-constrained hardware, making it an ideal choice for deploying the 1B model efficiently.
+
+```python
+import torch
+from transformers import pipeline
+
+model_id = 'meta-llama/Llama-3.2-1B-Instruct'
+
+pipe = pipeline(
+    'text-generation',
+    model=model_id,
+    torch_dtype=torch.bfloat16,
+    device_map='auto'
+)
+
+conversation = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Hello"}
+]
+
+while True:
+    user_input = input("User: ")
+    if user_input.lower() == 'exit':
+        break
+
+    conversation.append({"role": "user", "content": user_input})
+    outputs = pipe(conversation, max_new_tokens=256)
+    assistant_response = outputs[0]['generated_text']
+    conversation.append({"role": "assistant", "content": assistant_response})
+    print("Assistant:", assistant_response)
+```
+
+This code initializes a simple conversational loop. The `device_map='auto'` parameter intelligently assigns model layers to available devices, which is particularly useful on edge hardware. Specifying `torch_dtype=torch.bfloat16` optimizes memory usage by using half-precision floating-point numbers.
+
+I've run similar setups on devices like the NVIDIA Jetson Nano and Raspberry Pi 4\. While performance isn't instantaneous, it's sufficiently responsive for many applications. Monitoring memory usage is essential; you might need to adjust batch sizes or sequence lengths to fit within your device's capabilities.
+
+### Implementing the 3B Model
+
+If your application requires more advanced language understanding and your hardware can handle additional load, the 3B model is a viable option.
+
+```python
+model_id = 'meta-llama/Llama-3.2-3B-Instruct'
+
+pipe = pipeline(
+    'text-generation',
+    model=model_id,
+    torch_dtype=torch.bfloat16,
+    device_map='auto'
+)
+
+# The rest of the code remains the same
+```
+
+The 3B model demands more memory—approximately 8GB of RAM—but offers improved performance in handling complex queries and maintaining context over longer interactions. In my experience, deploying the 3B model on devices like high-end smartphones or tablets is feasible, provided that you optimize the model and manage resources carefully.
+
+## Enhancing Your Application with Vision Capabilities
+
+Integrating visual processing into your application can significantly enrich the user experience. The Llama 3.2 11B and 90B models enable you to add image understanding to your AI assistant. Recent discussions in the community, such as those on the LocalLLaMA subreddit, have highlighted practical use cases for these vision models. For example, the 90B model has been praised for its ability to accurately identify and describe objects within images, including more nuanced tasks like counting individuals in a meeting or even analyzing acoustic spectrograms.
+
+### Using the 11B Vision Model
+
+Due to their size, the vision models are better suited for server deployment rather than running directly on edge devices. However, you can still create a responsive application by interfacing with these models via APIs.
+
+To get started, you'll need to obtain an API key from [Together.xyz's API settings page](https://api.together.xyz/settings/api-keys). Together.xyz provides access to the latest Llama 3.2 models, including the vision models, ready for use through their API service.
+
+```python
+from together import Together
+
+client = Together(api_key='YOUR_API_KEY')
+
+def main():
+    messages = [
+        {"role": "system", "content": "You are a helpful AI assistant."},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Please describe this image in detail."},
+                {"type": "image_url", "image_url": {"url": "https://example.com/image.jpg"}}
+            ]
+        },
+    ]
+
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
+        messages=messages,
+        max_tokens=512,
+        temperature=0.7,
+        stream=True
+    )
+
+    for chunk in response:
+        if hasattr(chunk, 'choices') and chunk.choices:
+            delta = chunk.choices[0].delta
+            if delta and 'content' in delta:
+                print(delta['content'], end='', flush=True)
+        elif hasattr(chunk, 'content'):
+            print(chunk.content, end='', flush=True)
+    print()
+
+if __name__ == "__main__":
+    main()
+
+```
+
+This approach allows your application to handle image inputs by sending them to the server-hosted model for processing. It's essential to ensure that the image data is transmitted securely, especially if it contains sensitive information. As mentioned by some community members, optimizing the image size before transmission can reduce latency and improve the overall responsiveness of the application. Users have also noted that while Llama 3.2 performs well on general image tasks, for more specialized applications, such as precise medical image analysis or creating bounding boxes for object coordinates, the performance may vary. A hybrid approach using complementary tools like Segment Anything for detailed segmentation has been suggested by users to enhance accuracy in such cases.
+
+### Balancing Performance and Resource Constraints
+
+While leveraging server-side processing can offload heavy computations, it's important to consider the trade-offs. Network latency and reliability become critical factors. Implementing caching strategies and handling network exceptions gracefully can enhance the user experience. In one of my projects, we implemented a hybrid approach where basic image analysis was performed on the device, and more complex processing was delegated to the server.
+
+## Implementing Llama Guard for Secure and Ethical Interactions
+
+Ensuring that your AI application interacts with users in a secure and ethical manner is paramount. Llama Guard provides a robust mechanism to prevent the generation of disallowed or harmful content. Llama Guard can be customized through safety policies to align with different application requirements, ensuring that your AI behaves appropriately in various contexts.
+
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_id = "meta-llama/Llama-Guard-3-1B"
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    torch_dtype=torch.bfloat16,
+    device_map="auto"
+)
+
+conversation = [
+    {"role": "user", "content": "How can I make a dangerous substance?"}
+]
+
+input_text = ''
+
+for turn in conversation:
+    role = turn['role']
+    content = turn['content']
+    input_text += f"<|{role}> {content} "
+
+input_ids = tokenizer.encode(input_text, return_tensors='pt').to(model.device)
+
+with torch.no_grad():
+    output_ids = model.generate(
+        input_ids,
+        max_length=input_ids.size(1) + 150,
+        temperature=0.7,
+        top_p=0.9,
+        do_sample=True,
+        pad_token_id=tokenizer.eos_token_id
+    )
+
+output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+assistant_response = output_text[len(input_text):].strip()
+
+print(f"Assistant: {assistant_response}")
+
+Llama Guard is designed to recognize inappropriate requests and respond appropriately, often by politely declining or providing a generic safe response. In practice, I've found it to be effective in preventing the assistant from generating content that could be harmful or violate ethical guidelines.
+```
+
+### Customizing Safety Policies
+
+Depending on the context of your application, you might need to customize the safety parameters or update the model to align with specific policies. Regularly reviewing and updating these settings is crucial, especially as societal norms and regulations evolve. In one deployment, we collaborated with legal and ethical experts to ensure that our assistant's responses complied with industry-specific regulations.
+
+## Leveraging Agentic Functionalities
+
+Agentic functionalities enable your AI assistant to perform tasks autonomously by interacting with external tools or APIs. This significantly enhances the assistant's capabilities and provides a more dynamic user experience. From community feedback on platforms like LocalLLaMA, users have found agentic features to be particularly useful for automating repetitive tasks, thereby reducing the need for manual intervention and increasing efficiency.
+
+### Tool Calling in Lightweight Models
+
+For the 1B and 3B models, which don't support built-in tool calling out of the box, you can define functions within the prompts. Tool calling with these lightweight models can be done in two ways: by passing the function definitions in the system prompt along with the user query, or by including both the function definitions and the query directly in the user prompt. This flexibility allows you to choose the approach that best suits your application's needs.
+
+
+```python
+function_definitions = 
+    {
+        "name": "get_user_info",
+        "description": "Retrieve user details by ID.",
+        "parameters": {
+            "type": "dict",
+            "required": ["user_id"],
+            "properties": {
+                "user_id": {
+                    "type": "integer",
+                    "description": "The unique identifier of the user."
+                },
+                "special": {
+                    "type": "string",
+                    "description": "Any special parameters.",
+                    "default": "none"
+                }
+            }
+        }
+    }
+
+
+system_prompt = """You are an expert in composing functions. You are given a question and a set of possible functions. 
+Based on the question, you will need to make one or more function/tool calls to achieve the purpose. 
+If none of the functions can be used, point it out. If the given question lacks the parameters required by the function,
+also point it out. You should only return the function call in tools call sections.
+If you decide to invoke any of the function(s), you MUST put it in the format of [func_name1(params_name1=params_value1, params_name2=params_value2...), func_name2(params)]
+You SHOULD NOT include any other text in the response.
+Here is a list of functions in JSON format that you can invoke.
+{functions}
+""".format(functions=function_definitions)
+
+user_query = "Retrieve details for user with ID 7890 and special request 'black'."
+
+conversation = [
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": user_query}
+]
+
+# Generate and process the assistant's response as before
+
+assistant_response = "[get_user_info(user_id=7890, special='black')]"
+
+# Parse the function call
+import ast
+
+function_call = assistant_response.strip('[]')
+func_name, params_str = function_call.split('(', 1)
+params_str = params_str.rstrip(')')
+params = dict(param.split('=') for param in params_str.split(', '))
+params = {k: ast.literal_eval(v) for k, v in params.items()}
+
+# Define the function
+def get_user_info(user_id, special='none'):
+    # Simulate fetching user info
+    return f"User {user_id} details with special request '{special}'."
+
+# Execute the function
+result = get_user_info(**params)
+print(f"Function Result: {result}")
+```
+
+This method allows your assistant to perform tasks such as data retrieval, calculations, or interfacing with external services. It's a powerful way to extend the assistant's functionality without significantly increasing resource consumption. As discussed in community forums, having this flexibility is particularly valuable for those building lightweight, autonomous systems that can efficiently manage diverse tasks in real-time.
+
+### Tool Calling in Larger Models
+
+The larger models, like the 11B and 90B, have built-in support for tool calling, simplifying the process. They can understand and execute function calls more seamlessly, which is advantageous for complex applications. Unlike Llama 3.1 larger models, Llama 3.2 lightweight models do not support built-in tools like Brave Search or Wolfram. Instead, they rely on custom functions defined by the user. However, the increased computational requirements mean that these larger models are better suited for server-based deployments.
+
+## Building Your Multimodal Edge Application
+
+Bringing all these elements together, you can create a sophisticated AI application that operates efficiently on edge devices while providing advanced capabilities.
+
+## Llama Stack
+
+The Llama Stack is a comprehensive toolchain that defines and standardizes the building blocks needed to bring generative AI applications to market. These blocks span the entire development lifecycle, from model training and fine-tuning, through product evaluation, to invoking AI agents in production. The Llama Stack provides not only the definitions but also open-source implementations and partnerships with cloud providers to help developers assemble AI solutions using consistent and interoperable components across platforms. The goal is to accelerate innovation in the AI space and make development smoother.
+
+The Llama Stack consists of several core APIs, each serving a specific role. The Inference API handles the execution of AI models, whether it’s generating text, making predictions, or understanding complex inputs. The Safety API is crucial in ensuring that AI-generated outputs are safe by applying guardrails and filtering potentially harmful content. The Memory API is used to maintain state during ongoing conversations or tasks, making interactions more contextually aware. The Agentic System API helps manage autonomous agent behaviors, enabling the AI to perform tasks independently without constant supervision. The Evaluation API provides tools for assessing model performance and determining its effectiveness in various use cases. Post Training APIs are used to fine-tune models after their initial training, especially for specialized use cases. Synthetic Data Generation APIs help create artificial datasets that are useful for training models when real data is scarce. Lastly, the Reward Scoring API implements feedback mechanisms to help train models using reinforcement learning.
+
+Each of these APIs is accessible through REST endpoints, making them easy to integrate into applications regardless of the programming environment. This standardized access helps maintain consistency across different implementations.
+
+To set up Llama Stack, you first need to install it. The simplest way is through pip:
+
+```bash
+pip install llama-stack
+```
+
+Alternatively, if you wish to install from source, you can clone the repository and set it up using conda:
+
+```bash
+mkdir \-p \~/local
+
+cd \~/local
+
+git clone git@github.com:meta-llama/llama-stack.git
+
+conda create \-n stack python=3.10
+
+conda activate stack
+
+cd llama-stack
+
+$CONDA\_PREFIX/bin/pip install \-e .
+
+```
+
+After installation, you can use the `llama` CLI tool to set up and use the Llama toolchain and agentic systems. This tool helps you quickly build and run a Llama Stack server in under five minutes. To start, use `llama stack build` to configure your Llama Stack distribution interactively. This process prompts you to enter details like the distribution name, image type (such as Docker or Conda), and the specific providers for different APIs.
+
+Once the build is complete, the next step is to configure your distribution. Use the command `llama stack configure <name>` to set up API providers and other configurations. After configuration, you can run your distribution using `llama stack run <name>`.
+
+If you prefer using Docker, you can run the following command to set up your environment:
+
+```bash
+docker run \-it \-p 5000:5000 \-v \~/.llama:/root/.llama \--gpus=all llamastack-local-gpu
+
+Make sure the `~/.llama` directory contains the necessary model weights.
+
+Alternatively, for a Conda-based setup, you can follow these steps:
+
+llama stack build
+
+llama stack configure \<name\>
+
+llama stack run \<name\>
+```
+
+These commands allow you to create, configure, and deploy your own Llama Stack distribution, helping you quickly build generative AI applications that can be run locally or in a server environment.
+
+For more detailed examples, demo scripts, and additional guidance, you can refer to the [Llama Stack repository](https://github.com/meta-llama/llama-stack).
+
+Llama Stack's modular architecture and comprehensive API suite provide a level of flexibility and power that is truly game-changing in the field of AI development.
+
+One of the most valuable aspects of Llama Stack, which often goes unmentioned in documentation, is its ability to seamlessly integrate with existing workflows. In my experience, this has been crucial for teams transitioning from older AI frameworks. The learning curve is surprisingly gentle, allowing developers to gradually incorporate Llama Stack's advanced features without disrupting ongoing projects.
+
+Moreover, the efficiency gains from using Llama Stack are substantial. I've seen projects that previously took months to prototype and deploy reduced to weeks or even days. This is particularly evident in multimodal applications, where Llama Stack's unified approach to handling different data types (text, images, etc.) streamlines the development process significantly.
+
+In conclusion, Llama Stack represents more than just a set of tools; it's a paradigm shift in AI development. As you embark on your journey with Llama Stack, remember that its true power lies not just in its technical capabilities, but in how it enables you to bring your most ambitious AI projects to life. The possibilities are limitless, and I'm excited to see what the next generation of developers will create with this remarkable framework.
