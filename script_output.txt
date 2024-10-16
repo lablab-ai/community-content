@@ -1,9 +1,0 @@
-Processing file: tutorials/en/llama3.2-vision-cooking-tutorial.mdx
-Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1728901129/Screenshot_2024-10-12_at_12.04.20_PM_uc94he.png
-Successfully downloaded image to: images/Screenshot_2024-10-12_at_12.04.20_PM_uc94he.png
-Uploading image: images/Screenshot_2024-10-12_at_12.04.20_PM_uc94he.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b3812ef0-318a-4242-afee-b9716ee5ef00/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b3812ef0-318a-4242-afee-b9716ee5ef00/full
-Deleted local image: images/Screenshot_2024-10-12_at_12.04.20_PM_uc94he.png
-Successfully processed file: tutorials/en/llama3.2-vision-cooking-tutorial.mdx
-CHANGES_MADE
