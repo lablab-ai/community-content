@@ -1,0 +1,33 @@
+Processing file: tutorials/en/e-learning-with-llama-tutorial.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1729816048/eye-upload_paozud.png
+Successfully downloaded image to: images/eye-upload_paozud.png
+Uploading image: images/eye-upload_paozud.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e93f1000-2a4a-430d-be70-41d215c98c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e93f1000-2a4a-430d-be70-41d215c98c00/full
+Deleted local image: images/eye-upload_paozud.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1729816046/button-order_knjlm1.png
+Successfully downloaded image to: images/button-order_knjlm1.png
+Uploading image: images/button-order_knjlm1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a3822d7e-3763-4e8d-db06-f5865cf1d700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a3822d7e-3763-4e8d-db06-f5865cf1d700/full
+Deleted local image: images/button-order_knjlm1.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1729816035/course_link_wcx0p1.png
+Successfully downloaded image to: images/course_link_wcx0p1.png
+Uploading image: images/course_link_wcx0p1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cda59393-598e-4789-18d6-9bda15cd1800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cda59393-598e-4789-18d6-9bda15cd1800/full
+Deleted local image: images/course_link_wcx0p1.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1729816040/student-classwork_ke20tc.png
+Successfully downloaded image to: images/student-classwork_ke20tc.png
+Uploading image: images/student-classwork_ke20tc.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6d49e2e5-55a3-4937-5a54-1551c9167600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6d49e2e5-55a3-4937-5a54-1551c9167600/full
+Deleted local image: images/student-classwork_ke20tc.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1729816038/teacher-course-work_e1eiso.png
+Successfully downloaded image to: images/teacher-course-work_e1eiso.png
+Uploading image: images/teacher-course-work_e1eiso.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/596273e6-3be3-4c0c-3602-a792c814cf00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/596273e6-3be3-4c0c-3602-a792c814cf00/full
+Deleted local image: images/teacher-course-work_e1eiso.png
+Successfully processed file: tutorials/en/e-learning-with-llama-tutorial.mdx
+CHANGES_MADE
