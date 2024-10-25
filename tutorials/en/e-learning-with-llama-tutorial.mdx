@@ -1,0 +1,593 @@
+---
+title: "Building an AI-Enhanced E-Learning Platform with LLaMA 3.2 and 3.1, and Google Classroom Integration"
+description: "Discover how to build an AI-powered e-learning platform that automatically generates courses, quizzes, and student interactions using LLaMA models and Google Classroom."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99b270a5-5dae-40c8-57f0-3e1699613a00/full"
+authorUsername: "TommyA"
+---
+
+# Building an AI-Enhanced E-Learning Platform with LLaMA 3.2 and 3.1, and Google Classroom Integration
+
+## Introduction
+
+Hey there! It’s Tommy again, and I’m excited to walk you through building something amazing today. In this tutorial, we’re diving into the world of AI-powered education by creating a platform that uses [**LLaMA 3.2**](https://lablab.ai/tech/meta/llama-3.2) **Vision** and [**LLaMA 3.1**](https://lablab.ai/tech/meta/llama-3.1) models, integrated with **Google Classroom**. The result? A seamless system where users can upload images, automatically generate explanations, create quizzes, and even manage courses—completely AI-driven.
+
+With the power of [**AI/ML API**](https://lablab.ai/tech/aiml-api) handling the heavy lifting and [**Streamlit**](https://lablab.ai/tech/streamlit) providing an intuitive interface, you’ll see how easy it is to turn images into meaningful educational content. Whether you’re an educator looking to automate course creation or just someone fascinated by the possibilities of AI in education, this tutorial has something for you.
+
+Let’s get started and transform the way learning happens! 🎓
+
+## Setting Up the Environment
+
+Before we dive into the code, let’s set up our environment properly. We’ll start by creating a project folder, setting up a Conda environment, and installing the required dependencies.
+
+### Step 1: Create and Enter the Project Folder
+
+First, create a new folder for your project and navigate into it. I named mine **`llama-classroom`**, which will also be the name of our Conda environment.
+
+### Step 2: Setting Up a Conda Environment
+
+Now, create and activate a new Conda environment for this project:
+
+```bash
+conda create --name llama-classroom python=3.11
+conda activate llama-classroom
+```
+
+### Step 3: Install Dependencies
+
+Add all required libraries to your `requirements.txt` file:
+
+```txt
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+streamlit
+openai
+```
+
+Then, install the dependencies by running:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Setting Up `.env` File
+
+To work with **AI/ML API** and use the **LLaMA 3.1** and **LLaMA 3.2** models, you’ll need to store your API key in a `.env` file. Create a `.env` file in the root of your project and add the following line:
+
+```txt
+AI_ML_API_KEY=your_ai_ml_api_key_here
+```
+
+Replace `your_ai_ml_api_key_here` with your actual **AI/ML API** key. You can get it [here](https://aimlapi.com/app/keys/).
+
+### Step 5: Google Classroom API Setup
+
+To integrate with Google Classroom, you need to set up access through the Google Cloud Console. Follow the detailed steps in [this guide](https://developers.google.com/classroom/quickstart/python) to configure your Google Cloud project and generate a **`credentials.json`** file.
+
+**Important Note**: When you download the OAuth credentials from the Google Cloud Console, the file may not be literally named **`credentials.json`**. You will need to rename the file to **`credentials.json`** for the code in this tutorial to work.
+
+Make sure to place the renamed **`credentials.json`** file in your project directory, as it is essential for authenticating with the Google Classroom API. This file will be used to create a **`token.json`** file when you first run the code, which handles your login session and authorization.
+
+Once you run any of the Google Classroom functions for the first time, a `token.json` file will be created, storing your login session and authorizing access. If you modify access scopes, you must delete this file and re-authenticate.
+
+## Behind the Scenes: How It All Works
+
+In this section, we’ll go over the core functions used in this project, which are divided across two files: **`generation_functions.py`** and **`classroom_functions.py`**. Each function plays a specific role in handling the image analysis, course creation, quiz generation, and managing Google Classroom interactions.
+
+### Step 1: Create the Necessary Files
+
+Before we dive into explaining the functions, create the following files and add the content as provided:
+
+1.  generation_functions.py
+
+    ```python
+    import os
+    import re
+    import json
+    import base64
+    from openai import OpenAI
+    from textwrap import dedent
+    from dotenv import load_dotenv
+    from typing import Dict, List
+
+    load_dotenv()
+
+    # Initialize AI/ML Api client
+    client = OpenAI(api_key=os.getenv("AI_ML_API_KEY"), base_url="https://api.aimlapi.com/v1")
+
+    def extract_course_info(text):
+        # Use regular expressions to extract the relevant parts
+        course_name = re.search(r'CourseName:\s*(.*)', text).group(1)
+        course_description = re.search(r'CourseDescription:\s*(.*)', text).group(1)
+        topic = re.search(r'Topic:\s*(.*)', text).group(1)
+        explanation_match = re.search(r'Explanation:\s*(.*)', text, re.DOTALL)
+
+        # Extract everything after "Explanation:" as the explanation
+        explanation = explanation_match.group(1).strip()
+
+        # Return the extracted values as a dictionary
+        return {
+            'CourseName': course_name,
+            'CourseDescription': course_description,
+            'Topic': topic,
+            'Explanation': explanation
+        }
+
+    # Function to analyze image using Groq's LLaMA 3.2 Vision model
+    def analyze_image_and_explain(image: bytes) -> Dict[str, str]:
+        # Read and encode image as base64
+        base64_image = base64.b64encode(image).decode('utf-8')
+        prompt = dedent(
+            """
+            Based on this image, give me a well detailed explanation of what it entails.
+            It should be in clear and easy to understand words as this is for students.
+
+            follow the format below strictly, do not bold the format fields in md format.
+
+            format:
+            CourseName: <Course name>
+            CourseDescription: <mini Course description>
+            Topic: <topic>
+            Explanation: <well detailed explanation>
+            """
+        )
+        # Make API call to Groq for image analysis
+        response = client.chat.completions.create(
+            model="meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                            },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        },
+                    ]
+                }
+            ],
+            stream=False,
+            temperature=1, # 1 for testing, lesser for production
+        )
+
+        content = response.choices[0].message.content
+        # Extract the course information from the generated text
+        course_info = extract_course_info(content)
+        return course_info
+
+    # Function to generate mcqs from text in json format using LLaMA 3.1 70b model
+    def generate_mcqs_from_text(text: str) -> List[Dict]:
+        prompt = dedent(
+            f"""
+            Based on the well detailed explanation below, generate 5 MCQs  to test the knowledge of the student.
+            Start by giving questions 'only' using the format below
+
+            Format:
+            question: <question>
+            options: <array of options>
+            answer: <answer>
+
+            Give me in 'only' raw json format nothing more nothing less.
+            Explanation:
+            {text}
+            """
+        )
+
+        response = client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            stream=False,
+            temperature=1, # 1 for testing, lesser for production
+        )
+
+        content = response.choices[0].message.content
+        mcqs = json.loads(content)
+        return mcqs
+    ```
+
+- **`analyze_image_and_explain(image)`**:  
+  We selected **LLaMA 3.2 Vision (90B)** for its ability to handle complex images and generate detailed, human-like explanations. With 90 billion parameters, it’s ideal for breaking down educational visuals like scientific diagrams into clear, accurate descriptions, making it perfect for generating course material directly from images.
+
+  This function sends an image to **LLaMA 3.2 Vision** for analysis. It returns a well-detailed explanation of the image, extracted using the `extract_course_info` function.
+
+- **`extract_course_info(text)`**:  
+  This helper function extracts relevant details from the text generated by LLaMA 3.2 Vision, such as the course name, description, and topic, and returns them as a dictionary.
+
+- **`generate_mcqs_from_text(text)`**:  
+  For quiz generation, we opted for **LLaMA 3.1 (70B Instruct)**. This model is fine-tuned to follow prompts precisely and generate structured content such as multiple-choice questions. Its 70 billion parameters ensure that it accurately converts the detailed explanations from **LLaMA 3.2 Vision** into reliable and well-formatted educational quizzes.
+
+  This function takes the explanation generated by **LLaMA 3.2 Vision** and prompts **LLaMA 3.1** to create multiple-choice questions (MCQs). It returns the questions in JSON format.
+
+2.  classroom_functions.py:
+
+    ```python
+    import os.path
+    from typing import List, Tuple, Dict
+
+    from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    from googleapiclient.discovery import build
+    from googleapiclient.errors import HttpError
+
+
+    # If modifying these scopes, delete the file token.json.
+    SCOPES = [
+            "https://www.googleapis.com/auth/classroom.courses",
+            "https://www.googleapis.com/auth/classroom.coursework.students",
+            "https://www.googleapis.com/auth/classroom.courseworkmaterials",
+            "https://www.googleapis.com/auth/classroom.topics",
+            "https://www.googleapis.com/auth/classroom.student-submissions.students.readonly",
+            "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly",
+            "https://www.googleapis.com/auth/classroom.coursework.me",
+            "https://www.googleapis.com/auth/classroom.rosters"
+        ]
+
+    def get_service():
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+        else:
+        flow = InstalledAppFlow.from_client_secrets_file(
+            "credentials.json", SCOPES
+        )
+        creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open("token.json", "w") as token:
+        token.write(creds.to_json())
+
+    try:
+        service = build("classroom", "v1", credentials=creds)
+        return service
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return None
+
+    service = get_service()
+
+
+    # Function to create a course in Google Classroom
+    def create_course(title, description) -> Tuple[str, str]:
+
+        course = {
+            'name': title,
+            'description': description,
+            'ownerId': 'me',  # Replace with authenticated user ID
+            # 'courseState': 'ACTIVE'
+        }
+
+        created_course = service.courses().create(body=course).execute()
+
+        return created_course['id'], created_course['alternateLink']  # Return Course ID and Course Link
+
+    def create_topic(course_id, topic_name):
+        """
+        Creates a topic in Google Classroom.
+
+        Args:
+            course_id (str): The ID of the course where the topic should be created.
+            topic_name (str): The name of the topic.
+
+        Returns:
+            str: The ID of the created topic.
+        """
+        topic = {
+            'name': topic_name
+        }
+
+        created_topic = service.courses().topics().create(courseId=course_id, body=topic).execute()
+
+        return created_topic['topicId']
+
+
+    def add_material_to_topic(course_id: str, topic_id: str, material_title: str, explanation: str) -> Dict:
+        """
+        Adds a material (explanation) to a specific topic in Google Classroom.
+
+        Args:
+            course_id (str): The ID of the course.
+            topic_id (str): The ID of the topic.
+            material_title (str): The title of the material.
+            explanation (str): The content/explanation for the topic.
+
+        Returns:
+            dict: The response from the API, containing the created material's details.
+        """
+
+        material = {
+            'title': material_title,
+            'description': explanation,  # This is the explanation or text description
+            'materials': [],  # No external materials, just text for now
+            'topicId': topic_id,  # Link to the topic
+            'state': 'PUBLISHED'  # Material is published immediately
+        }
+
+        created_material = service.courses().courseWorkMaterials().create(courseId=course_id, body=material).execute()
+
+        return created_material
+
+
+    def post_quiz_to_classroom(course_id: str, topic_id: str, questions: List[Dict]) -> List[Tuple[str, str]]:
+        """
+        Creates multiple multiple-choice quizzes under a specific topic in Google Classroom and returns a list of
+        tuples with courseWork ID and the correct answer.
+
+        Args:
+            course_id (str): The ID of the course.
+            topic_id (str): The ID of the topic.
+            questions (list): A list of dictionaries with 'question', 'options', and 'answer'.
+
+        Returns:
+            List[Tuple[str, str]]: A list of tuples containing (courseWork ID, correct answer).
+        """
+        coursework_ids_and_answers = []  # To store tuples of (courseWork ID, correct answer)
+
+        for q in questions:
+            quiz_title = q.get('question', 'Untitled Quiz')
+            multiple_choice = {
+                "title": quiz_title,
+                "description": f"Multiple choice quiz for {quiz_title}",
+                "workType": "MULTIPLE_CHOICE_QUESTION",
+                "multipleChoiceQuestion": {
+                    "choices": q['options']  # List of options for this question
+                },
+                "topicId": topic_id,
+                "state": "PUBLISHED"  # You can change the state to published directly if needed
+            }
+
+            # Create the quiz in Google Classroom and get the coursework ID
+            created_quiz = service.courses().courseWork().create(courseId=course_id, body=multiple_choice).execute()
+
+            # Store the coursework ID and the correct answer
+            coursework_id = created_quiz['id']
+            correct_answer = q['answer']  # Assuming 'answer' holds the correct answer in the input questions
+
+            coursework_ids_and_answers.append((coursework_id, correct_answer))
+
+        return coursework_ids_and_answers
+
+
+    # update one or more fields of a courseWork
+    def update_coursework(course_id: str, coursework_id: str, update_fields: Dict) -> str:
+        """
+        Updates one or more fields of a coursework in Google Classroom.
+
+        Args:
+            course_id (str): The ID of the course.
+            coursework_id (str): The ID of the coursework to be updated.
+            update_fields (dict): A dictionary containing the fields to be updated.
+
+        Returns:
+            dict: The response from the API, containing the updated coursework's details.
+        """
+        updated_coursework = service.courses().courseWork().patch(courseId=course_id, id=coursework_id, updateMask=",".join(update_fields.keys()), body=update_fields).execute()
+
+        return updated_coursework['id']
+
+    def invite_student_to_course(course_id: str, student_name: str, student_email: str) -> dict:
+        """
+        Sends an invitation to a student to join a Google Classroom course by their email.
+
+        Args:
+            course_id (str): The ID of the Google Classroom course.
+            student_name (str): The name of the student.
+            student_email (str): The email address of the student to be invited.
+
+        Returns:
+            dict: The response from the API with details about the invitation.
+        """
+
+        # Create the invitation object
+        invitation_body = {
+            "courseId": course_id,
+            "role": "STUDENT",
+            "userId": student_email  # The user's email
+        }
+
+        try:
+            # Send the invitation
+            invitation = service.invitations().create(body=invitation_body).execute()
+            print(f"Invitation sent to student: {student_name} ({student_email}) for course {course_id}")
+            return invitation
+
+        except Exception as e:
+            print(f"Error sending invitation to student {student_name} ({student_email}): {e}")
+            return {"error": str(e)}
+    ```
+
+- **`get_service()`**:  
+  This function handles the Google Classroom API authentication process. It either uses an existing `token.json` file or prompts the user to log in and accept the necessary permissions.
+
+  If you modify the API access scopes, you’ll need to delete the `token.json` file to reauthenticate.  
+  Once authenticated, the service object is returned, which is used by other functions to interact with the Google Classroom API.
+
+- **`create_course(title, description)`**:  
+  Creates a new course in Google Classroom using the provided title and description. Returns the course ID and course link.
+- **`create_topic(course_id, topic_name)`**:  
+  Adds a topic to the specified course based on the course ID and topic name.
+
+- **`add_material_to_topic(course_id, topic_id, material_title, explanation)`**:  
+  Posts the generated explanation as material under the specified topic in the course.
+
+- **`post_quiz_to_classroom(course_id, topic_id, questions)`**:  
+  Takes the MCQs generated by **LLaMA 3.1** and posts them to the course as a quiz.
+
+- **`invite_student_to_course(course_id, student_name, student_email)`**:  
+  Sends an invitation to the student’s email to join the course in Google Classroom.
+
+## Bringing Everything Together: The Full Streamlit Frontend
+
+Now that we’ve set up the individual components for image analysis, quiz generation, and Google Classroom interaction, it’s time to bring everything together in the **Streamlit** frontend. This file will allow users to upload images, generate explanations, create courses and quizzes, and invite students—all through an intuitive interface.
+
+Here is the full code for **`main.py`**, which ties together all the functions from **`generation_functions.py`** and **`classroom_functions.py`**.
+
+```python
+import streamlit as st
+from generation_functions import analyze_image_and_explain, generate_mcqs_from_text
+import classroom_functions as cf
+import json
+
+
+st.title("Llama Powered Quiz Generator and Google Classroom Automation 🦙")
+
+# Step 1: Upload Image
+uploaded_image = st.file_uploader("Upload an image to generate a course with quizzes", type=["jpg", "jpeg", "png"])
+
+if uploaded_image:
+    st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
+
+    image_bytes = uploaded_image.read()
+
+    explanation = {}
+    if st.button("Generate Explanation"):
+        with st.spinner("Generating explanation..."):
+            explanation = analyze_image_and_explain(image_bytes)
+            st.success("Explanation generated successfully!")
+            print(explanation)
+            # write the course name
+            st.write(f"### Course Name: {explanation['CourseName']}")
+
+
+            for key in explanation.keys():
+                if key not in st.session_state:
+                    st.session_state[key] = explanation.get(key)
+
+    if st.button("Create Course"):
+        with st.spinner("Creating course..."):
+            print(st.session_state['CourseName'])
+            st.session_state['CourseId'], course_link = cf.create_course(st.session_state['CourseName'], st.session_state['CourseDescription'])
+            st.success(f"Course created successfully!")
+            st.write(f"Course Link: {course_link}")
+
+
+    if st.button("Create Topic with material"):
+        with st.spinner("Creating topic..."):
+            if 'TopicId' not in st.session_state:
+                st.session_state['TopicId'] = cf.create_topic(st.session_state['CourseId'], st.session_state['Topic'])
+            st.success(f"Topic created successfully!")
+            topic_title = f"Explanation for {st.session_state['Topic']}"
+
+        with st.spinner("Adding material to topic..."):
+            cf.add_material_to_topic(st.session_state['CourseId'], st.session_state['TopicId'], topic_title, st.session_state['Explanation'])
+            st.success("Material added to topic successfully!")
+
+    # Step 2: Generate MCQs
+    quiz_ids_and_answers = []
+    if st.button("Generate MCQs"):
+        mcqs = []
+        with st.spinner("Generating MCQs..."):
+            mcqs = generate_mcqs_from_text(st.session_state['Explanation'])
+            st.success("MCQs generated successfully!")
+
+        with st.spinner("Posting quiz to classroom..."):
+            # post quiz to classroom
+            quiz_ids_and_answers = cf.post_quiz_to_classroom(st.session_state['CourseId'], st.session_state['TopicId'], mcqs)
+            st.success("Quiz posted to classroom successfully!")
+
+    # Input for the student's email address
+    email = st.text_input("Enter student email to invite to course")
+
+    # Input for name of the student
+    student_name = st.text_input("Enter student name")
+
+    # Ensure the email is stripped of any leading or trailing whitespace
+    email = email.strip()
+    student_name = student_name.strip()
+
+    # Button to trigger the invitation process
+    if st.button("Invite Student"):
+        if email and student_name:  # Check if the email and student_name input is not empty
+            try:
+                # Call the function to invite the student to the course
+                cf.invite_student_to_course(st.session_state['CourseId'], student_name, email)
+                st.success(f"Student with email {email} invited to course successfully!")
+                # Tell the student to check their email for the invite
+                st.write(f"Student with email {email} should check their email for the invite.")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+        else:
+            st.error("Please enter a valid email address.")
+
+```
+
+### **Explanation**
+
+- Users can upload an image, which is analyzed by **LLaMA 3.2 Vision** to generate a detailed explanation.
+- The explanation is used to create a course in Google Classroom, add materials, and generate MCQs using **LLaMA 3.1**.
+- Finally, users can invite students to the course by entering their email and name.
+
+## Running the Application
+
+To launch the Streamlit application, open your terminal and navigate to the project folder. You’ll need to run Streamlit using the path to your Conda environment's `bin` directory. Here’s how I ran mine on my terminal in my current project directory:
+
+```bash
+/opt/anaconda3/envs/llama-classroom/bin/streamlit run main.py
+```
+
+This will start the Streamlit server and open the application in your browser. You should now be able to interact with the platform by uploading images, generating explanations, and more.
+
+## Visualizing the Results: Output Showcase
+
+To start, we upload an educational or scientific image. In this example, I uploaded an image of the **eye**, which will be used to generate a detailed explanation and create a course around this topic.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e93f1000-2a4a-430d-be70-41d215c98c00/full" alt="Upload Image" caption="Image uploaded" />
+
+After uploading the image, follow the numbered steps below:
+
+### Steps:
+
+1. **Generate Explanation**: Analyze the uploaded image and generate a detailed explanation.
+2. **Create Course**: Use the generated explanation to create a new course in Google Classroom.
+3. **Create Topic with Material**: Add the explanation as material in a topic within the course.
+4. **Generate MCQs**: Generate multiple-choice questions based on the explanation.
+5. **Invite Student**: Enter a student's email and name, then invite them to the course.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a3822d7e-3763-4e8d-db06-f5865cf1d700/full" alt="Steps to create quiz" caption="Quiz creation and student invite steps" />
+
+Get course link for the teacher when the **Create Course** button is pressed
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cda59393-598e-4789-18d6-9bda15cd1800/full" alt="course link" caption="Course link generated" />
+
+Once all the buttons are pressed in sequence, the system will create a course in Google Classroom, publish the generated explanation as material under a topic, create and publish the multiple-choice quizzes, and invite the student to the course. The students will receive access to the course with all the content and quizzes ready for them to engage with.
+
+In the student classwork section, the student should see all the published Multiple Choice questions and detailed material for the topic:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6d49e2e5-55a3-4937-5a54-1551c9167600/full" alt="Student Classwork" caption="Student Classwork" />
+
+Also, the teacher should see published content, as well as now manage grades that the student turns in:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/596273e6-3be3-4c0c-3602-a792c814cf00/full" alt="Teacher classwork upload" caption="Teacher Classwork upload" />
+
+## Next Steps?
+
+Here are a few ideas for enhancing the platform and extending its capabilities:
+
+1. **AI-Powered Grading and Feedback**: Use **LLaMA 3.1** to automatically generate feedback for students' quiz responses, offering personalized insights and explanations.
+2. **Dynamic Lesson Generation**: Extend **LLaMA 3.2 Vision** to generate more comprehensive lessons or courses from a variety of images, enabling educators to cover broader subjects automatically.
+3. **Auto-Generated Assignments**: Have **LLaMA 3.1** create assignments or project ideas based on the course material to encourage deeper learning.
+4. **Multimedia Analysis**: Expand **LLaMA 3.2 Vision** to analyze videos or complex diagrams for generating even more detailed educational content.
+
+## Conclusion
+
+In this tutorial, we built an AI-powered e-learning platform that uses the **LLaMA 3.2 Vision** model through **AI/ML API** to analyze images and generate detailed explanations. We then leveraged the **LLaMA 3.1** model to create multiple-choice quizzes based on the generated content. Additionally, we integrated this AI-driven system with **Google Classroom**, allowing us to automatically create courses, publish material, and invite students—all through a user-friendly **Streamlit** interface.
+
+For more information on further customizing and exploring the Google Classroom API, you can refer to the [Google Classroom Python API documentation](https://developers.google.com/resources/api-libraries/documentation/classroom/v1/python/latest/index.html).
+
+Happy coding and learning! 🎉
