@@ -1,0 +1,10 @@
+Processing file: blog/en/example.mdx
+Downloading image from URL: https://iili.io/2BjJNt4.png
+Successfully downloaded image to: images/2BjJNt4.png
+Uploading image: images/2BjJNt4.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/175c4b96-63f1-47ef-dd39-c4013ecc0600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/175c4b96-63f1-47ef-dd39-c4013ecc0600/full
+Deleted local image: images/2BjJNt4.png
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7a7e021e-9768-4bbf-411e-767c28a5bb00/full
+Successfully processed file: blog/en/example.mdx
+CHANGES_MADE
