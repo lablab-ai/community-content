@@ -1,6 +1,6 @@
 ---
 title: "Building Efficient AI Models with OpenAI’s Model Distillation: A Comprehensive Guide"
-description: "Model Distillation creates a smaller, efficient AI model by transferring knowledge from a larger model. It retains performance while reducing size, making it ideal for limited-resource environments. Fine-tuning adapts the model for specific tasks."
+description: "Model Distillation creates a smaller, efficient AI model by transferring knowledge from a larger model."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb01671c-d9ea-4721-585b-a8a6c035c200/full"
 authorUsername: "sanchayt743"
 ---
@@ -58,33 +58,36 @@ First, make sure Python is installed. You can download Python from [python.org](
 Next, you’ll need to create a virtual environment to manage your dependencies without conflicts:
 1. **Install virtualenv** if you haven't done so:  
      
-   ```bash
-   pip install virtualenv  
-   ```
+```bash
+pip install virtualenv  
+```
      
 2. **Create a virtual environment** in your project directory:  
      
-   ```bash
-   virtualenv venv  
-   ```
+```bash
+virtualenv venv  
+```
      
 3. **Activate the virtual environment**:  
      
-   - On Windows:  
+- On Windows:  
        
-     ```bash
-     venv\Scripts\activate  
-     ```
+```bash
+venv\Scripts\activate  
+```
        
-   - On macOS/Linux:  
+- On macOS/Linux:  
        
-     ```bash
-     source venv/bin/activate
+```bash
+source venv/bin/activate
+```
 
      
-4. **Install required libraries**: After activating the virtual environment, install necessary libraries including OpenAI and dotenv:  
-     
-   pip install openai python-dotenv
+4. **Install required libraries**: After activating the virtual environment, install necessary libraries including OpenAI and dotenv: 
+
+```     
+pip install openai python-dotenv
+```
 
 #### **Obtaining Your API Key**
 
