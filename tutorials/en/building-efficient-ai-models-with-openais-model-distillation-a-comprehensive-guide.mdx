@@ -33,19 +33,9 @@ In summary, model distillation focuses on creating a smaller, efficient version 
 
 ### **Best Practices for Model Distillation**
 
-To make the most out of model distillation, consider the following best practices:
+For a comprehensive understanding of model distillation, including best practices and detailed insights, please refer to the blog post on [OpenAI's Model Distillation](https://lablab.ai/blog/model-distillation-openais-solution-for-efficient-ai-deployment). This resource covers essential aspects such as the quality of training data, diversity of examples, hyperparameter tuning, evaluation and iteration, and the use of metadata.
 
-1. **Quality of Training Data**: The quality of the training data used for distillation directly impacts the student model's performance. It's crucial to use high-quality, diverse outputs from the teacher model to train the student model effectively.  
-     
-2. **Diversity of Examples**: OpenAI recommends using at least 10 examples for basic distillation purposes, but for production-level results, a few hundred examples are advisable. The more diverse the training examples, the better the student model will generalize across different scenarios.  
-     
-3. **Hyperparameter Tuning**: Experiment with different hyperparameters such as learning rate, batch size, and number of epochs during the distillation process. The right combination of these parameters can significantly impact the quality of the student model.  
-     
-4. **Evaluation and Iteration**: Continuously evaluate the student model against the teacher model. Use metrics such as accuracy, response quality, and latency to assess the performance of the student model. Iterate on the training process by refining the dataset and adjusting hyperparameters to achieve optimal results.  
-     
-5. **Use of Metadata**: When storing outputs from the teacher model, use metadata to categorize and filter the data. This makes it easier to select the most relevant examples for distillation and ensures that the training dataset is well-organized.
-
-Since we are using OpenAI's hosted models, the entire process becomes much simpler, with many of the resource management and infrastructure concerns being handled for you. Instead of deploying a large model, we’ll focus on fine-tuning a smaller version using OpenAI’s platform, making it suitable for mobile and edge computing tasks.
+Since we are using OpenAI's hosted models, the entire process becomes much simpler, with many of the resource management and infrastructure concerns being handled for you. Instead of deploying a large model, we’ll focus on fine-tuning a smaller version using OpenAI’s platform, making it suitable for mobile and edge computing tasks. For more detailed guidance, visit the blog on [Model Distillation](https://lablab.ai/blog/model-distillation-openais-solution-for-efficient-ai-deployment).
 
 ### **Setting Up the Development Environment**
 
