@@ -1,0 +1,57 @@
+Processing file: FAIRrelease.mdx
+Downloading image from URL: https://iili.io/2CUcXeI.png
+Successfully downloaded image to: images/2CUcXeI.png
+Uploading image: images/2CUcXeI.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/70885d1a-59b9-4333-62e3-0d7550e41700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/70885d1a-59b9-4333-62e3-0d7550e41700/full
+Deleted local image: images/2CUcXeI.png
+Downloading image from URL: https://iili.io/2CUhw8u.png
+Successfully downloaded image to: images/2CUhw8u.png
+Uploading image: images/2CUhw8u.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ded2fc07-d5ac-4d1f-afae-d73df311fc00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ded2fc07-d5ac-4d1f-afae-d73df311fc00/full
+Deleted local image: images/2CUhw8u.png
+Downloading image from URL: https://iili.io/2CUhMn2.png
+Successfully downloaded image to: images/2CUhMn2.png
+Uploading image: images/2CUhMn2.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0487271e-1506-40fd-59a5-8979b1512800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0487271e-1506-40fd-59a5-8979b1512800/full
+Deleted local image: images/2CUhMn2.png
+Downloading image from URL: https://iili.io/2CUhVGS.png
+Successfully downloaded image to: images/2CUhVGS.png
+Uploading image: images/2CUhVGS.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f89c04e8-67c1-4fa7-15c0-de83dc469c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f89c04e8-67c1-4fa7-15c0-de83dc469c00/full
+Deleted local image: images/2CUhVGS.png
+Downloading image from URL: https://iili.io/2CUhhF9.png
+Successfully downloaded image to: images/2CUhhF9.png
+Uploading image: images/2CUhhF9.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5e975608-bb56-4e2e-d865-205e61dfbe00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5e975608-bb56-4e2e-d865-205e61dfbe00/full
+Deleted local image: images/2CUhhF9.png
+Downloading image from URL: https://iili.io/2CUhUMB.png 
+Successfully downloaded image to: images/2CUhUMB.png 
+Uploading image: images/2CUhUMB.png 
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4441ab22-b53b-41ba-c979-c08a3ca8e900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4441ab22-b53b-41ba-c979-c08a3ca8e900/full
+Deleted local image: images/2CUhUMB.png 
+Downloading image from URL: https://iili.io/2CUhEZl.png
+Successfully downloaded image to: images/2CUhEZl.png
+Uploading image: images/2CUhEZl.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/37d92d42-7e57-45a3-da42-279c4f71e800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/37d92d42-7e57-45a3-da42-279c4f71e800/full
+Deleted local image: images/2CUhEZl.png
+Downloading image from URL: https://iili.io/2CUhkwx.png
+Successfully downloaded image to: images/2CUhkwx.png
+Uploading image: images/2CUhkwx.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb3f43e0-f524-40ec-3ee0-b32dd1356700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb3f43e0-f524-40ec-3ee0-b32dd1356700/full
+Deleted local image: images/2CUhkwx.png
+Downloading image from URL: https://iili.io/2CUhNyb.png
+Successfully downloaded image to: images/2CUhNyb.png
+Uploading image: images/2CUhNyb.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c737c25-0465-41b2-bdca-9cf3f4ae5200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c737c25-0465-41b2-bdca-9cf3f4ae5200/full
+Deleted local image: images/2CUhNyb.png
+Successfully processed file: FAIRrelease.mdx
+CHANGES_MADE
