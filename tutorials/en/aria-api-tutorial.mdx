@@ -1,0 +1,207 @@
+---
+title: "Getting Started with Aria: A Beginner’s Guide to Rhymes AI's Multimodal API"
+description: "Discover how to harness Rhymes AI’s Aria API to create dynamic, multimodal applications that understand text and images—all from Google Colab."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5b8ae8c4-872f-4f6c-576a-7b72f5f2c200/full"
+authorUsername: "TommyA"
+---
+
+# Getting Started with Aria: A Beginner’s Guide to Rhymes AI's Multimodal API
+
+## Introduction
+
+Hello! It’s Tommy again, and today, I’m excited to guide you through an exploration of [Rhymes AI’s](https://lablab.ai/tech/rhymes-ai) **Aria multimodal API**. This tutorial will explore Aria’s versatile capabilities for handling both text and images in various applications. I’ll guide you through setting up in Google Colab, making basic API calls, and using LangChain for advanced workflows. You’ll also find a link to a **Colab notebook** with all the code implemented for easy experimentation.
+
+Whether you're a beginner looking to dip your toes into multimodal AI or someone curious about Aria’s capabilities, this tutorial will make it easy to understand and implement Aria’s features into your projects.
+
+Let’s unlock the potential of Aria together! 🚀
+
+## Setting Up Your Environment in Google Colab
+
+To get started, open a new Colab notebook, then install the required packages.
+
+- **Install Required Libraries**:
+
+  ```bash
+  !pip install openai requests
+  ```
+
+- **Configure API Access**: Define the API base URL and your API key. Replace `'YOUR_ARIA_API_KEY'` with the API key obtained from your Rhymes AI dashboard.
+
+  ```bash
+  base_url = 'https://api.rhymes.ai/v1'
+  api_key = 'YOUR_ARIA_API_KEY'  # Replace with your actual API key
+  ```
+
+## Interacting with the Aria API for Text and Image-Based Queries
+
+With Aria’s powerful multimodal capabilities, let’s start by interacting with its API, which can process both text and image queries seamlessly.
+
+- **Initialize the OpenAI Client**:
+
+  ```python
+  from openai import OpenAI
+
+  client = OpenAI(
+      base_url=base_url,
+      api_key=api_key
+  )
+  ```
+
+- **Send a Prompt (Text Query)**: This example sends a query to Aria’s API and prints the response. Here, we’re asking for a recipe suggestion, but you can customize it with any question.
+
+  ```python
+  response = client.chat.completions.create(
+      model="uf-sft-0929",
+      messages=[
+          {
+              "role": "user",
+              "content": [
+                  {
+                      "type": "text",
+                      "text": "How can I make toothpaste?"
+                  }
+              ]
+          }
+      ],
+      stream=False,
+      temperature=1,
+      max_tokens=1024,
+      top_p=1
+  )
+
+  print(response.choices[0].message.content)
+  ```
+
+### Using Aria for Image-Based Analysis
+
+Aria can also analyze images. To do this, we’ll first convert an image to base64 format and then send it to Aria with a query about its content.
+
+1. **Convert Image to Base64**:
+
+   ```python
+   import base64
+
+   def image_to_base64(image_path):
+       """
+       Converts an image to a base64-encoded string.
+
+       Args:
+           image_path (str): The path to the image file.
+
+       Returns:
+           str: The base64-encoded string of the image.
+       """
+       try:
+           with open(image_path, "rb") as image_file:
+               base64_string = base64.b64encode(image_file.read()).decode("utf-8")
+           return base64_string
+       except FileNotFoundError:
+           return "Image file not found. Please check the path."
+       except Exception as e:
+           return f"An error occurred: {str(e)}"
+   ```
+
+2. **Send an Image Query**: Use the encoded image to interact with Aria’s image processing API.
+
+   ```python
+   base64_image = image_to_base64('/path/to/image')
+
+   response = client.chat.completions.create(
+       model="uf-sft-0929",
+       messages=[
+           {
+               "role": "user",
+               "content": [
+                   {
+                       "type": "image_url",
+                       "image_url": {
+                           "url": f"data:image/jpeg;base64,{base64_image}"
+                       }
+                   },
+                   {
+                       "type": "text",
+                       "text": "What is in the image?"
+                   }
+               ]
+           }
+       ],
+       stream=False,
+       temperature=1,
+       max_tokens=1024,
+       top_p=1
+   )
+
+   print(response.choices[0].message.content)
+   ```
+
+## Advanced Integration Using LangChain-OpenAI
+
+For more advanced workflows, we can use **LangChain-OpenAI** to manage more complex conversations with Aria.
+
+1. **Install LangChain-OpenAI**:
+
+   ```bash
+   !pip install langchain_openai
+   ```
+
+2. **Initialize LangChain for Conversational Workflows**: Here’s an example where we create a math tutor bot, asking for step-by-step solutions to math problems.
+
+   ```python
+   from langchain_openai import ChatOpenAI
+   from langchain_core.messages import HumanMessage, SystemMessage
+
+   chat = ChatOpenAI(
+       model="uf-sft-0929",
+       api_key=api_key,
+       base_url=base_url,
+       streaming=False,
+   )
+
+   base = chat.invoke([
+       SystemMessage(content="You are MathTutor, an AI designed to help students with math problems. Provide clear, step-by-step solutions and explanations."),
+       HumanMessage(content="Hi tutor, can you help me solve this quadratic equation: x^2 - 5x + 6 = 0?")
+   ])
+   print(base.content)
+   ```
+
+3. **Enable Real-Time Streaming (Optional)**: To get continuous output, try streaming responses. This is useful for live feedback.
+
+   ```python
+   # Uncomment to enable streaming
+   # for chunk in chat.stream("Explain Newton's Third Law"):
+   #    print(chunk.content, end="", flush=True)
+   ```
+
+## Using cURL for API Requests (Alternative Method)
+
+For those comfortable with cURL, here’s an example command to interact with Aria via the command line.
+
+```bash
+curl -X POST "https://api.rhymes.ai/v1/completions" \
+-H "Authorization: Bearer YOUR_ARIA_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+    "model": "uf-sft-0929",
+    "messages": [{"role": "user", "content": {"type": "text", "text": "How can I make toothpaste?"}}],
+    "stream": false,
+    "temperature": 1,
+    "max_tokens": 1024,
+    "top_p": 1
+}'
+```
+
+The **Google Colab Notebook** for this tutorial can be found [here](https://colab.research.google.com/drive/1D9exd8HzqswZHYa9W-YyyrRkUXMKYTUa?usp=sharing).
+
+## Conclusion
+
+In this tutorial, we’ve covered the essential steps to get started with Aria’s multimodal API on Rhymes AI. We explored both text and image analysis, saw how to send API calls effectively, and even integrated LangChain for handling more complex interactions. With these tools, you’re equipped to build a variety of applications, from image-based content recognition to educational assistants.
+
+For more **Advanced API documentation**, check out this [pdf](https://drive.google.com/file/d/1mAFTTicG_Egdb_Jtan1wvgCN6lxGD5Yc/view?usp=sharing).
+
+Thanks for following along, and happy building with Aria!
+
+### Next Steps?
+
+1. **Experiment with Multimodal Capabilities**: Explore Aria’s ability to analyze different media types like video and documents for a comprehensive AI solution.
+2. **Tune API Parameters**: Adjust `temperature`, `top_p`, and `max_tokens` to optimize responses for your needs.
+3. **Integrate with Applications**: Build real-time, multimodal AI-powered applications, whether for educational tools, data analysis, or creative projects.
