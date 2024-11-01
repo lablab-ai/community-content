@@ -137,6 +137,7 @@ response = client.chat.completions.create(
     temperature=0.6,
     max_tokens=1024,
     top_p=1
+    stop=["<|im_end|>"]
 )
 
    print(response.choices[0].message.content)
