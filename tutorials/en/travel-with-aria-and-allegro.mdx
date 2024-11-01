@@ -1,0 +1,169 @@
+---
+title: "Building an App with Aria and Allegro: Turning Travel Photos into Fun Fact Videos"
+description: "Transform your travel photos into captivating fun fact videos using Aria's scene analysis and Allegro's video generation magic."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/df7a486e-0940-4af1-ca04-3a2caec03400/full"
+authorUsername: "TommyA"
+---
+
+# **Building an App with Aria and Allegro: Turning Travel Photos into Fun Fact Videos 🌍**
+
+Hello! It’s Tommy here, and today, I’m excited to walk you through a project where we’ll transform travel photos into fun fact videos. Using [Rhymes AI’s](https://lablab.ai/tech/rhymes-ai) **Aria API** to analyze images, we’ll generate rich scene descriptions and bring them to life with **Allegro’s text-to-video model**. This tutorial lets you explore the creative potential of these tools in a fun, hands-on way.
+
+Whether you’re looking to experiment with multimodal APIs or curious about unique app integrations, this guide will help you adapt these tools to suit your projects. Stick around until the end for a link to the **Colab notebook** so you can follow along directly.
+
+Let’s get started! 🌄
+
+## **Getting Started with the Setup 🛠️**
+
+To begin, let’s set up our environment and install the necessary libraries. Here’s what you’ll need:
+
+```bash
+!pip install -q openai request
+```
+
+Once we’ve installed the requirements, we can move to the image preparation and API integration sections.
+
+## **Preparing Your Image in Base64 Format**
+
+The first step is to convert your image into base64 format, which will allow us to send it through the Aria API. Here’s a function to handle the conversion:
+
+```python
+import base64
+
+def image_to_base64(image_path):
+    try:
+        with open(image_path, "rb") as image_file:
+            base64_string = base64.b64encode(image_file.read()).decode("utf-8")
+        return base64_string
+    except FileNotFoundError:
+        return "Image file not found. Please check the path."
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+```
+
+**Usage**: Provide your image path to `image_to_base64()` to get the base64-encoded string.
+
+## **Analyzing the Image with Aria’s API**
+
+Now that we’ve prepared the image, let’s use **Aria’s** multimodal API to analyze it. This API will return a set of scene descriptions that bring the location in the photo to life. Be sure to replace `userdata.get('ARIA_API_KEY')` with your own API key, or update the secret in Colab with the same parameter.
+
+```python
+from google.colab import userdata
+from openai import OpenAI
+from textwrap import dedent
+
+api_key = userdata.get('ARIA_API_KEY')  # Replace with your Aria API key or set it as a Colab secret
+client = OpenAI(base_url='https://api.rhymes.ai/v1', api_key=api_key)
+base64_image = image_to_base64('/path/to/your/image.jpg')
+
+response = client.chat.completions.create(
+    model="aria",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}},
+                {"type": "text", "text": dedent("""\
+                <image>\nThis is an image of a place. Give three scenes and descriptions to bring it to life. Format:
+
+                Scene <number>: <engaging description>
+
+                Return 3 scenes in that format only.
+                """)}
+            ]
+        }
+    ],
+    stream=False,
+    temperature=0.6,
+    max_tokens=1024,
+    top_p=1,
+    stop=["<|im_end|>"]
+)
+
+result = response.choices[0].message.content
+print(result)
+```
+
+## **Creating a Video Task with Allegro**
+
+Let’s now use **Allegro’s text-to-video API** to create a video based on the scene descriptions. This function initiates a video generation task, which we’ll query in the next section using the `request_id` returned here.  
+Remember to replace `userdata.get('ALLEGRO_API_KEY')` with your actual Allegro API key or set it as a Colab secret with the same parameter.
+
+```python
+import requests
+
+def create_video_task(token, result_scenes):
+    url = "https://api.rhymes.ai/v1/generateVideoSyn"
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    data = {
+        "refined_prompt": result_scenes,
+        "num_step": 100,
+        "cfg_scale": 7.5,
+        "user_prompt": result_scenes,
+        "rand_seed": 12345
+    }
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return f"An error occurred: {str(e)}"
+```
+
+**Usage**: Replace `userdata.get('ALLEGRO_API_KEY')` with your **Allegro API** token. Run the function and capture the `request_id`, which we’ll use to query the video status.
+
+**Note**: When calling the create video task endpoint, be aware that if you hit the endpoint again within a **2-minute** interval, you may encounter an error message: _“The request rate for model Allegro has exceeded the allowed limit. Please wait and try again later.”_ This response comes with a status code of 500, indicating that a brief wait between requests is required to avoid rate limiting.
+
+## **Checking the Video Generation Status**
+
+Because Allegro can take around **2 minutes** to process the video, we’ll add a `time.sleep()` delay before querying.
+
+```python
+import time
+
+def query_video_status(token, request_id):
+    time.sleep(120)  # Wait for at least 2 minutes
+    url = "https://api.rhymes.ai/v1/videoQuery"
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"requestId": request_id}
+
+    try:
+        response = requests.get(url, headers=headers, params=params)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        return f"An error occurred: {str(e)}"
+```
+
+When you run this, Allegro will return a link to the video stored in an S3 bucket:
+
+```python
+response_data = query_video_status(bearer_token, request_id)
+video_link = response_data.get('data')
+print(video_link)
+```
+
+**Displaying the Generated Video Image 🎥**
+
+Here’s how the generated video might look:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/952dc522-bc9a-4b3f-3fc7-62c7bf99f400/full" alt="Video generated by Allegro" caption="Video generated by Allegro" />
+
+Once the video link is retrieved, I captured a screenshot from the video to showcase the result. This visual gives you an idea of what the final output could look like when you follow these steps to transform a travel photo into a dynamic video.
+
+Find the link to the **Google Colab Notebook** for this tutorial [here](https://colab.research.google.com/drive/1QZNF2758y4illFS-SvtSxxgwaXeALx1o?usp=sharing).
+
+## **Wrapping Up**
+
+Congratulations! You’ve successfully created an app that transforms a travel photo into a fun fact video. By using Aria to generate compelling scene descriptions and Allegro to bring them to life in video format, you’ve tapped into the potential of multimodal AI applications.
+
+For further customization and a more advanced setup, check out the [detailed documentation here](https://drive.google.com/file/d/1mAFTTicG_Egdb_Jtan1wvgCN6lxGD5Yc/view?usp=sharing). This tutorial opens the door to endless possibilities with Aria and Allegro, whether you’re crafting travel-inspired content, educational materials, or any other creative media.
+
+Enjoy exploring, and let your imagination guide you to new ideas and projects!
+
+**Next Steps**  
+Here are some practical steps to expand your app:
+
+1. **Batch Processing for Multiple Images**: Implement support for multiple image uploads to create a collection of related fun fact videos.
+2. **Video Customization Options:** Experiment with Allegro’s settings, like `cfg_scale` and `num_step`, to create unique video effects.
+3. **Dynamic Scene Narrations**: Incorporate personalized narration for each video using additional API integrations, enriching the viewing experience.
