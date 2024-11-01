@@ -1,9 +1,0 @@
-Processing file: tutorials/en/travel-with-aria-and-allegro.mdx
-Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1730464950/Screenshot_2024-10-31_at_8.54.21_PM_hhffnz.png
-Successfully downloaded image to: images/Screenshot_2024-10-31_at_8.54.21_PM_hhffnz.png
-Uploading image: images/Screenshot_2024-10-31_at_8.54.21_PM_hhffnz.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/952dc522-bc9a-4b3f-3fc7-62c7bf99f400/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/952dc522-bc9a-4b3f-3fc7-62c7bf99f400/full
-Deleted local image: images/Screenshot_2024-10-31_at_8.54.21_PM_hhffnz.png
-Successfully processed file: tutorials/en/travel-with-aria-and-allegro.mdx
-CHANGES_MADE
