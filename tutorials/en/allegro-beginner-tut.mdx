@@ -41,10 +41,10 @@ def generate_video(token):
     }
     data = {
         "refined_prompt": "Handsome man running on the streets of Tokyo",
-        "num_step": 50,
+        "num_step": 100,
         "cfg_scale": 7.5,
         "user_prompt": "Handsome man running on the streets of Tokyo",
-        "rand_seed": 42
+        "rand_seed": 12345
     }
 
     try:
@@ -90,10 +90,10 @@ curl -X POST "https://api.rhymes.ai/v1/generateVideoSyn" \
 -H "Content-Type: application/json" \
 -d '{
     "refined_prompt": "Handsome man running on the streets of Tokyo",
-    "num_step": 50,
+    "num_step": 100,
     "cfg_scale": 7.5,
     "user_prompt": "Handsome man running on the streets of Tokyo",
-    "rand_seed": 42
+    "rand_seed": 12345
 }'
 ```
 
