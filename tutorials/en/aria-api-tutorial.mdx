@@ -51,7 +51,7 @@ With Aria’s powerful multimodal capabilities, let’s start by interacting wit
 
   ```python
   response = client.chat.completions.create(
-      model="uf-sft-0929",
+      model="aria",
       messages=[
           {
               "role": "user",
@@ -63,8 +63,9 @@ With Aria’s powerful multimodal capabilities, let’s start by interacting wit
               ]
           }
       ],
+      stop=["<|im_end|>"],
       stream=False,
-      temperature=1,
+      temperature=0.6,
       max_tokens=1024,
       top_p=1
   )
@@ -104,32 +105,39 @@ Aria can also analyze images. To do this, we’ll first convert an image to base
 2. **Send an Image Query**: Use the encoded image to interact with Aria’s image processing API.
 
    ```python
-   base64_image = image_to_base64('/path/to/image')
+   base64_image_1 = image_to_base64('/path/to/image1')
+base64_image_2 = image_to_base64('/path/to/image2')
 
-   response = client.chat.completions.create(
-       model="uf-sft-0929",
-       messages=[
-           {
-               "role": "user",
-               "content": [
-                   {
-                       "type": "image_url",
-                       "image_url": {
-                           "url": f"data:image/jpeg;base64,{base64_image}"
-                       }
-                   },
-                   {
-                       "type": "text",
-                       "text": "What is in the image?"
-                   }
-               ]
-           }
-       ],
-       stream=False,
-       temperature=1,
-       max_tokens=1024,
-       top_p=1
-   )
+response = client.chat.completions.create(
+    model="aria",  # Model name updated
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image_1}"
+                    }
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image_2}"
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": "<image><image>\nWhat's in the image?"  # Added <image> symbols for each image
+                }
+            ]
+        }
+    ],
+    stream=False,
+    temperature=0.6,
+    max_tokens=1024,
+    top_p=1
+)
 
    print(response.choices[0].message.content)
    ```
@@ -151,7 +159,7 @@ For more advanced workflows, we can use **LangChain-OpenAI** to manage more comp
    from langchain_core.messages import HumanMessage, SystemMessage
 
    chat = ChatOpenAI(
-       model="uf-sft-0929",
+       model="aria",
        api_key=api_key,
        base_url=base_url,
        streaming=False,
@@ -181,10 +189,10 @@ curl -X POST "https://api.rhymes.ai/v1/completions" \
 -H "Authorization: Bearer YOUR_ARIA_API_KEY" \
 -H "Content-Type: application/json" \
 -d '{
-    "model": "uf-sft-0929",
+    "model": "aria",
     "messages": [{"role": "user", "content": {"type": "text", "text": "How can I make toothpaste?"}}],
     "stream": false,
-    "temperature": 1,
+    "temperature": 0.6,
     "max_tokens": 1024,
     "top_p": 1
 }'
