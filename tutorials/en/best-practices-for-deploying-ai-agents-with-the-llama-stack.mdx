@@ -13,7 +13,7 @@ Llama Stack isn't just another model runner. It's Meta's complete toolkit for AI
 
 Before we write any code, we need to get access to the models. Head over to Meta's download page at llama.com/llama-downloads. You'll see a form that looks like this:
 
-<Img src="https://iili.io/2noPq3F.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28a09549-362d-4e28-5c28-f6482b5dfe00/full" />
 
 Fill out the details and select the models you want access to. For this guide, we'll use Llama 3.2 8B - it's the sweet spot between performance and resource usage. Once approved, Meta will send you download URLs for each model.
 
@@ -32,13 +32,13 @@ llama download --source meta --model-id Llama3.2-8B --meta-url <META_URL>
 ```
 
 
-<Img src="https://iili.io/2noPzjR.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f0103bc-1788-4693-002f-f0b496b6e100/full" />
 
 
 
 The download will take a few minutes - you'll see a progress bar like the one above. The model gets stored in your `~/.llama` directory, and those checksums at the bottom ensure you've got an intact copy.
 
-<Img src="https://iili.io/2noPBYg.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8f1f4705-edd3-49d1-bbc8-8f65fc69b300/full" />
 
 
 Now that our model is downloaded, let's build our first AI server. Llama Stack uses a build-configure-run workflow that's pretty straightforward once you understand it.
@@ -80,9 +80,9 @@ llama stack configure my-local-stack
 
 This is where we tell our server exactly how to run. When I'm setting up a new server, I focus on the inference settings first:
 
-<Img src="https://iili.io/2noPdQV.md.png" />
-<Img src="https://iili.io/2noPFEP.md.png" />
-<Img src="https://iili.io/2noP3CB.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/41be96f6-39bf-4a6e-4490-4406e9d61800/full" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/04e3ae2b-6913-44db-6222-d090bdecb300/full" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a9f939c8-2e89-473f-d7f3-71bbcebfd500/full" />
 
 
 I usually stick with the defaults for most settings, but make sure to point it to our Llama3.2-8B model. The sequence length of 4096 gives us plenty of room for context, and a batch size of 1 keeps things simple while we're getting started.
@@ -109,7 +109,7 @@ Now that we've configured everything, let's start our server. This is where Llam
 llama stack run my-local-stack
 ```
 
-<Img src="https://iili.io/2noPxTv.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb586b28-72f3-403a-21c0-c0b856e28700/full" />
 
 When you run this command, your Llama Stack server initializes its core components:
 
@@ -252,13 +252,13 @@ client.metrics.track_performance(
 
 The initialization sequence reveals how Llama Stack orchestrates its components:
 
-<Img src="https://iili.io/2noPnyJ.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e6543a4e-2382-4292-a4e8-375b801c7300/full" />
 
 The server sets up multiple processing pipelines - this is how it handles concurrent requests efficiently. You'll see it initialize model parallelism, distributed data processing (DDP), and the inference pipeline.
 
 Once the model loads, the server exposes a comprehensive API suite:
 
-<Img src="https://iili.io/2noPCva.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0fc3a34a-ad85-4857-b6a9-836f96975900/full" />
 
 These aren't just simple endpoints - each one represents a sophisticated AI capability:
 - `/inference/chat_completion` handles conversational AI, similar to ChatGPT
@@ -266,7 +266,7 @@ These aren't just simple endpoints - each one represents a sophisticated AI capa
 - `/memory_banks/*` endpoints manage conversation history and context
 - `/agentic_system/*` enables complex multi-step reasoning
 
-<Img src="https://iili.io/2noPIQp.md.png" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1c768d37-2f2e-4fc5-f0ec-8f2577811c00/full" />
 
 Looking at the server logs, you can see how requests flow through the system. Those `200 OK` responses mean successful interactions with the model. Each request gets processed through the inference pipeline we configured, with the model generating responses in real-time.
 
