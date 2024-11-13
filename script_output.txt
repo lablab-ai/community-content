@@ -1,0 +1,15 @@
+Processing file: tutorials/en/i-let-claude-take-the-mouse-heres-what-happened-when-ai-started-clicking-around-my-scree.mdx
+Downloading image from URL: https://iili.io/2TWYENt.png
+Successfully downloaded image to: images/2TWYENt.png
+Uploading image: images/2TWYENt.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc80e974-5114-435c-35d8-7c3e13622b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc80e974-5114-435c-35d8-7c3e13622b00/full
+Deleted local image: images/2TWYENt.png
+Downloading image from URL: https://iili.io/2TWYVxn.webp
+Successfully downloaded image to: images/2TWYVxn.webp
+Uploading image: images/2TWYVxn.webp
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/962af0d0-c229-458d-36f1-9d6787dfa000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/962af0d0-c229-458d-36f1-9d6787dfa000/full
+Deleted local image: images/2TWYVxn.webp
+Successfully processed file: tutorials/en/i-let-claude-take-the-mouse-heres-what-happened-when-ai-started-clicking-around-my-scree.mdx
+CHANGES_MADE
