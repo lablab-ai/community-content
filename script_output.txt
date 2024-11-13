@@ -1,0 +1,45 @@
+Processing file: blog/en/bitnet-pulled-a-fast-one-how-158-bits-just-made-your-dollar50000-gpu-obsolete.mdx
+Downloading image from URL: https://iili.io/2u7E7AN.jpg
+Successfully downloaded image to: images/2u7E7AN.jpg
+Uploading image: images/2u7E7AN.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/03aaca29-3614-4c57-5e05-3897f6ea7d00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/03aaca29-3614-4c57-5e05-3897f6ea7d00/full
+Deleted local image: images/2u7E7AN.jpg
+Downloading image from URL: https://iili.io/2u7E59p.jpg
+Successfully downloaded image to: images/2u7E59p.jpg
+Uploading image: images/2u7E59p.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/07a847ae-9eeb-43a4-f2fe-72c690743000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/07a847ae-9eeb-43a4-f2fe-72c690743000/full
+Deleted local image: images/2u7E59p.jpg
+Downloading image from URL: https://iili.io/2u7ExMg.jpg
+Successfully downloaded image to: images/2u7ExMg.jpg
+Uploading image: images/2u7ExMg.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28af8bb1-abeb-4bde-3753-19dfe7ee8a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28af8bb1-abeb-4bde-3753-19dfe7ee8a00/full
+Deleted local image: images/2u7ExMg.jpg
+Downloading image from URL: https://iili.io/2u7EASR.jpg
+Successfully downloaded image to: images/2u7EASR.jpg
+Uploading image: images/2u7EASR.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c723838-771b-46a9-4a10-e142ccbf4800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c723838-771b-46a9-4a10-e142ccbf4800/full
+Deleted local image: images/2u7EASR.jpg
+Downloading image from URL: https://iili.io/2u7EzPa.jpg
+Successfully downloaded image to: images/2u7EzPa.jpg
+Uploading image: images/2u7EzPa.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b51e9b82-5dc1-43ba-20f3-52d929f5e500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b51e9b82-5dc1-43ba-20f3-52d929f5e500/full
+Deleted local image: images/2u7EzPa.jpg
+Downloading image from URL: https://iili.io/2u7ETKJ.jpg
+Successfully downloaded image to: images/2u7ETKJ.jpg
+Uploading image: images/2u7ETKJ.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/89135495-02e3-4df4-3397-fead455a2b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/89135495-02e3-4df4-3397-fead455a2b00/full
+Deleted local image: images/2u7ETKJ.jpg
+Downloading image from URL: https://iili.io/2u7Eucv.jpg
+Successfully downloaded image to: images/2u7Eucv.jpg
+Uploading image: images/2u7Eucv.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2dd81e81-f53c-442c-0428-b533d7bfe200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2dd81e81-f53c-442c-0428-b533d7bfe200/full
+Deleted local image: images/2u7Eucv.jpg
+Successfully processed file: blog/en/bitnet-pulled-a-fast-one-how-158-bits-just-made-your-dollar50000-gpu-obsolete.mdx
+CHANGES_MADE
