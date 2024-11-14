@@ -1,0 +1,223 @@
+---
+title: "Comprehensive Guide to start with IBM watxsonx Assistant"
+description: "Beginner's guide to use watsonx assistant"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bf604bba-9ee0-4676-0e24-fc93b31a9900/full"
+authorUsername: "EmmanuelIriarte"
+---
+
+# Comprehensive Guide to Start with IBM watsonx Assistant
+
+**IBM watsonx Assistant** is a next-generation conversational AI solution that empowers individuals and organizations to build generative AI assistants effortlessly. These assistants deliver seamless self-service experiences to customers across various devices or channels, boost employee productivity, and scale efficiently across a business.
+
+In this guide, you will learn how to use watsonx Assistant to build and deploy an intelligent conversational AI assistant solution that simplifies tasks, improves business efficiency, and amplifies productivity.
+
+## **Step 1: Setting Up Your IBM Cloud Account**
+
+To ensure a smooth onboarding process, begin by setting up your IBM Cloud account following these steps:
+
+1. **Access Your IBM Cloud Account**:
+
+   - Check the email you used for hackathon registration for an invitation from the IBM Cloud team.
+   - If you can’t find the email, search for “IBM Cloud” in your inbox or check your junk/spam folders.
+   - Click the **Join Now** button in the email.
+
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558282/st1-1_n5yg96.png" alt="Join IBM cloud" caption="Join IBM cloud" />
+
+2. **Create or Log Into Your Account**:
+
+- If it’s your first time setting up an IBM Cloud account:
+
+  - Enter a new password, complete your personal information, accept the terms, and click **Continue**.
+    <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-2_lfnhc5.png" alt="First time account set up" caption="First time account set up" />
+
+  - Acknowledge the creation of your IBMid and click **Join Account**.
+    <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558282/st1-3_xjbgga.png" alt="Join account" caption="First time joining account" />
+
+- For existing IBM Cloud accounts:
+  - Simply read and accept the terms and click **Join Account**.
+    <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-4_pnydsd.png" alt="Join account" caption="Existing user joining account" />
+
+3. **Complete Authentication**:
+   - Click **Continue** to finish the authentication and gain access to the IBM Cloud dashboard.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-5_curabb.png" alt="Gaining Access to dashboard" caption="Continue to gain access to dashboard" />
+
+**Note**: If you have an existing account, you might be directed to your current dashboard. Ensure you switch to the designated **WatsonX Challenge** or **Watsonx Ecosystem Challenge** account.
+
+## **Step 2: Getting Started with IBM watsonx Assistant**
+
+Now that your IBM Cloud account is set up, follow the steps below to create your first assistant and get started with building your AI solution.
+
+1. **Accessing the Service:**
+
+   - Navigate to the Resource list on your IBM Cloud dashboard.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st2-1_x3g4ty.png" alt="Resource list" caption="The Resource list" />
+
+   - Expand the AI/Machine Learning section and select the pre-configured watsonx-Challenge WA service.
+   - Click Launch watsonx Assistant.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st2-2_rw7qtp.png" alt="Launch watsonx Assistant" caption="Launching the watsonx Assistant." />
+
+2. **Creating Your First Assistant:**
+
+   - Enter a name and optional description.
+   - Set the language to **English** and click **Next**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-3_soba8j.png" alt="Create first Assistant" caption="Creating your first Assistant" />
+
+   - Personalize your assistant with display settings such as colors and avatars.
+   - Review your setup and click **Create**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-4_zjxxwr.png" alt="Preview Assistant" caption="Preview your Assistant" />
+
+   - An Assistant will be created, and you will be taken to its home page. Now you are ready to begin building your first assistant.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-5_bg9e3i.png" alt="First Assistant homepage" caption="First Assistant homepage" />
+
+## **Step 3: Planning Your Assistant**
+
+With your initial setup complete, it’s time to think strategically. Planning your assistant will help you build a solution that aligns with your goals and user needs.To better understand how to effectively plan your assistant, refer to [this guide](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-plan-assistant).
+
+Proper planning is essential to ensure that your assistant is well-structured and meets its intended goals. Here’s how to start: Before building your assistant, plan out:
+
+- **Initial Channel Selection**: Decide which platform or channel your assistant will operate on.
+- **Domain Expertise**: Choose the primary focus (e.g., customer support, HR).
+- **Tone and Language**: Set the communication style.
+- **Content Source Integration**: Identify relevant content sources.
+- **Handoff Strategy**: Plan how interactions will transfer to human agents if needed.
+
+## **Step 4: Building Actions and Steps**
+
+Once you have a plan in place, it’s time to start constructing your assistant by creating actions and steps. These form the foundation of your assistant’s interactions.
+
+Creating actions and steps is critical to constructing a robust conversation flow. Follow these guidelines to build effectively:
+
+- **What is an Action?**: A task or problem the assistant helps resolve, like paying a bill or tracking orders.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st4-1_q5nnfn.png" alt="Action diagram" caption="Action diagram" />
+- **What is a Step?**: An interaction between the assistant and user, including clarification questions, final responses, and agent handoffs.
+
+### **Example Exercise:**
+
+### **Building a Billing Use Case**
+
+1. **Create Your First Action**:
+
+   - On your assistant's home page, select **Actions** from the left navigation panel.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558284/st4-2_ymqvcc.png" alt="Select Actions" caption="Select Actions on Assistant Homepage" />
+
+   - Click the **Create action +** button and choose **Start from scratch**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-3_t17rxb.png" alt="Create Action" caption="Create your first action" />
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-4_bbyq94.png" alt="Start from scratch" caption="Start from scratch" />
+
+   - Train the assistant by entering example phrases such as **“I want to pay my cable bill please”** and save them to help the assistant recognize related topics.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-5_tkfpfm.png" alt="Train assistant" caption="Training assistant" />
+
+2. **Add the First Conversation Step**:
+
+   - Use the pre-created blank step to add a clarification question in the _Assistant says_ text box, like “What type of account are we talking here?”.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st4-6_qjfjjs.png" alt="First conversation step" caption="First conversation step" />
+
+   - Define customer response options (e.g., Cable, Internet, Phone) and apply the changes.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-7_udieux.png" alt="Define customer response" caption="Define customer response" />
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558288/st4-8_wplksw.png" alt="Apply changes" caption="Apply changes" />
+
+3. **Add Conditional Steps**:
+
+   - Create a new step asking for the account number only if the selected option is “Cable”.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558288/st4-9_tlw0cy.png" alt="New Step" caption="Create new step" />
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-10_zr2nu4.png" alt="Configure response" caption="Configure response" />
+
+   - Set conditions so that this step only appears when Step 1's answer is **“Cable”**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-11_mo9a4c.png" alt="Set conditions" caption="Set conditions" />
+
+4. **Agent Handoff Step**:
+
+   - Add a step saying, **“Let me get you to an agent who can help you pay your cable bill!”** and set it to connect to an agent under specific conditions (e.g., when Step 1 is “Cable”).
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-12_vekk7v.png" alt="Add agent handoff step" caption="Add agent handoff step" />
+
+   - Configure the message to the agent to include: “This user wants to pay their cable bill. Account number is `$[variable from Step 2]`”.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-13_raga1o.png" alt="Configure agent message" caption="Configuring agent message" />
+
+5. **Handling Internet and Phone Bill Requests**:
+
+   - Create a step with text like, “To pay your bill, you can head to our online portal.”
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-15_fgsssx.png" alt="Inserting a variable" caption="Inserting a variable" />
+
+   - Insert a variable for from Step 1 and link to your billing portal.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-16_tlamzr.png" alt="Adding a link" caption="Adding a link" />
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-17_vphrxc.png" alt="Insert link" caption="Enter the link to be added" />
+
+   - Apply conditions to ensure this step triggers when the answer is “Internet” or “Phone”.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-18_liqhmn.png" alt="Apply conditions" caption="Applying conditions" />
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-19_wqe0ar.png" alt="Change from All to Any" caption="Change from All to Any" />
+
+- Finally, under And then section, select **Continue** to next step drop down and select End the action option.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-20_zqr6vl.png" alt="End the action" caption="End the action" />
+
+6. **Testing the Flow**:
+
+   - Preview the conversation flow by using the **Preview** button and simulate different scenarios (e.g., paying a cable bill, selecting Internet).
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558326/st4-21_iagwbi.png" alt="Preview the conversation" caption="Previewing the conversation" />
+
+   - Add more training examples if the assistant does not recognize initial phrases effectively.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558491/st4-22_jwriqp.png" alt="Add more training examples" caption="Adding more training examples" />
+
+## **Step 5: Visualizing and Reviewing Your Assistant**
+
+After building your actions, reviewing and visualizing them is crucial. This helps ensure your workflow is logical and meets your project requirements. For more comprehensive details on building and refining your assistant, refer to [this documentation](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-build-actions-overview).
+
+A visual representation of your assistant’s actions helps in refining and communicating its logic. Here’s how to navigate this feature:
+
+- Toggle between **Edit** and **Visualization** tabs to see action flows as a flowchart.
+- Use this visualization for better understanding and presentation.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558751/st5-1_gya3ap.png" alt="Visualizing action flow" caption="Visualizing the action flow" />
+
+## **Step 6: Previewing and Customizing**
+
+Before final deployment, previewing your assistant will help identify areas for improvement and ensure that it aligns with your brand. Customize as needed to perfect the user experience.
+
+Previewing your assistant allows you to test its functionality and make necessary adjustments. Customize it to align with your brand using these steps:
+
+- **Preview Your Assistant**:
+  - Test functionalities on the **Preview** page.
+  - Use options like **Copy [link](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-preview-share#preview-share-link) to share** or **Change [background](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-preview-share#preview-change-background)** to simulate different user experiences.
+- Customize the web chat to align with your brand.For more information on configuring web chat, refer to [this resource](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-web-chat-config).
+
+## **Step 7: Publishing and Deploying**
+
+With your assistant ready and tested, the next step is to publish and deploy it. This ensures your assistant is accessible to your users in the desired channels.
+
+Once your assistant is built, publishing and deploying it ensures it reaches your target audience. Follow these procedures to manage deployment:
+
+- **Publishing**:
+  - Maintain version control to manage content updates and rollbacks. For more information on publishing, refer to [this guide](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-publish).
+- **Deployment Options**:
+  - Deploy on [websites](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-web-chat-overview), mobile apps, or integrate with [phone](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-phone) systems and [other channels](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-integration-add).
+
+## **Step 8: Analyzing Your Assistant**
+
+After deployment, continuous analysis is key to maintaining and improving your assistant. This section will guide you on how to effectively monitor and optimize its performance.
+
+To continuously improve your assistant, analyzing its interactions is vital. Use these insights to enhance user satisfaction and performance: Use the **Analyze** page to track interactions, understand user needs, and identify areas for improvement. For more details on analyzing your assistant, refer to [this resource](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-analytics-overview).
+
+## **Conclusion**
+
+In this comprehensive guide, you have learned how to set up your IBM Cloud account, create your first **watsonx Assistant**, plan and build effective actions and steps, visualize and review your work, and finally, publish, deploy, and analyze your assistant. By following these steps, you can build a robust and responsive assistant tailored to your needs. Remember, continual refinement and analysis will help you maintain a high-quality user experience.
+
+With these insights, you are now well-equipped to harness the full potential of **IBM watsonx Assistant** and create impactful AI solutions. Good luck with your development journey\!
+
+## **Additional Resources**
+
+To expand your understanding and capabilities with watsonx Assistant, explore these additional resources and tools.
+
+For further learning and deeper customization, explore these additional resources to boost your assistant’s capabilities:
+
+- [Building actions from templates](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-actions-templates)
+- [Starting the conversation](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-start-conversation)
+- [Understanding your users’ questions or requests](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-understand-questions)
+- [Boost words](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-boost-words)
+- [Adding assistant responses](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-respond)
+- [Collecting information from your customers](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-collect-info)
+- [Using variables to manage conversation information](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-manage-info)
+- [Adding conditions to an action](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-action-conditions)
+- [Adding conditions to a step](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-step-conditions)
+- [Choosing what to do at the end of a step](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-step-what-next)
+- [Calling a custom extension](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-call-extension)
+- [Saving your actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-save-actions)
+- [Reviewing and debugging actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-review)
+- [Global settings for actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-actions-global-settings)
