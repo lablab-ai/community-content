@@ -11,6 +11,33 @@ authorUsername: "EmmanuelIriarte"
 
 In this guide, you will learn how to use watsonx Assistant to build and deploy an intelligent conversational AI assistant solution that simplifies tasks, improves business efficiency, and amplifies productivity.
 
+## Before You Begin
+
+Follow the [instructions](#step-1-setting-up-your-ibm-cloud-account) to access the IBM Cloud account provisioned to be used in
+this hackathon.
+
+Each participant is provisioned with an individual IBM Cloud account for the hackathon. Since teammates cannot be added to your account, you’ll need to collaborate offline or virtually, working on one team member’s assigned IBM Cloud account.
+
+### Plan Limitations
+
+The hackathon-provided IBM Cloud account is pre-configured with a watsonx Assistant Trial plan and includes necessary services to complete the hackathon. However, note the following limitations:
+
+- **No Support for**:
+  - Built-in conversational search
+  - V2 API endpoints
+
+Refer to [watsonx Assistant Trial plan limits](#watsonx-assistant-trial-plan-limitations).
+
+IBM has also added a $100 credit on top of the free tier for pre-configured services. You’ll receive email alerts at 25%, 50%, and 80% of your credit use, with an account deactivation notice within an hour upon reaching 100%. Plan your usage wisely and back up your work regularly. Refer [IBM cloud usage tips](#ibm-cloud-account-usage-tips) and [saving your work](#save-your-work).
+
+**Important**: Notifications are only sent when limits are reached hourly. Exhausting the credit limit within an hour may result in deactivation without a warning email.
+
+### Usage Restrictions
+
+- Participants are not allowed to use the provisioned hackathon IBM Cloud account services for any purposes other than to build a solution for the hackathon.
+- To use any services other than the ones pre-configured in the hackathon provisioned cloud account, you will have to bring your own personal IBM Cloud account and utilize the services.
+- If you notice a permission/access issue for any other services on the provisioned cloud account, then they are not required/available for this hackathon.
+
 ## **Step 1: Setting Up Your IBM Cloud Account**
 
 To ensure a smooth onboarding process, begin by setting up your IBM Cloud account following these steps:
@@ -93,6 +120,8 @@ Creating actions and steps is critical to constructing a robust conversation flo
 
 ### **Example Exercise:**
 
+This section includes two example exercises: **[Building a Billing Use Case](#building-a-billing-use-case)** and **[Travel Assistant Use Case Exercise: Integrate watsonx.ai LLM for Gen AI](#travel-assistant-use-case-exercise-integrate-watsonxai-llm-for-gen-ai)**, each designed to help you build essential components and explore generative AI integration within your assistant.
+
 ### **Building a Billing Use Case**
 
 1. **Create Your First Action**:
@@ -157,6 +186,12 @@ Creating actions and steps is critical to constructing a robust conversation flo
    - Add more training examples if the assistant does not recognize initial phrases effectively.
      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/361051c2-77aa-49e1-363d-af46a7f3e200/full" alt="Add more training examples" caption="Adding more training examples" />
 
+### Travel Assistant Use Case Exercise: Integrate watsonx.ai LLM for Gen AI
+
+Try the Travel Assistant Use Case Exercise to integrate watsonx.ai LLM and enable generative AI capabilities in your assistant.
+
+[Follow the watsonx.ai integration exercise guide](https://lablab-watsonx-hackathon-2024.s3.eu-es.cloud-object-storage.appdomain.cloud/Lablab-watsonx_assistant_hackathon_guide.pdf) to build a Travel Assistant conversation that incorporates watsonx.ai LLM. This exercise will introduce you to integrating watsonx.ai AI models into your assistant, though it is not intended as a final submission for the hackathon.
+
 ## **Step 5: Visualizing and Reviewing Your Assistant**
 
 After building your actions, reviewing and visualizing them is crucial. This helps ensure your workflow is logical and meets your project requirements. For more comprehensive details on building and refining your assistant, refer to [this documentation](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-build-actions-overview).
@@ -195,6 +230,10 @@ After deployment, continuous analysis is key to maintaining and improving your a
 
 To continuously improve your assistant, analyzing its interactions is vital. Use these insights to enhance user satisfaction and performance: Use the **Analyze** page to track interactions, understand user needs, and identify areas for improvement. For more details on analyzing your assistant, refer to [this resource](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-analytics-overview).
 
+## Save your work
+
+Make sure to save any work if you want to retain for your records. The provisioned IBM Cloud accounts will be disabled anytime after the end of the hackathon. Follow the [Backing up and restoring data documentation](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-admin-backup-restore) to save your work.
+
 ## **Conclusion**
 
 In this comprehensive guide, you have learned how to set up your IBM Cloud account, create your first **watsonx Assistant**, plan and build effective actions and steps, visualize and review your work, and finally, publish, deploy, and analyze your assistant. By following these steps, you can build a robust and responsive assistant tailored to your needs. Remember, continual refinement and analysis will help you maintain a high-quality user experience.
@@ -221,3 +260,39 @@ For further learning and deeper customization, explore these additional resource
 - [Saving your actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-save-actions)
 - [Reviewing and debugging actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-review)
 - [Global settings for actions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-actions-global-settings)
+
+## watsonx Assistant Trial plan limitations
+
+- Does not support:
+  - Built-in conversational search
+  - V2 API endpoints
+- Actions:
+  - 10 assistants per instance
+  - Up to 100 actions
+  - 5 custom extensions per assistant
+  - Session inactivity timeout 5 minutes
+
+## IBM Cloud account usage tips
+
+**General:**
+
+- Collaborate with other participants to form a team and leverage your team
+  members’ cloud accounts to utilize the resources effectively.
+- Always save your work in regular intervals.
+
+**watsonx.ai:**
+If you have integrated watsonx.ai to enable generative AI capabilities for
+your watsonx Assistant, the watsonx.ai service consumes resources by
+tokens for using the foundational models available on the platform. A token
+is a collection of characters that has semantic meaning for a model.
+Tokenization is the process of converting the words in your prompt into
+tokens. You can learn more about tokens and how they are calculated [here](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-tokens.html?context=wx&audience=wdp).
+
+Leverage the model parameters to set limits for token consumption and
+repetitions for efficient prompting. You can learn how to work with model
+parameters [here](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/fm-model-parameters.html?context=wx&audience=wdp&audience=wdp).
+
+**Note:** The focus of this hackathon is watsonx Assistant and NOT watsonx.ai.
+watsonx.ai must be used only for enabling the generative AI capabilities for
+your assistant and not for any other purpose. Your cloud account will be
+deactivated if any suspicious watsonx.ai service utilization is noticed.
