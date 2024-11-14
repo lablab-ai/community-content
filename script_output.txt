@@ -1,0 +1,195 @@
+Processing file: tutorials/en/guide-to-ibm-watsonx-assistant.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558282/st1-1_n5yg96.png
+Successfully downloaded image to: images/st1-1_n5yg96.png
+Uploading image: images/st1-1_n5yg96.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/262f8e76-0847-4132-e682-316ed2169000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/262f8e76-0847-4132-e682-316ed2169000/full
+Deleted local image: images/st1-1_n5yg96.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-2_lfnhc5.png
+Successfully downloaded image to: images/st1-2_lfnhc5.png
+Uploading image: images/st1-2_lfnhc5.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/39ef98ff-9ca3-468b-d483-b9fed517b000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/39ef98ff-9ca3-468b-d483-b9fed517b000/full
+Deleted local image: images/st1-2_lfnhc5.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558282/st1-3_xjbgga.png
+Successfully downloaded image to: images/st1-3_xjbgga.png
+Uploading image: images/st1-3_xjbgga.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0ec774a-bdca-4058-d460-0d551022ec00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0ec774a-bdca-4058-d460-0d551022ec00/full
+Deleted local image: images/st1-3_xjbgga.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-4_pnydsd.png
+Successfully downloaded image to: images/st1-4_pnydsd.png
+Uploading image: images/st1-4_pnydsd.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/725517d5-7210-4a73-27a8-212821075e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/725517d5-7210-4a73-27a8-212821075e00/full
+Deleted local image: images/st1-4_pnydsd.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st1-5_curabb.png
+Successfully downloaded image to: images/st1-5_curabb.png
+Uploading image: images/st1-5_curabb.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4b9a86bd-5e8f-4ee6-61ec-4cfc5536e000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4b9a86bd-5e8f-4ee6-61ec-4cfc5536e000/full
+Deleted local image: images/st1-5_curabb.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st2-1_x3g4ty.png
+Successfully downloaded image to: images/st2-1_x3g4ty.png
+Uploading image: images/st2-1_x3g4ty.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c33ff406-9dfc-4507-1e0d-1291f9043100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c33ff406-9dfc-4507-1e0d-1291f9043100/full
+Deleted local image: images/st2-1_x3g4ty.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st2-2_rw7qtp.png
+Successfully downloaded image to: images/st2-2_rw7qtp.png
+Uploading image: images/st2-2_rw7qtp.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f01fa4e4-9305-48a1-4956-b391f944ae00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f01fa4e4-9305-48a1-4956-b391f944ae00/full
+Deleted local image: images/st2-2_rw7qtp.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-3_soba8j.png
+Successfully downloaded image to: images/st2-3_soba8j.png
+Uploading image: images/st2-3_soba8j.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b12dbfd6-7b4d-4815-4fea-d4e6a02a8a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b12dbfd6-7b4d-4815-4fea-d4e6a02a8a00/full
+Deleted local image: images/st2-3_soba8j.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-4_zjxxwr.png
+Successfully downloaded image to: images/st2-4_zjxxwr.png
+Uploading image: images/st2-4_zjxxwr.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8433a230-f664-47db-403f-1540dc1f7b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8433a230-f664-47db-403f-1540dc1f7b00/full
+Deleted local image: images/st2-4_zjxxwr.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558283/st2-5_bg9e3i.png
+Successfully downloaded image to: images/st2-5_bg9e3i.png
+Uploading image: images/st2-5_bg9e3i.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c93c37b7-e844-46c5-23f3-a10d2fe35f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c93c37b7-e844-46c5-23f3-a10d2fe35f00/full
+Deleted local image: images/st2-5_bg9e3i.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st4-1_q5nnfn.png
+Successfully downloaded image to: images/st4-1_q5nnfn.png
+Uploading image: images/st4-1_q5nnfn.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9c4508ee-e5bb-4064-9bc1-439f972e1700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9c4508ee-e5bb-4064-9bc1-439f972e1700/full
+Deleted local image: images/st4-1_q5nnfn.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558284/st4-2_ymqvcc.png
+Successfully downloaded image to: images/st4-2_ymqvcc.png
+Uploading image: images/st4-2_ymqvcc.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99589763-9722-4c0e-ae05-a98a20892b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99589763-9722-4c0e-ae05-a98a20892b00/full
+Deleted local image: images/st4-2_ymqvcc.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-3_t17rxb.png
+Successfully downloaded image to: images/st4-3_t17rxb.png
+Uploading image: images/st4-3_t17rxb.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f838437a-3776-4439-62cf-a7ab587f6000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f838437a-3776-4439-62cf-a7ab587f6000/full
+Deleted local image: images/st4-3_t17rxb.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-4_bbyq94.png
+Successfully downloaded image to: images/st4-4_bbyq94.png
+Uploading image: images/st4-4_bbyq94.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/58a4f40d-e94a-4b60-f525-2434a51c7300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/58a4f40d-e94a-4b60-f525-2434a51c7300/full
+Deleted local image: images/st4-4_bbyq94.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558286/st4-5_tkfpfm.png
+Successfully downloaded image to: images/st4-5_tkfpfm.png
+Uploading image: images/st4-5_tkfpfm.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/445abea2-8440-43db-bf87-c07937e7ab00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/445abea2-8440-43db-bf87-c07937e7ab00/full
+Deleted local image: images/st4-5_tkfpfm.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558287/st4-6_qjfjjs.png
+Successfully downloaded image to: images/st4-6_qjfjjs.png
+Uploading image: images/st4-6_qjfjjs.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/db1e02f1-0aa3-472f-ca1d-50dda9042a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/db1e02f1-0aa3-472f-ca1d-50dda9042a00/full
+Deleted local image: images/st4-6_qjfjjs.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-7_udieux.png
+Successfully downloaded image to: images/st4-7_udieux.png
+Uploading image: images/st4-7_udieux.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2727c2bb-e1c0-4b4d-3403-a63ac1afa600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2727c2bb-e1c0-4b4d-3403-a63ac1afa600/full
+Deleted local image: images/st4-7_udieux.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558288/st4-8_wplksw.png
+Successfully downloaded image to: images/st4-8_wplksw.png
+Uploading image: images/st4-8_wplksw.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a75e4bdc-e2ef-467e-9151-c3bddf078400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a75e4bdc-e2ef-467e-9151-c3bddf078400/full
+Deleted local image: images/st4-8_wplksw.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558288/st4-9_tlw0cy.png
+Successfully downloaded image to: images/st4-9_tlw0cy.png
+Uploading image: images/st4-9_tlw0cy.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/464cd397-43aa-4e3d-6543-ed58eb752600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/464cd397-43aa-4e3d-6543-ed58eb752600/full
+Deleted local image: images/st4-9_tlw0cy.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-10_zr2nu4.png
+Successfully downloaded image to: images/st4-10_zr2nu4.png
+Uploading image: images/st4-10_zr2nu4.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36f27870-a306-4f55-fefb-602ba1efac00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36f27870-a306-4f55-fefb-602ba1efac00/full
+Deleted local image: images/st4-10_zr2nu4.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558289/st4-11_mo9a4c.png
+Successfully downloaded image to: images/st4-11_mo9a4c.png
+Uploading image: images/st4-11_mo9a4c.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/15a3d66b-4be4-4fbf-5029-d409adee1700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/15a3d66b-4be4-4fbf-5029-d409adee1700/full
+Deleted local image: images/st4-11_mo9a4c.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-12_vekk7v.png
+Successfully downloaded image to: images/st4-12_vekk7v.png
+Uploading image: images/st4-12_vekk7v.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/16c9413f-05d9-4cd3-2789-ed95f44d2700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/16c9413f-05d9-4cd3-2789-ed95f44d2700/full
+Deleted local image: images/st4-12_vekk7v.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-13_raga1o.png
+Successfully downloaded image to: images/st4-13_raga1o.png
+Uploading image: images/st4-13_raga1o.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2de92d94-adc7-467d-3d5c-84b6c6422b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2de92d94-adc7-467d-3d5c-84b6c6422b00/full
+Deleted local image: images/st4-13_raga1o.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-15_fgsssx.png
+Successfully downloaded image to: images/st4-15_fgsssx.png
+Uploading image: images/st4-15_fgsssx.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d71bc609-e442-4227-eaef-7578c79b7400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d71bc609-e442-4227-eaef-7578c79b7400/full
+Deleted local image: images/st4-15_fgsssx.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-16_tlamzr.png
+Successfully downloaded image to: images/st4-16_tlamzr.png
+Uploading image: images/st4-16_tlamzr.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e0dc0001-acc4-4030-6ec5-effd467e0f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e0dc0001-acc4-4030-6ec5-effd467e0f00/full
+Deleted local image: images/st4-16_tlamzr.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558290/st4-17_vphrxc.png
+Successfully downloaded image to: images/st4-17_vphrxc.png
+Uploading image: images/st4-17_vphrxc.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/113d59ae-6725-438a-ac4d-b08fc7db7900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/113d59ae-6725-438a-ac4d-b08fc7db7900/full
+Deleted local image: images/st4-17_vphrxc.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-18_liqhmn.png
+Successfully downloaded image to: images/st4-18_liqhmn.png
+Uploading image: images/st4-18_liqhmn.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3fc7749c-69e3-48bf-f89b-abf411031000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3fc7749c-69e3-48bf-f89b-abf411031000/full
+Deleted local image: images/st4-18_liqhmn.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-19_wqe0ar.png
+Successfully downloaded image to: images/st4-19_wqe0ar.png
+Uploading image: images/st4-19_wqe0ar.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ad35cfdb-a895-4e83-66cc-99f16fb72900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ad35cfdb-a895-4e83-66cc-99f16fb72900/full
+Deleted local image: images/st4-19_wqe0ar.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558291/st4-20_zqr6vl.png
+Successfully downloaded image to: images/st4-20_zqr6vl.png
+Uploading image: images/st4-20_zqr6vl.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28f59ebd-ce1b-4894-4b0f-60fdffd36600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28f59ebd-ce1b-4894-4b0f-60fdffd36600/full
+Deleted local image: images/st4-20_zqr6vl.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558326/st4-21_iagwbi.png
+Successfully downloaded image to: images/st4-21_iagwbi.png
+Uploading image: images/st4-21_iagwbi.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f654353-ccbd-476b-59bf-ba156d9db400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f654353-ccbd-476b-59bf-ba156d9db400/full
+Deleted local image: images/st4-21_iagwbi.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558491/st4-22_jwriqp.png
+Successfully downloaded image to: images/st4-22_jwriqp.png
+Uploading image: images/st4-22_jwriqp.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/361051c2-77aa-49e1-363d-af46a7f3e200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/361051c2-77aa-49e1-363d-af46a7f3e200/full
+Deleted local image: images/st4-22_jwriqp.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731558751/st5-1_gya3ap.png
+Successfully downloaded image to: images/st5-1_gya3ap.png
+Uploading image: images/st5-1_gya3ap.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/14c60acc-3583-4c7c-06e7-6573204d8c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/14c60acc-3583-4c7c-06e7-6573204d8c00/full
+Deleted local image: images/st5-1_gya3ap.png
+Successfully processed file: tutorials/en/guide-to-ibm-watsonx-assistant.mdx
+CHANGES_MADE
