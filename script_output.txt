@@ -1,0 +1,191 @@
+Processing file: tutorials/en/guide-to-ibm-watsonx-assistant.mdx
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/262f8e76-0847-4132-e682-316ed2169000/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/39ef98ff-9ca3-468b-d483-b9fed517b000/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0ec774a-bdca-4058-d460-0d551022ec00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/725517d5-7210-4a73-27a8-212821075e00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4b9a86bd-5e8f-4ee6-61ec-4cfc5536e000/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c33ff406-9dfc-4507-1e0d-1291f9043100/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f01fa4e4-9305-48a1-4956-b391f944ae00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b12dbfd6-7b4d-4815-4fea-d4e6a02a8a00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8433a230-f664-47db-403f-1540dc1f7b00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c93c37b7-e844-46c5-23f3-a10d2fe35f00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9c4508ee-e5bb-4064-9bc1-439f972e1700/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99589763-9722-4c0e-ae05-a98a20892b00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f838437a-3776-4439-62cf-a7ab587f6000/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/58a4f40d-e94a-4b60-f525-2434a51c7300/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/445abea2-8440-43db-bf87-c07937e7ab00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/db1e02f1-0aa3-472f-ca1d-50dda9042a00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2727c2bb-e1c0-4b4d-3403-a63ac1afa600/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a75e4bdc-e2ef-467e-9151-c3bddf078400/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/464cd397-43aa-4e3d-6543-ed58eb752600/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36f27870-a306-4f55-fefb-602ba1efac00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/15a3d66b-4be4-4fbf-5029-d409adee1700/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/16c9413f-05d9-4cd3-2789-ed95f44d2700/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2de92d94-adc7-467d-3d5c-84b6c6422b00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d71bc609-e442-4227-eaef-7578c79b7400/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e0dc0001-acc4-4030-6ec5-effd467e0f00/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/113d59ae-6725-438a-ac4d-b08fc7db7900/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3fc7749c-69e3-48bf-f89b-abf411031000/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ad35cfdb-a895-4e83-66cc-99f16fb72900/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28f59ebd-ce1b-4894-4b0f-60fdffd36600/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f654353-ccbd-476b-59bf-ba156d9db400/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/361051c2-77aa-49e1-363d-af46a7f3e200/full
+Image already on Cloudflare: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/14c60acc-3583-4c7c-06e7-6573204d8c00/full
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647635/genai-1_ml0luc.png
+Successfully downloaded image to: images/genai-1_ml0luc.png
+Uploading image: images/genai-1_ml0luc.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5262ed8a-c2e2-4170-5e2e-2a59d1206000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5262ed8a-c2e2-4170-5e2e-2a59d1206000/full
+Deleted local image: images/genai-1_ml0luc.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647947/genai-2_borqey.png
+Successfully downloaded image to: images/genai-2_borqey.png
+Uploading image: images/genai-2_borqey.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0518eb9a-e717-435c-c615-a744b4e93900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0518eb9a-e717-435c-c615-a744b4e93900/full
+Deleted local image: images/genai-2_borqey.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648335/genai-3_cs1ax0.png
+Successfully downloaded image to: images/genai-3_cs1ax0.png
+Uploading image: images/genai-3_cs1ax0.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ca8bf0df-e1d9-4d01-3125-fb1b481dff00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ca8bf0df-e1d9-4d01-3125-fb1b481dff00/full
+Deleted local image: images/genai-3_cs1ax0.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648478/genai-4_qj5y1r.png
+Successfully downloaded image to: images/genai-4_qj5y1r.png
+Uploading image: images/genai-4_qj5y1r.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ea3743c5-9b6d-44bd-0f84-ef34f9546500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ea3743c5-9b6d-44bd-0f84-ef34f9546500/full
+Deleted local image: images/genai-4_qj5y1r.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648624/genai-5_voooay.png
+Successfully downloaded image to: images/genai-5_voooay.png
+Uploading image: images/genai-5_voooay.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/791d47fe-4318-4e5a-4449-d8c2871c1b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/791d47fe-4318-4e5a-4449-d8c2871c1b00/full
+Deleted local image: images/genai-5_voooay.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648863/genai-6_dsfuo1.png
+Successfully downloaded image to: images/genai-6_dsfuo1.png
+Uploading image: images/genai-6_dsfuo1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb92a325-88a7-450b-8320-a2cd71840d00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb92a325-88a7-450b-8320-a2cd71840d00/full
+Deleted local image: images/genai-6_dsfuo1.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649056/genai-7_xv5nlt.png
+Successfully downloaded image to: images/genai-7_xv5nlt.png
+Uploading image: images/genai-7_xv5nlt.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9fa5b1b5-c59a-4362-0e81-8aefce61b200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9fa5b1b5-c59a-4362-0e81-8aefce61b200/full
+Deleted local image: images/genai-7_xv5nlt.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649221/genai-8_mvxise.png
+Successfully downloaded image to: images/genai-8_mvxise.png
+Uploading image: images/genai-8_mvxise.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5fe3d28-932b-4dc8-2903-8afc62b13e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5fe3d28-932b-4dc8-2903-8afc62b13e00/full
+Deleted local image: images/genai-8_mvxise.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649401/genai-9_da3d8p.png
+Successfully downloaded image to: images/genai-9_da3d8p.png
+Uploading image: images/genai-9_da3d8p.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/382882c0-64db-40b6-1fb9-e41b6682b500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/382882c0-64db-40b6-1fb9-e41b6682b500/full
+Deleted local image: images/genai-9_da3d8p.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649590/genai-10_ebuhrt.png
+Successfully downloaded image to: images/genai-10_ebuhrt.png
+Uploading image: images/genai-10_ebuhrt.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/95f952c9-f4ff-4148-1d4d-022843402700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/95f952c9-f4ff-4148-1d4d-022843402700/full
+Deleted local image: images/genai-10_ebuhrt.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649767/genai-11_buxx5b.png
+Successfully downloaded image to: images/genai-11_buxx5b.png
+Uploading image: images/genai-11_buxx5b.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0212b235-8de1-4c7a-61b5-137fb4953f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0212b235-8de1-4c7a-61b5-137fb4953f00/full
+Deleted local image: images/genai-11_buxx5b.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650031/genai-12_yzzinv.png
+Successfully downloaded image to: images/genai-12_yzzinv.png
+Uploading image: images/genai-12_yzzinv.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c8e86c2-08e5-477c-38ae-e8ee08b09c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c8e86c2-08e5-477c-38ae-e8ee08b09c00/full
+Deleted local image: images/genai-12_yzzinv.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650959/genai-13_bsln6y.png
+Successfully downloaded image to: images/genai-13_bsln6y.png
+Uploading image: images/genai-13_bsln6y.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2911b2e4-f71e-483f-1076-6b1b58798300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2911b2e4-f71e-483f-1076-6b1b58798300/full
+Deleted local image: images/genai-13_bsln6y.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651100/genai-14_j8udzy.png
+Successfully downloaded image to: images/genai-14_j8udzy.png
+Uploading image: images/genai-14_j8udzy.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/378e347c-388f-4070-c02d-38d75155eb00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/378e347c-388f-4070-c02d-38d75155eb00/full
+Deleted local image: images/genai-14_j8udzy.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651433/genai-15_tyrsny.png
+Successfully downloaded image to: images/genai-15_tyrsny.png
+Uploading image: images/genai-15_tyrsny.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3cdb21f4-2893-40ca-46a2-38aeb744f700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3cdb21f4-2893-40ca-46a2-38aeb744f700/full
+Deleted local image: images/genai-15_tyrsny.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652232/genai-16_scwpmf.png
+Successfully downloaded image to: images/genai-16_scwpmf.png
+Uploading image: images/genai-16_scwpmf.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6fa7c58a-96fe-4a37-cf3a-da657e423400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6fa7c58a-96fe-4a37-cf3a-da657e423400/full
+Deleted local image: images/genai-16_scwpmf.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652351/genai-17_ediu7p.png
+Successfully downloaded image to: images/genai-17_ediu7p.png
+Uploading image: images/genai-17_ediu7p.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a31177d1-cac8-46eb-6fd9-f0a00de73e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a31177d1-cac8-46eb-6fd9-f0a00de73e00/full
+Deleted local image: images/genai-17_ediu7p.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653041/genai-18_yozjgy.png
+Successfully downloaded image to: images/genai-18_yozjgy.png
+Uploading image: images/genai-18_yozjgy.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6bd93476-eb79-4a49-f78a-557851e30a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6bd93476-eb79-4a49-f78a-557851e30a00/full
+Deleted local image: images/genai-18_yozjgy.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653468/genai-19_zdrbjs.png
+Successfully downloaded image to: images/genai-19_zdrbjs.png
+Uploading image: images/genai-19_zdrbjs.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2140e7a3-03a9-4345-132c-4845723eef00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2140e7a3-03a9-4345-132c-4845723eef00/full
+Deleted local image: images/genai-19_zdrbjs.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-20_jpmzmm.png
+Successfully downloaded image to: images/genai-20_jpmzmm.png
+Uploading image: images/genai-20_jpmzmm.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4452cff-73a8-4655-c836-e71049d07500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4452cff-73a8-4655-c836-e71049d07500/full
+Deleted local image: images/genai-20_jpmzmm.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-21_rwyld8.png
+Successfully downloaded image to: images/genai-21_rwyld8.png
+Uploading image: images/genai-21_rwyld8.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c733740-f4f9-47b9-8948-8e84268d8b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c733740-f4f9-47b9-8948-8e84268d8b00/full
+Deleted local image: images/genai-21_rwyld8.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-22_ey9gex.png
+Successfully downloaded image to: images/genai-22_ey9gex.png
+Uploading image: images/genai-22_ey9gex.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e7df392-547e-46c2-15b9-fcf505b0b800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e7df392-547e-46c2-15b9-fcf505b0b800/full
+Deleted local image: images/genai-22_ey9gex.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653813/genai-23_o08hnw.png
+Successfully downloaded image to: images/genai-23_o08hnw.png
+Uploading image: images/genai-23_o08hnw.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5d6ce61-bedb-4a39-319c-d6f1999da200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5d6ce61-bedb-4a39-319c-d6f1999da200/full
+Deleted local image: images/genai-23_o08hnw.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655007/genai-24_p9bxj6.png
+Successfully downloaded image to: images/genai-24_p9bxj6.png
+Uploading image: images/genai-24_p9bxj6.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a3e801a-e127-42ec-6dad-ade09291e200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a3e801a-e127-42ec-6dad-ade09291e200/full
+Deleted local image: images/genai-24_p9bxj6.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655152/genai-25_gtgiyu.png
+Successfully downloaded image to: images/genai-25_gtgiyu.png
+Uploading image: images/genai-25_gtgiyu.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7bd78d67-a7c4-4d8e-78ba-92d5cbbce600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7bd78d67-a7c4-4d8e-78ba-92d5cbbce600/full
+Deleted local image: images/genai-25_gtgiyu.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655368/genai-26_e2szyo.png
+Successfully downloaded image to: images/genai-26_e2szyo.png
+Uploading image: images/genai-26_e2szyo.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0122e9e-e35b-406f-695c-b543eaeece00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0122e9e-e35b-406f-695c-b543eaeece00/full
+Deleted local image: images/genai-26_e2szyo.png
+Successfully processed file: tutorials/en/guide-to-ibm-watsonx-assistant.mdx
+CHANGES_MADE

@@ -220,49 +220,49 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
 
    - Log into [watsonx.ai platform](https://dataplatform.cloud.ibm.com/wx/home?context=wx) with your IBM Cloud account email.
    - Go to **View all projects** > **New Project** > **Create an empty project**. Name the project.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647635/genai-1_ml0luc.png" alt="view all projects" caption="View all projects from the side bar" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5262ed8a-c2e2-4170-5e2e-2a59d1206000/full" alt="view all projects" caption="View all projects from the side bar" />
    - In the **Storage** panel, ensure “watsonx – Challenge COS” is selected. Click **Create**.
    - In the **Manage** tab under **Services & integrations**, click **Associate service +**, select "watsonx-Challenge WML," and click **Associate**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647947/genai-2_borqey.png" alt="Associate service" caption="CLicking associate +" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0518eb9a-e717-435c-c615-a744b4e93900/full" alt="Associate service" caption="CLicking associate +" />
    - Still under **Manage** tab, select **General** on the left pan then copy the Project ID.
 
 3. **Create an IBM Cloud API Key**
 
    - In [IBM Cloud](https://cloud.ibm.com/), go to **Manage > Access (IAM)**, then **API keys**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648335/genai-3_cs1ax0.png" alt="Manage Access" caption="Manage Access" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ca8bf0df-e1d9-4d01-3125-fb1b481dff00/full" alt="Manage Access" caption="Manage Access" />
    - Click **Create +**, name the API key, select **Yes** for Session creation, and click **Create**. Download and save it securely.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648478/genai-4_qj5y1r.png" alt="Create API key" caption="Create API key" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ea3743c5-9b6d-44bd-0f84-ef34f9546500/full" alt="Create API key" caption="Create API key" />
 
 4. **Create a New Assistant**
 
    - In watsonx Assistant, navigate to your assistant dropdown at the top of the dashboard and select **Create New +**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648624/genai-5_voooay.png" alt="Create new assistant" caption="Create new assistant" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/791d47fe-4318-4e5a-4449-d8c2871c1b00/full" alt="Create new assistant" caption="Create new assistant" />
    - Name your assistant (e.g., "Travel Assistant"), add an optional description, and click **Create assistant**.
    - Once the assistant is created, you will be navigated to its homepage. You can switch between assistants by selecting the assistant dropdown.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648863/genai-6_dsfuo1.png" alt="Assistant homepage" caption="Assistant homepage" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bb92a325-88a7-450b-8320-a2cd71840d00/full" alt="Assistant homepage" caption="Assistant homepage" />
 
 5. **Add a Custom Extension for watsonx.ai LLM Integration**
 
    - Go to **Integrations (on the left navigation menu) > Extensions** and click **Build custom extension**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649056/genai-7_xv5nlt.png" alt="Build custom extension" caption="Build custom extension" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9fa5b1b5-c59a-4362-0e81-8aefce61b200/full" alt="Build custom extension" caption="Build custom extension" />
    - Follow the **Get Started** steps and click **Next**.
    - Enter an extension name (e.g., `wx-ai-custom-extension`) and an optional description. Click **Next**.
    - Import the `watsonx-openapi.json` file obtained in **Step 1** and click **Next**.
    - Review the extension details and click **Finish**.
    - Once created, the extension will appear in the **Extensions** section. Click **Add +** to confirm and add the extension.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649221/genai-8_mvxise.png" alt="custom extension added" caption="custom extension added" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5fe3d28-932b-4dc8-2903-8afc62b13e00/full" alt="custom extension added" caption="custom extension added" />
    - In the **Authentication settings** panel:
      - Configure the authentication type as **OAuth 2.0**.
      - Enter the IBM Cloud API key created in **Step 3** in the `Apikey` field.
      - Click **Next**, review operations, and click **Finish** to complete the integration.
-       <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649401/genai-9_da3d8p.png" alt="Authentication settings" caption="Authentication settings" />
+       <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/382882c0-64db-40b6-1fb9-e41b6682b500/full" alt="Authentication settings" caption="Authentication settings" />
 
 6. **Create an Action for the Travel Assistant**
 
    - In **Actions** (on the left navigation menu), click **Create action +** and select **Start from scratch**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649590/genai-10_ebuhrt.png" alt="Create action" caption="Create action" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/95f952c9-f4ff-4148-1d4d-022843402700/full" alt="Create action" caption="Create action" />
    - Train your assistant’s topic recognition by entering example sentences like "Travel" and click **Save**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649767/genai-11_buxx5b.png" alt="training assistant topic recognition" caption="training assistant topic recognition" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0212b235-8de1-4c7a-61b5-137fb4953f00/full" alt="training assistant topic recognition" caption="training assistant topic recognition" />
    - You can add more example sentences later.
 
 7. **Create the First Conversation Step**
@@ -271,13 +271,13 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
    - In the _Assistant says_ box, enter “What country would you like to travel to?”
    - Under **Define customer response**, select **Free Text**.
    - Click **Save** at the top-right corner.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650031/genai-12_yzzinv.png" alt="First Conversation step" caption="First Conversation step" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c8e86c2-08e5-477c-38ae-e8ee08b09c00/full" alt="First Conversation step" caption="First Conversation step" />
 
 8. **Create the Second Conversation Step**
 
    - Click **New step +** on the left pane to create Step 2, and name it “Information on country.”
    - Under **Conditions**, set a condition that refers to the response from Step 1.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650959/genai-13_bsln6y.png" alt="setting a condition" caption="setting a condition" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2911b2e4-f71e-483f-1076-6b1b58798300/full" alt="setting a condition" caption="setting a condition" />
    - In the _Assistant says_ box, enter “Would you like information on [country]?” using the variable for the specified country.
    - Under **Define customer response**, select **Confirmation** to enable a yes/no option.
    - Click **Save**.
@@ -288,13 +288,13 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
    - In **Conditions**, set it to activate if the user selects "No" for the confirmation in Step 2.
    - Under **And then**, select **End the action** to stop the dialogue flow if the user doesn’t need further information.
    - Click **Save**.
-     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651100/genai-14_j8udzy.png" alt="third conversation step" caption="third conversation step" />
+     <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/378e347c-388f-4070-c02d-38d75155eb00/full" alt="third conversation step" caption="third conversation step" />
 
 10. **Create the Fourth Conversation Step**
 
     - Click **New step +** to create Step 4, and name it “Call LLM for general country information.”
     - Under **Conditions**, set it to activate if the user selects "Yes" in Step 2.
-      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651433/genai-15_tyrsny.png" alt="Step4 condiitons" caption="Step4 condiitons" />
+      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3cdb21f4-2893-40ca-46a2-38aeb744f700/full" alt="Step4 condiitons" caption="Step4 condiitons" />
     - In **Set variable values**, click **Set new value +** and create a session variable named `prompt`.
     - For the variable assignment, select **Expression** and enter `"Tell me about the country " + $SpecifyCountry`, with `$SpecifyCountry` referring to Step 1’s response.
     - Under **And then**, select **Use an extension** and configure:
@@ -308,20 +308,20 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
         - **Optional parameters**: Set `parameters.temperature` to 0.7, `parameters.max_net_tokens` to 900, `parameters.min_new_tokens` to 50, `parameters.repetition_penalty` to 2, and `parameters.decoding_method` to "sample."
     - Click **Apply**.
     - Click **Save** at the top right of the page.
-      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652232/genai-16_scwpmf.png" alt="save step 4" caption="save step 4" />
+      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6fa7c58a-96fe-4a37-cf3a-da657e423400/full" alt="save step 4" caption="save step 4" />
 
 11. **Create the Fifth Conversation Step**
 
     - Click **New step +** to create Step 5, and name it “Country info response.”
     - In **Conditions**, click the first item, then select **wx-ai-custom-extension (step 4)** and choose **Ran successfully**.
-      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652351/genai-17_ediu7p.png" alt="step 5 condition" caption="step 5 condition" />
+      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a31177d1-cac8-46eb-6fd9-f0a00de73e00/full" alt="step 5 condition" caption="step 5 condition" />
     - Click **Set variable values**. Select **Set new value +** under the variable values section, then choose **New session variable**.
     - In the session variable prompt, enter `result_country_info` as the Name. Under the **Type** section, select **Free text** from the dropdown, and click **Apply**.
     - For the **variable assignment To** field, select **Expression**, and enter `$`. When the dropdown menu appears, select **wx-ai-custom-extension (step 4)** > **body.results**, and append `[0].generated_text` to the expression. Click **Apply**.
-      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653041/genai-18_yozjgy.png" alt="variable assignment" caption="variable assignment" />
+      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6bd93476-eb79-4a49-f78a-557851e30a00/full" alt="variable assignment" caption="variable assignment" />
     - In the _Assistant says_ panel, add the text `${result_country_info}` by selecting **Session variables** > **result_country_info**. This will display the information generated by the LLM.
     - Click **Save** at the top-right corner.
-      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653468/genai-19_zdrbjs.png" alt="save step 5" caption="save step 5" />
+      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2140e7a3-03a9-4345-132c-4845723eef00/full" alt="save step 5" caption="save step 5" />
 
 12. **Create the Sixth Conversation Step**
 
@@ -329,7 +329,7 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
 - In the _Assistant says_ box, enter “Would you like more information on $”. A dropdown will appear. Select **Action step variables** > **1. Specify country**, and append “that is specific to your interests?”.
 - Under **Define customer response**, select **Confirmation**.
 - Click **Save** at the top-right corner.
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-20_jpmzmm.png" alt="Step 6" caption="Step 6" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a4452cff-73a8-4655-c836-e71049d07500/full" alt="Step 6" caption="Step 6" />
 
 13. **Create the Seventh Conversation Step**
 
@@ -338,7 +338,7 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
 - In the _Assistant says_ box, enter “Please list your interests.”
 - Under **Define customer response**, select **Free Text**.
 - Click **Save** at the top-right corner.
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-21_rwyld8.png" alt="Step 7" caption="Step 7" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7c733740-f4f9-47b9-8948-8e84268d8b00/full" alt="Step 7" caption="Step 7" />
 
 14. **Create the Eighth Conversation Step**
 
@@ -346,7 +346,7 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
 - In **Conditions**, click the first item, then select **Action step variables** > **6. More info on country**. Click the third item, and select **No**.
 - Expand the **And then** section, and select **End the action**.
 - Click **Save** at the top-right corner.
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-22_ey9gex.png" alt="Step 8" caption="Step 8" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8e7df392-547e-46c2-15b9-fcf505b0b800/full" alt="Step 8" caption="Step 8" />
 
 15. **Create the Ninth Conversation Step**
 
@@ -370,7 +370,7 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
     - `parameters.repetition_penalty`: `2`
     - `parameters.decoding_method`: `sample`
 - Click **Apply**, then **Save** at the top-right corner.
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653813/genai-23_o08hnw.png" alt="step 9" caption="step 9" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f5d6ce61-bedb-4a39-319c-d6f1999da200/full" alt="step 9" caption="step 9" />
 
 16. **Create the Tenth Conversation Step**
 
@@ -382,15 +382,15 @@ In this exercise, you'll learn to integrate watsonx.ai [Large Language Models](h
 - In the _Assistant says_ panel, enter `${result_country_specific_info}` by selecting **Session variables** > **result_country_specific_info**. This will display the detailed information generated by the LLM.
 - Expand the **And then** section, and select **End the action**.
 - Click **Save** at the top-right corner.
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655007/genai-24_p9bxj6.png" alt="step 10" caption="step 10" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a3e801a-e127-42ec-6dad-ade09291e200/full" alt="step 10" caption="step 10" />
 
 17. **Test the Travel Assistant**
 
 - Click **Preview** at the bottom-right corner of the page to test the assistant.
 - Enter “travel” to start the conversation, and specify a country (e.g., "Greece"). Confirm the assistant retrieves and displays general information correctly.
 
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655152/genai-25_gtgiyu.png" alt="preview assistant" caption="preview assistant" />
-  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655368/genai-26_e2szyo.png" alt="assistant response" caption="assistant response" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7bd78d67-a7c4-4d8e-78ba-92d5cbbce600/full" alt="preview assistant" caption="preview assistant" />
+  <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c0122e9e-e35b-406f-695c-b543eaeece00/full" alt="assistant response" caption="assistant response" />
 - When prompted for specific interests, provide examples like “food culture” or “sports.” Verify that the assistant generates and displays personalized responses based on the input.
 
 ---
