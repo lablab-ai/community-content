@@ -38,16 +38,16 @@ IBM has also added a $100 credit on top of the free tier for pre-configured serv
 - To use any services other than the ones pre-configured in the hackathon provisioned cloud account, you will have to bring your own personal IBM Cloud account and utilize the services.
 - If you notice a permission/access issue for any other services on the provisioned cloud account, then they are not required/available for this hackathon.
 
-### Data Sets
+## Data Sets
 
 As you collect data for your project, it’s important to follow best practices. Here are some helpful tips:
 
-- **You are responsible for ensuring data compliance.**  
-- **Public website data** may be used if the terms allow for commercial use, but make sure to keep a list of the websites you reference.  
-- **Do not use data or assets containing company confidential information**, or any other data without the permission of the data owner. Ensure you have proper approval.  
-- **Do not use any client data.**  
-- **Do not use any data containing personal information (PI).**  
-- **Do not use data obtained from social media.**  
+- **You are responsible for ensuring data compliance.**
+- **Public website data** may be used if the terms allow for commercial use, but make sure to keep a list of the websites you reference.
+- **Do not use data or assets containing company confidential information**, or any other data without the permission of the data owner. Ensure you have proper approval.
+- **Do not use any client data.**
+- **Do not use any data containing personal information (PI).**
+- **Do not use data obtained from social media.**
 
 ## **Step 1: Setting Up Your IBM Cloud Account**
 
@@ -197,14 +197,6 @@ This section includes two example exercises: **[Building a Billing Use Case](#bu
    - Add more training examples if the assistant does not recognize initial phrases effectively.
      <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/361051c2-77aa-49e1-363d-af46a7f3e200/full" alt="Add more training examples" caption="Adding more training examples" />
 
-### Travel Assistant Use Case Exercise: Integrate watsonx.ai LLM for Gen AI
-
-Try the Travel Assistant Use Case Exercise to integrate watsonx.ai LLM and enable generative AI capabilities in your assistant.
-
-[Follow the watsonx.ai integration exercise guide](https://lablab-watsonx-hackathon-2024.s3.eu-es.cloud-object-storage.appdomain.cloud/lablab_watsonx_ai_integration_guide.pdf) to build a Travel Assistant conversation that incorporates watsonx.ai LLM. This exercise will introduce you to integrating watsonx.ai AI models into your assistant, though it is not intended as a final submission for the hackathon.
-
-## **Step 5: Visualizing and Reviewing Your Assistant**
-
 After building your actions, reviewing and visualizing them is crucial. This helps ensure your workflow is logical and meets your project requirements. For more comprehensive details on building and refining your assistant, refer to [this documentation](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-build-actions-overview).
 
 A visual representation of your assistant’s actions helps in refining and communicating its logic. Here’s how to navigate this feature:
@@ -212,6 +204,194 @@ A visual representation of your assistant’s actions helps in refining and comm
 - Toggle between **Edit** and **Visualization** tabs to see action flows as a flowchart.
 - Use this visualization for better understanding and presentation.
   <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/14c60acc-3583-4c7c-06e7-6573204d8c00/full" alt="Visualizing action flow" caption="Visualizing the action flow" />
+
+---
+
+### Travel Assistant Use Case Exercise: Integrate watsonx.ai LLM for Gen AI
+
+In this exercise, you'll learn to integrate watsonx.ai Large Language Models (LLMs) into a Travel Assistant to add generative AI capabilities.
+
+1. **Obtain the watsonx.ai OpenAPI File**
+
+   - Download [`watsonx-openapi.zip`](https://lablab-watsonx-hackathon-2024.s3.eu-es.cloud-object-storage.appdomain.cloud/watsonx-openapi.zip) and extract `watsonx-openapi.json`. You will use this OpenAPI endpoint file later.
+
+2. **Get Your watsonx.ai Project ID**
+
+   - Log into [watsonx.ai platform](https://dataplatform.cloud.ibm.com/wx/home?context=wx) with your IBM Cloud account email.
+   - Go to **View all projects** > **New Project** > **Create an empty project**. Name the project.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647635/genai-1_ml0luc.png" alt="view all projects" caption="View all projects from the side bar" />
+   - In the **Storage** panel, ensure “watsonx – Challenge COS” is selected. Click **Create**.
+   - In the **Manage** tab under **Services & integrations**, click **Associate service +**, select "watsonx-Challenge WML," and click **Associate**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731647947/genai-2_borqey.png" alt="Associate service" caption="CLicking associate +" />
+   - Still under **Manage** tab, select **General** on the left pan then copy the Project ID.
+
+3. **Create an IBM Cloud API Key**
+
+   - In [IBM Cloud](https://cloud.ibm.com/), go to **Manage > Access (IAM)**, then **API keys**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648335/genai-3_cs1ax0.png" alt="Manage Access" caption="Manage Access" />
+   - Click **Create +**, name the API key, select **Yes** for Session creation, and click **Create**. Download and save it securely.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648478/genai-4_qj5y1r.png" alt="Create API key" caption="Create API key" />
+
+4. **Create a New Assistant**
+
+   - In watsonx Assistant, navigate to your assistant dropdown at the top of the dashboard and select **Create New +**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648624/genai-5_voooay.png" alt="Create new assistant" caption="Create new assistant" />
+   - Name your assistant (e.g., "Travel Assistant"), add an optional description, and click **Create assistant**.
+   - Once the assistant is created, you will be navigated to its homepage. You can switch between assistants by selecting the assistant dropdown.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731648863/genai-6_dsfuo1.png" alt="Assistant homepage" caption="Assistant homepage" />
+
+5. **Add a Custom Extension for watsonx.ai LLM Integration**
+
+   - Go to **Integrations (on the left navigation menu) > Extensions** and click **Build custom extension**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649056/genai-7_xv5nlt.png" alt="Build custom extension" caption="Build custom extension" />
+   - Follow the **Get Started** steps and click **Next**.
+   - Enter an extension name (e.g., `wx-ai-custom-extension`) and an optional description. Click **Next**.
+   - Import the `watsonx-openapi.json` file obtained in **Step 1** and click **Next**.
+   - Review the extension details and click **Finish**.
+   - Once created, the extension will appear in the **Extensions** section. Click **Add +** to confirm and add the extension.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649221/genai-8_mvxise.png" alt="custom extension added" caption="custom extension added" />
+   - In the **Authentication settings** panel:
+     - Configure the authentication type as **OAuth 2.0**.
+     - Enter the IBM Cloud API key created in **Step 3** in the `Apikey` field.
+     - Click **Next**, review operations, and click **Finish** to complete the integration.
+       <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649401/genai-9_da3d8p.png" alt="Authentication settings" caption="Authentication settings" />
+
+6. **Create an Action for the Travel Assistant**
+
+   - In **Actions** (on the left navigation menu), click **Create action +** and select **Start from scratch**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649590/genai-10_ebuhrt.png" alt="Create action" caption="Create action" />
+   - Train your assistant’s topic recognition by entering example sentences like "Travel" and click **Save**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731649767/genai-11_buxx5b.png" alt="training assistant topic recognition" caption="training assistant topic recognition" />
+   - You can add more example sentences later.
+
+7. **Create the First Conversation Step**
+
+   - Title the step “Specify country.”
+   - In the _Assistant says_ box, enter “What country would you like to travel to?”
+   - Under **Define customer response**, select **Free Text**.
+   - Click **Save** at the top-right corner.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650031/genai-12_yzzinv.png" alt="First Conversation step" caption="First Conversation step" />
+
+8. **Create the Second Conversation Step**
+
+   - Click **New step +** on the left pane to create Step 2, and name it “Information on country.”
+   - Under **Conditions**, set a condition that refers to the response from Step 1.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731650959/genai-13_bsln6y.png" alt="setting a condition" caption="setting a condition" />
+   - In the _Assistant says_ box, enter “Would you like information on [country]?” using the variable for the specified country.
+   - Under **Define customer response**, select **Confirmation** to enable a yes/no option.
+   - Click **Save**.
+
+9. **Create the Third Conversation Step**
+
+   - Click **New step +** to add Step 3, and name it “No information on country required.”
+   - In **Conditions**, set it to activate if the user selects "No" for the confirmation in Step 2.
+   - Under **And then**, select **End the action** to stop the dialogue flow if the user doesn’t need further information.
+   - Click **Save**.
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651100/genai-14_j8udzy.png" alt="third conversation step" caption="third conversation step" />
+
+10. **Create the Fourth Conversation Step**
+
+    - Click **New step +** to create Step 4, and name it “Call LLM for general country information.”
+    - Under **Conditions**, set it to activate if the user selects "Yes" in Step 2.
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731651433/genai-15_tyrsny.png" alt="Step4 condiitons" caption="Step4 condiitons" />
+    - In **Set variable values**, click **Set new value +** and create a session variable named `prompt`.
+    - For the variable assignment, select **Expression** and enter `"Tell me about the country " + $SpecifyCountry`, with `$SpecifyCountry` referring to Step 1’s response.
+    - Under **And then**, select **Use an extension** and configure:
+      - **Extension**: `wx-ai-custom-extension`
+      - **Operation**: `Generation`
+      - **Parameters**:
+        - `version`: `2023-05-29`
+        - `input`: `prompt`
+        - `model_id`: `ibm/granite-13b-chat-v2`
+        - `project_id`: Project ID from Step 2
+        - **Optional parameters**: Set `parameters.temperature` to 0.7, `parameters.max_net_tokens` to 900, `parameters.min_new_tokens` to 50, `parameters.repetition_penalty` to 2, and `parameters.decoding_method` to "sample."
+    - Click **Apply**.
+    - Click **Save** at the top right of the page.
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652232/genai-16_scwpmf.png" alt="save step 4" caption="save step 4" />
+
+11. **Create the Fifth Conversation Step**
+
+    - Click **New step +** to create Step 5, and name it “Country info response.”
+    - In **Conditions**, click the first item, then select **wx-ai-custom-extension (step 4)** and choose **Ran successfully**.
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731652351/genai-17_ediu7p.png" alt="step 5 condition" caption="step 5 condition" />
+    - Click **Set variable values**. Select **Set new value +** under the variable values section, then choose **New session variable**.
+    - In the session variable prompt, enter `result_country_info` as the Name. Under the **Type** section, select **Free text** from the dropdown, and click **Apply**.
+    - For the **variable assignment To** field, select **Expression**, and enter `$`. When the dropdown menu appears, select **wx-ai-custom-extension (step 4)** > **body.results**, and append `[0].generated_text` to the expression. Click **Apply**.
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653041/genai-18_yozjgy.png" alt="variable assignment" caption="variable assignment" />
+    - In the _Assistant says_ panel, add the text `${result_country_info}` by selecting **Session variables** > **result_country_info**. This will display the information generated by the LLM.
+    - Click **Save** at the top-right corner.
+      <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653468/genai-19_zdrbjs.png" alt="save step 5" caption="save step 5" />
+
+12. **Create the Sixth Conversation Step**
+
+- Select **New step +** to create Step 6, and name it “More info on country.”
+- In the _Assistant says_ box, enter “Would you like more information on $”. A dropdown will appear. Select **Action step variables** > **1. Specify country**, and append “that is specific to your interests?”.
+- Under **Define customer response**, select **Confirmation**.
+- Click **Save** at the top-right corner.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-20_jpmzmm.png" alt="Step 6" caption="Step 6" />
+
+13. **Create the Seventh Conversation Step**
+
+- Select **New step +** to create Step 7, and name it “Specific interests on country.”
+- In **Conditions**, click the first item, then select **Action step variables** > **6. More info on country**. Click the third item, and select **Yes**.
+- In the _Assistant says_ box, enter “Please list your interests.”
+- Under **Define customer response**, select **Free Text**.
+- Click **Save** at the top-right corner.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-21_rwyld8.png" alt="Step 7" caption="Step 7" />
+
+14. **Create the Eighth Conversation Step**
+
+- Select **New step +** to create Step 8, and name it “No specific interests on country.”
+- In **Conditions**, click the first item, then select **Action step variables** > **6. More info on country**. Click the third item, and select **No**.
+- Expand the **And then** section, and select **End the action**.
+- Click **Save** at the top-right corner.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653469/genai-22_ey9gex.png" alt="Step 8" caption="Step 8" />
+
+15. **Create the Ninth Conversation Step**
+
+- Select **New step +** to create Step 9, and name it “Call LLM for specific country information.”
+- Click **Set variable values**. Select **Set new value +** under the variable values section, then choose **New session variable**.
+- In the session variable prompt, enter `prompt_specific` as the Name. Under the **Type** section, select **Free text**, and click **Apply**.
+- For the **variable assignment To** field, select **Expression**, and enter `"Tell me about " + $SpecifyCountry + " specific to " + $Specific_interests`. Use **Action step variables** > **1. Specify country** and **Action step variables** > **7. Specific interests on country** where required.
+- Expand the **And then** section, and select **Use an extension**.
+- In the **Extension setup**, configure the following:
+  - **Extension**: `wx-ai-custom-extension`
+  - **Operation**: `Generation`
+  - **Parameters**:
+    - `version`: `2023-05-29`
+    - `input`: `prompt_specific`
+    - `model_id`: `ibm/granite-13b-chat-v2`
+    - `project_id`: Use the Project ID captured in Step 2.
+  - Expand **Optional parameters**, and configure:
+    - `parameters.temperature`: `0.7`
+    - `parameters.max_net_tokens`: `900`
+    - `parameters.min_new_tokens`: `50`
+    - `parameters.repetition_penalty`: `2`
+    - `parameters.decoding_method`: `sample`
+- Click **Apply**, then **Save** at the top-right corner.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731653813/genai-23_o08hnw.png" alt="step 9" caption="step 9" />
+
+16. **Create the Tenth Conversation Step**
+
+- Select **New step +** to create Step 10, and name it “Specific country info response.”
+- In **Conditions**, click the first item, then select **wx-ai-custom-extension (step 9)** and choose **Ran successfully**.
+- Click **Set variable values**. Select **Set new value +** under the variable values section, then choose **New session variable**.
+- In the session variable prompt, enter `result_country_specific_info` as the Name. Under the **Type** section, select **Free text**, and click **Apply**.
+- For the **variable assignment To** field, select **Expression**, and enter `$`. When the dropdown menu appears, select **wx-ai-custom-extension (step 9)** > **body.results**, and append `[0].generated_text` to the expression. Click **Apply**.
+- In the _Assistant says_ panel, enter `${result_country_specific_info}` by selecting **Session variables** > **result_country_specific_info**. This will display the detailed information generated by the LLM.
+- Expand the **And then** section, and select **End the action**.
+- Click **Save** at the top-right corner.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655007/genai-24_p9bxj6.png" alt="step 10" caption="step 10" />
+
+17. **Test the Travel Assistant**
+
+- Click **Preview** at the bottom-right corner of the page to test the assistant.
+- Enter “travel” to start the conversation, and specify a country (e.g., "Greece"). Confirm the assistant retrieves and displays general information correctly.
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655152/genai-25_gtgiyu.png" alt="preview assistant" caption="preview assistant" />
+  <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1731655368/genai-26_e2szyo.png" alt="assistant response" caption="assistant response" />
+- When prompted for specific interests, provide examples like “food culture” or “sports.” Verify that the assistant generates and displays personalized responses based on the input.
+
+---
 
 ## **Step 6: Previewing and Customizing**
 
