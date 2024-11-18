@@ -1,0 +1,51 @@
+Processing file: tutorials/en/python-vscode-beginner-tutorial.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944979/download-page_dqimxy.png
+Successfully downloaded image to: images/download-page_dqimxy.png
+Uploading image: images/download-page_dqimxy.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36bda14d-c8f1-471f-4c56-e9ed6d721b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36bda14d-c8f1-471f-4c56-e9ed6d721b00/full
+Deleted local image: images/download-page_dqimxy.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944979/donwloading-py_dgghcm.png
+Successfully downloaded image to: images/donwloading-py_dgghcm.png
+Uploading image: images/donwloading-py_dgghcm.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2247a11c-2840-491d-6407-7acb9c4f1c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2247a11c-2840-491d-6407-7acb9c4f1c00/full
+Deleted local image: images/donwloading-py_dgghcm.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731945260/Screenshot_2024-11-16_at_6.28.38_PM_pffjdy.png
+Successfully downloaded image to: images/Screenshot_2024-11-16_at_6.28.38_PM_pffjdy.png
+Uploading image: images/Screenshot_2024-11-16_at_6.28.38_PM_pffjdy.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae91b96a-f4ad-4efa-b429-222a96e35300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae91b96a-f4ad-4efa-b429-222a96e35300/full
+Deleted local image: images/Screenshot_2024-11-16_at_6.28.38_PM_pffjdy.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944978/python-extension_i1aaxn.png
+Successfully downloaded image to: images/python-extension_i1aaxn.png
+Uploading image: images/python-extension_i1aaxn.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1b4bd24e-4968-428f-e3d6-030657fc8500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1b4bd24e-4968-428f-e3d6-030657fc8500/full
+Deleted local image: images/python-extension_i1aaxn.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944978/new-py-file_vb9ct8.png
+Successfully downloaded image to: images/new-py-file_vb9ct8.png
+Uploading image: images/new-py-file_vb9ct8.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c378d6e-6792-4c0d-87f3-c4cceb556a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2c378d6e-6792-4c0d-87f3-c4cceb556a00/full
+Deleted local image: images/new-py-file_vb9ct8.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944975/new-terminal_ppnwcz.png
+Successfully downloaded image to: images/new-terminal_ppnwcz.png
+Uploading image: images/new-terminal_ppnwcz.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e524374a-090c-4c7b-bfcd-7c78f95b3c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e524374a-090c-4c7b-bfcd-7c78f95b3c00/full
+Deleted local image: images/new-terminal_ppnwcz.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944978/run-py-file_qz7yon.png
+Successfully downloaded image to: images/run-py-file_qz7yon.png
+Uploading image: images/run-py-file_qz7yon.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6f58e83f-4152-434a-bdee-a7fac020f900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6f58e83f-4152-434a-bdee-a7fac020f900/full
+Deleted local image: images/run-py-file_qz7yon.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731944973/py-output_gwbjs5.png
+Successfully downloaded image to: images/py-output_gwbjs5.png
+Uploading image: images/py-output_gwbjs5.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99bbf33c-ed06-4a26-df00-8f17f3289c00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/99bbf33c-ed06-4a26-df00-8f17f3289c00/full
+Deleted local image: images/py-output_gwbjs5.png
+Successfully processed file: tutorials/en/python-vscode-beginner-tutorial.mdx
+CHANGES_MADE
