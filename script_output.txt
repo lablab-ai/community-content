@@ -1,0 +1,45 @@
+Processing file: tutorials/en/setting-up-jupyter-notebook.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954573/download-page_b3niom.png
+Successfully downloaded image to: images/download-page_b3niom.png
+Uploading image: images/download-page_b3niom.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0a64519f-7ea2-47af-36a3-77fadcbac200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0a64519f-7ea2-47af-36a3-77fadcbac200/full
+Deleted local image: images/download-page_b3niom.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954572/starting-server_iahyks.png
+Successfully downloaded image to: images/starting-server_iahyks.png
+Uploading image: images/starting-server_iahyks.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5c11725f-cdef-4621-0094-bcfc90908200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5c11725f-cdef-4621-0094-bcfc90908200/full
+Deleted local image: images/starting-server_iahyks.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954573/access-server_rz14k4.png
+Successfully downloaded image to: images/access-server_rz14k4.png
+Uploading image: images/access-server_rz14k4.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8ef7a2a3-1752-4e4c-bd4c-2e25f9a9df00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8ef7a2a3-1752-4e4c-bd4c-2e25f9a9df00/full
+Deleted local image: images/access-server_rz14k4.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731955723/Screenshot_2024-11-16_at_11.05.47_PM_ygdxr0.png
+Successfully downloaded image to: images/Screenshot_2024-11-16_at_11.05.47_PM_ygdxr0.png
+Uploading image: images/Screenshot_2024-11-16_at_11.05.47_PM_ygdxr0.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c572116-8847-4105-9bbb-40cbc1e80900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c572116-8847-4105-9bbb-40cbc1e80900/full
+Deleted local image: images/Screenshot_2024-11-16_at_11.05.47_PM_ygdxr0.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954565/select-kernel_ceivr1.png
+Successfully downloaded image to: images/select-kernel_ceivr1.png
+Uploading image: images/select-kernel_ceivr1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9936b41b-9ced-4dbb-c701-5f223c828a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9936b41b-9ced-4dbb-c701-5f223c828a00/full
+Deleted local image: images/select-kernel_ceivr1.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954564/print-code_wx8igu.png
+Successfully downloaded image to: images/print-code_wx8igu.png
+Uploading image: images/print-code_wx8igu.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/da653349-aece-4dac-5219-d4a45e107800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/da653349-aece-4dac-5219-d4a45e107800/full
+Deleted local image: images/print-code_wx8igu.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1731954580/shutdown-kernel_zjsmgo.png
+Successfully downloaded image to: images/shutdown-kernel_zjsmgo.png
+Uploading image: images/shutdown-kernel_zjsmgo.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2ea829d9-51a8-4ba3-f0f6-ff6f2636cd00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2ea829d9-51a8-4ba3-f0f6-ff6f2636cd00/full
+Deleted local image: images/shutdown-kernel_zjsmgo.png
+Successfully processed file: tutorials/en/setting-up-jupyter-notebook.mdx
+CHANGES_MADE
