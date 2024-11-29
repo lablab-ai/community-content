@@ -1,0 +1,147 @@
+---
+title: "Dataset"
+description: "Introduzione ai Dataset"
+---
+
+# Introduzione ai Dataset
+
+Benvenuti al Llama Hackathon: Impact Rome! Questo documento fornisce una panoramica dei dataset messi a disposizione per l’evento. Questi dataset coprono vari ambiti rilevanti per le sfide sociali e sono pensati per ispirare la creatività nella creazione di soluzioni basate sull’intelligenza artificiale.
+
+L’obiettivo di condividere questi dataset è quello di offrirvi accesso a dati reali che possono essere sfruttati per creare applicazioni ad alto impatto. Ogni sezione contiene dataset che rappresentano diversi domini, come servizi sociali, ambiente, trasporti, sicurezza pubblica e amministrazione civica. Sebbene i dataset siano eterogenei, tutti offrono il potenziale per risolvere problemi concreti attraverso soluzioni innovative basate sull’intelligenza artificiale.
+
+Questi dataset sono stati raccolti e messi a disposizione in collaborazione con [AGID](https://www.agid.gov.it/it), riflettendo un impegno condiviso per garantire la qualità e la rilevanza dei dati utilizzati in questo evento.
+
+---
+
+## **Formati e Preprocessing**
+
+I dataset sono disponibili in una varietà di formati, tra cui **CSV**, **JSON**, **XML**, **GeoJSON** e **GTFS**, tra gli altri. Alcuni sono pronti per essere utilizzati direttamente, mentre altri potrebbero richiedere preprocessing per estrarre informazioni significative. Ecco cosa considerare:
+
+1. **Variabilità dei Formati**: 
+   - **CSV**: Spesso in formato tabellare, facile da utilizzare, ma potrebbe contenere colonne con dati incoerenti o valori mancanti.
+   - **JSON/GeoJSON**: Ottimi per dati gerarchici o geospaziali, ma potrebbero richiedere parsing per estrarre informazioni nidificate.
+   - **XML**: Comune nei dataset normativi o strutturati, potrebbe necessitare di conversione in formati più accessibili (come CSV o JSON) per l'analisi.
+   - **GTFS**: Dataset specializzati per i trasporti pubblici, richiedono familiarità con file specifici come `stops.txt`, `routes.txt` e `trips.txt`.
+
+2. **Pulizia dei Dati**: Alcuni dataset potrebbero includere:
+   - **Dati mancanti o incompleti**, da gestire con tecniche di imputazione o filtraggio.
+   - **Formattazione irregolare** o problemi di codifica che richiedono trasformazioni in una struttura uniforme.
+   - **Delimitatori o suddivisione di colonne multiple** (es. valori separati da `;`).
+
+3. **Combinazione dei Dataset**: Per ottenere analisi più ricche, potreste unire dataset provenienti da diverse sezioni o formati. Questo potrebbe richiedere identificatori chiave (es. codici di località o timestamp) per allineare efficacemente le fonti di dati.
+
+---
+
+## **Panoramica delle Sezioni**
+
+### **1. Servizi Sociali**
+Questa sezione include dataset relativi al welfare e ai servizi sociali in Italia, come:
+- Strutture familiari e distribuzione del reddito (es. Reddito di Cittadinanza).
+- Rapporti mensili sulle malattie professionali.
+- Motivi di assunzione in base alle demografie.
+
+**Possibili Applicazioni**:
+- Modelli di ottimizzazione del welfare.
+- Analisi predittive per politiche sociali.
+
+---
+
+### **2. Ambiente**
+I dataset ambientali coprono:
+- Zone di qualità dell'aria e misurazioni degli inquinanti in città come Milano e regioni come la Puglia.
+- Dati giornalieri delle stazioni di monitoraggio.
+
+**Possibili Applicazioni**:
+- Modelli predittivi per i trend di inquinamento.
+- Strumenti per la consapevolezza ambientale e la pianificazione urbana.
+
+---
+
+### **3. Trasporto**
+Questa sezione contiene dataset in formato GTFS (General Transit Feed Specification), tra cui:
+- Orari, percorsi e posizioni delle fermate dei trasporti pubblici.
+- Dati specifici sui percorsi di metro a Milano e autobus in Piemonte.
+
+**Possibili Applicazioni**:
+- Strumenti per l'ottimizzazione in tempo reale dei trasporti.
+- Soluzioni basate sull'AI per migliorare l'esperienza dei pendolari.
+
+---
+
+### **4. Sicurezza Pubblica**
+I dataset sulla sicurezza pubblica includono:
+- Dati sugli incidenti stradali con dettagli su luogo, tipo di incidente e conseguenze.
+- Dati demografici per la protezione temporanea (es. risposta alla crisi in Ucraina).
+
+**Possibili Applicazioni**:
+- Modelli predittivi per la prevenzione degli incidenti.
+- Strumenti visivi per la distribuzione degli aiuti umanitari.
+
+---
+
+### **5. Dialogo con la Pubblica Amministrazione**
+Questa sezione presenta:
+- Proposte per miglioramenti nei quartieri di Bologna, categorizzate per temi come accessibilità e ambiente.
+
+**Possibili Applicazioni**:
+- Sistemi di supporto decisionale per pianificatori urbani.
+- Strumenti per migliorare il coinvolgimento dei cittadini nella governance locale.
+
+---
+
+## **Come Utilizzare questi Dataset**
+
+I partecipanti sono incoraggiati a:
+1. **Esplorare i Dati**: Familiarizzate con la struttura, il formato e i contenuti di ciascun dataset.
+2. **Effettuare Preprocessing**: Risolvete le incongruenze, pulite i dati mancanti e combinate dataset per scoprire nuovi approfondimenti.
+3. **Sfruttare l'AI**: Applicate tecnologie come machine learning, elaborazione del linguaggio naturale o visione artificiale per amplificare l'impatto dei dataset.
+
+Ricordate, alcuni dataset potrebbero richiedere un lavoro aggiuntivo per essere utilizzabili nelle vostre soluzioni, ma questa è parte della sfida! Attraverso il preprocessing e la trasformazione dei dati, potrete scoprire modelli nascosti e approfondimenti preziosi.
+
+Non vediamo l'ora di vedere come sfrutterete questi dataset per innovare e creare impatti significativi. Buona fortuna!
+
+# Dataset
+
+## Servizi Sociali
+
+| **Titolo Dataset** | **Descrizione Breve** | **Numero di Righe** | **Numero di Colonne** | **Dati Chiave (Tipi)** | **Note Aggiuntive** |
+|--------------------|-----------------------|---------------------|------------------------|------------------------|---------------------|
+| [Numero persone nel Nucleo e importo annuale reddito di cittadinanza diviso per anno. Diviso per area Geografica. Anno 2019](http://www.inps.it/docallegati/Mig/OpenData/CSV/ID-5583.csv) | Dettagli sulle dimensioni del nucleo familiare e distribuzione annuale del “Reddito di Cittadinanza”, categorizzato per area geografica in Italia per l’anno 2019. | 55 | 5 | Anno (Anno, int), Area (Area, str), Numero componenti nucleo (Numero componenti nucleo, str), Presenza di minori (f_mino, int – 1 se nel nucleo sono presenti minori), Reddito annuale (NUM_COMP, float) | - |
+| [Malattie professionali - dati con cadenza mensile - Italia](https://dati.inail.it/opendata/downloads/datimensilimalattieprofessionali/csv/DatiMensiliMalattieProfessionaliDataProtItalia.csv) | Dati mensili sulle malattie professionali in Italia, comprendenti identificazione del caso, dettagli sul lavoratore, diagnosi e registri amministrativi raccolti da Inail. | 118.888 | 1 (richiede suddivisione) | Richiede suddivisione in 9 colonne usando il delimitatore `;`: 1. Data Rilevazione (DataRilevazione, str) 2. Data Protocollo (DataProtocollo, str) 3. Sede Inail Competente (SedeInailCompetente, str) 4. Identificativo Lavoratore (IdentificativoLavoratore, str) 5. Genere (Genere, str) 6. Luogo di Nascita (LuogoNascita, str) 7. Codice ICD-10 (ICD10denunciato, str) 8. Identificativo Caso (IdentificativoCaso, str) 9. Info Gestione (Gestione, str) | - |
+| [Motivi assunzione](https://dati-noipa.mef.gov.it/cl/web/open-data/dataset?p_p_id=it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_anno=2024&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_formato=CSV&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_mese=10&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_id=EntryMotivoAssunzione&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_id=EntryMotivoAssunzione&_it_gov_mef_opendata_portlet_NoipaOpendataPortlet_INSTANCE_k0QJbYynlaqN_jspPage=%2Fdettaglio%2FdettaglioDataSet.jsp&) | Dettagli sui motivi di assunzione in Italia, categorizzati per ente amministrativo, località, fascia d’età, genere e motivo di assunzione, con conteggi inclusi. | 8.389 | 7 | Provincia della sede (provincia_della_sede, str), Amministrazione (amministrazione, str), Età minima (eta_min, int), Età massima (eta_max, str), Genere (sesso, str), Motivo di assunzione (motivo_assunzione, str), Numero di assunzioni (numero, int) | L’1,57% dei dati amministrativi non è pubblicato per motivi di privacy. |
+| [SMARTCIG anno 2022](https://www.dati.gov.it/view-dataset/dataset?id=326ea89f-9a3d-4ec0-b2d6-7967cefe80b5) | Raccolta di più dataset contenenti informazioni dettagliate sugli appalti pubblici pubblicati nel 2022, forniti in vari formati e aggiornati mensilmente. | Variabile per file | Variabile per file | Esempio di dati: Data dell’appalto, Tipo di contratto, Contraente, Valore del contratto, Regione, Stato (Variano in base al formato del file: CSV, JSON, TTL). Ogni file include informazioni specifiche per mesi e formati. | I dati includono dettagli sugli appalti del 2022, pubblicati mensilmente. Formati: CSV, JSON, TTL. Aggiornati al 15/11/2024. |
+
+---
+
+## L’Ambiente
+
+| **Titolo Dataset** | **Descrizione Breve** | **Numero di Righe** | **Numero di Colonne** | **Dati Chiave (Tipi)** | **Note Aggiuntive** |
+|--------------------|-----------------------|---------------------|------------------------|------------------------|---------------------|
+| [Qualità dell’Aria Zone e agglomerati - Dataset](https://drive.google.com/file/d/1vGTWqSETYh-T4wM0WaJEZFMIvO6ZLYEs/view?usp=sharing) | Informazioni sulle zone di qualità dell’aria e sugli agglomerati in Italia, incluse informazioni geografiche, demografiche e normative. | 98 | 30 | - localId (str): Identificativo unico per ogni record. - zoneCode (str): Codice della zona di qualità dell’aria. - residentPopulation (float): Popolazione residente nella zona. - area (float): Superficie della zona in chilometri quadrati. - dateEnteredIntoForce (str): Data di entrata in vigore. - posList (str): Coordinate per il posizionamento geografico. | Estratto da un file XML conforme agli standard europei di segnalazione sulla qualità dell’aria. Include informazioni su zone, regioni e conformità normativa. |
+| [Rilevazione qualità aria 2024](https://drive.google.com/file/d/1L1M1xDLk5Z7J8L0Fd5QmzTWkCOAphsRZ/view?usp=sharing) | Rilevazioni giornaliere sulla qualità dell’aria a Milano nel 2024, registrate dalle stazioni di monitoraggio in città. | Variabile (giornaliera) | 5 | - data (str): Data della misurazione. - codstazione (str): Identificativo della stazione. - inquinante (str): Tipo di inquinante. - valore (float): Concentrazione dell’inquinante. - unita_misura (str): Unità di misura (tipicamente µg/m³). | Dati raccolti da AMAT - Agenzia Mobilità Ambiente Territorio e aggiornati quotidianamente. |
+| [Aria - Arpa Puglia API](https://drive.google.com/file/d/1K4jR__sRVWp3ay5oRM-jdyPx-qFrQKG3/view?usp=sharing) | Snapshot sui dati della qualità dell’aria di ARPA Puglia, incluse informazioni sulle stazioni e concentrazioni di inquinanti. | Fisso | 30 | - id_station (str): ID della stazione. - denominazione (str): Nome della stazione. - inquinante_misurato (str): Tipo di inquinante. - valore_inquinante_misurato (float): Concentrazione dell’inquinante. - data_di_misurazione (date): Data della misurazione. - coordinates (list): Posizione geografica. | Dati estratti in formato GeoJSON; includono metadati per ogni stazione, limiti degli inquinanti e superamenti. |
+
+---
+
+## Trasporto
+
+| **Titolo Dataset** | **Descrizione Breve** | **Numero di Righe** | **Numero di Colonne** | **Dati Chiave (Tipi)** | **Note Aggiuntive** |
+|--------------------|-----------------------|---------------------|------------------------|------------------------|---------------------|
+| [Dataset GTFS sul Trasporto Pubblico in Italia](https://www.dati.gov.it/view-dataset?Cerca=GTFS&tags_set=&tags=&ordinamento=&groups=trasporti&sort=Invia) | Collezione di dataset GTFS (General Transit Feed Specification) che coprono trasporti pubblici locali e regionali in Italia, inclusi orari, fermate e percorsi. | Variabile | Variabile | I file GTFS includono: - stops.txt: Posizioni delle fermate. - routes.txt: Dettagli sui percorsi. - trips.txt: Orari delle corse. - calendar.txt: Giorni operativi. | GTFS è un formato standard per i dati sui trasporti pubblici, consentendo l’integrazione con strumenti come Google Maps. Include dataset per Milano, Lecce, Lombardia, Trentino, Matera, Roma e Piemonte. Ultimi aggiornamenti dal 2016 al 2024. |
+| [ATM - Orari linee metropolitane MILANO](https://drive.google.com/file/d/1n3iYhO3yIKh1UM35Xv1rAYAVx4C4S81F/view?usp=sharing) | Informazioni sugli orari delle linee metro di Milano, inclusi percorsi, tempi e conteggi delle corse per varie fasce orarie. | 120 | 12 | - linea (str): Numero della linea metro. - mezzo (str): Tipo di trasporto (METRO). - percorso (str): Identificativo univoco del percorso. - orario (str): Versione dell’orario. - tipo_giorno (str): Tipo di giorno (feriale, festivo, ecc.). - inizio e fine (str): Orari di inizio e fine. | Il dataset è in formato GeoJSON. La colonna `geometry` è vuota, quindi non sono inclusi dati geografici. |
+| [Servizio programmato del Trasporto Pubblico Regione Piemonte (TPL) - Autobus](https://s3.gtfs.pro/files/sourcedata/piemonte-autobus.zip) | Dataset GTFS per il servizio autobus programmato nella regione Piemonte, con dettagli su percorsi, corse e orari. | Variabile | GTFS standard | File GTFS includono: - agency.txt: Dettagli dell’agenzia. - routes.txt: Dettagli sui percorsi. - stops.txt: Posizioni delle fermate. - trips.txt: Orari delle corse. - calendar.txt: Giorni operativi. | Dataset GTFS standard per la regione Piemonte, utile per pianificazione e integrazione con strumenti di transito. |
+
+---
+
+## Sicurezza Pubblica
+
+| **Titolo Dataset** | **Descrizione Breve** | **Numero di Righe** | **Numero di Colonne** | **Dati Chiave (Tipi)** | **Note Aggiuntive** |
+|--------------------|-----------------------|---------------------|------------------------|------------------------|---------------------|
+| [Protezione temporanea - UKR](https://drive.google.com/file/d/1mUBvtgyNRd5j3igzMIemUJTLciv-OeYk/view?usp=sharing) | Dettagli sugli individui con protezione temporanea in Italia sotto la risposta alla crisi in Ucraina, inclusi dati demografici e geografici. | 151.898 | 14 | - update (str): Timestamp dell’aggiornamento dati. - gender (str): Genere. - age (int): Età. - country_birth (str): Paese di nascita. - nationality (str):
+| [Dataset sugli Incidenti Stradali in Italia]( https://www.dati.gov.it/view-dataset?Cerca=incidenti&tags_set=&tags=&ordinamento=&groups=giustizia&sort=Invia) | Raccolta di dataset sugli incidenti stradali in diverse regioni e comuni italiani, incluse analisi statistiche, tipologie di incidenti e dettagli geografici. | Variabile | Variabile | - Formati inclusi: CSV, JSON, XML, RDF, TSV, XLS e XLSX. - Dati chiave variabili per dataset e possono includere: tipo di incidente, orario, posizione, numero di morti e feriti, e veicoli coinvolti. | Include dataset di Lombardia, Bari, Messina, Povoletto e Puglia. Dati dal 2013 al 2024, coprendo rapporti regionali e comunali. |
+
+## Dialogo con la Pubblica Amministrazione
+
+| **Titolo Dataset** | **Descrizione Breve** | **Numero di Righe** | **Numero di Colonne** | **Dati Chiave (Tipi)** | **Note Aggiuntive** |
+|--------------------|-----------------------|---------------------|------------------------|------------------------|---------------------|
+| [Proposte di Quartiere - Tipologie Puntuali](https://opendata.comune.bologna.it/api/v2/catalog/datasets/proposte-di-quartiere-tipologie-puntuali/exports/csv?use_labels=true) | Proposte per miglioramenti nei quartieri di Bologna, Italia, categorizzate per temi come accessibilità, ambiente e coinvolgimento della comunità. | 107 | 17 | - Geo Point (str): Latitudine e longitudine. - Geo Shape (str): Dati geospaziali in formato GeoJSON. - Nome (str): Titolo della proposta. - Quartiere (str): Nome del quartiere. - Campi tematici (es. 1B_persone, 2B_piccoli) descrivono categorie specifiche di miglioramenti. | Include dati geografici per analisi spaziale e un’ampia gamma di proposte in diversi quartieri. |
