@@ -1,0 +1,57 @@
+Processing file: blog/en/Touch-Sense-Collaborate.mdx
+Downloading image from URL: https://iili.io/2AGP7Uu.png
+Successfully downloaded image to: images/2AGP7Uu.png
+Uploading image: images/2AGP7Uu.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/253c90b7-3bcf-4dc9-af05-578e8cd0d000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/253c90b7-3bcf-4dc9-af05-578e8cd0d000/full
+Deleted local image: images/2AGP7Uu.png
+Downloading image from URL: https://iili.io/2AGPaHb.png
+Successfully downloaded image to: images/2AGPaHb.png
+Uploading image: images/2AGPaHb.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/722b7740-1ffd-47c4-b394-b04061cd9200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/722b7740-1ffd-47c4-b394-b04061cd9200/full
+Deleted local image: images/2AGPaHb.png
+Downloading image from URL: https://iili.io/2AGPExV.png
+Successfully downloaded image to: images/2AGPExV.png
+Uploading image: images/2AGPExV.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/94b92b34-b1fc-40e5-991c-0ee0aaa0e200/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/94b92b34-b1fc-40e5-991c-0ee0aaa0e200/full
+Deleted local image: images/2AGPExV.png
+Downloading image from URL: https://iili.io/2AGP5le.png
+Successfully downloaded image to: images/2AGP5le.png
+Uploading image: images/2AGP5le.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba77711d-8dda-4cdd-38d8-7ef5b4491f00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba77711d-8dda-4cdd-38d8-7ef5b4491f00/full
+Deleted local image: images/2AGP5le.png
+Downloading image from URL: https://iili.io/2AGPX0F.png
+Successfully downloaded image to: images/2AGPX0F.png
+Uploading image: images/2AGPX0F.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/376d4106-abf9-485c-589b-6e748624c700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/376d4106-abf9-485c-589b-6e748624c700/full
+Deleted local image: images/2AGPX0F.png
+Downloading image from URL: https://iili.io/2AGPWf1.png
+Successfully downloaded image to: images/2AGPWf1.png
+Uploading image: images/2AGPWf1.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b63b3910-e49b-4204-6aa1-637f47a48900/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b63b3910-e49b-4204-6aa1-637f47a48900/full
+Deleted local image: images/2AGPWf1.png
+Downloading image from URL: https://iili.io/2AGPMiP.png
+Successfully downloaded image to: images/2AGPMiP.png
+Uploading image: images/2AGPMiP.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8968d47-c0c2-443a-c268-f78128db7000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8968d47-c0c2-443a-c268-f78128db7000/full
+Deleted local image: images/2AGPMiP.png
+Downloading image from URL: https://iili.io/2AGPwJa.png
+Successfully downloaded image to: images/2AGPwJa.png
+Uploading image: images/2AGPwJa.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ed9d82da-fb72-4624-3690-53ec1be5a400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ed9d82da-fb72-4624-3690-53ec1be5a400/full
+Deleted local image: images/2AGPwJa.png
+Downloading image from URL: https://iili.io/2AGPhUg.png
+Successfully downloaded image to: images/2AGPhUg.png
+Uploading image: images/2AGPhUg.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/51e40d15-8d1a-4de7-dc0a-767d3527ac00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/51e40d15-8d1a-4de7-dc0a-767d3527ac00/full
+Deleted local image: images/2AGPhUg.png
+Successfully processed file: blog/en/Touch-Sense-Collaborate.mdx
+CHANGES_MADE

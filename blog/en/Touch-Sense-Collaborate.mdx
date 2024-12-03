@@ -1,0 +1,178 @@
+---
+title: "Touch, Sense, and Collaborate: Meta’s New Tools for the Robotics Frontier"
+description: "Blog regarding Meta´s latest advancements on touch oriented technology"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4a19cc98-703a-4452-2c49-3f524e236700/full"
+authorUsername: "CarlosMRF"
+---
+# Touch, Sense, and Collaborate: Meta’s New Tools for the Robotics Frontier  
+**Tuesday, November 6th, 2024**  
+*by CarlosMRF*  
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/253c90b7-3bcf-4dc9-af05-578e8cd0d000/full" alt="Robot finger touching a coral" />
+  </div>
+---
+
+## TOUCH: The Newest Sense to Take the Virtual Stage  
+Hello there! I’m Carlos Martinez Reding, here to dive into the latest from Meta’s AI and robotics research team. Today, we’re exploring new tools that bring tactile perception to the digital space, including **Meta Sparsh**, **Meta Digit 360**, and the versatile **Meta Digit Plexus platform**. These technologies aim to enhance touch, dexterity, and collaboration between humans and robots, paving the way for the next generation of intelligent machines. Let’s see what these advancements mean for the future of human-robot interaction!
+
+---
+
+## Breaking Down: The Latest Touch Technologies from META FAIR  
+
+### **Meta Sparsh: A New Approach to Touch Perception**  
+Meta introduces Sparsh, a general-purpose encoder for vision-based tactile sensors, to tackle the challenges of touch perception in AI and robotics. Unlike traditional task-specific models that require extensive labeling and custom training, Sparsh leverages **self-supervised learning (SSL)** to train on 460,000+ unlabeled tactile images.  This approach allows Sparsh to work across different tactile sensors and tasks, covering a variety of essential touch-related tasks from estimating tactile properties like force and slip to facilitating manipulation planning.
+A key component of Sparsh's introduction is the TacBench benchmark, which encompasses six touch-centric tasks designed to evaluate the efficacy of models in handling tasks such as tactile property comprehension and object manipulation. Through TacBench, Sparsh outperformed task-specific models by an average of 95.1%, underscoring the effectiveness of SSL in tactile representation learning. Notably, Sparsh's variants DINO and IJEPA showed competitive results, outperforming other models and demonstrating the advantages of latent-space learning over pixel-based approaches for tactile perception.
+This innovation, coupled with partnerships with GelSight and Wonik Robotics, aims to commercialize advanced tactile sensing hardware, making tactile sensors more accessible to researchers and developers.
+
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/722b7740-1ffd-47c4-b394-b04061cd9200/full" alt="graph showing sparsh´s different models and their affinity for different attributes in regards to touch" />
+  </div>
+
+for a deeper look into this awesome technology, you can 📄 **[Read the paper](#)**  , 💾 **[Download the code](#)**   and also 📦 **[Explore the dataset and models](#)**   that the researchers at META published on huggingface. 
+
+Key Highlights:  
+- Works across different tactile sensors and tasks.  
+- Covers touch-related tasks like force and slip estimation and manipulation planning.  
+- Outperformed task-specific models by **95.1%** on the TacBench benchmark, which evaluates tactile property comprehension and object manipulation.  
+
+---
+
+### **Meta Digit 360: Expanding Tactile Sensing Capabilities**  
+Meta Digit 360 takes tactile sensing to a new level with a fingertip-inspired design capable of capturing nuanced physical details with over 18 sensing features. Using a customized optical system with over 8 million taxels, it can detect intricate forces and changes, enabling AI systems to perceive textures, vibrations, heat, and even odors with near-human precision. The Digit 360’s multimodal sensory data opens doors for advancements in fields from healthcare to virtual reality by allowing AI to model interactions more realistically.
+Meta's AI Research team, in partnership with GelSight Inc., is calling for proposals from universities and research organizations to explore the capabilities of the next-generation touch sensor, Digit 360. This initiative seeks to accelerate research, foster open-source development, and contribute to the broader scientific community. Researchers will receive fully assembled Digit 360 sensors at no cost, provided they apply them in rigorous, creative ways within their research projects.
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/94b92b34-b1fc-40e5-991c-0ee0aaa0e200/full" alt="hands showing to artificial digits (fingers)" />
+  </div>
+
+As with Sparsh, you can 📄 **[Read the paper](#)** published by META, as well as visit the website and 💾 **[Download the code and design](#)**  uploaded to Github.
+
+Key Features:  
+- Detects intricate physical changes and textures.  
+- Opens applications in healthcare, virtual reality, and robotics.  
+- Free Digit 360 sensors for research proposals to foster development.  
+
+
+---
+
+### **Meta Digit Plexus and Allegro Hand Collaboration**  
+Meta is partnering with Wonik Robotics to develop the next-generation Allegro Hand, a fully integrated robotic hand featuring tactile sensors. This collaboration builds upon the Meta Digit Plexus platform, which serves as a hardware-software solution designed to seamlessly integrate tactile sensors, such as Digit, Digit 360, and ReSkin, into robotic hands.
+The Allegro Hand is set to advance robotics research by simplifying the experimental process for researchers. By using the Digit Plexus platform, the Allegro Hand will allow for easy interfacing of vision-based and skin-based tactile sensors across the fingertips, fingers, and palm. The platform encodes all sensory data onto a control board, which is then transmitted to a host computer, enabling effective data collection and analysis via a single cable.
+Wonik Robotics is set to manufacture and distribute the Allegro Hand, with a planned release for next year. Those interested in staying up-to-date on its availability can sign up via the interest form provided by Meta. This collaboration promises to further the development of tactile sensing technology, ultimately pushing the boundaries of robotic capabilities.
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ba77711d-8dda-4cdd-38d8-7ef5b4491f00/full" alt="Artificial hand holding a marble" />
+  </div>
+  
+for this technology, META has published a direct link to 💾 **[Download the code and designs](#)**   from github
+
+
+Key Features:  
+- Uses the Digit Plexus platform for seamless hardware-software integration.  
+- Simplifies research with a single cable for sensory data collection.  
+- Allegro Hand release planned for next year.  
+
+
+---
+
+### **GelSight Inc and Wonik Robotics: Partners in Touch and Dexterity**  
+We find that its important to note that the developers at Meta ar not making this advancements on their own, as they have chosen to become partnered with GelSight Inc and Wonik Robotics to develop, manufacture, and distribute Digit 360 and Allegro Hand, two advanced tools designed to expand the reach of tactile sensing in AI. GelSight Inc will handle production and distribution of Digit 360, opening a call for research proposals for early access to their platform. Wonik Robotics, on the other hand, will release a tactile-integrated Allegro Hand, enabling researchers to dive deeper into touch-sensitive robotics without building from scratch.
+
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/376d4106-abf9-485c-589b-6e748624c700/full" alt="Sci-Fi robotic hand" />
+  </div>
+you can visit their respective websites with the following links:
+ 
+🔗 **[Visit GelSight](#)**  
+🔗 **[Visit Wonik Robotics](#)**  
+
+
+---
+
+## PARTNR and Habitat 3.0: A New Era for Human-Robot Collaboration  
+
+# PARTNR and Habitat 3.0: A New Era for Human-Robot Collaboration
+
+The PARTNR (Planning And Reasoning Tasks in humaN-Robot collaboration) benchmark plays a crucial role in evaluating human-robot coordination within everyday environments. It includes 100,000 natural language tasks across 60 homes, incorporating 5,819 unique objects. Designed to address the challenges of spatial, temporal, and agent capability constraints, PARTNR offers a comprehensive framework for studying the collaboration between humans and robots in household activities. The benchmark leverages Large Language Models (LLMs) to generate tasks, and incorporates simulations for task grounding and verification.
+
+A key finding from PARTNR is that state-of-the-art LLMs struggle with task coordination and tracking, often requiring more steps than humans working together. This emphasizes the need for better error recovery and task management. Interestingly, fine-tuning smaller LLMs on planning-specific data shows significant performance improvements, offering a potential path forward for more efficient and effective human-robot collaboration.
+
+Alongside PARTNR, Habitat 3.0 serves as a powerful simulation platform to further study collaborative tasks in home environments. Habitat 3.0 contributes across three critical dimensions:
+
+1. **Accurate Humanoid Simulation:** It addresses challenges in modeling complex, deformable bodies and diverse motions while maintaining high simulation speed.
+2. **Human-in-the-loop Infrastructure:** This allows real humans to interact with simulated robots, either via mouse/keyboard or VR interfaces, providing a real-world evaluation of robot policies.
+3. **Collaborative Tasks:** Habitat 3.0 focuses on two key tasks:  
+   - **Social Navigation:** Tests a robot's ability to navigate and follow humanoid avatars in unseen environments.  
+   - **Social Rearrangement:** Studies collaboration between robots and humans when rearranging scenes.
+
+These features of Habitat 3.0 enable in-depth exploration of robot learning policies, focusing on how robots collaborate with humans in novel scenarios. For example, robots demonstrate emergent behaviors, such as yielding space to humans to facilitate task completion. Moreover, the integration of human input during simulations allows for more accurate policy evaluations, particularly in understanding how robots collaborate with human partners in real-world situations.
+
+
+### **PARTNR Benchmark**  
+- Evaluates human-robot coordination with 100,000+ natural language tasks.  
+- Highlights LLMs’ limitations in task tracking and recovery.  
+
+### **Habitat 3.0**  
+- Simulates collaborative tasks in home environments.  
+- Enables human-robot interactions through VR and other interfaces.  
+- Focuses on Social Navigation and Social Rearrangement tasks.  
+
+These platforms aim to improve robots' ability to collaborate with humans in dynamic settings.  
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b63b3910-e49b-4204-6aa1-637f47a48900/full" alt="table showing the process followed for PARTNR to perform tasks" />
+  </div>
+
+📄 **[Read more about PARTNR and Habitat 3.0](#)**  
+
+---
+
+## AI with Digitized Touch: Advancements and Implications  
+The development of an **artificial multimodal fingertip** represents a leap forward, mimicking human tactile capabilities with **8.3 million taxels**.  
+
+Applications:  
+- Healthcare (e.g., prosthetics).  
+- Robotics for industrial, medical, and agricultural purposes.  
+- Virtual reality and e-commerce (haptic feedback).  
+
+This innovation integrates touch with AI, creating reflex-like responses and enabling deeper human-machine connections.  
+
+---
+
+## What Is the Community Saying?  
+
+### **Key Reactions**  
+- **Michael Allen**: Applauds the collaboration between GelSight and Wonik Robotics for advancing tactile technologies.
+- 
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8968d47-c0c2-443a-c268-f78128db7000/full" alt="These innovations significantly improve the accuracy and application flexibility of robot tactile perception. Through cooperation with GelSight and Wonik Robotics, Meta has promoted the commercial application of tactile sensing technology in the fields of medicine, manufacturing, etc. At the same time, the release of the PARTNR benchmark will accelerate the research of human-machine collaboration and promote the development of robots in practical scenarios such as homes. These advances have laid a solid foundation for the future of robotics and promoted greater breakthroughs in the collaboration between AI and humans." />
+  </div>
+  User Michael Allen, on Linkedin, left us with a poignant remark on how the collaboration between  GelSight and Wonik Robotics, bring great news for the future of this technologies 
+
+- **TuringPost (@TheTuringPost)**: Detailed a thread on Meta Sparsh developments.
+
+<div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ed9d82da-fb72-4624-3690-53ec1be5a400/full" alt="Detailed thread on Meta Sparsh developments" />
+  </div>
+  Popular X page TuringPost (@TheTuringPost), made a very handy thread detaoiling some of the most specific developments in regards to META sparsh
+
+- **Bota Systems AG**: Congratulated Meta AI for its advancements in virtual touch.
+
+ <div align="center">
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/51e40d15-8d1a-4de7-dc0a-767d3527ac00/full" alt="" />
+  </div>
+Popular Linkedin page Bota Systems AG congratulates AI at Meta for the important advancements they´ve made in the relatively uncharted space of virtual touch
+
+---
+
+## Conclusion: Transforming Human-Robot Collaboration and Touch Perception  
+The integration of tactile sensing, self-supervised learning, and collaboration benchmarks signifies a leap in AI-driven robotics. Efforts like PARTNR, Sparsh, and Habitat 3.0 show promise for enhancing human-robot interaction in real-world environments.  
+
+With open-source contributions and partnerships, the future of AI and robotics looks collaborative, adaptive, and bright.  
+
+---
+
+### **P.S. Want to put your AI skills to the test?**  
+🚀 **[Explore our AI Hackathons](#)**  
