@@ -1,27 +1,33 @@
-Processing file: blog/en/openai-day-2-reinforcement-fine-tuning-brings-strategic-shift-in-ai-development.mdx
-Downloading image from URL: https://iili.io/2M2ET8J.png
-Successfully downloaded image to: images/2M2ET8J.png
-Uploading image: images/2M2ET8J.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e18382c1-a8a6-474d-cc60-dfaa3cda1d00/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e18382c1-a8a6-474d-cc60-dfaa3cda1d00/full
-Deleted local image: images/2M2ET8J.png
-Downloading image from URL: https://iili.io/2M2Eo6F.png
-Successfully downloaded image to: images/2M2Eo6F.png
-Uploading image: images/2M2Eo6F.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f5b49aa-1b75-4a48-5558-f6c1c47d4200/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f5b49aa-1b75-4a48-5558-f6c1c47d4200/full
-Deleted local image: images/2M2Eo6F.png
-Downloading image from URL: https://iili.io/2M2Ez3g.png
-Successfully downloaded image to: images/2M2Ez3g.png
-Uploading image: images/2M2Ez3g.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/01b396b6-8ed1-4d4a-cdef-49ffb5a3f300/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/01b396b6-8ed1-4d4a-cdef-49ffb5a3f300/full
-Deleted local image: images/2M2Ez3g.png
-Downloading image from URL: https://iili.io/2M2EIaa.png
-Successfully downloaded image to: images/2M2EIaa.png
-Uploading image: images/2M2EIaa.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8910385-5d3c-43a6-6138-ed509f04a300/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8910385-5d3c-43a6-6138-ed509f04a300/full
-Deleted local image: images/2M2EIaa.png
-Successfully processed file: blog/en/openai-day-2-reinforcement-fine-tuning-brings-strategic-shift-in-ai-development.mdx
+Processing file: tutorials/en/xai-custom-workflows.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/streamlit-start_t8mjh2.png
+Successfully downloaded image to: images/streamlit-start_t8mjh2.png
+Uploading image: images/streamlit-start_t8mjh2.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a2dbb7c5-88e6-4483-7c30-37a9fe6a9100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a2dbb7c5-88e6-4483-7c30-37a9fe6a9100/full
+Deleted local image: images/streamlit-start_t8mjh2.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/image-upload_rcfmxg.png
+Successfully downloaded image to: images/image-upload_rcfmxg.png
+Uploading image: images/image-upload_rcfmxg.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c55a03ed-59e6-49b3-d155-aadbd162fe00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c55a03ed-59e6-49b3-d155-aadbd162fe00/full
+Deleted local image: images/image-upload_rcfmxg.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/extract-text_ozuwzi.png
+Successfully downloaded image to: images/extract-text_ozuwzi.png
+Uploading image: images/extract-text_ozuwzi.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc203d5b-63d3-4637-d059-54ab02ff1a00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/cc203d5b-63d3-4637-d059-54ab02ff1a00/full
+Deleted local image: images/extract-text_ozuwzi.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/get-summary_zt8odd.png
+Successfully downloaded image to: images/get-summary_zt8odd.png
+Uploading image: images/get-summary_zt8odd.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/31758d65-81f6-4892-8970-58039a226300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/31758d65-81f6-4892-8970-58039a226300/full
+Deleted local image: images/get-summary_zt8odd.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/get-insights_ud0g3f.png
+Successfully downloaded image to: images/get-insights_ud0g3f.png
+Uploading image: images/get-insights_ud0g3f.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1b65246e-52eb-48c3-4829-059f8e0cda00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1b65246e-52eb-48c3-4829-059f8e0cda00/full
+Deleted local image: images/get-insights_ud0g3f.png
+Successfully processed file: tutorials/en/xai-custom-workflows.mdx
 CHANGES_MADE
