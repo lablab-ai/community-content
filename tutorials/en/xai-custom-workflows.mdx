@@ -1,0 +1,334 @@
+---
+title: "Custom AI Workflows: Multi-Step Pipelines Using xAI"
+description: "Discover how to harness the power of AI to turn images into meaningful insights with a streamlined, interactive application!"
+image: ""
+authorUsername: "TommyA"
+---
+
+# Custom AI Workflows: Multi-Step Pipelines Using xAI
+
+Hello! It’s Tommy again, and I’m thrilled to take you on an exciting journey to explore how AI can simplify complex workflows. Today, we’ll create a practical AI-powered pipeline using xAI. In this tutorial, you’ll learn how to extract text from an image, summarize the content, and generate actionable insights seamlessly—all within a single workflow.
+
+We’ll be using **xAI’s [Grok](https://lablab.ai/tech/x-ai/grok) API** for backend processing and Streamlit to build an interactive user interface. By the end of this tutorial, you’ll gain hands-on experience with building a robust application that integrates AI seamlessly into practical workflows. Let’s get started on this rewarding journey!
+
+## Prerequisites
+
+Before diving in, ensure you have the following installed:
+
+1. **Conda**: For environment management.
+2. **Python 3.8+**
+3. **Streamlit**: For creating the app interface.
+4. **xAI API access**: Obtain an API key from [xAI](https://console.x.ai/).
+
+---
+
+## Step 1: Setting Up the Environment
+
+We'll use Conda to create an isolated environment for this project.
+
+1. **Create the Conda Environment**:
+
+   ```bash
+   conda create -n custom_ai_pipelines python=3.11-y
+   ```
+
+2. **Activate the Environment**:
+
+   ```bash
+   conda activate custom_ai_pipelines
+   ```
+
+3. **Install Dependencies**:
+
+   Create a `requirements.txt` file with the following contents:
+
+   ```plaintext
+   python-dotenv
+   openai
+   streamlit
+   ```
+
+   Install the dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Set Up Environment Variables**:
+
+   Create a `.env` file in the project directory:
+
+   ```plaintext
+   XAI_API_KEY="your_xai_api_key"
+   ```
+
+---
+
+## Step 2: Project Structure
+
+Organize your project as follows:
+
+```
+project/
+|
+├── main.py                # Streamlit application
+├── helpers/
+│   ├── image_utils.py     # Functions for image encoding
+│   ├── api_utils.py       # API interaction with xAI
+│   └── __init__.py        # Package initialization
+├── requirements.txt       # Python dependencies
+└── .env                   # Environment variables
+```
+
+## Step 3: Writing Helper Functions
+
+### 1. **Image Utilities**
+
+Create a `helpers/image_utils.py` file to encode images into Base64 format:
+
+```python
+import base64
+
+def encode_image_to_base64(image_path: str) -> str:
+    """
+    Encode an image to a Base64 string.
+
+    Args:
+        image_path (str): Path to the image file.
+
+    Returns:
+        str: Base64 encoded string of the image.
+    """
+    with open(image_path, 'rb') as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
+```
+
+### 2. **API Utilities**
+
+Create a `helpers/api_utils.py` file to interact with xAI's Grok API. Each function in this file serves a specific purpose in the multi-step pipeline:
+
+- **extract_text_from_image**: This function uses the Grok Vision API to process a Base64-encoded image and extract text from it. It sends the encoded image as input to the API and retrieves the extracted text as a string.
+
+- **summarize_text**: This function takes the extracted text as input and leverages the Grok API to produce a concise summary. It is useful for distilling long pieces of text into manageable insights.
+
+- **generate_insights**: This function processes the summary to generate actionable insights. It uses the Grok API to analyze the summarized information and provide meaningful outputs that can guide decision-making.
+
+These functions are modular, making it easy to maintain and extend the workflow as needed.
+
+```python
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
+
+# Load environment variables
+load_dotenv()
+
+# Configure the OpenAI client for xAI's Grok API
+api_key = os.getenv("XAI_API_KEY")
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.x.ai/v1",
+)
+
+def extract_text_from_image(image_base64: str) -> str:
+    """
+    Extract text from an image using Grok Vision API.
+
+    Args:
+        image_base64 (str): Base64 encoded image string.
+
+    Returns:
+        str: Extracted text from the image.
+    """
+    response = client.chat.completions.create(
+        model="grok-vision-beta",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": "Extract and give me the text in the image provided, and nothing else no intro"
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{image_base64}"
+                        }
+                    }
+                ]
+            }
+        ],
+        temperature=0.7,
+        max_tokens=500,
+        n=1
+    )
+    return response.choices[0].message.content.strip()
+
+def summarize_text(text: str) -> str:
+    """
+    Summarize extracted text using Grok API.
+
+    Args:
+        text (str): Extracted text.
+
+    Returns:
+        str: Summary of the text.
+    """
+    response = client.chat.completions.create(
+        model="grok-beta",
+        messages=[
+            {
+                "role": "user",
+                "content": f"Summarize the following text:\n\n{text}"
+            }
+        ],
+        temperature=0.7,
+        max_tokens=200,
+        n=1
+    )
+    return response.choices[0].message.content.strip()
+
+def generate_insights(summary: str) -> str:
+    """
+    Generate actionable insights from a summary using Grok API.
+
+    Args:
+        summary (str): Summary of the text.
+
+    Returns:
+        str: Actionable insights derived from the summary.
+    """
+    response = client.chat.completions.create(
+        model="grok-beta",
+        messages=[
+            {
+                "role": "user",
+                "content": f"Based on the following summary, generate actionable insights:\n\n{summary}"
+            }
+        ],
+        temperature=0.7,
+        max_tokens=200,
+        n=1
+    )
+    return response.choices[0].message.content.strip()
+```
+
+---
+
+## Step 4: Building the Streamlit App
+
+Create a `main.py` file for the Streamlit app. This file serves as the main entry point for the application. It uses Streamlit to create an interactive user interface that allows users to upload an image, extract text using the xAI Grok Vision API, summarize the text, and generate actionable insights. The app leverages session state to retain data between user interactions, ensuring that results like extracted text, summaries, and insights persist as the user progresses through each step of the workflow.
+
+```python
+import streamlit as st
+from helpers.image_utils import encode_image_to_base64
+from helpers.api_utils import extract_text_from_image, summarize_text, generate_insights
+
+# Initialize session state variables
+if "extracted_text" not in st.session_state:
+    st.session_state.extracted_text = ""
+if "summary" not in st.session_state:
+    st.session_state.summary = ""
+if "insights" not in st.session_state:
+    st.session_state.insights = ""
+
+st.title("Image-to-Insights Workflow with Grok Vision")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+
+if uploaded_file:
+    # Display the uploaded image
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+
+    # Save the image to a temporary location
+    with open("temp_image.jpg", "wb") as f:
+        f.write(uploaded_file.read())
+
+    # Encode image to Base64
+    st.info("Encoding image...")
+    image_base64 = encode_image_to_base64("temp_image.jpg")
+    st.success("Image encoded successfully!")
+
+    # Call API to extract text
+    st.info("Extracting text from the image...")
+    st.session_state.extracted_text = extract_text_from_image(image_base64)
+    st.success("Text extracted successfully!")
+
+# Display the extracted text
+if st.session_state.extracted_text:
+    st.subheader("Extracted Text:")
+    st.text_area("Extracted Text", st.session_state.extracted_text, height=200)
+
+    # Summarize the extracted text
+    if st.button("Summarize Text"):
+        st.info("Summarizing text...")
+        st.session_state.summary = summarize_text(st.session_state.extracted_text)
+        st.success("Text summarized successfully!")
+
+# Display the summary
+if st.session_state.summary:
+    st.subheader("Summary:")
+    st.text_area("Summary", st.session_state.summary, height=150)
+
+    # Generate insights from the summary
+    if st.button("Generate Insights"):
+        st.info("Generating actionable insights...")
+        st.session_state.insights = generate_insights(st.session_state.summary)
+        st.success("Insights generated successfully!")
+
+# Display the insights
+if st.session_state.insights:
+    st.subheader("Actionable Insights:")
+    st.text_area("Insights", st.session_state.insights, height=150)
+```
+
+## Step 5: Running the Streamlit Application
+
+Once you have set up your project and written all the necessary code, it’s time to run the Streamlit application. To do this:
+
+1. **Run the Application**:
+
+   Execute the following command in your terminal from the project directory:
+
+   ```bash
+   streamlit run main.py
+   ```
+
+   You will see output similar to the following in your terminal:
+   <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/streamlit-start_t8mjh2.png" alt="streamlit running" caption="Application running locally" />
+
+2. **Interact with the App**:
+
+   - Upload an image using the provided interface.
+   - View the extracted text, summary, and actionable insights in real-time.
+
+3. **Outputs**:
+
+   - After uploading an image, you will see a preview of the uploaded image:
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/image-upload_rcfmxg.png" alt="upload image to the workflow" caption="Upload image to the workflow" />
+
+   - The application will process the image and extract the text, as shown here:
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/extract-text_ozuwzi.png" alt="Extracted Text" caption="Get the extracted text from the image" />
+
+   - The summarized version of the extracted text will appear in this section:
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/get-summary_zt8odd.png" alt="Summarized Text" caption="Get the summary of the extracted text" />
+
+   - Finally, actionable insights will be generated and displayed:
+     <Img src="https://res.cloudinary.com/dqvd8otcz/image/upload/v1733921635/get-insights_ud0g3f.png" alt="Actionable insights" caption="Actionable insights from summary" />
+
+## Conclusion
+
+In this tutorial, we built an AI-powered application that leverages xAI’s Grok API to extract text from images, summarize it, and generate actionable insights. Using Streamlit, we created an intuitive user interface that allows users to upload images and interact with these AI-powered functionalities in real-time.
+
+Now that you’ve seen how to integrate APIs like xAI’s Grok with an interactive web application, you can explore additional features such as improving the summarization quality or adding more advanced workflows. This project demonstrates how AI can be effectively utilized to simplify complex processes and deliver meaningful results.
+
+Happy coding! 🎉
+
+## Next Steps
+
+1. **Add Error Handling**: Improve robustness by handling API failures and invalid inputs.
+2. **Enhance the UI**: Use advanced Streamlit widgets for a better user experience.
+3. **Expand Functionality**: Integrate other xAI models or APIs for more advanced workflows.
+4. **Deploy the App**: Use Streamlit Sharing or a cloud platform to make the app publicly accessible.
