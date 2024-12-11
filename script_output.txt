@@ -1,27 +1,21 @@
-Processing file: blog/en/openai-day-2-reinforcement-fine-tuning-brings-strategic-shift-in-ai-development.mdx
-Downloading image from URL: https://iili.io/2M2ET8J.png
-Successfully downloaded image to: images/2M2ET8J.png
-Uploading image: images/2M2ET8J.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e18382c1-a8a6-474d-cc60-dfaa3cda1d00/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e18382c1-a8a6-474d-cc60-dfaa3cda1d00/full
-Deleted local image: images/2M2ET8J.png
-Downloading image from URL: https://iili.io/2M2Eo6F.png
-Successfully downloaded image to: images/2M2Eo6F.png
-Uploading image: images/2M2Eo6F.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f5b49aa-1b75-4a48-5558-f6c1c47d4200/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f5b49aa-1b75-4a48-5558-f6c1c47d4200/full
-Deleted local image: images/2M2Eo6F.png
-Downloading image from URL: https://iili.io/2M2Ez3g.png
-Successfully downloaded image to: images/2M2Ez3g.png
-Uploading image: images/2M2Ez3g.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/01b396b6-8ed1-4d4a-cdef-49ffb5a3f300/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/01b396b6-8ed1-4d4a-cdef-49ffb5a3f300/full
-Deleted local image: images/2M2Ez3g.png
-Downloading image from URL: https://iili.io/2M2EIaa.png
-Successfully downloaded image to: images/2M2EIaa.png
-Uploading image: images/2M2EIaa.png
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8910385-5d3c-43a6-6138-ed509f04a300/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b8910385-5d3c-43a6-6138-ed509f04a300/full
-Deleted local image: images/2M2EIaa.png
-Successfully processed file: blog/en/openai-day-2-reinforcement-fine-tuning-brings-strategic-shift-in-ai-development.mdx
+Processing file: tutorials/en/xai-dynamic-content-generation.mdx
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733911317/streamlit-start_glokpf.png
+Successfully downloaded image to: images/streamlit-start_glokpf.png
+Uploading image: images/streamlit-start_glokpf.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3839212b-1539-4b0b-1f7a-7d93a58d3300/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3839212b-1539-4b0b-1f7a-7d93a58d3300/full
+Deleted local image: images/streamlit-start_glokpf.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733911318/dynamic-content-gen_kp4k1x.png
+Successfully downloaded image to: images/dynamic-content-gen_kp4k1x.png
+Uploading image: images/dynamic-content-gen_kp4k1x.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/41694f06-563e-42ca-bfcb-a5a0c914d500/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/41694f06-563e-42ca-bfcb-a5a0c914d500/full
+Deleted local image: images/dynamic-content-gen_kp4k1x.png
+Downloading image from URL: https://res.cloudinary.com/dqvd8otcz/image/upload/v1733911318/dynamic-result_drjudb.png
+Successfully downloaded image to: images/dynamic-result_drjudb.png
+Uploading image: images/dynamic-result_drjudb.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7d3767cf-37dd-4a4e-ed49-ae19604f4700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7d3767cf-37dd-4a4e-ed49-ae19604f4700/full
+Deleted local image: images/dynamic-result_drjudb.png
+Successfully processed file: tutorials/en/xai-dynamic-content-generation.mdx
 CHANGES_MADE
