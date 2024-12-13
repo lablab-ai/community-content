@@ -1,0 +1,21 @@
+Processing file: blog/en/day-6-12-openai-chatgpt-can-finally-see-what-you-see.mdx
+Downloading image from URL: https://iili.io/2W4oL6g.md.jpg
+Successfully downloaded image to: images/2W4oL6g.md.jpg
+Uploading image: images/2W4oL6g.md.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7f0aa4ca-dfd3-4e24-2d30-41327e7eae00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7f0aa4ca-dfd3-4e24-2d30-41327e7eae00/full
+Deleted local image: images/2W4oL6g.md.jpg
+Downloading image from URL: https://iili.io/2W4oZFa.md.jpg
+Successfully downloaded image to: images/2W4oZFa.md.jpg
+Uploading image: images/2W4oZFa.md.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/75d50476-fbfb-4cf2-2318-5b3082d65700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/75d50476-fbfb-4cf2-2318-5b3082d65700/full
+Deleted local image: images/2W4oZFa.md.jpg
+Downloading image from URL: https://iili.io/2W4otcJ.md.jpg
+Successfully downloaded image to: images/2W4otcJ.md.jpg
+Uploading image: images/2W4otcJ.md.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c2f75adb-5b4a-4114-2382-2d72edffe400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c2f75adb-5b4a-4114-2382-2d72edffe400/full
+Deleted local image: images/2W4otcJ.md.jpg
+Successfully processed file: blog/en/day-6-12-openai-chatgpt-can-finally-see-what-you-see.mdx
+CHANGES_MADE
