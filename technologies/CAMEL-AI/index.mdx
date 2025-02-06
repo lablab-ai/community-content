@@ -1,1 +1,95 @@
-#placeholder
+---
+Author: emmanueliriarte
+Title: "CAMEL-AI"
+Description: "Pioneering scalable multi-agent systems for autonomous cooperation, data generation, and AI society simulations."
+---
+
+# CAMEL-AI
+CAMEL-AI (Communicative Agents for Mind Exploration) is an open-source community founded in 2023, dedicated to discovering agent scaling laws through advanced multi-agent frameworks. Inspired by their landmark research paper, CAMEL enables dynamic AI societies where agents collaborate on complex tasks like synthetic data generation, task automation, and world simulations.
+
+| General  |  |
+| --- | --- |
+| Organization | [CAMEL-AI](https://www.camel-ai.org/) |
+| Founded | 2023 |
+| Repository | https://github.com/camel-ai |
+
+## Start Building with CAMEL-AI
+
+Install the framework in seconds and explore its modular architecture:
+```bash
+pip install camel-ai[all]  # Full-featured installation
+```
+
+### Core Components
+- **Agents**: Customizable entities with role-based specialization (e.g., Python Programmer, Stock Trader) 
+- **Multi-Agent Societies**: Orchestrated teams for complex problem-solving 
+- **Tool Integration**: 20+ model platforms (OpenAI, Mistral, Qwen) and 50+ external tools (GitHub, WolframAlpha) 
+
+---
+
+### Agentic Framework
+A revolutionary architecture enabling:
+- **Role-Playing Systems**: Pre-configured agent pairs for tasks like coding collaboration or customer service 
+- **Memory-Augmented Conversations**: Context-aware dialogues with 4K+ token capacity 
+- **Real Function Calling**: Seamless API integration for live data processing 
+
+```python
+from camel.agents import ChatAgent
+from camel.models import ModelFactory
+
+# Initialize Llama3 agent via Ollama
+model = ModelFactory.create(model_platform="OLLAMA", model_type="llama3")
+agent = ChatAgent("Financial Analyst", model=model)
+```
+
+---
+
+### Data Generation Suite
+Transform synthetic data creation with:
+- **Hermes Format Generation**: Structured outputs for model training 
+- **Self-Improving Pipelines**: Automated quality enhancement using reward models 
+- **Math Reasoning Distillation**: Extract complex CoT data from DeepSeek R1 
+
+**Key Features:**
+- 25,000+ GPT-3.5 Turbo conversations in Domain Expert dataset 
+- Support for Mistral/Unsloth fine-tuning workflows 
+- Real-time data filtering through ethical guardrails 
+
+---
+
+### Integration Ecosystem
+| Category | Technologies |
+| --- | --- |
+| **AI Models** | OpenAI, Anthropic Claude, Qwen, DeepSeek, Phi-3  |
+| **Vector DBs** | Qdrant, Milvus |
+| **Cloud Services** | AWS S3, Azure Blob, Google Cloud  |
+| **Dev Tools** | Docker, Jupyter, Code Interpreter  |
+
+---
+
+### Real-World Applications
+1. **Dynamic Travel Planner**: Multi-agent system with real-time Dappier integration 
+2. **Finance Discord Bot**: OpenBB-powered market analysis 
+3. **Knowledge Graph Generator**: Automated report creation through role-playing scrapers 
+4. **Ethical AI Simulation**: HumanLayer-approved tool interactions 
+
+---
+
+## Supported Model Platforms
+| Provider | Notable Models | Multimodal |
+| --- | --- | --- |
+| OpenAI | GPT-4o, GPT-3.5-Turbo | ✅ | 
+| Mistral | Mixtral 8x22B, Codestral | ✅ |
+| Anthropic | Claude 3 Sonnet/Opus | ✅ |
+| Qwen | Qwen-VL-Plus, Qwen-Math | ✅ |
+| Local | Llama3, Phi-3 (via Ollama/vLLM) | ✅ |
+
+## Useful Links
+
+👉 [Explore CAMEL Documentation](https://docs.camel-ai.org/)
+
+👉 [Set up your first Agent in 120 seconds] (https://www.camel-ai.org/post/getting-started-with-camel-ai)
+
+👉 [CAMEL MODELS] (https://docs.camel-ai.org/key_modules/models.html)
+
+👉 [CAMEL Cookbooks Examples] (https://docs.camel-ai.org/index.html)
