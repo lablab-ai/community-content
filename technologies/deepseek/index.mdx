@@ -1,1 +1,67 @@
+---
+title: "DeepSeek Guide: Architecture, Features, and Competitive Edge"
+description: "Comprehensive guide to DeepSeek's revolutionary AI models - explore architecture, use cases, and how it challenges global AI dominance."
+---
 
+# DeepSeek Guide: Technical Breakdown and Strategic Implications
+
+| General       |                                                                 |
+|---------------|-----------------------------------------------------------------|
+| Headquarters  | Hangzhou, China                                    |
+| Founders      | Liang Wenfeng (Zhejiang University graduate)      |
+| Key Models    | DeepSeek-V3 (671B MoE), R1 (reasoning specialist)  |
+| GitHub Repos  | [DeepSeek-V3](https://github.com/deepseek-ai/DeepSeek-V3), [DeepSeek-R1](https://github.com/deepseek-ai/DeepSeek-R1)  |
+| API Pricing   | $0.55/million tokens (input), $2.19 (output)       |
+
+## What is DeepSeek? 
+
+DeepSeek represents China's breakthrough in democratizing AI through:
+- **Ultra-Efficient Training**: $5.6M training cost for GPT-4-level models vs OpenAI's $100M+ 
+- **Military-Grade Optimization**: 2,048 H800 GPUs completing training in days vs industry-standard months 
+- **Open Source Dominance**: Full model weights available on HuggingFace (V3/R1) 
+- **Specialized Reasoning**: R1 model achieves 97.3% on MATH-500 benchmark vs GPT-4o's 74.6% 
+
+### Core Innovations
+1. **Multi-Head Latent Attention (MLA)**: 68% memory reduction via KV vector compression 
+2. **DeepSeekMoE Architecture**: 671B total params with 37B activated per token 
+3. **FP8 Mixed Precision**: First successful implementation in 100B+ parameter models 
+4. **Zero-SFT Reinforcement Learning**: Emergent reasoning without supervised fine-tuning 
+
+---
+
+## Technical Architecture 
+
+![DeepSeek-V3 Architecture](https://deepseek.net/static/v3-arch-diagram.png)
+
+### Key Components
+| Component               | Implementation Details                          | Performance Gain |
+|-------------------------|------------------------------------------------|------------------|
+| **Multi-Head Latent Attention** | Compressed KV cache via W<sup>DKV</sup> matrices | 4.2x faster inference |
+| **Device-Limited Routing**      | Top-M device selection for MoE layers          | 83% comms reduction |
+| **FP8 Training Framework**      | 14.8T token pre-training at 158 TFLOPS/GPU     | 2.8M H800 hours   |
+| **Three-Level Balancing**       | Expert/Device/Comm balance losses              | 99.7% GPU utilization |
+
+### Benchmark Dominance (Selected Tasks)
+| Task                | DeepSeek-V3 | GPT-4o    | Claude-3.5 |
+|---------------------|-------------|-----------|------------|
+| MMLU (5-shot)       | 88.5%       | 87.2%     | 88.3%      |
+| Codeforces Rating   | 2029        | 759       | 717        |
+| MATH (EM)           | 97.3%       | 74.6%     | 78.3%      |
+| LiveCodeBench (COT) | 65.9%       | 34.2%     | 33.8%      |
+
+---
+
+## How to Implement DeepSeek
+
+### Deployment Options
+1. **Self-Hosted MoE**
+
+2. **Cloud API**
+
+3. **Distilled Models (Qwen/Llama-based)**
+  1.5B to 70B parameter variants
+  2.79.8% AIME 2024 accuracy in 32B model
+
+#### Useful Resources for Deepseek
+1.[Deepseek r1](https://lablab.ai/tech/deepseek/deepseek-r1)
+2.[Deepseek V3](https://lablab.ai/tech/deepseek/deepseek-v3) 
