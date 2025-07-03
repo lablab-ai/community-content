@@ -1,0 +1,61 @@
+---
+title: "Llama 4"
+author: "meta"
+description: "Llama 4 is Meta’s fourth-generation large language-model family, featuring a Mixture-of-Experts architecture, native multimodality, and context windows up to 10 million tokens. The open-weight Scout & Maverick variants are available for research, enterprise, and commercial deployment under the Llama 4 Community License."
+---
+
+# Llama 4
+
+[**Llama 4**](https://techcrunch.com/2025/04/05/meta-releases-llama-4-a-new-crop-of-flagship-ai-models/) is Meta AI’s newest open-weight model series.  
+It introduces Mixture-of-Experts (MoE) routing for efficient inference, accepts both text *and* images natively, and stretches context windows to record-breaking lengths—**10 M tokens** in the Scout variant. Meta positions Llama 4 as a research-friendly, production-ready alternative to proprietary frontier models, while keeping the code and weights downloadable from its [GitHub repos](https://github.com/meta-llama/llama-models) and the official [llama.com](https://www.llama.com/llama4) portal.
+
+| General            |                                           |
+| ------------------ | ----------------------------------------- |
+| Release date       | 5 Apr 2025                                |
+| Developer          | Meta AI                                   |
+| Type               | Open-weight multimodal LLM                |
+| License            | Llama 4 Community License                 |
+| GitHub             | [meta-llama/llama-models](https://github.com/meta-llama/llama-models) |
+
+---
+
+## Core Features
+
+* **Mixture-of-Experts architecture** – Each query activates a subset of specialised “experts,” yielding higher throughput per FLOP while scaling to trillions of total parameters ([TechCrunch](https://techcrunch.com/2025/04/05/meta-releases-llama-4-a-new-crop-of-flagship-ai-models/)).  
+* **Native multimodality** – Models ingest both text and images without external adapters ([The Verge](https://www.theverge.com/news/644171/llama-4-released-ai-model-whatsapp-messenger-instagram-direct)).  
+* **Extended context windows** – Scout handles up to **10 M tokens**; Maverick supports **1 M tokens** ([llm-stats](https://llm-stats.com/models/llama-4-scout)).  
+* **Multilingual training** – Optimised across 200+ languages for global deployments ([Data Scientist Guide](https://www.datascientistguide.com/2025/04/what-is-llama-4-ultimate-guide-to-metas.html)).  
+* **Fine-tunable & agent-ready** – Models ship with recipes for supervised fine-tuning, LoRA, and RAG inside the [Llama Cookbook](https://github.com/meta-llama/llama-cookbook).
+
+---
+
+## Model Variants
+
+| Variant   | Active Params | Experts | Total Params | Context Window | Best for |
+|-----------|---------------|---------|--------------|---------------|----------|
+| **Scout** | 17 B          | 16      | 109 B        | 10 M tokens    | Long-context RAG, document analysis ([stats](https://llm-stats.com/models/llama-4-scout)) |
+| **Maverick** | 17 B       | 128     | 400 B        | 1 M tokens     | Coding & reasoning tasks, general chat ([Oracle Docs](https://docs.oracle.com/en-us/iaas/Content/generative-ai/meta-llama-4-maverick.htm)) |
+| **Behemoth** | 288 B*     | 16      | ~2 T         | TBA            | High-end STEM, under training (*not yet released*) |
+
+---
+
+## Tools & Resources
+
+* **Weights & License** – Download from the [official portal](https://www.llama.com/llama-downloads/huggingface.co/meta-llama).  
+* **Inference & training code** – [meta-llama/llama-models](https://github.com/meta-llama/llama-models).  
+* **Quick-start recipes** – [Llama Cookbook](https://github.com/meta-llama/llama-cookbook).  
+* **Stats & benchmarks** – Interactive dashboards at [llm-stats.com](https://llm-stats.com/models/llama-4-scout).  
+* **Cloud endpoints** – Ready-to-use deployments in [Oracle OCI Generative AI](https://docs.oracle.com/en-us/iaas/releasenotes/generative-ai/llama-4.htm).
+
+---
+
+## Ecosystem & Integrations
+
+* **Meta AI assistant** now runs Llama 4 across WhatsApp, Messenger, Instagram, and web chat ([The Verge](https://www.theverge.com/news/644171/llama-4-released-ai-model-whatsapp-messenger-instagram-direct)).  
+* **OCI Generative AI** offers managed Scout & Maverick endpoints for enterprise workloads ([Oracle Docs](https://docs.oracle.com/en-us/iaas/Content/generative-ai/meta-llama-4-maverick.htm)).  
+* **Community hosting** – Providers such as DeepInfra, Groq, and Together price Llama 4 as low as \$0.08 / 1 M input tokens ([llm-stats](https://llm-stats.com/models/llama-4-scout)).  
+* **Research & open-source** – Thousands of fine-tuned checkpoints already live on Hugging Face; Meta’s annual *LlamaCon* (29 Apr 2025) spotlights academic collaborations ([TechCrunch](https://techcrunch.com/2025/04/05/meta-releases-llama-4-a-new-crop-of-flagship-ai-models/)).
+
+---
+
+Llama 4 pushes open-weight LLMs into frontier-model territory—combining trillion-scale capacity with permissive licensing. Start experimenting by cloning the [GitHub repo](https://github.com/meta-llama/llama-models), reading the [cookbook](https://github.com/meta-llama/llama-cookbook), or provisioning a managed endpoint on [Oracle OCI](https://docs.oracle.com/en-us/iaas/releasenotes/generative-ai/llama-4.htm).
