@@ -1,27 +1,152 @@
 ---
 title: "Qdrant"
-description: "Qdrant is a search engine and database designed for vector similarity. With its user-friendly API, it offers a production-ready service for storing, managing, and searching vectors, including an additional payload. Qdrant is particularly well-suited for neural-network or semantic-based matching, faceted search, and other applications that require extended filtering support."
+description: "Qdrant is a high-performance, open-source vector database and search engine written in Rust, designed for scalable vector similarity search with hybrid search capabilities, advanced quantization, and comprehensive filtering support."
 ---
 
 # Qdrant
 
-Qdrant is a high-performance search engine and database designed specifically for vector similarity.
-Written in Rust, Qdrant offers fast and reliable performance even under high load, making it an ideal
-choice for applications that demand speed and scalability.
-With Qdrant, you can turn your embeddings or neural network encoders into powerful, full-fledged
-applications for a wide range of use cases. Whether you need to match, search, recommend, or perform
-other complex operations on large datasets, Qdrant provides a convenient and user-friendly API that simplifies the process.
-Qdrant's extended filtering support also makes it well-suited for a variety of applications, including
-faceted search and semantic-based matching. Plus, with its managed solution available on the Qdrant Cloud,
-you can easily deploy and manage your applications with minimal setup and maintenance.
+Qdrant is a high-performance, open-source vector database and search engine designed specifically for vector similarity search. Written in Rust, Qdrant offers fast and reliable performance even under high load, making it an ideal choice for applications that demand speed and scalability. With Qdrant, you can turn your embeddings or neural network encoders into powerful, full-fledged applications for a wide range of use cases including matching, search, recommendation, and complex operations on large datasets.
 
-| General     |                                |
-| ----------- | ------------------------------ |
-| Relese date | October 29, 2021               |
-| Author      | [Qdrant](https://qdrant.tech/) |
-| Type        | Search engine, database        |
+Qdrant's comprehensive API and extended filtering support make it well-suited for various applications, including faceted search, semantic-based matching, and hybrid search combining vector similarity with keyword matching. The platform offers both self-hosted and managed cloud solutions, providing flexibility for different deployment scenarios.
 
----
+| General     |                                                                  |
+| ----------- | ---------------------------------------------------------------- |
+| Release Date| October 29, 2021                                                |
+| Author      | [Qdrant](https://qdrant.tech/)                                  |
+| Type        | Vector Database & Search Engine                                  |
+| Language    | Rust                                                             |
+| License     | Apache License 2.0                                              |
+| Latest Version | 1.15.x (July 2025)                                           |
+| GitHub Stars | 19,000+ (as of 2025)                                           |
+
+
+
+
+## Core Features
+
+**High-Performance Vector Search**
+- HNSW (Hierarchical Navigable Small World) indexing algorithm
+- Sub-millisecond search latency for millions of vectors
+- Handles billions of vectors with horizontal scaling
+- SIMD hardware acceleration for optimal CPU utilization
+
+**Advanced Quantization Techniques**
+- **Scalar Quantization**: Reduces memory usage by 4x with minimal accuracy loss
+- **Binary Quantization**: Up to 32x compression with 40x speed improvement
+- **Product Quantization**: Higher compression ratios for high-dimensional vectors
+- **1.5-bit and 2-bit Quantization**: New compression options balancing efficiency and accuracy
+- **Asymmetric Quantization**: Different encoding for stored vectors vs. queries
+
+**Hybrid Search Capabilities**
+- **Dense Vectors**: Traditional semantic similarity search using neural embeddings
+- **Sparse Vectors**: Keyword-based search with neural network weighting (BM25, SPLADE)
+- **Combined Search**: Unified queries across both dense and sparse vectors in single collections
+- **BM42 Algorithm**: Proprietary hybrid search combining vector and keyword methods
+
+**Comprehensive Filtering & Payload Support**
+- Rich JSON payload attachment to vectors
+- Advanced filtering conditions (must, should, must_not clauses)
+- Geo-location, numerical ranges, and full-text filtering
+- Custom business logic implementation on top of similarity matching
+
+## Latest Enhancements (2024-2025)
+
+**Qdrant 1.15.x (July 2025)**
+- **Smarter Quantization**: Enhanced 1.5-bit and 2-bit quantization options
+- **Advanced Full-Text Filtering**: Improved text search capabilities
+- **Performance Optimizations**: Better resource utilization and faster processing
+
+**Qdrant 1.14.x (April 2025)**
+- **Score-Boosting Reranker**: Blend vector similarity with custom rules and context
+- **Incremental HNSW Indexing**: Build indexes gradually as data arrives
+- **Optimized Batch Search**: Parallel processing for large query batches
+- **Memory Optimization**: Reduced RAM usage for large datasets
+
+**Qdrant Cloud Inference (July 2025)**
+- **Unified Embedding Generation**: Generate, store, and index embeddings in single API calls
+- **Multimodal Support**: Text and image embedding models integrated natively
+- **Supported Models**: MiniLM, SPLADE, BM25, Mixedbread Embed-Large, CLIP
+- **Free Tier**: 5 million tokens per model monthly, unlimited BM25 tokens
+
+## Deployment Options
+
+**Self-Hosted (Open Source)**
+- Full control over infrastructure and data
+- Horizontal scaling through sharding and replication
+- Zero-downtime rolling updates and dynamic scaling
+- Available on GitHub with comprehensive documentation
+
+**Qdrant Cloud (Managed Service)**
+- Fully managed SaaS solution across AWS, Google Cloud, and Azure
+- Automatic scaling, monitoring, and maintenance
+- Built-in backups and disaster recovery
+- Simple setup with production-ready clusters in minutes
+
+**Hybrid Cloud**
+- Deploy across diverse environments for performance and compliance
+- Integrate on-premise and cloud infrastructure
+- Maintain data residency requirements while leveraging cloud benefits
+
+**Private Cloud**
+- Full Kubernetes-based deployment on any infrastructure
+- Complete control and customization for enterprise requirements
+- Air-gapped deployments for maximum security
+
+## Key Use Cases
+
+**Retrieval-Augmented Generation (RAG)**
+- Semantic search over knowledge bases and documents
+- Context retrieval for large language models
+- Enterprise knowledge management and Q&A systems
+
+**Recommendation Systems**
+- Product recommendations based on user behavior
+- Content discovery and personalization
+- Similar item matching across catalogs
+
+**Multimodal Search**
+- Combined text and image search capabilities
+- Video content indexing and retrieval
+- Cross-modal similarity matching
+
+**Enterprise Search**
+- Semantic document search with filtering
+- Compliance and regulatory document retrieval
+- Customer support knowledge bases
+
+**Anomaly Detection**
+- Outlier detection in high-dimensional data
+- Fraud detection and security monitoring
+- Quality control and process optimization
+
+## Technical Specifications
+
+**Performance Characteristics**
+- **Throughput**: Up to 10,000+ queries per second
+- **Latency**: Sub-millisecond search response times
+- **Scale**: Billions of vectors with horizontal scaling
+- **Memory Efficiency**: Up to 97% RAM reduction with quantization
+
+**Supported Distances**
+- Cosine similarity
+- Euclidean (L2) distance
+- Dot product
+- Manhattan (L1) distance
+
+**Integration Ecosystem**
+- **Embeddings**: OpenAI, Cohere, Hugging Face, Sentence Transformers
+- **Frameworks**: LangChain, LlamaIndex, Haystack
+- **Languages**: Python, Rust, JavaScript, Go, .NET
+- **Platforms**: Docker, Kubernetes, cloud providers
+
+## Recent Achievements
+
+- **250+ million installs** across all open-source packages
+- Featured in **The Forrester Waveâ„¢: Vector Databases, Q3 2024**
+- Named one of **Europe's top 10 startups** in Sifted's 2025 B2B SaaS Rising 100
+- Powers AI applications at **Tripadvisor, HubSpot, and Deutsche Telekom**
+- Active community of **6,000+ members** on Discord
+
 
 ## Tutorials
 
@@ -29,20 +154,16 @@ Great tutorials on how to build with Qdrant
 
 <TechTutorials/>
 
-### Qdrant - General sources
+## Resources
 
-Learn even more about Qdrant!
+**Getting Started**
+- [Qdrant Documentation](https://qdrant.tech/documentation/) - Comprehensive guides and API reference
+- [Qdrant Cloud](https://qdrant.tech/cloud/) - Managed cloud service with free tier
+- [GitHub Repository](https://github.com/qdrant/qdrant) - Open-source codebase and examples
 
-- [Qdrant Cloud](https://cloud.qdrant.io/) Qdrant Cloud is a managed solution for Qdrant. It provides a production-ready service for storing, managing, and searching vectors
-- [Qdrant Repository](https://github.com/qdrant/qdrant) Qdrant is an open-source search engine and database designed for vector similarity
-- [Qdrant Documentation](https://qdrant.github.io/qdrant/redoc/index.html) Qdrant Documentation
-- [Qdrant Demo](https://github.com/qdrant/qdrant_demo) Qdrant Demo Project. This project contains a set of examples of using Qdrant
+**Community & Support**
+- [Discord Community](https://discord.gg/qdrant) - Active developer community
+- [Qdrant Blog](https://qdrant.tech/blog/) - Latest features, tutorials, and best practices
+- [Benchmarks](https://qdrant.tech/benchmarks/) - Performance comparisons with other vector databases
 
-### Qdrant x Cohere resources
-
-Use Qdrant and Cohere to make powerful applications!
-
-- [Basic example of the Qdrant and Cohere integration](https://qdrant.tech/documentation/integrations/#cohere) This example shows how to use Qdrant and Cohere to start with this stack
-- [Q&A application](https://qdrant.tech/articles/qa-with-cohere-and-qdrant/) How to build a Q&A application with Qdrant and Cohere
-
----
+Qdrant represents the cutting edge of vector database technology, combining high performance with developer-friendly APIs and comprehensive feature sets. Whether building semantic search, recommendation systems, or complex AI applications, Qdrant provides the infrastructure needed to scale from prototype to production with confidence.
