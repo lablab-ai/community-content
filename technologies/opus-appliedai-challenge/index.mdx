@@ -3,198 +3,212 @@ title: "Opus by AppliedAI"
 author: "AppliedAI"
 description: "Opus is an AI-native workflow orchestration platform by AppliedAI that redefines enterprise operations through human+AI collaboration, delivering measurable business results across regulated industries."
 ---
-
+---
 # lablab x AppliedAI Challenge
 
 ## Introduction to Opus
-Opus is an **AI-native workflow builder** created by **AppliedAI** that turns plain-language prompts into executable workflows.
 
-Opus offers a **visual canvas** where you can drag, drop, and link nodes—inputs/outputs, AI agents, human reviews, data connectors, decisions, and even reusable sub-workflows. Once satisfied, Opus executes them as jobs with detailed logs and support for both human and agentic reviews.
+Opus is an AI-native workflow builder created by AppliedAI that turns plain-language prompts into executable workflows.  
 
-We support connecting with external platforms via **Import/Export Data**, **REST API integrations**, and **custom Python code**. You can also set up **conditional branching**, **error handling**, **metrics**, and **tracing** to keep automations understandable, testable, and easy to maintain.
+Opus offers a visual canvas where you drag, drop, and link nodes—inputs/outputs, AI agents, human reviews, data connectors, decisions, and even reusable sub-workflows. When you’re satisfied with your workflows, Opus executes them as jobs with detailed logs, and support for human and agentic reviews.  
+We support connecting with external platforms via Import/Export Data options, REST API integrations, and by running your own custom Python code. You can also set up conditional branching, error handling, metrics, and tracing to keep automations understandable, testable, and easy to maintain.
 
 ---
 
 ## Challenge
-Build a reusable **“Intake → Understand → Decide → Review → Deliver”** automation that tackles the pain points of manual workflows—regardless of industry. Your solution will be an Opus workflow that keeps data and decisions traceable, handles exceptions gracefully, and uses data inputs to create actionable outputs for users.
 
-> You may use public/demo data and free external APIs. Enterprise integrations are **not expected**.
+**Build a reusable “Intake → Understand → Decide → Review → Deliver” automation** that tackles the common pain points of manual workflows—no matter the industry. Your solution will be an **Opus** workflow that keeps data and decisions traceable, handle exceptions gracefully, and uses data inputs to create actionable outputs for users.  
+
+We do not expect enterprise integrations: you may use public/demo data and free external APIs for this challenge.
 
 ---
 
-## The Problem
-Manual workflows share core issues across domains:
+##  The Problem
 
-- **Messy, multi-format intake:** Data arrives via emails, PDFs, spreadsheets, images, or exports, causing bottlenecks and costly handoffs.  
-- **Decisions mix rules with judgment:** Workflows often combine deterministic checks (IDs, dates, thresholds) and nuanced reasoning. Opus separates these with **Decision nodes** for rules and **Agent/Advanced Agent nodes** for reasoning.  
-- **Exceptions sink time:** Edge cases (missing fields, low confidence, conflicts) slow everything down.  
-- **Opaque processes:** Without audit trails, it’s difficult to track inputs, decisions, and outcomes—creating risk and costly errors.
+Manual workflows struggle with the same core issues, regardless of domain:
+
+1. **Messy, multi-format intake.** Work arrives as emails, PDFs, spreadsheets, images, or portal exports. The variation creates bottlenecks and forces costly handoffs.
+
+2. **Decisions mix rules with judgment.** Many steps require both deterministic checks (IDs, dates, thresholds) *and* nuanced reasoning. Good automation separates the two cleanly so each is auditable and tunable. The Opus model encourages explicit Decision nodes for rules and Agent/Advanced Agent nodes for AI reasoning.
+
+3. **Exceptions sink time.** Edge cases (missing fields, low confidence extractions, conflicts) escalate slowly, creating backlogs and rework.
+
+4. **Opaque processes.** Without a built-in audit trail, it’s hard to see what came in, which rules fired, what changed, and why a decision was made. This is risky and expensive—industry research links poor data quality to multi-million-dollar annual losses, and error-prone manual entry compounds the problem.
 
 ---
 
 ## What You’ll Build
-Design one **end-to-end, reusable workflow** in Opus that can be adapted to multiple industries. Demonstrate it using realistic scenarios with public/sample data.
 
-Your automation should:
-- Keep data and decisions traceable  
-- Handle exceptions gracefully  
-- Turn inputs into actionable outputs  
+Design one end-to-end, reusable **“Intake → Understand → Decide → Review → Deliver”** workflow in Opus that can be lightly configured to fit multiple industries. Demonstrate it with realistic scenarios using public/sample inputs.  
 
-You may use **public/demo data** and **free APIs**.  
-Enterprise credentials are **not required**.
+Your automation should keep data and decisions traceable, handle exceptions gracefully, and turn inputs into actionable outputs for users. You may rely on public/demo data and free external APIs—enterprise credentials are **not** expected.
 
----
+### Required building blocks:
 
-### Required Building Blocks
+- **Data Import & Processing**
+  - Accept at least two input types (e.g., PDF/image, email/text, CSV/JSON, or webpage).
+  - Extract and structure key fields (IDs, dates, amounts, entities); use OCR/Text Extraction and Agent nodes where helpful.
+  - Import data from external sources (file, sheet, or public API), parse it into structured records, and make it available for downstream steps.
+  - If you process many items, **batch or paginate** inputs and avoid model context limits via **chunking/progressive processing** so large files/feeds don’t overflow your prompts.
+  - If importing from multiple sources, parallelize data imports and processing.
 
-#### **Data Import & Processing**
-- Accept at least two input types (e.g., PDF/image, email/text, CSV/JSON, or webpage).  
-- Extract and structure key fields (IDs, dates, amounts, entities).  
-- Import and parse external data (file, sheet, or API).  
-- Batch or paginate inputs and avoid model context limits via chunking.  
-- Parallelize imports and processing where possible.
+- **Conditional Logic & Branching**
+  - Use at least two **Decision nodes** for auditable branching (e.g., accept, reject, needs review, request info) that effectively implements business logic.
+  - Handle **errors/timeouts** and **missing data** with sensible fallbacks.
+  - Combine **deterministic rules** (thresholds, required fields, pattern/format checks) with **AI reasoning** (categorize intent, summarize, etc.)
+  - Implement **multi-condition logic** (AND/OR, nesting) and produce transparent scores/rationales so borderline cases behave consistently.
+  - If steps are independent, **run them in parallel** and aggregate the results to reduce latency; note any measured time savings vs. sequential.
 
-#### **Conditional Logic & Branching**
-- Use at least two **Decision nodes** for auditable branching.  
-- Handle errors, timeouts, and missing data gracefully.  
-- Combine deterministic rules with AI reasoning.  
-- Implement **multi-condition logic** (AND/OR, nesting) with transparent scores/rationales.  
-- Parallelize independent steps to reduce latency.
+- **Review for quality & safety**
+  - Include at least two **Review** checkpoints:
+    - **Agentic Review** to auto-check outputs against guidance/policy, and/or
+    - **Human Review** for low-confidence or high-impact cases (with accept/reject/override).
+  - Show how a rejected item is corrected or reprocessed.
 
-#### **Review for Quality & Safety**
-- Include at least two review checkpoints:  
-  - **Agentic Review:** Auto-check outputs  
-  - **Human Review:** For low-confidence or high-impact cases  
-- Show how rejected items are reprocessed.
+- **Provenance & audit**
+  - Produce a concise **audit artifact** (JSON or PDF) that includes: inputs; extracted fields + confidence; rules fired; scores/rationales; review actions; timestamps; IDs; and any external source URLs.
+  - Keep a clear trail of decisions; ***optionally*** stream logs/metrics to an external system for observability.
 
-#### **Provenance & Audit**
-- Produce an audit artifact (JSON or PDF) including:  
-  inputs, extracted fields + confidence, rules fired, scores/rationales, review actions, timestamps, IDs, and source URLs.  
-- Keep a clear decision trail; optionally stream logs to external systems.
-
-#### **Delivery**
-- Export outcomes via **email**, **Google Sheets**, or other destinations.  
-- Optionally build an operator interface (web form, CLI, or API) to trigger runs, validate inputs, and retry failed items.
+- **Delivery**
+  - Export final outcomes via email, Google Sheets, or another Opus-supported destination.
+  - ***Optionally***, provide a **simple operator surface**—web form, CLI, or API—to trigger runs programmatically, validate inputs, monitor status/progress, and retry failed items without losing state.
 
 ---
 
-## What to Submit
-1. A runnable **Opus workflow** with clear inputs/outputs  
-2. A **demo video** explaining your workflow  
-3. A **sample dataset** and setup notes  
-4. A **short README** describing logic, reviews, and error handling  
-5. **Audit artifact samples** (one accepted, one reviewed/rejected)
+### What to submit
+
+- A runnable **Opus workflow** with clear inputs/outputs.  
+- A **demo video** explaining your workflow.  
+- A **small sample dataset** and **setup notes** so reviewers can re-run.  
+- A short **readme** describing your workflow logic, reviews, error handling, and output export path.  
+- An **audit artifact sample** (one accepted, one reviewed/rejected example).
 
 ---
 
-## How to Stand Out
+## How to stand out
 
-### **Compose Opus Capabilities with Purpose**
-Use key Opus nodes effectively:
-- OCR/Text Extraction  
-- Opus Agent  
-- Decision Nodes  
-- Review (Human/Agentic)  
-- External Service Calls  
-- Import/Export Data  
-- Opus Code (custom Python)
+- **Compose Opus capabilities with purpose.**
+  - Judicious use of Opus Nodes:
+    - OCR/Text Extraction
+    - Opus Agent
+    - Decision nodes
+    - Review (Human/Agentic)
+    - External Service calls to public APIs
+    - Import/Export Data
+    - Opus Code for custom Python wherever needed
+  - Keep rules and AI judgment cleanly separated with thoughtful thresholds.
 
-Keep **rules and AI judgment separate**.
+- **Demonstrate real integration thoughtfulness.**
+  - If you pull from more than one source (files + a public API), **normalize schemas**, handle **pagination**, and show how you reconcile discrepancies.
 
-### **Demonstrate Real Integration Thoughtfulness**
-- Normalize schemas across multiple data sources  
-- Handle pagination  
-- Reconcile discrepancies
+- **When required, use mock data to simulate real world scenarios.**
+  - You can use public/free APIs to pull in data into your Opus workflow.
+  - However, in case you want to mock an integration to a legacy system (think a Bank’s Ledger, an Enterprise customer’s ERP software, etc), you are free to mock API responses.
+  - **Examples of mock API data you may create:**
+    - Banking Services: Account management, transactions, loans, cards
+    - Credit Bureau: Individual and corporate credit scoring
+    - Sanctions Screening: AML compliance and fraud detection
+    - Business Information: Lead enrichment, revenue data, etc.
+  - **Examples of mock documents data you may create:**
+    - Personal IDs
+    - Invoices
+    - Letters of credit
+    - Receipts
+    - Any other documents you wish to use for your Opus workflow.
 
-### **Use Mock Data for Realism**
-Mock integrations (e.g., banking, credit bureau, AML, ERP) or use free public APIs.
+- **Make it fast—and prove it.**
+  - Where safe, run independent tasks in **parallel** and include a brief note on latency improvements vs. sequential execution.
+  - Use batching/chunking to keep large inputs responsive.
 
-### **Make It Fast**
-Parallelize independent tasks and include latency improvements.  
-Use batching/chunking for large data.
+- **Human-in-the-loop**
+  - Used sparingly but effectively for risk/quality.
 
-### **Human-in-the-Loop**
-Use selectively but effectively.
+- **Elevate auditability.**
+  - Produce an exemplary decision artifact that links inputs → checks → decisions → reviews.
+  - For a higher score from the judges, mirror logs/metrics to an external store for observability.
+  - Reviewers should be able to retrace any outcome.
 
-### **Elevate Auditability**
-Produce a decision artifact linking **inputs → checks → decisions → reviews**.  
-Mirror logs to external stores for higher scores.
+- **Offer a lightweight operator experience.**
+  - A small UI to trigger runs via Opus API, validate inputs, show live status, retry failures with preserved state, and browse job history makes your solution easier to evaluate and reuse.
+  - *You may use a vibe-coding tool like Lovable, Bolt or Replit* to quickly build this UI and interact with the Opus API to run and manage your Jobs.
 
-### **Lightweight Operator Experience**
-Provide a UI to:
-- Trigger runs  
-- Validate inputs  
-- Monitor progress  
-- Retry failures  
-- View job history  
+- **Keep it modular and reusable.**
+  - Use sub-workflows, clear naming, and parameterized policy text so a potential user can adapt your flow to other use-cases.
 
-### **Keep It Modular**
-Use sub-workflows, clear naming, and parameterized policies.
-
-### **Be Explicit About Limits**
-Explain any size/context constraints and how you mitigated them.
+- **Be explicit about limits and how you tackle them.**
+  - Note any context/size constraints and how you mitigated them (e.g., chunking, progressive summarization).
 
 ---
 
 ## Technology
 
-### **For Non-Technical Users**
-- Use **prompt-to-workflow** generation  
-- Use **visual canvas builder**
+Opus supports both no-code and experienced users who are comfortable writing their own code.  
 
-### **For Developers**
-- Write **custom Python code** via the Code node  
-- Integrate **external APIs** with the External Service node  
-- Send/receive data via **Data Import/Export node**  
-- Trigger Opus Jobs via API (see [developer.opus.com](https://developer.opus.com))
+Non-technical users:
+- Take advantage of the Opus prompt-to-workflow feature, which allows for workflow generation based on a natural language prompt.
+- Use the visual canvas builder to create/refine their workflows.
 
-Developers can use mock API responses for external systems like ERPs, CMSs, or databases.
+Developers can make use of all the above features available to no-code users. Additionally, they can:
+- Use the **Opus Code** node to write their own custom Python code.
+- Use the **External Service** node to integrate their workflows with any external APIs of their choice.
+- Use the **Data Import/Export Node** to receive and send data from/to supported platforms.
+
+*To learn more about triggering Opus Jobs via API, you can view our API documentation at [developer.opus.com](https://developer.opus.com).*
+
+*Developers are welcome to use mock API responses to simulate an external system functionality such as ERPs, CMSs, vector databases, etc.*
 
 ---
 
 ## Workflow Examples
 
-### **Financial Services — KYC/Onboarding**
-Intake identity docs → extract → apply rules → review → audit decision.
+These examples serve real-world industry problems we have observed.  
 
-### **Market & Social Intelligence**
-Monitor sources → dedupe/cluster → score relevance → enforce checks → publish briefs.
+**You may attempt to solve for these scenarios or design your own workflow** using these as inspiration:
 
-### **People Ops — Resume Screening**
-Parse resumes → score → shortlist → route → audit trail.
+- **Financial services — KYC/Onboarding**
+Intake identity docs, extract key fields, evaluate policy rules, route low-confidence cases to review, and generate a decision artifact.
 
-### **E-Commerce Returns & Quality**
-Ingest images → assess policy compliance → recommend action → escalate edge cases.
+- **Market & social intelligence**
+Monitor public sources on a schedule, dedupe/cluster items, score relevance, enforce brand/policy checks, and publish a concise brief or content calendar with provenance.
 
-### **Sales — AI-Assisted Demos**
-Profile leads → score demo relevance → review → log decisions → deliver briefs.
+- **People Ops — Resume screening**
+Parse resumes, score against a live JD, threshold to a shortlist, and route to the right recruiter with an audit trail.
+
+- **ECommerce Returns & quality adjudication**
+Ingest photos/notes, assess an item’s condition against policy, emit a recommendation with confidence/rationale, and escalate edge cases (e.g., high-value items) to review.
+
+- **Sales — AI-assisted Personalized Demos**
+Ingest product docs and website, profile the lead’s company and persona, score and rank demo use-cases tailored to the company and individual, support agentic vs human review, log decisions for audit, and deliver a concise brief to the rep.
 
 ---
 
 ## Resources
-Check the [Opus Help Center](https://help.opus.com) and onboarding process to learn the visual builder.
+
+We encourage users to check out our **Help Center** at [help.opus.com](https://help.opus.com).  
+
+Users also undergo an onboarding process when they first sign up to the platform, which should help them get started with the visual canvas workflow builder.
 
 ---
 
 ## Judgement Criteria
 
-| Criterion | What We’re Looking For | Max Points |
-|------------|------------------------|-------------|
-| **Integration Depth & Breadth** | Connects to multiple systems, parallel fetching, schema normalization, clear failure handling | 25 |
-| **Data Handling & Matching at Scale** | Converts unstructured → structured, handles 100–500+ records, batching/parallelization | 25 |
-| **Orchestration & Human Decisioning** | Robust branching, reviews, escalations | 25 |
-| **Operability & Observability** | UI/API/CLI for monitoring, retrying, logging, audit trail | 25 |
+| **Criterion** | **What we’re looking for** | **Max pts** |
+|---------------|----------------------------|--------------|
+| **Integration Depth & Breadth** | • Connects to multiple external systems with diverse auth (API key/OAuth/Bearer).<br>• Parallel fetching where applicable.<br>• Schema/format normalization across sources (JSON/XML/CSV).<br>• Clear failure handling on integrations. | 25 |
+| **Data Handling & Matching at Scale** | • Converts unstructured→structured data reliably.<br>• Handles volume (100+→500+ records) with pagination/batching/chunking.<br>• Parallelized processing when possible to reduce workflow latency. | 25 |
+| **Orchestration & Human Decisioning** | • Robust branching (multi-condition, nested, loops, dynamic routing).<br>• Human-in-the-loop Review usage, timeouts/auto-escalation. | 25 |
+| **Operability & Observability** | • UI/CLI/API to trigger and monitor runs; live status, results, input validation, retry with preserved state, job history.<br>• External logging/metrics/alerts and comprehensive audit trail. | 25 |
 
 ---
 
 ## Winners
 
-**Total Prize Pool:** 💰 **$10,000**
+**Total prize pool:** $10,000
 
-🏆 **Best Opus Workflow**  
-- 1st: $3,000 + 1000 Man-Hour credits ($1,500 value)  
-- 2nd: $2,000 + 500 Man-Hour credits ($750 value)  
-- 3rd: $1,000 + 300 Man-Hour credits ($450 value)
+- **Best Opus Workflow**
+  - 1st: $3,000 cash, 1000 Man-Hour credits worth $1500  
+  - 2nd: $2,000 cash, 500 Man-Hour credits worth $750  
+  - 3rd: $1,000 cash, 300 Man-Hour credits worth $450  
 
-💡 **Most Innovative Use of Opus:** $500 + 100 Man-Hour credits ($150 value)  
-🔍 **Most Auditable Workflow:** $500 + 100 Man-Hour credits ($150 value)
+- **Most Innovative use of Opus:** $500 cash, 100 Man-Hour credits worth $150  
+- **Most Auditable Opus Workflow:** $500 cash, 100 Man-Hour credits worth $150
