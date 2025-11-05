@@ -47,7 +47,7 @@ Your automation should keep data and decisions traceable, handle exceptions grac
 ### Required building blocks:
 
 - **Data Import & Processing**
-  - Accept at least two input types (e.g., PDF/image, email/text, CSV/JSON, or webpage).
+  - Accept at least **two** input types (e.g., PDF/image, email/text, CSV/JSON, or webpage).
   - Extract and structure key fields (IDs, dates, amounts, entities); use OCR/Text Extraction and Agent nodes where helpful.
   - Import data from external sources (file, sheet, or public API), parse it into structured records, and make it available for downstream steps.
   - If you process many items, **batch or paginate** inputs and avoid model context limits via **chunking/progressive processing** so large files/feeds don’t overflow your prompts.
@@ -80,7 +80,7 @@ Your automation should keep data and decisions traceable, handle exceptions grac
 
 - A runnable **Opus workflow** with clear inputs/outputs.  
 - A **demo video** explaining your workflow.  
-- A **small sample dataset** and **setup notes** so reviewers can re-run.  
+- A small **sample dataset** and **setup notes** so reviewers can re-run.  
 - A short **readme** describing your workflow logic, reviews, error handling, and output export path.  
 - An **audit artifact sample** (one accepted, one reviewed/rejected example).
 
@@ -118,7 +118,7 @@ Your automation should keep data and decisions traceable, handle exceptions grac
     - Any other documents you wish to use for your Opus workflow.
 
 - **Make it fast—and prove it.**
-  - Where safe, run independent tasks in **parallel** and include a brief note on latency improvements vs. sequential execution.
+  - Where safe, run independent tasks **in parallel** and include a brief note on latency improvements vs. sequential execution.
   - Use batching/chunking to keep large inputs responsive.
 
 - **Human-in-the-loop**
@@ -131,7 +131,7 @@ Your automation should keep data and decisions traceable, handle exceptions grac
 
 - **Offer a lightweight operator experience.**
   - A small UI to trigger runs via Opus API, validate inputs, show live status, retry failures with preserved state, and browse job history makes your solution easier to evaluate and reuse.
-  - *You may use a vibe-coding tool like Lovable, Bolt or Replit* to quickly build this UI and interact with the Opus API to run and manage your Jobs.
+  - **You may use a vibe-coding tool like Lovable, Bolt or Replit** to quickly build this UI and interact with the Opus API to run and manage your Jobs.
 
 - **Keep it modular and reusable.**
   - Use sub-workflows, clear naming, and parameterized policy text so a potential user can adapt your flow to other use-cases.
@@ -152,7 +152,7 @@ Non-technical users:
 Developers can make use of all the above features available to no-code users. Additionally, they can:
 - Use the **Opus Code** node to write their own custom Python code.
 - Use the **External Service** node to integrate their workflows with any external APIs of their choice.
-- Use the **Data Import/Export Node** to receive and send data from/to supported platforms.
+- Use the Data Import/Export Node to receive and send data from/to supported platforms.
 
 *To learn more about triggering Opus Jobs via API, you can view our API documentation at [developer.opus.com](https://developer.opus.com).*
 
@@ -185,7 +185,7 @@ Ingest product docs and website, profile the lead’s company and persona, score
 
 ## Resources
 
-We encourage users to check out our **Help Center** at [help.opus.com](https://help.opus.com).  
+We encourage users to check out our Help Center at [help.opus.com](https://help.opus.com).  
 
 Users also undergo an onboarding process when they first sign up to the platform, which should help them get started with the visual canvas workflow builder.
 
@@ -195,10 +195,10 @@ Users also undergo an onboarding process when they first sign up to the platform
 
 | **Criterion** | **What we’re looking for** | **Max pts** |
 |---------------|----------------------------|--------------|
-| **Integration Depth & Breadth** | • Connects to multiple external systems with diverse auth (API key/OAuth/Bearer).<br />• Parallel fetching where applicable.<br />• Schema/format normalization across sources (JSON/XML/CSV).<br />• Clear failure handling on integrations. | 25 |
-| **Data Handling & Matching at Scale** | • Converts unstructured→structured data reliably.<br />• Handles volume (100+→500+ records) with pagination/batching/chunking.<br />• Parallelized processing when possible to reduce workflow latency. | 25 |
-| **Orchestration & Human Decisioning** | • Robust branching (multi-condition, nested, loops, dynamic routing).<br />• Human-in-the-loop Review usage, timeouts/auto-escalation. | 25 |
-| **Operability & Observability** | • UI/CLI/API to trigger and monitor runs; live status, results, input validation, retry with preserved state, job history.<br />• External logging/metrics/alerts and comprehensive audit trail. | 25 |
+| Integration Depth & Breadth | • Connects to multiple external systems with diverse auth (API key/OAuth/Bearer).<br />• Parallel fetching where applicable.<br />• Schema/format normalization across sources (JSON/XML/CSV).<br />• Clear failure handling on integrations. | 25 |
+| Data Handling & Matching at Scale | • Converts unstructured→structured data reliably.<br />• Handles volume (100+→500+ records) with pagination/batching/chunking.<br />• Parallelized processing when possible to reduce workflow latency. | 25 |
+| Orchestration & Human Decisioning | • Robust branching (multi-condition, nested, loops, dynamic routing).<br />• Human-in-the-loop Review usage, timeouts/auto-escalation. | 25 |
+| Operability & Observability | • UI/CLI/API to trigger and monitor runs; live status, results, input validation, retry with preserved state, job history.<br />• External logging/metrics/alerts and comprehensive audit trail. | 25 |
 
 ---
 
