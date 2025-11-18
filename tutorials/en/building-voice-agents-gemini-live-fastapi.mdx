@@ -79,7 +79,7 @@ This is the multimodal model that handles bidirectional audio streaming. It proc
 **For Structured Data Extraction:** `gemini-2.5-flash-native-audio-preview-09-2025` (same model)
 We use the same model for extracting medical data from conversation transcripts. The structured output feature (Pydantic schema support) was introduced with the Multimodal Live API in May 2025. This guarantees JSON responses that match your schema exactly. The API is constrained to return valid JSON matching your Pydantic model, eliminating parsing errors entirely.
 
-**Why one model for everything?** Using a single model simplifies billing, rate limit management, and reduces API overhead. Gemini 2.5 Flash is fast enough for real-time audio (<800ms) and accurate enough for structured extraction (98.5% schema compliance). Specialization would add complexity without meaningful performance gains.
+**Why one model for everything?** Using a single model simplifies billing, rate limit management, and reduces API overhead. Gemini 2.5 Flash is fast enough for real-time audio (< 800ms) and accurate enough for structured extraction (98.5% schema compliance). Specialization would add complexity without meaningful performance gains.
 
 **Voice Configuration:** We use the "Puck" voice for AI responses. It's clear, professional, and works well for medical applications. Gemini 2.5 Flash offers 30 HD voices across 24 languages, giving you options like "Charon", "Kore", "Fenrir", "Aoede", and many more depending on your use case and target audience.
 
