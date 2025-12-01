@@ -27,17 +27,19 @@ We fed it a detailed prompt for an AgentPay landing page with hero section, feat
 
 ![Conductor AI processing the build](https://iili.io/fnN016P.png)
 
-## Prompt 1: The AI Slop Problem
+## Prompt 1: When Vague Prompts Produce Generic Results
 
-Our first prompt was comprehensive. Hero section with "The Future of AI Commerce" headline, particle animations, glassmorphism cards, purple gradients. We specified structure, features, design direction. Everything you'd want in a landing page prompt.
+Our first prompt was comprehensive in structure but vague in design direction. We asked for a hero section with "The Future of AI Commerce" headline, particle animations, glassmorphism cards, purple gradients. We described features and layout. But we never told Conductor what we actually wanted it to look like.
 
 The output looked like this:
 
 ![First iteration with purple gradient](https://iili.io/fnNVFIa.png)
 
-It's functional. The layout is there. The CTAs are clickable. But this is what I call "AI slop." Every AI builder defaults to this aesthetic: purple gradients, floating particles, generic energy. It screams "a computer made this."
+It's functional. The layout is there. The CTAs are clickable. But it has that generic "AI aesthetic"—purple gradients, floating particles, safe visual choices. This wasn't Conductor's fault. We asked for purple gradients and particles. We got exactly what we requested.
 
-Here's what people miss about AI builders. The first output is never the final product. It's a sketch. The AI understood the structure, we got our hero section, the headline, the buttons. But most people stop here, and that's the difference between "obviously AI-generated" and something you'd actually ship.
+Here's what people miss about AI builders: the output reflects the input. When you give vague design direction like "make it look modern" or "use glassmorphism," you're leaving the visual decisions to defaults. The AI understood our structure perfectly—we got our hero section, headline, and buttons. But we hadn't given it a real design vision to execute.
+
+Most people stop at this first output and blame the tool. The real issue is the prompt. Conductor was ready to build something production-quality. We just hadn't told it what that meant yet.
 
 ## Prompt 2: Refinement (Still Generic)
 
@@ -51,7 +53,7 @@ At this point, Conductor also produced some broken versions as we iterated:
 
 ![Broken version with white background](https://iili.io/fnNX8Xa.png)
 
-And then it gave us the full "AI slop" experience: a fake dashboard with "$24,560 Revenue" and "127 Agents" and "98.5% Success Rate." Generic placeholder data that means absolutely nothing.
+And then we got the predictable result of an underspecified prompt: a dashboard with "$24,560 Revenue" and "127 Agents" and "98.5% Success Rate." Generic placeholder data that means absolutely nothing.
 
 ![Full AI slop with fake dashboard](https://iili.io/fnNhrZu.png)
 
