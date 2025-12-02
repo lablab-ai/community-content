@@ -13,8 +13,8 @@ I recently participated in a hackathon project called "**AI Agents on Arc with U
 
 ## Links & Resources
 
-- **GitHub Repository**: <https://github.com/kenhuangus/arc-ai-agents>
-- **Lablab.ai Project**: <https://lablab.ai/event/ai-agents-arc-usdc/arcmind-collective/arcmind-collective>
+- **GitHub Repository**: https://github.com/kenhuangus/arc-ai-agents
+- **Lablab.ai Project**: https://lablab.ai/event/ai-agents-arc-usdc/arcmind-collective/arcmind-collective
 - **Live Demo (no back end, for full stack, you can clone my repo and update .env file with your api keys to have full experience)**: https://arc-ai-agents8.streamlit.app/
 - **Arc Testnet Contracts**:
   - IntentRegistry: [0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82](https://testnet.arcscan.app/address/0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82)
@@ -78,6 +78,7 @@ During the Arc L1 hackathon, I set out to build what I believe is the **first mu
 
 I started with the blockchain layer - three Solidity contracts that would handle the on-chain settlement:
 
+```bash
 > _// Core contracts deployed to Arc testnet_
 >
 > _IntentRegistry.sol - Stores all trading intents (182 LOC)_
@@ -85,6 +86,7 @@ I started with the blockchain layer - three Solidity contracts that would handle
 > _AuctionEscrow.sol - Manages matching and settlement (348 LOC)_
 >
 > _PaymentRouter.sol - Handles payments via AP2 protocol (210 LOC)_
+```
 
 The key insight was to keep the blockchain minimal - just the trustless settlement layer. All the AI reasoning happens off-chain for speed and cost efficiency.
 
@@ -135,6 +137,7 @@ Getting everything on Arc L1 was surprisingly smooth. Circle's infrastructure is
 
 I used Foundry's deployment scripts:
 
+```bash
 > _forge script script/Deploy.s.sol:Deploy \\_
 >
 > _\--rpc-url https://rpc.testnet.arc.network \\_
@@ -142,6 +145,7 @@ I used Foundry's deployment scripts:
 > _\--broadcast \\_
 >
 > _\--legacy_
+```
 
 Within minutes, all three contracts were live and verified. You can actually see them on Arc testnet explorer - real contracts with real code, not vaporware.
 
@@ -248,7 +252,7 @@ This gives us:
 The settlement flow on Arc L1:
 
 1. **Intent Registration**
-
+```bash
 > _function registerIntent(_
 >
 > _IntentType intentType,_
@@ -260,9 +264,9 @@ The settlement flow on Arc L1:
 > _uint256 quantity_
 >
 > _) external returns (bytes32 intentId);_
-
+```
 2. **Escrow Creation** (when match found)
-
+```bash
 > _function createEscrow(_
 >
 > _bytes32 buyIntentId,_
@@ -272,9 +276,9 @@ The settlement flow on Arc L1:
 > _uint256 amount_
 >
 > _) external returns (uint256 escrowId);_
-
+```
 3. **Atomic Settlement**
-
+```bash
 > _function settleEscrow(uint256 escrowId) external {_
 >
 > _// Verify both parties deposited_
@@ -284,7 +288,7 @@ The settlement flow on Arc L1:
 > _// Emit settlement event_
 >
 > _}_
-
+```
 ### Why This Architecture Scales
 
 **Off-Chain Advantages:**
@@ -391,7 +395,7 @@ Let's talk market opportunity (because judges and investors care):
 If you found this interesting, share on:
 
 - Twitter: Tag @arc, @buildoncircle, @lablabai
-- LinkedIn: <https://www.linkedin.com/in/kenhuang8>
+- LinkedIn: https://www.linkedin.com/in/kenhuang8
 
 ## Acknowledgments: Standing on the Shoulders of Giants
 
