@@ -46,6 +46,32 @@ Finally, visit our GitHub repo and add AI tutorials here, get inspiration from t
    - to `community-content` branch - thanks to that our internal system will be able to check if your files contains plagiarism/AI generated content (required)
    - to `main` branch
 
+## Adding Quiz to the tutorial
+
+Simply add this component
+And provide questiongs in the props as an array, you can use the below code as example for the pattern
+```tsx
+<Quiz    
+  questions={[
+    {
+      question: "Which language runs in a web browser?",
+      options: ["Java", "C", "Python", "JavaScript"],
+      answer: 3
+    },
+    {
+      question: "What does CSS stand for?",
+      options: [
+        "Central Style Sheets",
+        "Cascading Style Sheets",
+        "Cascading Simple Sheets",
+        "Cars SUVs Sailboats"
+      ],
+      answer: 1
+    }
+  ]}
+/>
+```
+
 ## Adding as sponsored content/Adding sponsored image
 
 1. To add sponsor as author and link to the sponsor website add to the top of the file under the mandatory fields:

@@ -1,0 +1,434 @@
+---
+title: "My Experience Building a Multi Agent Hackathon Project Within 72 Hours"
+description: "A fast breakdown of how I built a fully working multi-agent AI system—five specialized agents, LangGraph orchestration, and real on-chain settlement on Arc L1-in just 72 hours."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5001f274-a6b5-4b44-a2ef-e7867d051b00/full"
+authorUsername: "distributedappsai917"
+---
+
+# My Experience Building a Multi Agent Hackathon Project Within 72 Hours
+
+## TL;DR
+
+I recently participated in a hackathon project called "**AI Agents on Arc with USDC**" organized by [**lablab.ai**](https://lablab.ai/). My project name is **Arc Mind Collective** which brings AI-powered intelligence to blockchain intent coordination using 5 specialized agents (supported by Claude Sonnet 4.5 + Gemini 2.5 Pro) orchestrated with LangGraph, deployed on Arc L1 testnet with full smart contract settlement.
+
+## Links & Resources
+
+- **GitHub Repository**: https://github.com/kenhuangus/arc-ai-agents
+- **Lablab.ai Project**: https://lablab.ai/event/ai-agents-arc-usdc/arcmind-collective/arcmind-collective
+- **Live Demo (no back end, for full stack, you can clone my repo and update .env file with your api keys to have full experience)**: https://arc-ai-agents8.streamlit.app/
+- **Arc Testnet Contracts**:
+  - IntentRegistry: [0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82](https://testnet.arcscan.app/address/0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82)
+  - PaymentRouter: [0x9A676e781A523b5d0C0e43731313A708CB607508](https://testnet.arcscan.app/address/0x9A676e781A523b5d0C0e43731313A708CB607508)
+  - AuctionEscrow: [0x0B306BF915C4d645ff596e518fAf3F9669b97016](https://testnet.arcscan.app/address/0x0B306BF915C4d645ff596e518fAf3F9669b97016)
+
+## The Problem: Why Blockchain Needs to Get Smarter
+
+I've been fascinated by intent-based architectures ever since Uniswap X and CoW Protocol started gaining traction. The idea is simple but powerful: instead of manually crafting complex transactions, users express their _intent_ ("I want to buy 1 BTC with USDC at the best price") and let the protocol figure out the execution.
+
+But here's the thing that kept bothering me: **these systems can't actually think**.
+
+Current intent coordination platforms are basically sophisticated matching engines - they can compare numbers and execute predefined rules, but they fundamentally lack:
+
+1. **Semantic understanding** - They can't understand context or nuanced requirements
+2. **Risk awareness** - No built-in fraud detection or counterparty risk assessment
+3. **Market intelligence** - No real-time validation of whether prices make sense
+4. **Explainability** - Decisions are opaque black boxes
+
+This is where AI and blockchain should merge. Smart contracts are perfect for trustless execution, but they need intelligence for coordination, analysis, and decision-making.
+
+## The Idea: Five AI Agents Working as a Team
+
+During the Arc L1 hackathon, I set out to build what I believe is the **first multi-agent AI system for decentralized intent coordination**. The architecture is inspired by how humans work in trading desks - different specialists handling different aspects:
+
+### The Five Agents
+
+**🎯 Matching Agent** (Claude Sonnet 4.5)
+
+- Semantic understanding of buy/sell intents
+- Finds optimal counterparties with confidence scoring
+- Can handle complex requirements like "verified sellers only" or "must settle within 1 hour"
+
+**📈 Market Agent** (Gemini 2.5 Pro)
+
+- Real-time price validation against market conditions
+- Volatility analysis and sentiment scoring
+- Ensures users aren't getting ripped off
+
+**🛡️ Fraud Agent** (Claude Sonnet 4.5)
+
+- Pattern detection for wash trading, pump-and-dump schemes
+- Historical behavior analysis
+- Flags suspicious activity before settlement
+
+**⚠️ Risk Agent** (Claude Sonnet 4.5)
+
+- Comprehensive risk scoring across multiple dimensions
+- Counterparty risk, liquidity risk, market risk, operational risk
+- Explainable decisions with reasoning
+
+**💳 Settlement Agent** (Claude Sonnet 4.5)
+
+- Plans atomic escrow settlement on Arc L1
+- Gas estimation and optimization
+- Coordinates with PaymentRouter for AP2 (Stripe) integration
+
+## The Build: From Concept to Production in 72 Hours
+
+### Night 1: Architecture & Smart Contracts
+
+I started with the blockchain layer - three Solidity contracts that would handle the on-chain settlement:
+
+```bash
+> _// Core contracts deployed to Arc testnet_
+>
+> _IntentRegistry.sol - Stores all trading intents (182 LOC)_
+>
+> _AuctionEscrow.sol - Manages matching and settlement (348 LOC)_
+>
+> _PaymentRouter.sol - Handles payments via AP2 protocol (210 LOC)_
+```
+
+The key insight was to keep the blockchain minimal - just the trustless settlement layer. All the AI reasoning happens off-chain for speed and cost efficiency.
+
+By 2 AM, I had all contracts compiling and 27 Foundry tests passing. There's something deeply satisfying about seeing that green checkmark wall.
+
+### Day 2: The Agent Swarm
+
+The real magic happened when I started building the agent coordination layer using **LangGraph**. This framework is perfect for multi-agent systems because it gives you:
+
+- Type-safe state management across agents
+- Conditional routing (different paths based on agent decisions)
+- Streaming outputs for real-time visualization
+- Full observability and debugging
+
+Each agent is built with a consistent pattern:
+
+1. Receive intent + context from shared state
+2. Use LLM API (Claude or Gemini) for analysis
+3. Return structured output with reasoning and confidence scores
+4. Update shared state for next agent
+
+The workflow looks like this:
+
+One of the breakthrough moments was getting the fraud agent working. I gave it examples of wash trading patterns and pump-and-dump schemes, and it started catching suspicious behavior with scary accuracy. In testing, it flagged a fake intent I created where the same address was both buyer and seller.
+
+### Day 3: UI, Integration & Deployment
+
+The final day was all about making it usable. I built a Streamlit dashboard that shows:
+
+- Real-time agent execution with color-coded status (🟡 running → 🟢 complete)
+- Live intermediate results from each agent
+- Confidence scores and reasoning for every decision
+- Transaction links to Arc testnet explorer
+
+The coolest feature: you can watch the agents "think" in real-time. When the Matching Agent analyzes intents, you see its reasoning appear live:
+
+🎯 Matching Agent: "Found 3 potential matches for BUY intent..."
+
+Match #1: score 0.92 - "High compatibility, price within 2% of market"
+
+Match #2: score 0.78 - "Good match but 4% price spread"
+
+...reasoning continues...
+
+### Deployment to Arc Testnet
+
+Getting everything on Arc L1 was surprisingly smooth. Circle's infrastructure is solid - the testnet is fast, the faucet is generous with USDC, and the block explorer is clean.
+
+I used Foundry's deployment scripts:
+
+```bash
+> _forge script script/Deploy.s.sol:Deploy \\_
+>
+> _\--rpc-url https://rpc.testnet.arc.network \\_
+>
+> _\--broadcast \\_
+>
+> _\--legacy_
+```
+
+Within minutes, all three contracts were live and verified. You can actually see them on Arc testnet explorer - real contracts with real code, not vaporware.
+
+The moment when I created the first intent through the UI and saw it appear on the Arc explorer... that's the hackathon high right there.
+
+## Why Arc L1 Was the Perfect Foundation
+
+Here are some benefits with Circle's Arc Chain
+
+### 1. Native USDC Integration
+
+Arc uses USDC as its native gas token. This is brilliant for a DeFi intent system because:
+
+- No need for users to hold separate gas tokens
+- All payments are already in USDC
+- Seamless integration with traditional finance via AP2
+
+### 2. EVM Compatibility with Modern Features
+
+Arc is EVM-compatible but built from scratch with modern standards. I could use familiar Solidity patterns while leveraging:
+
+- Faster block times (2-second finality)
+- Lower gas costs
+- Better tooling support
+
+### 3. The Google's AP2 Protocol
+
+Using Google's Agent Payments Protocol (AP2) on Arc Chain is game-changing. It lets you verify off-chain payments (like Stripe) on-chain. In Arc AI Agents, the PaymentRouter contract can:
+
+- Accept traditional credit card payments via Stripe
+- Verify the payment happened using Circle's oracle
+- Release escrow atomically
+
+This bridges TradFi and DeFi in a way that's actually usable.
+
+### 4. Early Ecosystem Opportunity
+
+Arc is brand new (testnet launched recently). Being an early builder means:
+
+- First-mover advantage in the ecosystem
+- Direct feedback from the Arc team
+- Potential for future grants/support
+- Chance to define standards
+
+## The Numbers: What We Achieved
+
+After 72 hours of focused building, here's what shipped:
+
+**Smart Contracts:**
+
+- 3 production contracts (740 LOC total)
+- 27 Foundry tests (100% passing)
+- Deployed and verified on Arc testnet
+
+**AI Agents:**
+
+- 5 specialized agents with distinct roles
+- LangGraph orchestration with conditional routing
+- Real-time streaming outputs
+- Structured outputs with confidence scores
+
+**Full Stack:**
+
+- FastAPI backend with async endpoints
+- Streamlit UI with live agent visualization
+- Arc L1 integration with contract calls
+- Real-time transaction tracking
+
+**Performance:**
+
+- Intent matching: 2-5 seconds end-to-end
+- Agent reasoning: 1-3 seconds per agent
+- On-chain settlement: < 10 seconds (Arc's 2s block time)
+- Cost per intent: ~$0.10 (LLM API calls)
+
+## The Architecture: Hybrid Intelligence
+
+The key architectural decision was to keep AI off-chain and settlement on-chain. Here's why this hybrid approach works:
+
+### Off-Chain: AI Coordination Layer
+
+All the "thinking" happens off-chain using LangGraph:
+
+```
+Intent → Matching Agent → Market Agent → Fraud Agent → Risk Agent → Settlement Agent → On-Chain Settlement
+```
+
+Each agent:
+
+1. Receives shared state (intent data, previous agent outputs)
+2. Calls LLM API (Claude or Gemini)
+3. Returns structured decision with reasoning
+4. Updates state for next agent
+
+This gives us:
+
+- **Speed**: LLM inference in seconds (not minutes)
+- **Cost**: $0.05-0.10 per intent (not $10-50 on-chain)
+- **Flexibility**: Update prompts without contract upgrades
+- **Explainability**: Full reasoning chain visible
+
+### On-Chain: Trustless Settlement
+
+The settlement flow on Arc L1:
+
+1. **Intent Registration**
+```bash
+> _function registerIntent(_
+>
+> _IntentType intentType,_
+>
+> _address asset,_
+>
+> _uint256 price,_
+>
+> _uint256 quantity_
+>
+> _) external returns (bytes32 intentId);_
+```
+2. **Escrow Creation** (when match found)
+```bash
+> _function createEscrow(_
+>
+> _bytes32 buyIntentId,_
+>
+> _bytes32 sellIntentId,_
+>
+> _uint256 amount_
+>
+> _) external returns (uint256 escrowId);_
+```
+3. **Atomic Settlement**
+```bash
+> _function settleEscrow(uint256 escrowId) external {_
+>
+> _// Verify both parties deposited_
+>
+> _// Transfer assets atomically_
+>
+> _// Emit settlement event_
+>
+> _}_
+```
+### Why This Architecture Scales
+
+**Off-Chain Advantages:**
+
+- LLM inference: 1-5 seconds per agent (vs minutes on-chain)
+- Cost: $0.10 per intent (vs $10-50 on-chain computation)
+- Flexibility: Update agent prompts without contract upgrades
+
+**On-Chain Advantages:**
+
+- Trustless settlement: No one can rug pull
+- Composability: Other contracts can read intent data
+- Transparency: All settlements verifiable
+
+The hybrid approach gives you the best of both worlds.
+
+## For Builders: Key Takeaways
+
+If you're building at the intersection of AI and blockchain, here's what I learned:
+
+### 1. Use the Right Tool for Each Layer
+
+- **AI Layer**: LangGraph for orchestration, Claude/Gemini for reasoning
+- **API Layer**: FastAPI for Python (fast, async, auto-docs)
+- **Blockchain Layer**: Foundry for contracts (best testing experience)
+- **UI Layer**: Streamlit for MVPs (insanely fast to build)
+
+### 2. Start with the Contract Tests
+
+Write your smart contract tests first. It forces you to think through edge cases and gives you confidence to build the rest of the stack.
+
+### 3. Make AI Decisions Explainable
+
+Always include reasoning and confidence scores in LLM outputs. Users need to understand why the system made a decision, especially in finance.
+
+### 4. Stream Everything
+
+Use server-sent events or WebSockets to stream agent progress to the UI. Real-time feedback makes the experience magical.
+
+### 5. Deploy Early and Often
+
+I deployed to Arc testnet on day 2. Having real on-chain contracts motivated me and caught integration bugs early.
+
+## The Business Case: Why This Could Be Big
+
+Let's talk market opportunity (because judges and investors care):
+
+### The Intent Economy is Exploding
+
+**Market Size:**
+
+- Global DeFi TVL: $50B+ (2024)
+- Intent-based protocols: Growing 300% YoY
+- OTC trading: $500B+ annually
+
+**Adoption Drivers:**
+
+- Uniswap X (UniswapX), CoW Protocol, 1inch Fusion all betting on intents
+- Users prefer "I want to buy BTC" over manual DEX interactions
+- Professional traders need sophisticated execution strategies
+
+### Revenue Model
+
+**Transaction Fees** (Primary)
+
+- 0.1-0.3% fee per matched intent
+- At 1M intents/month averaging $1,000 each → $1-3M/month revenue
+- 95% gross margins (LLM costs: $0.05/transaction)
+
+**Enterprise API** (Secondary)
+
+- $500-$5,000/month per protocol integration
+- Custom agents, SLA guarantees, dedicated support
+- Target: 50 protocols in year 1 → $300K-$3M ARR
+
+**White-Label Solutions** (High-Margin)
+
+- One-time deployment: $50K-$200K per protocol
+- Custom agent development for specific verticals
+- Target: 5-10 deployments in year 1 → $500K-$2M
+
+### Competitive Moat
+
+**Technical Moat:**
+
+- First-mover in multi-agent DeFi coordination
+- 6 months ahead in LLM+blockchain integration
+- Production code + working system (not vaporware)
+
+**Data Moat:**
+
+- Every intent analyzed trains the system
+- Network effects: more intents → better matching
+- Fraud/risk models improve with volume
+
+**Ecosystem Moat:**
+
+- Native Arc L1 integration (early ecosystem position)
+- Partnerships with initial protocols create lock-in
+- SDK enables community-driven agent development
+
+### Spread the Word
+
+If you found this interesting, share on:
+
+- Twitter: Tag @arc, @buildoncircle, @lablabai
+- LinkedIn: https://www.linkedin.com/in/kenhuang8
+
+## Acknowledgments: Standing on the Shoulders of Giants
+
+This project wouldn't exist without:
+
+**Arc & Circle**
+
+- @arc & @buildoncircle for building the infrastructure
+- The Arc testnet that just works
+- AP2 protocol for TradFi bridge
+
+**AI Infrastructure**
+
+- @AnthropicAI for Claude Sonnet 4.5 (the smartest LLM for structured tasks)
+- @Google for Gemini 2.5 Pro (incredible market analysis)
+- @LangChainAI for LangGraph (game-changer for multi-agent systems)
+
+**Hackathon & Community**
+
+- [@lablabai](https://lablab.ai/) for organizing the hackathon
+- @silencexlm, @samconnerone, @bleso_a, @corey\_\_Cooper, @akelani, @czech_pawel for the support
+
+## Final Thoughts: Why This Matters
+
+We're at an inflection point in technology. For the first time, we have:
+
+1. **Smart contracts** that can enforce trustless execution
+2. **LLMs** that can understand context and reason
+3. **Fast L1s like Arc** that can handle real-time settlement
+4. **TradFi bridges like AP2** that connect to existing finance
+
+These pieces weren't ready 2 years ago. They are now.
+
+The future of finance isn't purely decentralized (too rigid) or purely centralized (too risky). It's **agentic and hybrid** - AI agents handling intelligent coordination, smart contracts handling trustless settlement, and bridges connecting both worlds.
+
+Arc AI Agents is my bet on that future. I built it in 72 hours to prove it's possible. Now let's build it for real.
