@@ -913,6 +913,68 @@ By building this system, we've learned:
 
 ---
 
+<Quiz    
+  questions={[
+    {
+      question: "What HTTP status code does x402 use to request payment?",
+      options: ["HTTP 200", "HTTP 402", "HTTP 403", "HTTP 404"],
+      answer: 1
+    },
+    {
+      question: "Which Ethereum standard is x402 built on?",
+      options: [
+        "EIP-721",
+        "EIP-3009",
+        "EIP-155",
+        "EIP-20"
+      ],
+      answer: 1
+    },
+    {
+      question: "What is the role of a facilitator in the x402 protocol?",
+      options: [
+        "To create payment payloads",
+        "To verify payments and settle them on-chain, sponsoring gas fees",
+        "To store wallet addresses",
+        "To generate API keys"
+      ],
+      answer: 1
+    },
+    {
+      question: "Which package automatically handles 402 responses and payment flows in client applications?",
+      options: [
+        "@x402/core",
+        "@x402/express",
+        "@x402/axios",
+        "@x402/evm"
+      ],
+      answer: 2
+    },
+    {
+      question: "What network is used in this tutorial for testing x402 payments?",
+      options: [
+        "Ethereum Mainnet",
+        "Base Sepolia",
+        "Polygon",
+        "Arbitrum"
+      ],
+      answer: 1
+    },
+    {
+      question: "What header does the client send with payment information when retrying a request?",
+      options: [
+        "X-AUTHORIZATION",
+        "X-PAYMENT",
+        "X-API-KEY",
+        "Authorization"
+      ],
+      answer: 1
+    }
+  ]}
+/>
+
+---
+
 ## Next Steps
 
 1. **Deploy to production**: Set up CDP facilitator for mainnet
