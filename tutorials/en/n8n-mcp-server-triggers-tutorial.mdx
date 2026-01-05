@@ -1,0 +1,531 @@
+---
+title: 'n8n MCP Server Triggers: Expose Workflows as AI Tools'
+description: 'Build an MCP server that connects n8n to Cursor, enabling your AI assistant to fetch GitHub issues and automatically create pull requests with descriptions based on commit history.'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f3b3b1a5-00b5-4a62-1d63-5e5392294c00/full'
+authorUsername: 'stevekimoi'
+---
+
+## Introduction
+
+Imagine having your AI assistant in Cursor seamlessly trigger complex GitHub workflows—fetching issue details, analyzing commit history, and creating professional pull requests—all through natural language commands. This tutorial will show you how to make this a reality using n8n's powerful MCP (Model Context Protocol) Server Triggers.
+
+In this comprehensive guide, we'll build an MCP server on n8n that connects two essential GitHub operations to Cursor:
+
+1. **GitHub Issue Tracker** - Fetch detailed issue information and comment threads to give Cursor complete context for implementation planning
+2. **AI-Powered PR Creator** - Automatically generate professional pull requests with intelligent descriptions based on commit history
+
+By the end of this tutorial, you'll have a fully functional MCP server that transforms your n8n workflows into AI-accessible tools, making your development workflow more efficient and intelligent.
+
+### What You'll Build
+
+You'll create an MCP server that exposes n8n workflows as standardized tools that Cursor can understand and execute. This enables your AI assistant to:
+
+- Retrieve GitHub issue details with full context from discussions
+- Analyze commit messages and generate professional PR descriptions
+- Create pull requests automatically with AI-generated titles and descriptions
+
+### Quick Start: Test the Working Example
+
+Before we dive into building, you can test the final MCP server using this URL: `https://stevekimoi.app.n8n.cloud/mcp/dcd48feb-ce2a-4ef4-ba3e-431ec494b274`
+
+To connect it to Cursor:
+
+1. Open your Cursor IDE
+2. Navigate to Settings → Tools & MCP
+3. Click on "New MCP Server" → "Add custom MCP server"
+4. This will open an `mcp.json` file
+5. Add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "github-agent-mcp": { 
+      "url": "https://stevekimoi.app.n8n.cloud/mcp/dcd48feb-ce2a-4ef4-ba3e-431ec494b274"
+    }
+  }
+}
+```
+
+### Testing the Integration
+
+Once connected, you can test the integration with these example prompts:
+
+**Fetching GitHub Issues:**
+```
+We're working on issue number #5 in my repo https://github.com/Stephen-Kimoi/Example-Auth-Service
+
+Let's draft an implementation plan for it
+```
+
+This will retrieve issue #5 from the specified repository, including all comments and context, allowing Cursor to draft a comprehensive implementation plan.
+
+**Creating Pull Requests:**
+```
+I want to create a pull request from the feature/rate-limiting-middleware branch to the main branch of https://github.com/Stephen-Kimoi/Example-Auth-Service
+```
+
+Make sure your branch has active commits. The system will analyze the commit history and generate a professional title and description for your pull request automatically. 
+
+## Getting Started
+
+### Prerequisites
+
+Before we begin, make sure you have the following accounts and tools set up:
+
+1. **n8n Account** - Sign up at [app.n8n.cloud/register](https://app.n8n.cloud/register) if you don't have one yet
+2. **Groq Account** - Create an account at [console.groq.com/](https://console.groq.com/) for LLM access (we'll use this for AI-powered PR descriptions)
+3. **Cursor IDE** - Download and install from [cursor.com/download](https://cursor.com/download)
+4. **GitHub Account** - You'll need a GitHub personal access token with appropriate permissions
+
+### Setting Up Your MCP Server Trigger Workflow
+
+Let's start by creating the foundation of our MCP server. This workflow will serve as the entry point that exposes our tools to Cursor.
+
+#### Step 1: Create a New Workflow
+
+1. Sign up or sign in to your n8n account
+2. Navigate to `/home/workflows` and click the **"Create Workflow"** button in the top right corner
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601405/Screenshot_2026-01-05_at_11.21.18_s3tfug.png" alt="Create workflow button in n8n" caption="Click the Create Workflow button to start building your MCP server" />
+
+3. Click on **"Add First Step"** and search for **"MCP Server triggers"**
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.01_mfsowl.png" alt="Add first step button" caption="Click Add First Step to begin configuring your workflow" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.24_i1cmca.png" alt="MCP Server triggers node" caption="Select MCP Server triggers from the node options" />
+
+4. Close the MCP Server modal by clicking the **"x"** button in the top right corner
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601718/Screenshot_2026-01-05_at_11.27.44_reiovp.png" alt="MCP Server trigger node added" caption="Your MCP Server trigger node is now ready to accept tools" />
+
+#### Step 2: Building the GitHub Issue Tracker Tool
+
+Now we'll create a GitHub issue tracker that fetches comprehensive issue details, including the full comment thread. This gives Cursor complete context to understand requirements and draft implementation plans.
+
+1. Click on the **"+"** icon next to the MCP Server trigger node. This opens the tools section
+2. Search for **"GitHub"** tools and select it
+3. Configure the parameters as follows:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602203/Screenshot_2026-01-05_at_11.34.21_fuicy4.png" alt="GitHub tool configuration" caption="Configure the GitHub tool to fetch issue details" />
+
+**Configuration Details:**
+
+a. **Credential to connect with:**
+   - Select **"Github Account"**
+   - If this is your first time connecting, you'll need to provide a GitHub personal access token
+   - To create a token, go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Generate a new token with the following permissions:
+     - `repo` (full control of private repositories)
+     - `issues:read` (read issues)
+     - `issues:write` (write issues)
+     - `pull_requests:write` (create PRs)
+
+b. **Tool Description:**
+   - Set this to **"Manually"**
+
+c. **Description:**
+   - Enter this exact description: `Fetch GitHub issue details including the full comment thread, so Cursor can understand complete context and requirements from discussions.`
+   - This description is crucial—it needs to be specific so the LLM understands exactly what this tool does
+
+d. **Resource:**
+   - Select **"Repository"**
+
+e. **Operation:**
+   - Set to **"Get Issues"**
+
+f. **Repository Owner:**
+   - Select **"By URL"** and enter your GitHub profile URL
+
+g. **Repository Name:**
+   - Select **"By URL"** and enter the repository URL
+
+4. Close the modal and click the **"Publish"** button to make your MCP server accessible to external services like Cursor
+
+5. Click the **"Execute Workflow"** button at the bottom center of the screen
+
+6. Hover over the MCP Server trigger node and click the three dots menu → **"Open"**
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.50_nhgphl.png" alt="Opening MCP Server triggers" caption="Access the MCP Server trigger settings" />
+
+7. Copy the test URL provided and save it for later use
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.58_zbx1eo.png" alt="Copying the test URL" caption="Save the test URL to connect Cursor to your MCP server" />
+
+#### Step 3: Testing the Issue Tracker
+
+Now let's connect your MCP server to Cursor and test the issue tracker functionality.
+
+1. Open Cursor IDE and navigate to **Settings → Tools & MCP**
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767603053/Screenshot_2026-01-05_at_11.47.48_g2okiq.png" alt="Cursor settings MCP tools" caption="Access MCP settings in Cursor" />
+
+2. Click on **"New MCP Server"** to open the `mcp.json` file
+3. Replace the URL with the test URL you copied earlier:
+
+```json
+{
+  "mcpServers": {
+    "github-agent-mcp": { 
+      "url": "https://stevekimoi.app.n8n.cloud/mcp-test/dcd48feb-ce2a-4ef4-ba3e-431ec494b274"
+    }
+  }
+}
+```
+
+4. Wait for the tools to load. You'll see a green dot appear, indicating that Cursor is successfully connected to your MCP server
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767604802/Screenshot_2026-01-05_at_12.19.12_zqscd8.png" alt="MCP Server connected to cursor" caption="Green dot indicates successful connection to your MCP server" />
+
+5. Open the chat section in Cursor (press `CMD + L` on Mac or `CTRL + L` on Windows/Linux) and test with a request like:
+
+```
+We're working on issue #5 in my repo https://github.com/Stephen-Kimoi/Example-Auth-Service
+
+Let's draft an implementation plan for it
+```
+
+The AI will fetch the issue details, including all comments and context, then help you draft a comprehensive implementation plan.
+
+## Building the AI-Powered PR Creator
+
+Now we'll create a sophisticated workflow that generates professional pull requests with AI-powered descriptions. This workflow will analyze commit messages, extract repository information, and create PRs with intelligent titles and descriptions.
+
+### Step 4: Setting Up the PR Creator Workflow
+
+Let's create a new workflow that will be triggered by our MCP server to handle PR creation.
+
+1. Create a new workflow in n8n
+2. Click **"Add first step"** and select **"When executed by another workflow"**
+3. In the parameter section, select **"Accept all data"**
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767605616/Screenshot_2026-01-05_at_12.32.30_kidbwl.png" alt="When executed by another workflow" caption="Set up the workflow trigger to accept data from the MCP server" />
+
+### Step 5: Creating the Repository Info Extraction Agent
+
+We'll use an AI agent to intelligently extract repository information from natural language queries. This allows users to describe PRs in plain English, and the system will extract the necessary details.
+
+#### Configuring the AI Agent
+
+1. Click the **"+"** icon on the right side of the workflow trigger node
+2. Select **"AI Agent"** tool
+3. Rename it to **"Extract repository info"**
+4. Configure the parameters as shown:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606159/Screenshot_2026-01-05_at_12.36.53_s9bvap.png" alt="Extract repository info parameters" caption="Configure the AI Agent to extract repository information" />
+
+**Parameter Settings:**
+
+a. **Source for Prompt (User Message):**
+   - Set to **"Define below"**
+
+b. **Prompt (User Message):**
+   - Set to: `{{ $json.query }}`
+
+c. **Require Specific Output Format:**
+   - Toggle this **ON**
+
+d. **Options:**
+   - Add a **"System Message"** option
+   - Set the system message to:
+   ```
+   You are a data extraction assistant. Your task is to extract structured repository information from natural language queries about GitHub pull requests. Always provide all four fields: owner, repo, branch_name, and base_branch. Use the defaults provided when information is not explicitly mentioned in the query.
+   ```
+
+#### Setting Up the Chat Model
+
+1. Click the **"+"** icon in the **"Chat Mode"** section
+2. Select **"Groq Chat Model"**
+3. Configure as follows:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606552/Screenshot_2026-01-05_at_12.47.43_f5kem4.png" alt="Groq Chat Mode Parameters" caption="Configure Groq as the chat model provider" />
+
+a. **Credential to connect with:**
+   - Connect your Groq account (get your API key from [console.groq.com](https://console.groq.com))
+
+b. **Model:**
+   - Select **"openai/gpt-oss-120b"**
+
+#### Configuring the Output Parser
+
+1. Click the **"+"** icon in the **"Output parser"** section
+2. Select **"Structured Output Parser"**
+3. Configure the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606761/Screenshot_2026-01-05_at_12.51.58_mfqtue.png" alt="Structured Output Parameters" caption="Set up structured output parsing for consistent data extraction" />
+
+a. **Schema Type:**
+   - Select **"Generate From JSON Example"**
+
+b. **JSON Example:**
+   - Insert this schema:
+   ```json
+   {
+     "owner": "GitHub repository owner username",
+     "repo": "GitHub repository name",
+     "branch_name": "Source branch name for the pull request",
+     "base_branch": "Target branch name (usually main or master)"
+   }
+   ``` 
+
+### Step 6: Fetching Commit History
+
+Now we'll retrieve the commit messages from the specified branch to analyze what changes have been made.
+
+#### Setting Up the GitHub API Request
+
+1. Click the **"+"** button on the right side of the "Extract repository info" node
+2. Search for and select **"HTTP Request"**
+3. Configure the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767607045/Screenshot_2026-01-05_at_12.57.10_cbuzj6.png" alt="Get commits HTTP request parameters" caption="Configure the HTTP request to fetch commits from GitHub" />
+
+**Configuration:**
+
+a. **Method:**
+   - Set to **"GET"**
+
+b. **URL:**
+   - Set to: `{{ 'https://api.github.com/repos/' + $json.output.owner + '/' + $json.output.repo + '/commits' }}`
+
+c. **Authentication:**
+   - Set to **"Predefined Credential Type"**
+
+d. **Credential Type:**
+   - Select **"Github API"**
+
+e. **GitHub API:**
+   - Select **"Github Account"** (the same credential you used earlier)
+
+f. **Send Query Parameters:**
+   - Toggle this **ON**
+
+g. **Specify Query Parameters:**
+   - Select **"Using Fields Below"**
+   - Set **"Name"** to: `sha`
+   - Set **"Value"** to: `{{ $json.output.branch_name }}`
+
+4. Switch to the **"Settings"** tab
+5. Under **"On Error"**, select **"Continue (using error output)"**
+
+#### Adding Error Handling
+
+1. Click on the **"success"** output extension of the HTTP Request node
+2. Select **"If"** statement
+3. Rename it to **"Check for Repository error"**
+4. Configure the condition:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767607911/Screenshot_2026-01-05_at_13.10.19_zf59as.png" alt="Check for repository error" caption="Add error handling for invalid repositories or branches" />
+
+**If the condition is "true" (error occurred):**
+
+1. Click on the **"true"** output
+2. Select **"Edit Fields"**
+3. Configure as follows:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608083/Screenshot_2026-01-05_at_13.14.18_u7v7ky.png" alt="Error message parameters" caption="Set up error message formatting" />
+
+a. **Mode:**
+   - Select **"Manual Mapping"**
+
+b. **Fields to Set:**
+   - Click **"Add field"**
+   - **name:** `result`
+   - **value:** 
+   ```
+   Error: I couldn't find the repository "{{ $('Extract Repository Info').item.json.output.owner }}/{{ $('Extract Repository Info').item.json.output.repo }}" or branch "{{ $('Extract Repository Info').item.json.output.branch_name }}". Please double-check the spelling or ensure the repo is public and the branch exists.
+   ```
+
+**If the condition is "false" (success):**
+
+1. Click on the **"false"** output
+2. Select **"Edit Fields"**
+3. Configure:
+
+a. **Mode:**
+   - Select **"Manual Mapping"**
+
+b. **Fields to Set:**
+   - Add the following fields:
+     - **owner:** `{{ $('Extract Repository Info').item.json.output.owner }}`
+     - **repo:** `{{ $('Extract Repository Info').item.json.output.repo }}`
+     - **branch_name:** `{{ $('Extract Repository Info').item.json.output.branch_name }}`
+     - **base_branch:** `{{ $('Extract Repository Info').item.json.output.base_branch }}`
+     - **message:** `{{ $json.commit.message }}`
+
+#### Summarizing Commits
+
+1. Click the **"+"** button and search for **"Summarize"**
+2. Configure the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608587/Screenshot_2026-01-05_at_13.21.12_oojefn.png" alt="Summarize commits parameters" caption="Configure commit message summarization" />
+
+a. **Aggregation:**
+   - Select **"Concatenate"**
+
+b. **Field:**
+   - Select **"message"**
+
+c. **Separator:**
+   - Select **"New Line"** 
+
+### Step 7: Generating PR Description with AI
+
+Now we'll use an LLM to analyze the commit messages and generate a professional PR title and description.
+
+1. Click the **"+"** icon on the right of the "Summarize" node
+2. Search for and select **"Basic LLM Chain"**
+3. Configure the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608922/Screenshot_2026-01-05_at_13.28.30_nl1x3n.png" alt="Basic LLM Chain parameters" caption="Configure the LLM chain to generate PR descriptions" />
+
+**Parameter Settings:**
+
+a. **Source for Prompt (User Message):**
+   - Select **"Define below"**
+
+b. **Prompt (User Message):**
+   - Set to:
+   ```js
+   Here are all the commit messages for this branch:
+   {{ $('summarize_commits').first().json.concatenated_message }}
+
+   Please write a professional Pull Request:
+   1. A Title that summarizes the overall goal of these changes (max 72 characters).
+   2. A Description that lists the key changes in bullet points.
+
+   IMPORTANT: Return ONLY plain text without any markdown formatting. Do not use asterisks (**), bold, italics, or any other markdown syntax.
+
+   Format your response as:
+   Title: [your title here]
+   Description:
+   [your description here]
+   ```
+
+#### Configuring the Model
+
+1. Click the **"+"** icon in the **"Model"** section
+2. Select **"Groq Chat Model"**
+3. Configure:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609076/Screenshot_2026-01-05_at_13.31.04_lwovjj.png" alt="Groq model configuration" caption="Set up Groq as the LLM provider for PR generation" />
+
+a. **Credential to connect with:**
+   - Select **"Groq Account"**
+
+b. **Model:**
+   - Select **"openai/gpt-oss-120b"**
+
+### Step 8: Creating the Pull Request
+
+Finally, we'll send the PR creation request to GitHub using the AI-generated title and description.
+
+1. Click the **"+"** icon on the "Basic LLM Chain" node
+2. Select **"HTTP Request"**
+3. Configure the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609296/Screenshot_2026-01-05_at_13.34.43_oqd0z2.png" alt="GitHub PR creation parameters" caption="Configure the HTTP request to create the pull request" />
+
+**Parameter Configuration:**
+
+a. **Method:**
+   - Set to **"POST"**
+
+b. **URL:**
+   - Set to: `{{ 'https://api.github.com/repos/' + $('Extract Repository Info').item.json.output.owner + '/' + $('Extract Repository Info').item.json.output.repo + '/pulls' }}`
+
+c. **Authentication:**
+   - Select **"Predefined Credential Type"**
+
+d. **Credential Type:**
+   - Select **"Github API"**
+
+e. **GitHub API:**
+   - Select **"Github Account"**
+
+f. **Send body:**
+   - Toggle this **ON**
+
+g. **Body Content Type:**
+   - Select **"JSON"**
+
+h. **Specify Body:**
+   - Select **"Using Fields Below"**
+   - Add these body parameters:
+     - **title:** `{{ $('Basic LLM Chain').item.json.text.split('Title:')[1].split('Description:')[0].trim() }}`
+     - **head:** `{{ $('Extract Repository Info').item.json.output.branch_name }}`
+     - **base:** `{{ $('Extract Repository Info').item.json.output.base_branch }}`
+     - **body:** `{{ $('Basic LLM Chain').item.json.text.split('Description:')[1].trim() }}`
+
+#### Finalizing the Workflow
+
+Once configured, your complete n8n workflow should look like this:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609750/Screenshot_2026-01-05_at_13.41.26_wrry1d.png" alt="Final n8n workflow" caption="Your complete PR creation workflow is now ready" />
+
+1. Click **"Save"** to preserve your work
+2. Click **"Publish"** to make the workflow available
+3. Click **"Execute workflow"** to test it 
+
+### Step 9: Linking PR Creation to MCP Server
+
+Now we need to connect our PR creation workflow to the MCP server so Cursor can access it.
+
+1. Go back to your first workflow (the one with the MCP Server trigger)
+2. Click on the **"create_github_pr"** workflow tool in the MCP Server trigger node
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609897/Screenshot_2026-01-05_at_13.44.32_ichifd.png" alt="MCP server workflow tools" caption="Access the workflow tools in your MCP Server trigger" />
+
+3. Open the **"create_github_pr"** tool configuration
+4. Set the parameters:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609963/Screenshot_2026-01-05_at_13.45.20_dtizvg.png" alt="Set PR creation tool parameters" caption="Configure the PR creation tool for the MCP server" />
+
+**Configuration:**
+
+a. **Description:**
+   - Set to:
+   ```
+   Creates a GitHub Pull Request. IMPORTANT: You must provide the full repository owner and name (e.g., 'Stephen-Kimoi/Example-Auth-Service') even if you have a local git context, so the backend API can route the request correctly.
+   ```
+
+b. **Source:**
+   - Select **"Database"**
+
+c. **Workflow:**
+   - Select **"From List"**
+   - Choose the workflow you created in the previous steps (e.g., "Create Github PR")
+
+5. Click **"Save"** and **"Publish"**
+6. Click **"Execute workflow"** to activate the changes
+
+Your MCP server is now fully configured! You can test the PR creation functionality directly from your Cursor IDE using natural language commands.
+
+## Conclusion
+
+Congratulations! You've successfully built a powerful MCP server that connects n8n workflows to Cursor, enabling your AI assistant to:
+
+- **Fetch GitHub Issues** - Retrieve comprehensive issue details with full comment threads for better context understanding
+- **Create Pull Requests** - Automatically generate professional PRs with AI-powered titles and descriptions based on commit history
+
+### What You've Learned
+
+Throughout this tutorial, you've mastered:
+
+1. **MCP Server Setup** - Creating and configuring MCP Server triggers in n8n
+2. **GitHub Integration** - Connecting GitHub tools to fetch issues and create PRs
+3. **AI-Powered Automation** - Using LLMs to extract information and generate professional content
+4. **Error Handling** - Implementing robust error checking for invalid repositories or branches
+5. **Workflow Orchestration** - Connecting multiple workflows to create a seamless automation pipeline
+
+### Next Steps
+
+Now that you have a working MCP server, consider expanding it with additional capabilities:
+
+- Add more GitHub operations (merge PRs, create issues, manage labels)
+- Integrate other services (Slack notifications, email alerts, project management tools)
+- Create custom tools for your specific workflow needs
+- Build more sophisticated AI agents for different use cases
+
+The power of MCP servers lies in their ability to expose any n8n workflow as an AI-accessible tool. Experiment, iterate, and build automations that make your development workflow more efficient and intelligent!
+
+Happy automating!
