@@ -1,0 +1,468 @@
+---
+title: "How Gemini 3 Pro's Video Capabilities Give You the Words to Build Anything"
+description: "We wanted to clone a website but couldn't describe it. Video gave us the vocabulary. Agents built it in 37 minutes. Here's exactly how."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/93af78b3-16e1-463a-2bd7-3f0498340f00/full"
+authorUsername: "sanchayt743"
+---
+
+# How Gemini 3 Pro's Video Capabilities Give You the Words to Build Anything
+
+We've tried a lot of AI workflows. Cursor. Copilot. ChatGPT with screenshots. Claude with code snippets. They all hit the same wall.
+
+You find a website you want to build. Animated dots that react to the mouse. Cards that stack on scroll. Smooth transitions everywhere. You want to recreate it.
+
+But you can't describe it.
+
+You don't know if the dots are Canvas or WebGL. Don't know the animation library. Don't know the scroll technique. You can't even Google it because you don't have the words. And if you can't describe it, you can't prompt it.
+
+We tried everything. Then we tried recording a 45 second video and uploading it to Gemini 3 Pro.
+
+That changed everything.
+
+Gemini watched the video and told us exactly what we were looking at. The libraries. The techniques. The exact parameter values. Suddenly we had the vocabulary. We fed that to Antigravity and let the agents build it.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/93af78b3-16e1-463a-2bd7-3f0498340f00/full" alt="Final Result" caption="Konpo. 37 minutes from screen recording to this." />
+
+**See it live:** [konpo-yw1p.vercel.app](https://konpo-yw1p.vercel.app)
+
+This is the workflow we've been looking for. This is how we did it.
+
+---
+
+## Why Video, Not Screenshots
+
+We tried screenshots first. Took a bunch, pasted them into ChatGPT, asked "how do I build this?"
+
+It didn't work.
+
+A screenshot is frozen. It shows what something looks like at one instant. But the site we found wasn't magic because of how it looked. It was magic because of how it moved. The timing. The easing. The way elements responded to each other.
+
+You can screenshot the dot grid all day. You'll never know the dots scale from 1.0 to 1.8 based on mouse proximity with a 3 unit radius of influence. That detail only exists in motion.
+
+So we recorded a video instead. 45 seconds of scrolling, hovering, letting animations play out.
+
+---
+
+## What Gemini Told Us
+
+We uploaded the video to Gemini 3 Pro. It watches video natively, frame by frame, so it sees motion the way we see it.
+
+And it told us exactly what we were looking at.
+
+<Img src="https://iili.io/fAa549t.png" alt="Gemini Home" caption="Gemini 3 Pro in Google AI Studio" />
+
+Not vague descriptions. Specific technical details:
+
+"12x12 dot grid using InstancedMesh. Scale ranges from 1.0 to 1.8 based on mouse proximity. Color lerps from #E5E5E7 to #6366f1. Radius of influence: 3 units."
+
+"GSAP ScrollTrigger with scrub. Cards use sticky positioning at top: 15vh. Scale animates from 1 to 0.95 as next card approaches."
+
+"Lenis for smooth scrolling. Lerp: 0.1, duration: 1.5."
+
+<Img src="https://iili.io/fAa7nHP.png" alt="Our Prompt" caption="The prompt we used" />
+
+Suddenly we had the vocabulary. InstancedMesh. ScrollTrigger. Lenis. These weren't words we knew before. Now we could actually ask for what we wanted.
+
+---
+
+## Feeding It to Antigravity
+
+Antigravity is where the building happens. It's an IDE where AI agents control your editor, terminal, and browser simultaneously. You describe what you want, they build it, you review.
+
+<Img src="https://iili.io/fAa697R.png" alt="Antigravity Landing" caption="Antigravity" />
+
+We pasted Gemini's entire analysis into the Agent Manager and told it to build a Next.js portfolio with these exact specs.
+
+<Img src="https://iili.io/fAaAkba.png" alt="Agent Manager" caption="Starting the conversation" />
+
+---
+
+## The Full Analysis
+
+Gemini gave us everything. Tech stack, layout structure, component logic, animation patterns.
+
+<Img src="https://iili.io/fAaYfXs.png" alt="Tech Stack" caption="Tech stack breakdown" />
+
+It identified every library: Next.js 14 with App Router, Tailwind, GSAP with ScrollTrigger, Lenis, React Three Fiber, Zustand. It drew the z-index structure as ASCII so we understood how layers stacked.
+
+<Img src="https://iili.io/fAaczb9.png" alt="Dot Grid Logic" caption="How the dot grid works" />
+
+For the dot grid specifically, it explained the whole pipeline. 12x12 grid using InstancedMesh (one draw call instead of 144). Scale from 1.0 to 1.8 based on mouse proximity. Color lerping from grey to purple. Radius of influence: 3 units.
+
+This level of detail is what we needed. Not "animated dots" but the actual implementation.
+
+---
+
+## The Build
+
+We pasted the entire Gemini analysis into Antigravity. No editing, no summarizing. We were tempted to clean it up but resisted. The agent is better at deciding what matters than we are.
+
+<Img src="https://iili.io/fAalDyN.png" alt="Agent Conversation" caption="Pasting the full analysis" />
+
+The agent came back with a plan. Project setup, dependencies, component structure, the 3D dot grid, GSAP animations, Lenis config. All broken down into steps.
+
+<Img src="https://iili.io/fAa00oF.png" alt="Implementation Plan" caption="The agent's plan" />
+
+We didn't write this plan. The agent created it from Gemini's analysis. This is important. Ask for a plan first. Review it. Then approve. Cheaper to fix a plan than fix code.
+
+We set the agent to "Agent assisted" mode. It runs safe commands automatically but asks before anything destructive. Not full autopilot but not babysitting either.
+
+<Img src="https://iili.io/fAa5R87.png" alt="Agent Settings" caption="Agent settings" />
+
+As it worked, we reviewed changes. Every few files it pauses, shows a diff, you approve or reject.
+
+<Img src="https://iili.io/fAa1l5l.png" alt="Code Review" caption="Reviewing the Lenis setup" />
+
+We didn't write any of this code. We gave it Gemini's parameters (lerp: 0.1, duration: 1.5) and it figured out the implementation. You're not writing code anymore. You're reviewing code.
+
+Then we asked it to run the dev server.
+
+<Img src="https://iili.io/fAajjRa.png" alt="First Preview" caption="First preview" />
+
+It worked. The dots responded to the mouse. They scaled and changed color. Maybe 15 minutes in and we had a working 3D interactive hero.
+
+But it was dark. We wanted light.
+
+---
+
+## Iteration
+
+This is where most people give up. The first result isn't perfect. They think the tool is broken. They try a different approach. They waste hours.
+
+The first version was dark. We wanted light. Our instinct was to start over with a better prompt. That would have been a mistake. The agent has context now. It knows the codebase it built. It knows the structure. Starting over throws all that away. Instead, describe what's wrong.
+
+We recorded another quick video. Just the reference site's light theme. Uploaded it to Gemini. Got the exact colors. Then we told the agent specifically what to change.
+
+<Img src="https://iili.io/fAajQWl.png" alt="Accessibility Instructions" caption="Describing every color and detail precisely" />
+
+We learned early that vague feedback wastes cycles. "Make it lighter" gets you nowhere. "#F2F2F4 background, #111111 text, #6366f1 accents" gets you exactly what you want. The more specific you are, the fewer iterations you need.
+
+After one round of feedback:
+
+<Img src="https://iili.io/fAawBg1.png" alt="Light Hero" caption="Light hero with purple dot cluster" />
+
+Better. The colors were right. But the layout was still off. The dots were in the wrong place. The typography didn't feel the same. We realized we were asking for too much at once. Trying to fix colors AND layout AND typography in one prompt confuses the agent. It doesn't know what to prioritize. So we separated them. Colors first. Then layout. Then polish.
+
+<Img src="https://iili.io/fAaw71I.png" alt="Agent Feedback" caption="Understanding how to guide the agent" />
+
+This screenshot changed how we thought about feedback. We learned to frame requests as problems to solve, not code to write. Instead of "move the div 20px left" we'd say "the dots feel too close to the text, they need breathing room." Let the agent figure out the implementation. You hired an agent. Let it think. Your job is quality control, not micromanagement.
+
+Some problems need more than iteration. The 3D scene was too coupled to the hero. We needed to decouple it so it could float behind multiple sections. This required structural changes. We went back to Gemini with the original video, asked specifically about the layer structure.
+
+<Img src="https://iili.io/fAawjr7.png" alt="Layout Refactor" caption="Refactor spec. Decouple 3D scene, solid hero background, services split." />
+
+<Img src="https://iili.io/fAaN7Zx.png" alt="Plan V3" caption="Konpo V3. Decoupled scene, services split, typography tweaks." />
+
+If you're on iteration 5 and it's still not right, the problem isn't the details. It's the structure. Go back to Gemini. Get more context. Give the agent a new plan.
+
+Things started clicking. The stacked number cards:
+
+<Img src="https://iili.io/fAaNO6N.png" alt="Number Cards" caption="Stacked cards with large numbers" />
+
+A proper preloader:
+
+<Img src="https://iili.io/fAaOKS1.png" alt="Preloader" caption="Black preloader with pill shaped progress indicator" />
+
+The services section with the dot grid behind it:
+
+<Img src="https://iili.io/fAaO0xf.png" alt="Services Section" caption="Product Design and Brand Identity cards with dot grid" />
+
+Each of these took one or two iterations. Specific feedback. One thing at a time. Describe the problem, not the solution. That's the pattern.
+
+---
+
+## Design System Polish
+
+At this point we had something that worked. But it didn't feel cohesive. Colors were inconsistent across sections. Some animations were CSS, some were GSAP. The typography was close but not quite right.
+
+We should have locked down our design system earlier. Create a single source of truth for colors, fonts, spacing. Tell the agent to use only those values. It prevents drift.
+
+We went back to Gemini one more time. Asked it to extract every design token from the original site.
+
+<Img src="https://iili.io/fAaOkWx.png" alt="Design System" caption="Off white #F2F2F4, text #111111, sans font, hero as pure DOM" />
+
+Then we created CSS variables and told the agent: these are the only colors you can use.
+
+```css
+--background: #F2F2F4;
+--text-primary: #111111;
+--text-secondary: #999999;
+--accent: #6366f1;
+```
+
+Here's something we learned the hard way: constraints help agents. More freedom doesn't mean better results. When you say "use any color that looks good," you get inconsistency. When you say "only these four colors," you get cohesion.
+
+For the final polish, we asked Gemini to be extremely strict about matching the original.
+
+<Img src="https://iili.io/fAaOyJt.png" alt="Strict Redesign" caption="Gemini's strict visual matching" />
+
+This gave us pixel level feedback. "The gap between these elements should be 48px, not 32px." We fed each correction to the agent.
+
+We noticed some animations felt off. Turns out the agent had used CSS transitions in some places, GSAP in others. They have different easing curves. Different timing.
+
+<Img src="https://iili.io/fAaeO7t.png" alt="GSAP Directive" caption="Stop CSS animations. Use GSAP and Lenis exclusively." />
+
+Pick one animation library. GSAP or Framer Motion or CSS. Not all three. Tell the agent explicitly. Consistency matters more than variety.
+
+Before moving on, we had the agent check the console.
+
+<Img src="https://iili.io/fAaUSqJ.png" alt="Console Check" caption="No browser console errors. Page rendering correctly." />
+
+No errors. No warnings. Clean.
+
+---
+
+## Building Selected Work
+
+This was the most complex section. Each project case study had a different layout. The original site had an art directed bento grid. Unique compositions for each project.
+
+Our first instinct was to describe all three layouts in one prompt. Bad idea. When you ask for three different layouts at once, the agent gets confused. It tries to create abstractions. Shared components. Generic patterns. You end up with three mediocre layouts instead of three great ones.
+
+We recorded each case study separately. Three short videos. Uploaded each to Gemini.
+
+<Img src="https://iili.io/fAakanf.png" alt="Selected Work Instructions" caption="Art directed bento grid. Amp mosaic, Relax hero, Surge 3 column." />
+
+Gemini gave us specific instructions for each. Amp uses a 2x2 mosaic with the hero image spanning the left column. Relax is a full bleed hero with centered text. Surge uses three equal columns. Then we built them one at a time. Finished Amp. Reviewed. Approved. Then Relax. Then Surge.
+
+The services section was tricky. Cards that stack on top of each other as you scroll. Scale down as the next one approaches.
+
+<Img src="https://iili.io/fAakvcB.png" alt="Services Breakdown" caption="Sticky card deck with dot animation, white cards, purple accents" />
+
+Here's something that saved us hours: name the pattern. When we just said "cards that stack on scroll," the agent tried various approaches. When we said "sticky card deck like Apple's AirPods Pro page" it immediately knew the pattern. Reference well known implementations.
+
+Gemini's gap analysis caught things we missed.
+
+<Img src="https://iili.io/fAakQFp.png" alt="Gap Analysis" caption="Needed elegant accordion list with 40px+ row padding" />
+
+This is the feedback loop in action. Build. Compare to reference. Identify gaps. Fix. Repeat.
+
+Hero with work cards strip:
+
+<Img src="https://iili.io/fAavexs.png" alt="Updated Hero" caption="Hero page with work cards strip at bottom" />
+
+The Amp case study:
+
+<Img src="https://iili.io/fAavLzu.png" alt="Selected Work Gallery" caption="Fitness amp case study with multi card visuals" />
+
+Relax full bleed:
+
+<Img src="https://iili.io/fAa8uXs.png" alt="Relax Case" caption="Full bleed wellness case with centered View Case button" />
+
+Tech cards grid:
+
+<Img src="https://iili.io/fAa864R.png" alt="Tech Cards" caption="Three up technology cards layout" />
+
+Services with the dot backdrop:
+
+<Img src="https://iili.io/fAaSCCb.png" alt="Services Heading" caption="Dotted backdrop with Product Design card" />
+
+Each section built one at a time. Specific feedback. Named patterns. That's the formula.
+
+---
+
+## The Result
+
+37 minutes. From "I like this site" to "I built this site."
+
+<Img src="https://iili.io/fAaeQpe.png" alt="Final Hero" caption="Final hero. Dotted background, globe icon, intro copy." />
+
+<Img src="https://iili.io/fAakqZJ.png" alt="Work Cards Grid" caption="Work cards in horizontal grid with hover effects" />
+
+We didn't write most of this code. We didn't know how to implement half of it when we started. We couldn't even name the techniques.
+
+But we could record a video. We could describe problems. We could review code and say "not quite right, the spacing feels off."
+
+That's the new skill. Not writing code. Guiding agents that write code.
+
+---
+
+## Key Code
+
+Here's the interesting parts. Full code is in the repo.
+
+### The Dot Grid (The 3D Magic)
+
+The core interaction logic:
+
+```tsx
+// Inside useFrame. Runs every frame.
+const mouseX = (state.pointer.x * viewport.width) / 2
+const mouseY = (state.pointer.y * viewport.height) / 2
+
+particles.forEach((particle, i) => {
+    const { x, y } = particle
+    const dist = Math.sqrt(
+        Math.pow(x - mouseX, 2) + Math.pow(y - mouseY, 2)
+    )
+
+    // Scale: 1.0 to 1.8 based on proximity
+    let scale = 1
+    const maxDist = 3
+    if (dist < maxDist) {
+        scale = 1 + Math.pow(1 - dist / maxDist, 2) * 0.8
+    }
+
+    dummy.position.set(x, y, 0)
+    dummy.scale.set(scale, scale, scale)
+    dummy.updateMatrix()
+    meshRef.current!.setMatrixAt(i, dummy.matrix)
+
+    // Color: grey to indigo based on proximity
+    const color = new THREE.Color()
+    if (dist < maxDist) {
+        const t = 1 - (dist / maxDist)
+        color.setStyle('#E5E5E7')
+        color.lerp(new THREE.Color('#6366f1'), t * 0.8)
+    } else {
+        color.setStyle('#E5E5E7')
+    }
+    meshRef.current!.setColorAt(i, color)
+})
+```
+
+Why InstancedMesh? One draw call for 144 dots instead of 144 separate calls. 60fps.
+
+### Sticky Card Stack (The Scroll Effect)
+
+Cards that scale down as you scroll past:
+
+```tsx
+useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+        cardsRef.current.forEach((card, index) => {
+            if (!card) return
+            const nextCard = cardsRef.current[index + 1]
+
+            if (nextCard) {
+                gsap.to(card, {
+                    scale: 0.95,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: nextCard,
+                        start: "top bottom",
+                        end: "top top",
+                        scrub: true,
+                    }
+                })
+            }
+        })
+    }, container)
+    return () => ctx.revert()
+}, [])
+```
+
+Each card is `sticky top-[15vh]`. As the next card approaches, the current one scales to 0.95. Creates the stacking illusion.
+
+---
+
+## Dependencies
+
+```bash
+npm install three @react-three/fiber @react-three/drei \
+    gsap @gsap/react \
+    @studio-freight/react-lenis \
+    zustand lucide-react clsx tailwind-merge
+```
+
+---
+
+## The Workflow
+
+```
+1. RECORD    Screen capture of reference site (30 to 60 sec)
+             ↓
+2. ANALYZE   Upload to Gemini 3 Pro
+             Get: tech stack, components, animations, colors
+             ↓
+3. PLAN      Feed analysis to Antigravity
+             Agent creates implementation plan
+             ↓
+4. BUILD     Agent writes code, you review
+             ↓
+5. ITERATE   Preview. Feedback. Refine. Repeat.
+             ↓
+6. DEPLOY    One click to Vercel
+```
+
+---
+
+## The Real Cheat Code
+
+Here's what we cracked.
+
+You see a website with cool animations. Dots that react to your mouse. Cards that stack on scroll. Smooth transitions everywhere. You want to build it.
+
+But you're not a frontend developer. You don't know the words. Is that WebGL or Canvas? Is that GSAP or Framer Motion? What's the easing curve? What's the lerp value? You can't Google it because you don't know what to search for. You can't prompt an AI to build it because you can't describe it.
+
+Screenshots don't help. A screenshot shows one frozen moment. It can't show you that the dots scale from 1.0 to 1.8 based on mouse proximity. It can't show you the 3 unit radius of influence. It can't show you the timing.
+
+Video captures all of that. The motion. The timing. The response to interaction.
+
+And Gemini 3 Pro's video mode does something no other tool does. It watches the video like a senior frontend developer would. Then it translates what it sees into exact technical terminology.
+
+You show it dots reacting to a cursor. It tells you: "12x12 grid using InstancedMesh. Scale ranges from 1.0 to 1.8. Color lerps from #E5E5E7 to #6366f1. Radius of influence: 3 units."
+
+You show it cards stacking on scroll. It tells you: "GSAP ScrollTrigger with scrub. Sticky positioning at top: 15vh. Scale animates from 1 to 0.95 as next card approaches."
+
+You show it smooth scrolling. It tells you: "Lenis. Lerp: 0.1, duration: 1.5."
+
+That's the crack. Video gives Gemini the context. Gemini gives you the vocabulary. The vocabulary lets you prompt agents that actually build.
+
+We went from "I like how that moves" to "InstancedMesh with proximity-based scale interpolation" in 45 seconds. That translation is everything.
+
+---
+
+## The Other Cheat Codes
+
+Once you have the vocabulary, these patterns help:
+
+1. **Paste everything.** Don't summarize Gemini's output. The agent decides what matters.
+
+2. **Plan before code.** Review the agent's plan first. Cheaper to fix a plan than fix code.
+
+3. **Iterate, don't restart.** The agent has context. Starting over throws it away.
+
+4. **Be specific about values.** "#F2F2F4" works. "Make it lighter" doesn't.
+
+5. **One change at a time.** Colors first. Then layout. Then polish.
+
+6. **Describe problems, not solutions.** "The dots feel too close to the text" beats "move the div 20px left."
+
+7. **When stuck, zoom out.** Go back to Gemini. Record more video. Get more context.
+
+8. **Lock your design system.** Four colors. One font. One animation library. Constraints create cohesion.
+
+9. **Name the pattern.** "Sticky card deck like Apple's AirPods page" beats "cards that stack on scroll."
+
+10. **One complex thing at a time.** Three layouts in one prompt gives you three mediocre layouts.
+
+---
+
+## The Insight
+
+We've used a lot of AI coding tools. This workflow is different.
+
+The breakthrough isn't AI writing code. AI has been writing code for years. The breakthrough is AI giving you the words to describe what you're looking at.
+
+Every other workflow assumes you already know what you want. You type a prompt, AI generates code. But what if you can't write the prompt? What if you see something cool and you don't know how to describe it?
+
+Video plus Gemini 3 Pro fixes that. You show it what you want. It tells you what you're looking at. Now you can prompt.
+
+We went from "I don't know what this is" to "I know exactly what this is and how to build it." That's the unlock. That's why this workflow works when others don't. Everything else is iteration.
+
+---
+
+## Resources
+
+
+**Gemini 3 Pro:** [ai.google.dev](https://ai.google.dev)
+
+**Antigravity IDE:** [antigravityide.app](https://antigravityide.app)
+
+**React Three Fiber:** [docs.pmnd.rs/react-three-fiber](https://docs.pmnd.rs/react-three-fiber)
+
+**GSAP:** [greensock.com/docs](https://greensock.com/docs)
+
+---
+
+*37 minutes. Screen recording to deployed site. This is the workflow.*

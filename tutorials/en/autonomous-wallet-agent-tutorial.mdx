@@ -1,0 +1,652 @@
+---
+title: 'Building an Autonomous Wallet Agent: AI-Powered Smart Wallets That Execute Transactions'
+description: 'Learn how to build an AI agent that autonomously manages a blockchain wallet, executes transactions, and purchases items from a marketplace using natural language commands.'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/effaef09-0e95-4704-eb16-293abfd54700/full'
+authorUsername: 'stevekimoi'
+---
+
+# Building an Autonomous Wallet Agent: AI-Powered Smart Wallets That Execute Transactions
+
+## 1. Introduction: The Future of Autonomous Wallets
+
+Imagine telling your wallet "Buy me 'The Art of Programming' e-book" and watching it autonomously check your balance, find the book in a marketplace, transfer USDC, and confirm the purchase—all without you manually clicking through interfaces or copying addresses. This is the power of **autonomous wallet agents**.
+
+**Autonomous wallet agents** represent a fundamental shift in how we interact with blockchain wallets. Instead of manually executing every transaction, you can delegate tasks to an AI agent that understands natural language, makes decisions, and executes blockchain operations on your behalf. This tutorial will teach you how to build one from scratch.
+
+### What Makes This Different?
+
+Traditional wallet interactions require:
+- Manual address copying
+- Precise transaction parameters
+- Multiple confirmation steps
+- Technical blockchain knowledge
+
+An autonomous wallet agent enables:
+- Natural language commands: "Send 0.1 USDC to Alice"
+- Autonomous decision-making: The agent checks balances, validates transactions, and executes them
+- Context awareness: The agent understands your wallet state and transaction history
+- Multi-step operations: "Buy the e-book" triggers balance checks, marketplace searches, and purchases
+
+### The Technology Stack
+
+This tutorial combines several powerful technologies:
+
+- **Circle Developer-Controlled Wallets**: Programmatic wallet management without user interaction
+- **Groq AI (Llama 3.3)**: Fast, free LLM for natural language understanding
+- **LangChain.js**: Agent framework for tool orchestration
+- **React + TypeScript**: Modern frontend for chat interface
+- **Node.js + Express**: Backend API for wallet operations
+
+## 2. Understanding the Architecture
+
+Before diving into code, let's understand how all the pieces fit together:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  User Interface: Chat Interface                              │
+│  - Natural language input                                   │
+│  - Real-time message display                                │
+│  - Purchase history                                         │
+└──────────────────────┬──────────────────────────────────────┘
+                        │ HTTP POST /api/chat
+┌──────────────────────▼──────────────────────────────────────┐
+│  Backend: Express + TypeScript                              │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Chat API Endpoint                                  │   │
+│  │  - Receives user message                            │   │
+│  │  - Routes to AI agent                               │   │
+│  └────────────────────┬────────────────────────────────┘   │
+│                       │                                      │
+│  ┌────────────────────▼────────────────────────────────┐   │
+│  │  Groq AI Agent (LangChain)                          │   │
+│  │  - Understands user intent                           │   │
+│  │  - Decides which tools to use                        │   │
+│  │  - Executes multi-step workflows                     │   │
+│  └────────────────────┬────────────────────────────────┘   │
+│                       │                                      │
+│  ┌────────────────────▼────────────────────────────────┐   │
+│  │  Agent Tools                                        │   │
+│  │  - Wallet Tools: balance, transfer, transactions   │   │
+│  │  - Marketplace Tools: browse, search, purchase     │   │
+│  └────────────────────┬────────────────────────────────┘   │
+│                       │                                      │
+│  ┌────────────────────▼────────────────────────────────┐   │
+│  │  Circle SDK Wrapper                                │   │
+│  │  - Wallet operations                                │   │
+│  │  - Token transfers                                 │   │
+│  │  - Transaction queries                             │   │
+│  └────────────────────┬────────────────────────────────┘   │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+            Circle API (ARC Testnet)
+```
+
+### The Agent Loop
+
+The core of our autonomous wallet is the **agent loop**:
+
+1. **User Input**: "Buy me 'The Art of Programming'"
+2. **Intent Understanding**: Agent parses the request
+3. **Tool Selection**: Agent decides to use `browse_ebooks`, `get_ebook_price`, `check_wallet_balance`, and `purchase_ebook`
+4. **Tool Execution**: Each tool executes sequentially
+5. **Response Generation**: Agent synthesizes results into a natural language response
+6. **User Feedback**: "I've purchased 'The Art of Programming' for 0.15 USDC. Transaction ID: 0x..."
+
+## 3. Getting Started: Clone and Setup
+
+### Prerequisites
+
+Before we begin, ensure you have:
+
+- Node.js 18+ and npm
+- Circle Developer Account ([Sign up here](https://console.circle.com/))
+- Groq API Key ([Get one here](https://console.groq.com/) - it's free!)
+
+### Clone the Repository
+
+Let's start by cloning the repository:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/wallet-intergrated-ai
+cd wallet-intergrated-ai
+```
+
+### Install Dependencies
+
+Install all dependencies for both backend and frontend:
+
+```bash
+npm install
+npm run install:all
+```
+
+## 4. Initial Setup: Circle Wallet Configuration
+
+Before the agent can execute transactions, we need to set up Circle Developer-Controlled Wallets. The project includes scripts to make this easy.
+
+### Step 1: Generate Entity Secret
+
+The Entity Secret is a cryptographic key that allows programmatic control of your wallets. The project includes a script to generate it:
+
+```bash
+cd backend
+npm run generate:entity-secret
+```
+
+This will output a 32-byte hex string. **Copy this value** - you'll need it for the next step.
+
+**What this does**: The script [(`backend/src/scripts/generateEntitySecret.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/scripts/generateEntitySecret.ts) uses Node.js crypto to generate a secure random 32-byte secret. This secret is used to authenticate all wallet operations with Circle.
+
+### Step 2: Register Entity Secret
+
+Register your Entity Secret with Circle:
+
+```bash
+npm run register:entity-secret
+```
+
+This encrypts and registers your Entity Secret with Circle. **Save the recovery file securely!**
+
+**What this does**: The script [(`backend/src/scripts/registerEntitySecret.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/scripts/registerEntitySecret.ts) uses the Circle SDK to register your Entity Secret. This is a one-time setup that enables programmatic wallet control.
+
+### Step 3: Create Wallets
+
+1. **Create a Wallet Set:**
+   ```bash
+   npm run create:wallet-set
+   ```
+   Or with a custom name:
+   ```bash
+   npm run create:wallet-set "My Custom Wallet Set Name"
+   ```
+   **Save the Wallet Set ID** from the output.
+
+2. **Create Wallets:**
+   ```bash
+   npm run create:wallets <wallet-set-id>
+   ```
+   This creates 2 wallets by default:
+   - **Wallet 1**: Your primary wallet (for purchases and transactions)
+   - **Wallet 2**: Marketplace wallet (receives payments from purchases)
+
+   **Save both wallet IDs and addresses** from the output.
+
+**How it works**: The wallet creation process uses two scripts:
+- **[`createWalletSet.ts`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/scripts/createWalletSet.ts)** - Creates a wallet set (a collection of wallets managed by a single cryptographic key). This script uses the Circle SDK to create a new wallet set and returns a Wallet Set ID.
+- **[`createWallets.ts`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/scripts/createWallets.ts)** - Creates individual wallets within the wallet set. This script creates 2 SCA (Smart Contract Account) wallets on ARC-TESTNET by default: one for your primary wallet (used for purchases) and one for the marketplace (receives payments).
+
+3. **Fund Your Wallets:**
+   - Visit [Circle Faucet](https://faucet.circle.com/)
+   - Select **ARC Testnet**
+   - Enter your primary wallet address
+   - Request testnet USDC
+
+### Step 4: Environment Configuration
+
+1. **Backend Configuration:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+   
+   Edit `backend/.env` and add:
+   ```env
+   CIRCLE_API_KEY=your_circle_api_key_here
+   CIRCLE_ENTITY_SECRET=your_32_byte_hex_entity_secret_here
+   GROQ_API_KEY=your_groq_api_key_here
+   PRIMARY_WALLET_ID=your_primary_wallet_id_here
+   MARKETPLACE_WALLET_ADDRESS=your_marketplace_wallet_address_here
+   ```
+
+2. **Generate API Secret:**
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   Add the output to both `.env` files:
+   ```env
+   # backend/.env
+   API_KEY_SECRET=generated_api_secret_here
+   
+   # frontend/.env
+   VITE_API_KEY=generated_api_secret_here
+   ```
+
+3. **Frontend Configuration:**
+   ```bash
+   cd ../frontend
+   cp .env.example .env
+   ```
+   
+   Edit `frontend/.env`:
+   ```env
+   VITE_API_KEY=generated_api_secret_here
+   VITE_API_BASE_URL=/api
+   VITE_PRIMARY_WALLET_ID=your_primary_wallet_id_here
+   ```
+
+### Step 5: Start the Application
+
+Run both frontend and backend simultaneously:
+
+```bash
+npm run dev
+```
+
+Or run them separately:
+
+```bash
+# Terminal 1 - Backend
+npm run dev:backend
+
+# Terminal 2 - Frontend
+npm run dev:frontend
+```
+
+The application will be available at:
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:3001
+
+## 5. Understanding the Project Structure
+
+Let's explore the codebase to understand how everything works together:
+
+```
+wallet-intergrated-ai/
+├── backend/
+│   ├── src/
+│   │   ├── agent/              # AI agent (Groq + LangChain)
+│   │   │   ├── agent.ts        # Core agent logic
+│   │   │   └── tools/          # Agent tools
+│   │   ├── marketplace/        # E-book marketplace logic
+│   │   ├── routes/             # API routes
+│   │   ├── wallet/             # Circle SDK wrapper
+│   │   └── scripts/            # Setup scripts
+│   └── .env.example
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # React components
+│   │   └── services/           # API service
+│   └── .env.example
+└── documentation/               # Detailed guides
+```
+
+## 6. Understanding the AI Agent Core
+
+The heart of the autonomous wallet is the AI agent. Let's examine the key file: [`backend/src/agent/agent.ts`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/agent.ts).
+
+### How the Agent Works
+
+The agent uses **Groq (Llama 3.3)** for natural language understanding and **LangChain.js** for tool orchestration. Here's how it processes messages:
+
+**Key Components:**
+
+1. **Groq Model Initialization** - Creates the LLM instance:
+   ```typescript
+   export function createGroqModel(temperature: number = 0) {
+     return new ChatGroq({
+       model: "llama-3.3-70b-versatile",
+       temperature,
+       apiKey: process.env.GROQ_API_KEY,
+     });
+   }
+   ```
+   See the implementation: [`agent.ts#L23`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/agent.ts#L23)
+
+2. **System Prompt** - Defines the agent's behavior and capabilities. The prompt instructs the agent to:
+   - Always use tools to get real data (never hallucinate)
+   - Check balances before transactions
+   - Confirm purchases clearly
+   - List e-books when asked (actually call the tool)
+   
+   See the system prompt: [`agent.ts#L38-L86`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/agent.ts#L38-L86)
+
+3. **Message Processing Loop** - The core agent loop:
+   - Receives user message
+   - Agent decides which tools to use
+   - Executes tools sequentially
+   - Synthesizes results into natural language response
+   - Returns final answer to user
+   
+   See the message processing implementation: [`agent.ts#L92-L229`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/agent.ts#L92-L229)
+
+**The Agent Loop in Action:**
+
+When you say "Buy me 'The Art of Programming'", the agent:
+1. Recognizes purchase intent
+2. Calls [`browse_ebooks`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L13-L41) to find the book
+3. Calls [`check_wallet_balance`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L11-L38) to verify funds
+4. Calls [`purchase_ebook`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L107-L142) to execute the purchase
+5. Returns: "✅ I've purchased 'The Art of Programming' for 0.15 USDC" 
+
+The loop continues until the agent has all the information it needs to respond, with a maximum of 5 iterations to prevent infinite loops.
+
+## 7. Understanding Agent Tools
+
+Tools are the agent's "hands" - they allow the agent to interact with the wallet and marketplace. The project includes two main tool sets:
+
+### Wallet Tools [(`backend/src/agent/tools/wallet.tools.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts)
+
+These tools enable wallet operations:
+
+- **`check_wallet_balance`** - Checks USDC balance and returns token ID needed for transfers - [`wallet.tools.ts#L11-L38`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L11-L38)
+- **`get_wallet_info`** - Gets wallet details including address - [`wallet.tools.ts#L40-L68`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L40-L68)
+- **`list_transactions`** - Lists transaction history with optional filters - [`wallet.tools.ts#L70-L109`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L70-L109)
+- **`get_transaction`** - Gets specific transaction details - [`wallet.tools.ts#L111-L146`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L111-L146)
+- **`transfer_tokens`** - Transfers USDC to another address - [`wallet.tools.ts#L148-L205`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L148-L205) 
+
+**How it works**: Each tool is a `DynamicStructuredTool` with:
+- A descriptive name and description (the LLM uses these to decide when to call the tool)
+- A Zod schema defining required parameters
+- A function that executes the actual operation
+
+For example, when you ask "What's my balance?", the agent calls `check_wallet_balance` which uses the Circle SDK to fetch real balance data.
+
+### Marketplace Tools [(`backend/src/agent/tools/marketplace.tools.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts)
+
+These tools enable marketplace interactions:
+
+- **`browse_ebooks`** - Lists all available e-books - [`marketplace.tools.ts#L13-L41`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L13-L41)
+- **`search_ebooks`** - Searches e-books by title/author - [`marketplace.tools.ts#L43-L73`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L43-L73)
+- **`get_ebook_price`** - Gets price for a specific e-book - [`marketplace.tools.ts#L75-L105`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L75-L105)
+- **`purchase_ebook`** - Executes purchase by transferring USDC - [`marketplace.tools.ts#L107-L142`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L107-L142) 
+
+**Key Design**: The `purchase_ebook` tool accepts both string and number IDs (using `z.union([z.string(), z.number()])`) because Groq sometimes passes numbers. The tool converts to string internally for consistency.
+
+## 8. Understanding the Mock Marketplace
+
+The marketplace is a simple mock implementation demonstrating the concept. Key files:
+
+### E-Book Catalog [(`backend/src/marketplace/catalog.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/catalog.ts)
+
+Contains a hardcoded list of 20 e-books with:
+- ID, title, author, description
+- Price in USDC (0.1 - 0.2 USDC range)
+
+**Functions:**
+- `getAllEbooks()` - Returns all e-books - [`catalog.ts#L173-L178`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/catalog.ts#L173-L178)
+- `findEbookById(id)` - Finds specific e-book - [`catalog.ts#L180-L185`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/catalog.ts#L180-L185)
+- `searchEbooks(query)` - Searches by title/author - [`catalog.ts#L187-L199`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/catalog.ts#L187-L199) 
+
+### Purchase Processing [(`backend/src/marketplace/marketplace.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/marketplace.ts)
+
+The [`processPurchase`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/marketplace.ts#L50-L146) function:
+1. Finds the e-book by ID
+2. Transfers USDC to the marketplace wallet address
+3. Records the purchase (in-memory tracking)
+4. Returns success/error status
+
+**Purchase Tracking**: Uses an in-memory `Map` to track purchases per wallet. In production, you'd use a database.
+
+## 9. Understanding the Chat API
+
+The chat API [(`backend/src/routes/chat.routes.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/routes/chat.routes.ts) is the bridge between the frontend and the agent:
+
+**Endpoint**: [`POST /api/chat`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/routes/chat.routes.ts#L24-L72)
+
+**Flow:**
+1. Receives user message from frontend
+2. Validates input
+3. Gets active wallet ID (from request or environment)
+4. Combines all tools (wallet + marketplace)
+5. Calls `processMessage()` with agent
+6. Returns agent's response
+
+**Security**: Uses `apiKeyAuth` middleware to require API key authentication.
+
+## 10. Understanding the Frontend
+
+The frontend [(`frontend/src/components/ChatInterface.tsx`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/frontend/src/components/ChatInterface.tsx) provides the chat UI:
+
+**Key Features:**
+- Message history display
+- Input field with Enter key support
+- Loading states during agent processing
+- Error handling
+
+**API Integration**: Uses [`frontend/src/services/api.ts`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/frontend/src/services/api.ts) which:
+- Handles API key injection
+- Manages request/response formatting
+- Provides typed interfaces for all API calls
+
+The frontend also includes:
+- **Sidebar** - Navigation between Chat, Wallets, Transactions, and Marketplace
+- **Marketplace View** - Browse e-books and see purchase status
+- **Dashboard Views** - View wallet details, balances, and transaction history
+
+## 11. How It All Works Together: The Complete Flow
+
+Let's trace through a complete example to see how everything connects:
+
+### Example: Purchasing an E-Book
+
+**User types**: "Buy me 'The Art of Programming' e-book"
+
+**Step 1: Frontend** [`ChatInterface.tsx`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/frontend/src/components/ChatInterface.tsx)
+- User submits message
+- Frontend sends POST request to `/api/chat` with message - [`ChatInterface.tsx#L32-L72`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/frontend/src/components/ChatInterface.tsx#L32-L72) 
+
+**Step 2: Chat API** [(`chat.routes.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/routes/chat.routes.ts)
+- Receives message
+- Validates input
+- Gets wallet ID from environment
+- Combines all tools (wallet + marketplace)
+- Calls `processMessage()` with agent
+
+**Step 3: AI Agent** [(`agent.ts`)](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/agent.ts)
+- Agent analyzes message: "Buy me 'The Art of Programming' e-book"
+- Recognizes purchase intent
+- Decides to use tools: [`browse_ebooks`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L13-L41), [`check_wallet_balance`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L11-L38), [`purchase_ebook`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L107-L142)
+
+**Step 4: Tool Execution**
+- **[`browse_ebooks`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L13-L41)**: Returns list of all e-books, agent finds "The Art of Programming" (ID: 1, price: 0.15 USDC)
+- **[`check_wallet_balance`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/wallet.tools.ts#L11-L38)**: Verifies wallet has sufficient funds and gets token ID
+- **[`purchase_ebook`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/agent/tools/marketplace.tools.ts#L107-L142)**: 
+  - Calls [`processPurchase()`](https://github.com/Stephen-Kimoi/wallet-intergrated-ai/blob/main/backend/src/marketplace/marketplace.ts#L50-L146) in marketplace
+  - Marketplace transfers 0.15 USDC to marketplace wallet
+  - Records purchase in memory
+  - Returns transaction ID
+
+**Step 5: Agent Response**
+- Agent synthesizes tool results
+- Returns: "✅ I've purchased 'The Art of Programming' for 0.15 USDC. Transaction ID: 0x..."
+
+**Step 6: Frontend Display**
+- Frontend receives response
+- Displays agent's message in chat interface
+- User sees confirmation
+
+## 12. Using the Agent: Real-World Examples
+
+Once your setup is complete, you can interact with the agent through the chat interface. Here are some example queries:
+
+### Example 1: Checking Wallet Balance
+
+**You type**: "What's my current wallet balance?"
+
+**Agent responds**: "Your wallet currently has 1.5 USDC"
+
+**What happened**: Agent called `check_wallet_balance` tool and retrieved real balance from Circle API.
+
+![Checking wallet balance](https://res.cloudinary.com/dygkv9gam/image/upload/v1767081613/question-2_cokxs5.png)
+
+### Example 2: Listing E-Books
+
+**You type**: "List the e-books available for purchase"
+
+**Agent responds**: Lists all 20 e-books with titles, authors, and prices
+
+**What happened**: Agent called `browse_ebooks` tool and displayed the complete catalog.
+
+![Listing e-books](https://res.cloudinary.com/dygkv9gam/image/upload/v1767081613/question-4_ejg843.png)
+
+### Example 3: Purchasing an E-Book
+
+**You type**: "Purchase for me 'Metaverse Development' by Rachel Weisz"
+
+**Agent responds**: "✅ I've purchased 'Metaverse Development' for 0.15 USDC. Transaction ID: 0x..."
+
+**What happened**: Agent executed a multi-step process:
+1. Searched for the e-book
+2. Checked your balance
+3. Transferred USDC to marketplace
+4. Confirmed purchase
+
+![Purchasing e-book](https://res.cloudinary.com/dygkv9gam/image/upload/v1767081614/question-5_rzfgxr.png)
+
+### Example 4: Transferring Tokens
+
+**You type**: "Send 0.01 USDC to 0x75f100ee75a0e529aacced263de7a8f0e9f9c2a2"
+
+**Agent responds**: "✅ Transfer initiated. Transaction ID: 0x..."
+
+**What happened**: Agent:
+1. Parsed destination address and amount
+2. Got token ID from balance check
+3. Verified sufficient funds
+4. Executed transfer
+
+### Example 5: Viewing Transactions
+
+**You type**: "List for me all transactions"
+
+**Agent responds**: Lists all transactions with details including type, amount, status, and transaction hash
+
+**What happened**: Agent called `list_transactions` tool and formatted the results.
+
+![Viewing Transactions](https://res.cloudinary.com/dygkv9gam/image/upload/v1767081614/question-6_faqjqf.png)
+
+## 13. Testing the Agent
+
+You can test the agent in several ways:
+
+### Using the Frontend
+
+Simply open http://localhost:3000 and use the chat interface - this is the easiest way to interact with the agent.
+
+### Using cURL
+
+Test the API directly:
+
+```bash
+# Test balance check
+curl -X POST http://localhost:3001/api/chat \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key" \
+  -d '{"message": "What is my wallet balance?"}'
+
+# Test e-book browsing
+curl -X POST http://localhost:3001/api/chat \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key" \
+  -d '{"message": "List all available e-books"}'
+
+# Test purchase
+curl -X POST http://localhost:3001/api/chat \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key" \
+  -d '{"message": "Purchase The Art of Programming for me"}'
+```
+
+### Key Features to Test
+
+1. **Balance Queries** - Verify agent returns real balance data
+2. **E-Book Browsing** - Check that all e-books are listed
+3. **E-Book Search** - Test searching by title or author
+4. **Purchases** - Verify purchases execute and are tracked
+5. **Token Transfers** - Test sending USDC to addresses
+6. **Transaction History** - Check transaction listing works
+
+## 14. Key Concepts and Architecture Insights
+
+### Understanding the Agent Loop
+
+The core pattern of the autonomous wallet is the **agent loop**:
+
+1. **Observe**: Agent receives user message
+2. **Decide**: Agent analyzes intent and selects tools
+3. **Act**: Agent executes tools sequentially
+4. **Respond**: Agent synthesizes results into natural language
+
+This loop continues until the agent has enough information to provide a complete answer (max 5 iterations).
+
+### Tool Design Principles
+
+The tools are designed with these principles:
+
+1. **Clear Descriptions**: Each tool has a detailed description that helps the LLM understand when to use it
+2. **Structured Schemas**: Zod schemas ensure type safety and provide clear parameter definitions
+3. **Error Handling**: Tools return structured errors that the agent can understand and communicate to users
+4. **Idempotency**: Operations are designed to be safe to retry
+
+### System Prompt Engineering
+
+The system prompt is crucial - it:
+- Defines the agent's role and capabilities
+- Sets behavioral rules (always check balance, never hallucinate)
+- Provides context about available tools
+- Guides the agent's decision-making process
+
+**Key Insight**: The prompt explicitly instructs the agent to "actually call the tool" when listing e-books, preventing the agent from just saying it can list them without doing it.
+
+### Purchase Tracking
+
+The current implementation uses in-memory tracking (`Map<string, string[]>`). This is fine for demonstration, but in production you'd want:
+- Database persistence (PostgreSQL, MongoDB, etc.)
+- Purchase history API endpoints
+- User-specific purchase tracking
+- Receipt generation
+
+### Security Considerations
+
+The project includes:
+- **API Key Authentication**: All endpoints require API keys
+- **Environment Variables**: Secrets stored in `.env` files (never committed)
+- **Input Validation**: All user inputs are validated
+- **Error Handling**: Graceful error handling prevents information leakage
+
+For production, consider:
+- Rate limiting
+- Transaction amount limits
+- Multi-signature wallets for large transactions
+- Audit logging
+
+## 15. Conclusion: The Future of Autonomous Wallets
+
+What you've explored is just the beginning. Autonomous wallet agents open up incredible possibilities:
+
+- **Automated DeFi Operations**: "Stake my USDC in the highest yield pool"
+- **Smart Budgeting**: "Don't spend more than 10 USDC today"
+- **Multi-Chain Operations**: "Bridge 1 ETH from Ethereum to Polygon"
+- **Subscription Management**: "Pay my monthly subscriptions automatically"
+- **Investment Strategies**: "DCA 0.1 USDC into BTC daily"
+
+The combination of **Circle Developer-Controlled Wallets**, **Groq AI**, and **LangChain.js** provides a powerful foundation for building autonomous financial agents. As AI models improve and blockchain infrastructure evolves, we'll see increasingly sophisticated agents that can handle complex multi-step financial operations.
+
+### What You've Learned
+
+1. **Agent Architecture**: The agent loop (observe → decide → act → respond) is the core pattern
+2. **Tool Design**: Well-designed tools with clear descriptions enable reliable agent behavior
+3. **System Prompts**: Detailed system prompts guide agent behavior and prevent errors
+4. **Integration**: How to connect AI agents with blockchain wallets
+5. **User Experience**: Natural language interfaces make blockchain accessible
+
+### Extending the Project
+
+Now that you understand how it works, you can extend it:
+
+- **Add More Tools**: Create tools for DeFi operations, NFT purchases, etc.
+- **Multiple Wallets**: Support multiple wallets per user
+- **Transaction Scheduling**: Schedule recurring transactions
+- **Database Integration**: Replace in-memory tracking with a database
+- **Enhanced Marketplace**: Add real payment processing, receipts, etc.
+- **DeFi Integration**: Connect to DeFi protocols for staking, swapping, etc.
+
+The future of blockchain interaction is autonomous, intelligent, and user-friendly. You now understand how to build it!
+
+---
+
+**Thank you for following along!** This tutorial demonstrates the core concepts of building autonomous wallet agents. The complete codebase is available at [GitHub](https://github.com/Stephen-Kimoi/wallet-intergrated-ai).
+
+For questions or contributions, feel free to reach out or open an issue on the repository

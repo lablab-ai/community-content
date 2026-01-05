@@ -1,0 +1,347 @@
+---
+title: "Inside the Agentic AI Hackathon with IBM watsonx Orchestrate"
+description: "Technical deep-dive into IBM watsonx Orchestrate: exploring the ADK, multi-agent orchestration patterns, tool development with Python decorators, and hackathon projects demonstrating autonomous agent capabilities."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4a4ed7a4-227e-4f10-5fec-ba0020775a00/full"
+authorUsername: "distributedappsai917"
+---
+
+# Inside the Agentic AI Hackathon with IBM watsonx Orchestrate
+
+In November 2025, developers from around the world gathered for the Agentic AI Hackathon with IBM watsonx Orchestrate, organized by [LabLab.ai](https://lablab.ai/), to push the boundaries of what's possible with multi-agent orchestration.
+
+I was honored and humbled to serve as a judge for this hackathon, reviewing dozens of innovative projects that showcased the remarkable creativity and technical prowess of the global developer community. LabLab.ai has established itself as a premier platform for AI hackathons, bringing together thousands of participants to collaborate, learn, and build with cutting-edge technologies. This event, focused on IBM watsonx Orchestrate, challenged teams to design and build proof-of-concept agentic AI solutions that could transform how people and businesses get work done—all within a 48-hour window.
+
+This article provides a technical exploration of IBM watsonx Orchestrate, the Agent Development Kit (ADK), and highlights a sample of hackathon projects that I had the honor to judge.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/42a5eedd-cff3-4f86-4068-eaa5bc43dd00/full" alt="Participants actively programming" caption="Global teams building innovative multi-agent solutions during the 48-hour hackathon" />
+
+## Understanding IBM watsonx Orchestrate
+
+IBM watsonx Orchestrate is an AI-powered platform designed to create, deploy, and manage intelligent agents that automate business workflows. At its core, it functions as a multi-agent system with an intelligent automation layer that dynamically selects the best action, surfaces the right tools, and seamlessly integrates AI agents and assistants within a unified experience.
+
+The platform supports multiple orchestration styles, each suited for different decision-making needs. The ReAct (Reasoning and Acting) style enables agents to think, act, and observe in an iterative loop—ideal for complex tasks requiring exploration. The Plan-Act style provides structured workflows for predictable sequences, while deterministic orchestration offers maximum predictability when consistency is critical.
+
+Through the AI Gateway, developers can select from multiple foundation models including IBM Granite, OpenAI, Anthropic Claude, Google Gemini, Mistral, and Llama—optimizing routing for agentic workflows without vendor lock-in.
+
+## The Agent Development Kit
+
+The IBM watsonx Orchestrate Agent Development Kit (ADK) is a Python library and command-line tool that makes it easy to build and deploy agents. The ADK supports local development through the watsonx Orchestrate Developer Edition—a fully self-contained local copy that runs on your laptop where you can rapidly iterate before deploying to production.
+
+### Setting Up Your Environment
+
+Getting started with the ADK requires Python 3.11+ and Docker. Here's how to set up your development environment:
+
+```bash
+# Create a virtual environment
+python3.11 -m venv .venv
+source ./.venv/bin/activate
+
+# Install the ADK
+pip install ibm-watsonx-orchestrate
+
+# Verify installation
+orchestrate --version
+```
+
+Next, configure your environment variables. You'll need an IBM Cloud API key and entitlement key:
+
+```bash
+# .env file configuration
+WO_DEVELOPER_EDITION_SOURCE=myibm
+WO_ENTITLEMENT_KEY=<YOUR_ENTITLEMENT_KEY>
+WATSONX_APIKEY=<YOUR_WATSONX_API_KEY>
+WATSONX_SPACE_ID=<YOUR_SPACE_ID>
+```
+
+Start the local development server:
+
+```bash
+orchestrate server start --env-file .env
+orchestrate env activate local
+```
+
+### Creating Your First Tool
+
+Tools are the building blocks that give agents their capabilities. Python tools use the `@tool` decorator to expose functions to Orchestrate:
+
+```python
+# get_welcome_message.py
+from ibm_watsonx_orchestrate.agent_builder.tools import tool
+
+@tool()
+def get_welcome_message() -> str:
+    """Returns a welcome message for the agent.
+    
+    This tool demonstrates a simple native tool within watsonx Orchestrate ADK.
+    It takes no inputs and returns a static string message.
+    
+    Returns:
+        str: A welcome message string.
+    """
+    return "Welcome to watsonx Orchestrate! I'm here to help you automate your workflows."
+```
+
+Import the tool into your environment:
+
+```bash
+orchestrate tools import -k python -f get_welcome_message.py
+orchestrate tools list
+```
+
+Tools can also handle complex operations with external dependencies. Here's an example that processes data with credentials:
+
+```python
+from ibm_watsonx_orchestrate.agent_builder.tools import tool
+from ibm_watsonx_orchestrate.run import connections
+from ibm_watsonx_orchestrate.run.connections import ConnectionType
+from base64 import b64encode
+
+@tool(expected_credentials=[{'app_id': 'salesforce', 'type': [ConnectionType.OAUTH2]}])
+def get_salesforce_accounts() -> list:
+    """Retrieves account information from Salesforce.
+    
+    Returns:
+        list: A list of Salesforce account records.
+    """
+    conn = connections.oauth2_auth_code('salesforce')
+    headers = {'Authorization': f"Bearer {conn.access_token}"}
+    # Implementation continues...
+```
+
+### Defining Agents with YAML
+
+Agents are defined in YAML files that specify their behavior, tools, and collaboration patterns:
+
+```yaml
+# hello-world-agent.yaml
+spec_version: v1
+kind: native
+name: Hello_World_Agent
+description: A simple Hello World agent for demonstration purposes
+instructions: |
+  You are a friendly assistant created for a tutorial on watsonx Orchestrate ADK.
+  When the user asks 'who are you', respond with the welcome message from your tool.
+  Always be helpful and concise in your responses.
+llm: watsonx/meta-llama/llama-3-2-90b-vision-instruct
+style: default
+collaborators: []
+tools:
+  - get_welcome_message
+```
+
+Import and test your agent:
+
+```bash
+orchestrate agents import -f hello-world-agent.yaml
+orchestrate agents list
+orchestrate chat start
+```
+
+### Multi-Agent Orchestration
+
+The real power of watsonx Orchestrate emerges when multiple specialized agents collaborate. Here's an example of an orchestrator agent that routes requests to specialists:
+
+```yaml
+# orchestrator_agent.yaml
+spec_version: v1
+kind: native
+name: orchestrator_agent
+description: Routes user requests to the appropriate specialist agent
+style: react
+llm: watsonx/meta-llama/llama-3-2-90b-vision-instruct
+collaborators:
+  - greeting_agent
+  - calculator_agent
+  - knowledge_agent
+instructions: |
+  You are the Orchestrator Agent. Your role is to delegate tasks to specialists.
+  
+  Delegation rules:
+  1. If the user's message is a greeting, delegate to **greeting_agent**
+  2. If the message involves calculations, delegate to **calculator_agent**
+  3. For knowledge queries, delegate to **knowledge_agent**
+  
+  Do not answer directly yourself. Always delegate to the appropriate
+  collaborator and return their exact response.
+```
+
+This pattern—where a main orchestrator coordinates specialized sub-agents—is fundamental to building scalable AI systems. Each collaborator agent can have its own tools, knowledge bases, and even nested collaborators, enabling sophisticated hierarchical workflows.
+
+### Adding Knowledge Bases
+
+Agents can be enhanced with domain-specific knowledge through RAG (Retrieval-Augmented Generation). Upload documents to create a knowledge base:
+
+```yaml
+# knowledge-agent.yaml
+spec_version: v1
+kind: native
+name: policy_knowledge_agent
+description: Answers questions about company policies using uploaded documents
+style: react
+llm: watsonx/ibm/granite-3-8b-instruct
+instructions: |
+  You answer questions about company policies based on the knowledge base.
+  Always cite the relevant policy section when answering.
+  If information is not in the knowledge base, clearly state that.
+knowledge_bases:
+  - company_policies_kb
+tools: []
+collaborators: []
+```
+
+### Agent Styles Explained
+
+Choosing the right agent style significantly impacts performance:
+
+The **Default** style is streamlined and tool-centric, ideal for straightforward tasks. It relies on prompt-driven decision-making to identify which tool to invoke, what inputs to use, and when to respond.
+
+The **ReAct** style implements an iterative reasoning loop where the agent continuously thinks, acts, and observes. This is best for complex interactions requiring multiple steps and adaptive decision-making.
+
+The **Plan-Act** style first creates a complete plan, then executes it step by step. This provides more predictable behavior for structured workflows.
+
+Best practices suggest limiting agents to 10 or fewer tools and sub-agents, as accuracy tends to degrade with more options. Organize agents by domain or business use case rather than piling on tools.
+
+## Some Sample Projects from the Hackathon
+
+The Agentic AI Hackathon attracted hundreds of teams competing to build proof-of-concept solutions that transform how people and businesses work. With a $10,000 prize pool and access to IBM's cutting-edge AI tools, participants tackled challenges ranging from regulatory compliance to HR automation.
+
+### DORA Gatekeeper: Autonomous Regulatory Compliance
+
+One project addressed a pressing enterprise challenge: the EU's Digital Operational Resilience Act (DORA), which requires financial institutions to audit vendor contracts by January 2025. With over 50,000 contracts requiring review across European banks—each taking approximately four hours to analyze manually—the compliance burden was insurmountable.
+
+The DORA Gatekeeper solution leverages watsonx Orchestrate’s orchestration engine to coordinate five integrated systems in a fully autonomous workflow. The system connects to Box cloud storage for contract retrieval, IBM watsonx.ai with the Granite 3.3 8B model for intelligent legal text analysis, ERP systems for enforcement, and Microsoft Outlook for vendor communication.
+
+Built using the ADK, the solution implements custom Python tools that demonstrate true agentic behavior. The system autonomously analyzes contracts against 10 DORA Article 28 clauses, generates compliance scores, and has enforcement authority to block non-compliant vendors in real-time without human approval. Processing contracts in under 30 seconds, it auto-generates legal amendments for missing clauses and delivers professional notifications—providing continuous regulatory protection that scales to handle thousands of contracts daily.
+
+### ORQON: Voice-Activated Trading Compliance
+
+Another project reimagined compliance for financial trading desks. ORQON is a headless AI agent built on watsonx Orchestrate that bridges the gap between execution speed and regulatory compliance in securities trading.
+
+Unlike passive chatbots that wait for text input, ORQON is an active, listener-first system. By integrating IBM Watson Speech-to-Text, it ingests live broker audio to execute, validate, and audit trades at the speed of voice. The architecture leverages the Model Context Protocol (MCP) to decouple the AI reasoning from the user interface.
+
+A secure Python FastAPI middleware coordinates specialized agents powered by the IBM Granite 3-8B-Instruct model. The Smart Order Entry agent listens to calls and auto-fills complex trade tickets instantly, eliminating manual data entry. Before any trade is submitted, the Real-Time Guardrails agent calculates a live Compliance Score by comparing the trade against the client’s KYC profile stored in ChromaDB. If a violation is detected—such as an unsolicited risky trade—the system physically locks the execution button, preventing regulatory violations before they occur.
+
+The Automated Reporting agent uses DataStax Astra DB for RAG to auto-generate SEC-compliant audit logs and client portfolio PDFs immediately after each call. This transforms compliance from a reactive punishment into a proactive competitive advantage.
+
+### Veritas: Multi-Jurisdictional Contract Analysis
+
+Legal teams working across multiple jurisdictions face the challenge of ensuring contracts comply with varying regulatory frameworks. Veritas addresses this with an autonomous multi-jurisdictional contract compliance agent.
+
+The solution functions as a Policy Enforcement Engine using grounded reasoning through the ReAct pattern. Veritas orchestrates IBM Document Processing for data extraction and watsonx.ai for risk calculation. Its reasoning is grounded in a proprietary Knowledge Base containing a Global Legal Playbook and Delegation of Authority (DOA) Matrix.
+
+The agent strictly validates terms against multi-jurisdictional rules including UK law, German BGB, and the Pakistan Contract Act 1872. It calculates a quantitative Risk Score from 0-100 to prioritize legal review and identifies prohibited terms such as unlimited liability clauses as critical blocks.
+
+Intelligent routing determines the correct final approver by applying Category Override Rules from the DOA Matrix. For example, any software contract routes to the CTO regardless of price value, demonstrating complex logic beyond simple threshold-based routing. The result: contract triage time reduced from days to seconds with guaranteed policy compliance.
+
+### HRabbit: Knowledge Preservation During Employee Departures
+
+Employee transitions represent a significant knowledge management challenge. Fortune 500 companies lose an estimated $31.5 billion annually due to knowledge sharing failures during offboarding. Only 37% of organizations have formal knowledge transfer processes, yet 76.6% express concern about this knowledge drain.
+
+HRabbit tackles this with an Offboarding Lifecycle Management Agent built on watsonx Orchestrate. The system integrates with enterprise tools including Confluence, Slack, and Jira through a RAG architecture to automatically extract key work information.
+
+The workflow begins when HR initiates an offboarding process. The agent extracts information from all integrated platforms, then uses AI to identify knowledge gaps—undocumented processes and tribal knowledge that would otherwise be lost. Based on these gaps, the system produces customized exit interview questions.
+
+The departing employee participates in an AI-driven exit interview where they fill in the identified knowledge gaps. If gaps remain after the initial interview, the system iteratively generates additional questions until comprehensive knowledge transfer is achieved. The agent then produces complete documentation for the employee’s successor.
+
+The technical implementation uses watsonx Orchestrate’s REST API for authentication and skill invocation, with proper JWT token caching and dynamic skill discovery. The architecture includes a React frontend with watsonx Orchestrate managing the agent layer, connecting to Confluence, Slack, and Jira through RAG for knowledge extraction and gap filling.
+
+### Shadow Mentor: Invisible Onboarding Companion
+
+While HRabbit focuses on knowledge preservation during departures, Shadow Mentor addresses the opposite end of the employee lifecycle. The solution tackles “Post-Onboarding Ghosting”—the critical gap that emerges after the first week of employment when new hires feel lost and productivity drops because managers cease constant hand-holding.
+
+The agent operates on a continuous Perceive-Decide-Act loop. It perceives by using watsonx Skills to scan employee activity across Calendar, Slack, and HRIS systems, identifying “Integration Gaps” such as missed manager one-on-ones or failure to access core repositories.
+
+The system then decides on appropriate interventions by consulting its knowledge base, which includes features like matching users with certification paths and confirming role-appropriate actions for junior versus senior employees.
+
+Finally, it acts discreetly—either by ghost-booking a 15-minute check-in on the manager’s calendar with talking points, or by sending a personalized Slack DM to the new hire with direct links for administrative tasks like 401k enrollment. The agent includes intelligent provisioning that assigns pre-configured, role-specific initial projects with performance tracking and certification pathways.
+
+### TradeGuard AI: Global Trade Compliance
+
+International trade compliance involves validating documents against regulations from dozens of countries. TradeGuard AI automates this process by extracting key trade data from commercial invoices, validating HS codes with confidence scoring, and assessing compliance risks in real-time.
+
+The platform processes multi-format documents including PDF, JPG, and PNG through a dual-track AI pipeline that combines rule-based reliability with IBM’s natural language understanding. The system validates against 50+ country regulations, flags restricted destinations, and provides actionable recommendations for compliance officers.
+
+For logistics companies and international traders, the solution reduces operational costs while eliminating costly customs delays and penalties. The architecture integrates watsonx Orchestrate with Google Cloud Run and FastAPI for enterprise-grade scalability.
+
+### SMART News Orchestrator: Multi-Agent Intelligence Gathering
+
+Financial services and risk management teams require real-time intelligence from diverse sources. SMART News Orchestrator is an autonomous multi-agent system that continuously monitors curated sources including financial news, market updates, industry developments, social signals, and global risk events.
+
+Each scraper agent extracts articles, structured tables, images, charts, and metadata from assigned sources. A central LLM-powered Risk & Sentiment Agent analyzes every article in the context of a company knowledge base, auto-assigning sentiment scores from -1 to +1 and calculating risk scores based on financial, operational, regulatory, sensitive-topic, and competitive indicators.
+
+The system identifies embedded tabular data inside articles and automatically generates Python chart code through a dedicated chart-generation agent. Charts are saved locally and linked to article records for visualization. The final output is a unified JSON feed containing articles, extracted insights, structured data, sentiment scores, risk scores, and chart paths—a complete intelligent news-monitoring and early-risk detection engine.
+
+## Lessons from the Hackathon
+
+Several patterns emerged from successful hackathon projects that offer guidance for developers building with watsonx Orchestrate.
+
+Projects that deeply integrated multiple enterprise systems—connecting calendars, communication platforms, document repositories, and business applications—demonstrated the strongest use cases for agentic AI. The orchestration layer adds the most value when coordinating complex workflows across system boundaries.
+
+Successful teams chose specific, high-value problems rather than building generic assistants. Whether regulatory compliance, knowledge transfer, or trade documentation, focused solutions with clear ROI resonated most strongly with judges and would resonate with enterprise buyers.
+
+The most impressive solutions gave agents actual authority to take action—blocking non-compliant vendors, scheduling meetings, or locking execution buttons. This moves beyond advisory AI into truly autonomous systems that deliver measurable business impact.
+
+Teams that provided quantified metrics—processing time reductions, accuracy improvements, cost savings—made stronger cases than those with only qualitative descriptions. Enterprise buyers need numbers to justify investment.
+
+## REST API Integration
+
+While the ADK provides the most comprehensive development experience, watsonx Orchestrate also supports REST API integration for teams that need to embed agent capabilities into existing applications. This approach is particularly valuable when integrating agents into web applications or mobile experiences.
+
+Authentication follows a standard JWT token flow. After obtaining credentials from your watsonx Orchestrate instance, you can authenticate and invoke agents programmatically:
+
+```python
+import requests
+
+def get_auth_token(api_key, endpoint):
+    """Authenticate with watsonx Orchestrate and obtain JWT token."""
+    response = requests.post(
+        f"{endpoint}/v1/auth/token",
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": api_key
+        }
+    )
+    return response.json().get("token")
+
+def invoke_agent(token, endpoint, agent_id, message):
+    """Send a message to an agent and receive a response."""
+    response = requests.post(
+        f"{endpoint}/v1/agents/{agent_id}/invoke",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        },
+        json={"message": message}
+    )
+    return response.json()
+```
+
+The API supports discovering available skillsets and skills dynamically, making it possible to build adaptive applications that leverage whatever capabilities are available in the Orchestrate environment. This flexibility proved valuable for hackathon teams building web frontends that needed to integrate with their agents.
+
+## Observability and Testing
+
+Production-ready agents require robust observability. The ADK integrates with Langfuse for tracing agent executions end-to-end, allowing developers to inspect exactly how agents reason through problems and which tools they invoke.
+
+The evaluation framework built into the ADK provides structured testing for agent behavior. Teams can define expected outcomes for given inputs and run automated test suites to verify agents behave correctly before deployment. This proved particularly important for compliance-focused hackathon projects where predictable behavior was essential.
+
+```yaml
+# evaluation_config.yaml
+evaluations:
+  - name: compliance_check_test
+    input: "Check if contract ABC123 is DORA compliant"
+    expected_tools: ["extract_contract", "analyze_clauses", "calculate_risk_score"]
+    expected_outcome_contains: ["compliance score", "Article 28"]
+```
+
+## Getting Started with Your Own Agent
+
+If you're inspired to build with watsonx Orchestrate, here's a recommended path forward.
+
+Start with the ADK locally by installing the Developer Edition and working through the hello-world examples. Understanding the tool-agent-orchestrator pattern is foundational.
+
+Identify a specific workflow in your organization that involves multiple systems and manual coordination. The best agent use cases automate multi-step processes that currently require human routing decisions.
+
+Begin with a single agent and one or two tools. Get that working end-to-end before adding complexity. The ADK's evaluation framework helps verify agent behavior before deployment.
+
+When you're confident in your local solution, connect the ADK to a production watsonx Orchestrate instance to share your agents with your team and run at scale.
+

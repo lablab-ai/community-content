@@ -1,0 +1,75 @@
+---
+title: "x402"
+author: "coinbase"
+description: "x402 is an HTTP-native payment protocol that enables AI agents to make programmatic payments without accounts or credit cards, turning HTTP 402 into a working payment system."
+---
+
+# x402
+
+x402 is a payment protocol that unlocks HTTP 402 Payment Required, turning it into a working payment system for AI agents and applications. The protocol enables programmatic, autonomous payments without requiring accounts, credit cards, or manual human intervention. Built on EIP-3009 (transferWithAuthorization), x402 allows AI agents to discover services, understand pricing, sign payment authorizations, and pay for API access—all automatically through HTTP requests and responses.
+
+The protocol is designed for machine-to-machine payments, making it ideal for AI agents that need to pay for API access, data services, or computational resources. With x402, payments are as simple as an HTTP request: when an agent requests a paid resource, the server responds with HTTP 402 and payment instructions. The agent then signs a payment payload, retries the request with an `X-PAYMENT` header, and receives the resource—all without human intervention.
+
+| General        |                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| Release date   | 2024                                                                                        |
+| Author         | [Coinbase](https://www.coinbase.com/)                                                      |
+| Documentation  | [x402 Documentation](https://x402.gitbook.io/x402)                                        |
+| Repository     | [GitHub](https://github.com/coinbase/x402)                                                 |
+| Type           | Payment Protocol                                                                            |
+
+---
+
+## Start building with x402
+
+x402 makes payments HTTP-native, enabling AI agents to autonomously discover and pay for services. The protocol supports gasless payments through facilitators, works with any EIP-3009 token (USDC by default), and provides SDKs for popular frameworks like Express and Axios. Whether you're building a paid API service or an AI agent that needs to purchase resources, x402 simplifies the payment flow into standard HTTP requests and responses. Check out the community-built [x402 use cases and applications](/apps/tech/coinbase/x402) to see what others are building.
+
+### x402 Tutorials
+
+<TechTutorials/>
+
+---
+
+### x402 Resources
+
+Essential resources to help you get started with x402:
+
+- [x402 Documentation](https://x402.gitbook.io/x402) - Complete documentation and guides
+- [x402 GitHub Repository](https://github.com/coinbase/x402) - Open-source x402 protocol implementation
+- [CDP Facilitator Docs](https://docs.cdp.coinbase.com/x402) - Coinbase Developer Platform facilitator documentation
+- [EIP-3009 Specification](https://eips.ethereum.org/EIPS/eip-3009) - The Ethereum standard that x402 is built on
+
+---
+
+### x402 Libraries and SDKs
+
+Official and community libraries for integrating x402 into your applications:
+
+- [@x402/core](https://www.npmjs.com/package/@x402/core) - Core x402 protocol types and utilities
+- [@x402/express](https://www.npmjs.com/package/@x402/express) - Express middleware for x402 payments
+- [@x402/axios](https://www.npmjs.com/package/@x402/axios) - Axios interceptor for automatic payment handling
+- [@x402/evm](https://www.npmjs.com/package/@x402/evm) - EVM-specific payment schemes (EIP-3009 support)
+
+---
+
+### x402 Integrations
+
+Connect x402 with your favorite frameworks and tools:
+
+- **Express.js**: Use `@x402/express` middleware to protect API endpoints with payment requirements
+- **Axios**: Use `@x402/axios` to automatically handle 402 responses and payment flows in client applications
+- **React**: Build React applications that automatically pay for API access using x402
+- **Node.js**: Integrate x402 into any Node.js application for server-side payment processing
+
+---
+
+### x402 Features
+
+Key features that make x402 powerful for AI-to-AI payments:
+
+- **HTTP-Native**: Payments work through standard HTTP requests and responses
+- **Gasless Payments**: Facilitators sponsor gas fees, making payments seamless
+- **No Accounts Required**: Payments work with crypto wallets, no account creation needed
+- **Autonomous**: AI agents can discover, understand pricing, and pay without human intervention
+- **Universal Compatibility**: Works with any EIP-3009 token (USDC by default)
+- **Framework Support**: SDKs available for Express, Axios, and more

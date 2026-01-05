@@ -1,0 +1,998 @@
+---
+title: "Building AI-to-AI Payments with x402: A Complete Implementation Guide"
+description: "Learn how to implement the x402 payment protocol for AI agents. Build a weather forecast service that charges for API access and a client that automatically pays. Complete with Express middleware, React frontend, and real payment flows."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fa582a22-0e22-4c4e-4ad3-150bb0b96900/full"
+authorUsername: "stevekimoi"
+---
+
+# Building AI-to-AI Payments with x402: A Complete Implementation Guide
+
+## Introduction
+
+The internet was built without a native payment layer. For decades, HTTP 402 Payment Required sat unused, waiting for someone to unlock it. x402 does exactly that—it turns HTTP 402 into a working payment protocol that lets AI agents pay for API access programmatically, without accounts, credit cards, or manual approvals.
+
+We're going to build a complete AI-to-AI payment system. A weather forecast service that charges $0.001 per request, and a React client that automatically handles payments. By the end, you'll understand how x402 works, how to implement it on both sides, and how AI agents can discover and pay for services autonomously.
+
+<Img src="https://i.ibb.co/Df7H0nfd/tmpbq938ckf.png" alt="Weather Agent UI showing payment flow" caption="The complete weather agent interface with automatic x402 payment handling." />
+
+**What you'll build:** A production-ready Express server with x402 payment middleware, a React frontend that automatically pays for API calls, and a complete understanding of how the x402 protocol enables machine-to-machine payments.
+
+**Why this matters:** Traditional payment systems break when AI agents need to pay. They require human approval, account creation, and manual intervention. x402 makes payments as simple as an HTTP request. An AI agent can discover a service, understand the price, pay automatically, and consume the resource—all programmatically.
+
+### The Problem x402 Solves
+
+Most APIs today use one of three payment models:
+
+1. **API keys with billing**: You sign up, get a key, and get billed monthly. Works for humans, breaks for AI agents.
+2. **Credit card forms**: Requires human interaction. AI agents can't fill out forms.
+3. **Prepaid credits**: You buy credits upfront. Agents can't make autonomous decisions about spending.
+
+x402 solves this with HTTP-native payments. When an AI agent requests a paid resource, the server responds with HTTP 402 and payment instructions. The agent signs a payment payload, retries the request with an `X-PAYMENT` header, and gets the resource. No accounts. No forms. No human intervention.
+
+The protocol is built on EIP-3009 (transferWithAuthorization), which means:
+- **Gasless payments**: The facilitator sponsors gas fees
+- **One-step authorization**: Users sign once, payment executes on-chain
+- **Universal compatibility**: Works with any EIP-3009 token (USDC by default)
+
+---
+
+## Understanding the x402 Architecture
+
+Before we code, let's understand how x402 works. There are four key components:
+
+### 1. The Server (Seller)
+The server protects endpoints with x402 middleware. When a request arrives without payment, it responds with HTTP 402 and payment requirements. When payment is verified, it serves the resource.
+
+### 2. The Client (Buyer)
+The client makes HTTP requests. If it receives a 402, it extracts payment requirements, creates a signed payment payload, and retries with the `X-PAYMENT` header.
+
+### 3. The Facilitator
+An optional service that verifies payments and settles them on-chain. Servers can verify locally, but facilitators simplify the process and handle gas sponsorship.
+
+### 4. The Wallet
+Both buyers and sellers use crypto wallets. Buyers sign payment payloads. Sellers receive payments. No account creation needed.
+
+**The Flow:**
+```
+1. Client → GET /forecast?location=NYC
+2. Server → 402 Payment Required (with payment details)
+3. Client → Creates signed payment payload
+4. Client → GET /forecast?location=NYC (with X-PAYMENT header)
+5. Server → Verifies payment via facilitator
+6. Server → 200 OK (with weather data)
+```
+
+---
+
+## Project Setup
+
+Let's start by setting up our project structure. We'll build both the server and client.
+
+### Step 1: Create the Project Structure
+
+```bash
+mkdir ai-to-ai-purchase-tutorial
+cd ai-to-ai-purchase-tutorial
+
+# Create server directory
+mkdir server
+cd server
+npm init -y
+
+# Create client directory
+cd ..
+mkdir client
+cd client
+npm create vite@latest . -- --template react
+```
+
+### Step 2: Install Server Dependencies
+
+In the `server` directory:
+
+```bash
+npm install express cors dotenv
+npm install @x402/core @x402/express @x402/evm
+```
+
+**Why these packages?**
+- `@x402/core`: Core x402 protocol types and utilities
+- `@x402/express`: Express middleware for x402 payments
+- `@x402/evm`: EVM-specific payment schemes (EIP-3009 support)
+
+### Step 3: Install Client Dependencies
+
+In the `client` directory:
+
+```bash
+npm install axios viem
+npm install @x402/axios @x402/evm
+```
+
+**Why these packages?**
+- `@x402/axios`: Axios interceptor that automatically handles 402 responses
+- `viem`: Ethereum library for wallet interactions
+- `@x402/evm`: Client-side EVM payment scheme support
+
+---
+
+## Building the Server: x402 Payment Middleware
+
+The server is where we implement the seller side of x402. Let's build it step by step.
+
+### File 1: `server/server.js` - The Core Server
+
+Open `server/server.js` and let's build the complete server:
+
+```javascript
+/**
+ * Forecast Agent Server
+ * Implements x402 protocol for weather forecast service
+ */
+
+import express from 'express';
+import cors from 'cors';
+import { paymentMiddleware, x402ResourceServer } from '@x402/express';
+import { ExactEvmScheme } from '@x402/evm/exact/server';
+import { HTTPFacilitatorClient } from '@x402/core/server';
+import { getWeatherForLocation } from './weatherData.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// CORS middleware - must expose PAYMENT-REQUIRED and PAYMENT-RESPONSE headers
+app.use(cors({
+  exposedHeaders: ['PAYMENT-REQUIRED', 'PAYMENT-RESPONSE', 'X-PAYMENT-RESPONSE']
+}));
+app.use(express.json());
+
+// Your receiving wallet address (set in .env or use default for testing)
+const RECIPIENT_ADDRESS = process.env.RECIPIENT_ADDRESS || '0x23792579e2979a98d12a33a85e35914079304a56';
+
+// Facilitator URL (testnet facilitator for Base Sepolia)
+const FACILITATOR_URL = process.env.FACILITATOR_URL || 'https://x402.org/facilitator';
+
+// Create facilitator client
+const facilitatorClient = new HTTPFacilitatorClient({ url: FACILITATOR_URL });
+
+// Normalize payment header: x402/express expects X-PAYMENT, but @x402/axios sends PAYMENT-SIGNATURE
+app.use((req, res, next) => {
+  if (req.headers['payment-signature'] || req.headers['PAYMENT-SIGNATURE']) {
+    const paymentSignature = req.headers['payment-signature'] || req.headers['PAYMENT-SIGNATURE'];
+    req.headers['x-payment'] = paymentSignature;
+    req.headers['X-PAYMENT'] = paymentSignature;
+  }
+  next();
+});
+
+// Create x402 resource server and register EVM scheme for Base Sepolia
+// Base Sepolia network ID: eip155:84532 (CAIP-2 format)
+let resourceServer;
+
+try {
+  resourceServer = new x402ResourceServer(facilitatorClient)
+    .register('eip155:84532', new ExactEvmScheme());
+
+  // Apply x402 payment middleware - this is the x402 protocol implementation
+  // @x402/express middleware automatically:
+  // 1. Checks for X-PAYMENT header on requests
+  // 2. Returns 402 Payment Required if no valid payment
+  // 3. Verifies payments via facilitator
+  // 4. Settles payments on blockchain
+  app.use(
+    paymentMiddleware(
+      {
+        'GET /forecast': {
+          accepts: [
+            {
+              scheme: 'exact',
+              price: '$0.001', // Price in USD
+              network: 'eip155:84532', // Base Sepolia (CAIP-2 format)
+              payTo: RECIPIENT_ADDRESS,
+            },
+          ],
+          description: 'Get weather forecast data for any location',
+          mimeType: 'application/json',
+        },
+      },
+      resourceServer
+    )
+  );
+  
+  console.log('✅ x402 payment middleware registered');
+} catch (error) {
+  console.error('❌ Failed to initialize x402 resource server:', error.message);
+  if (error.errors) {
+    console.error('Route configuration errors:');
+    error.errors.forEach(err => {
+      console.error(`  - ${err.message}`);
+      if (err.reason === 'missing_facilitator') {
+        console.error(`    The facilitator at ${FACILITATOR_URL} does not support scheme "${err.scheme}" on network "${err.network}"`);
+        console.error('    This might mean:');
+        console.error('    1. The facilitator is unreachable (network/CORS issue)');
+        console.error('    2. The facilitator does not support this network/scheme combination');
+        console.error('    3. You may need to use a different facilitator URL or network');
+      }
+    });
+  }
+  console.error('\n⚠️  Server will start without payment middleware.');
+  console.error('   Payment functionality will not work until this is resolved.\n');
+  
+  // Add a simple middleware to log that payment is disabled
+  app.use((req, res, next) => {
+    if (req.path === '/forecast') {
+      console.warn('⚠️  Payment middleware not active - request will proceed without payment');
+    }
+    next();
+  });
+}
+
+// Forecast endpoint - only reached if payment middleware verifies payment
+app.get('/forecast', (req, res) => {
+  const location = req.query.location;
+
+  if (!location) {
+    return res.status(400).json({
+      error: 'Missing required parameter: location'
+    });
+  }
+
+  try {
+    const weatherData = getWeatherForLocation(location);
+    res.json({
+      status: 'success',
+      data: weatherData
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to fetch weather data',
+      message: error.message
+    });
+  }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'Forecast Agent',
+    recipient: RECIPIENT_ADDRESS,
+    network: 'eip155:84532', // Base Sepolia (CAIP-2 format)
+    facilitator: FACILITATOR_URL,
+    paymentMiddlewareActive: resourceServer !== undefined
+  });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Forecast Agent server running on http://localhost:${PORT}`);
+  console.log(`💰 Recipient: ${RECIPIENT_ADDRESS}`);
+  console.log(`🌐 Network: eip155:84532 (Base Sepolia)`);
+  console.log(`📡 Facilitator: ${FACILITATOR_URL}`);
+});
+```
+
+**Key Implementation Details:**
+
+1. **Facilitator Client**: We create an `HTTPFacilitatorClient` that connects to the x402 facilitator. This handles payment verification and settlement.
+
+2. **Resource Server**: The `x402ResourceServer` is the core of our payment system. It manages payment schemes and verification.
+
+3. **EVM Scheme Registration**: We register the `ExactEvmScheme` for Base Sepolia. This scheme handles EIP-3009 payments.
+
+4. **Payment Middleware**: The `paymentMiddleware` function protects routes. It:
+   - Checks for `X-PAYMENT` headers
+   - Returns 402 if no payment
+   - Verifies payments via facilitator
+   - Only allows requests through if payment is valid
+
+5. **Route Configuration**: We define payment requirements per route:
+   - `scheme: 'exact'`: Requires exact payment amount
+   - `price: '$0.001'`: Price in USD (infers USDC)
+   - `network: 'eip155:84532'`: Base Sepolia testnet
+   - `payTo`: Wallet address that receives payments
+
+### File 2: `server/weatherData.js` - Mock Weather Service
+
+```javascript
+/**
+ * Mock weather data generator
+ * Returns realistic weather data for any location
+ */
+
+export function generateWeatherData(location) {
+  const baseTemp = Math.floor(Math.random() * 20) + 65; // 65-85°F
+  
+  const weatherConditions = [
+    'Sunny',
+    'Partly Cloudy',
+    'Cloudy',
+    'Rainy',
+    'Clear',
+    'Overcast'
+  ];
+  
+  const currentCondition = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+  
+  // Generate forecast for next 3 days
+  const forecast = [];
+  for (let i = 1; i <= 3; i++) {
+    const dayTemp = baseTemp + Math.floor(Math.random() * 10) - 5;
+    forecast.push({
+      day: i === 1 ? 'Tomorrow' : `Day ${i}`,
+      high: dayTemp + Math.floor(Math.random() * 5) + 2,
+      low: dayTemp - Math.floor(Math.random() * 5) - 2,
+      condition: weatherConditions[Math.floor(Math.random() * weatherConditions.length)]
+    });
+  }
+  
+  return {
+    location: location,
+    temperature: baseTemp,
+    condition: currentCondition,
+    humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
+    windSpeed: Math.floor(Math.random() * 15) + 5, // 5-20 mph
+    forecast: forecast,
+    timestamp: new Date().toISOString()
+  };
+}
+
+export function getWeatherForLocation(location) {
+  return generateWeatherData(location);
+}
+```
+
+### File 3: `server/.env` - Environment Configuration
+
+Create `server/.env`:
+
+```bash
+RECIPIENT_ADDRESS=0xYourWalletAddress
+FACILITATOR_URL=https://x402.org/facilitator
+PORT=8000
+```
+
+**Important:** Replace `0xYourWalletAddress` with your actual wallet address. This is where payments will be sent.
+
+---
+
+## Building the Client: Automatic Payment Handling
+
+The client is where we implement the buyer side. The `@x402/axios` package makes this surprisingly simple—it automatically handles 402 responses and payment flows.
+
+### File 1: `client/src/components/AgentConversation.jsx` - The Payment Client
+
+This is the most complex component. It handles wallet connection, payment creation, and automatic retry logic:
+
+```javascript
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { x402Client, wrapAxiosWithPayment } from '@x402/axios';
+import { registerExactEvmScheme } from '@x402/evm/exact/client';
+import { createWalletClient, custom } from 'viem';
+import { baseSepolia } from 'viem/chains';
+import './AgentConversation.css';
+
+function AgentConversation({ onComplete }) {
+  const [messages, setMessages] = useState([]);
+  const [location, setLocation] = useState('');
+  const [stage, setStage] = useState('prompt');
+  const [paymentInProgress, setPaymentInProgress] = useState(false);
+  const [weatherData, setWeatherData] = useState(null);
+  const [error, setError] = useState('');
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const addMessage = (agent, text, type = 'text') => {
+    setMessages(prev => [...prev, { agent, text, type, timestamp: Date.now() }]);
+  };
+
+  const handleStartRequest = async () => {
+    if (!location.trim()) {
+      setError('Please enter a location');
+      return;
+    }
+
+    setError('');
+    setStage('conversation');
+    setMessages([]);
+
+    setTimeout(() => {
+      addMessage('user-agent', `I need weather data for ${location}. Can you provide it?`);
+    }, 500);
+
+    setTimeout(() => {
+      addMessage('weather-agent', `I can provide weather data for ${location}. However, this service requires payment via x402 protocol.`);
+      addMessage('system', 'Processing payment request...', 'payment-processing');
+      handlePaymentRequest();
+    }, 1500);
+  };
+
+  const handlePaymentRequest = async () => {
+    setPaymentInProgress(true);
+
+    try {
+      // Step 1: Check for wallet extension
+      if (typeof window === 'undefined' || !window.ethereum) {
+        throw new Error('Please install MetaMask or another EVM-compatible wallet.');
+      }
+
+      // Step 2: Request account access
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No wallet accounts found. Please connect your wallet.');
+      }
+
+      // Step 3: Switch to Base Sepolia if needed
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      const baseSepoliaChainId = `0x${baseSepolia.id.toString(16)}`;
+
+      if (chainId !== baseSepoliaChainId) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: baseSepoliaChainId }],
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: baseSepoliaChainId,
+                chainName: 'Base Sepolia',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia.base.org'],
+                blockExplorerUrls: ['https://sepolia-explorer.base.org'],
+              }],
+            });
+          } else {
+            throw switchError;
+          }
+        }
+      }
+
+      // Step 4: Create wallet client for @x402/axios (v2 SDK)
+      const walletClient = createWalletClient({
+        chain: baseSepolia,
+        transport: custom(window.ethereum),
+      });
+
+      const addresses = await walletClient.getAddresses();
+      if (!addresses || addresses.length === 0) {
+        throw new Error('No accounts found in wallet. Please connect your wallet.');
+      }
+      const accountAddress = addresses[0];
+
+      // Step 5: Create x402 client and register EVM scheme
+      const client = new x402Client();
+      
+      // Register the exact EVM scheme with the signer
+      registerExactEvmScheme(client, {
+        signer: {
+          address: accountAddress,
+          signTypedData: async (message) => {
+            try {
+              return await walletClient.signTypedData({
+                account: accountAddress,
+                domain: message.domain,
+                types: message.types,
+                primaryType: message.primaryType,
+                message: message.message,
+              });
+            } catch (signError) {
+              throw new Error(`Failed to sign payment: ${signError.message}`);
+            }
+          },
+        },
+      });
+
+      // Step 6: Wrap axios with payment handling
+      // @x402/axios intercepts 402 responses, creates payment, and retries automatically
+      const api = wrapAxiosWithPayment(
+        axios.create({
+          baseURL: 'http://localhost:8000'
+        }),
+        client
+      );
+
+      // Step 7: Make the request - @x402/axios automatically handles 402 and payments
+      addMessage('system', '🔄 Making request to weather agent...', 'payment-processing');
+      
+      const response = await api.get('/forecast', {
+        params: { location }
+      });
+
+      setPaymentInProgress(false);
+      addMessage('system', '✅ Payment successful!', 'payment-success');
+      
+      const weatherData = response.data?.data || response.data;
+      
+      if (!weatherData || !weatherData.location) {
+        addMessage('system', '❌ Error: Invalid response from server', 'error');
+        setError('Received invalid response from server. Please try again.');
+        return;
+      }
+      
+      setTimeout(() => {
+        addMessage('weather-agent', 'Payment confirmed. Here is your weather data:', 'data');
+        setWeatherData(weatherData);
+        setStage('completed');
+        
+        setTimeout(() => {
+          const weatherText = `Location: ${weatherData.location}\nTemperature: ${weatherData.temperature}°F\nCondition: ${weatherData.condition}\nHumidity: ${weatherData.humidity}%\nWind Speed: ${weatherData.windSpeed} mph`;
+          addMessage('weather-agent', weatherText, 'weather-data');
+        }, 500);
+      }, 1000);
+
+    } catch (err) {
+      setPaymentInProgress(false);
+      
+      // Handle specific x402 payment errors
+      if (err.code === 403 || err.name === 'i' || (err.response?.status === 402 && err.code === 403)) {
+        let errorMessage = 'Payment was rejected by the facilitator. ';
+        errorMessage += 'Possible reasons: ';
+        errorMessage += '1. Insufficient USDC balance in your wallet, ';
+        errorMessage += '2. Invalid payment signature, ';
+        errorMessage += '3. Payment authorization expired or not yet valid, ';
+        errorMessage += '4. Facilitator configuration issue.';
+        
+        if (err.message) {
+          errorMessage += ` Details: ${err.message}`;
+        }
+        
+        addMessage('system', '❌ Payment rejected by facilitator (403).', 'payment-error');
+        setError(errorMessage);
+      } else if (err.response?.status === 402) {
+        addMessage('system', '❌ Payment failed. @x402/axios could not complete the payment.', 'payment-error');
+        setError('Payment required but could not be completed. Check your wallet balance and network.');
+      } else {
+        addMessage('system', `❌ Error: ${err.message || 'Failed to fetch weather data'}`, 'error');
+        setError(err.message || 'Failed to fetch weather data');
+      }
+    }
+  };
+
+  // ... rest of component (UI rendering)
+}
+```
+
+**Key Implementation Details:**
+
+1. **Wallet Connection**: We use `window.ethereum` to connect to MetaMask or other EVM wallets.
+
+2. **Network Switching**: We automatically switch to Base Sepolia if the wallet is on a different network.
+
+3. **x402 Client Setup**: We create an `x402Client` and register the `ExactEvmScheme` with a signer function.
+
+4. **Automatic Payment Handling**: `wrapAxiosWithPayment` wraps axios and automatically:
+   - Detects 402 responses
+   - Extracts payment requirements
+   - Creates signed payment payloads
+   - Retries requests with `X-PAYMENT` header
+
+5. **Error Handling**: We handle specific x402 errors like 403 (payment rejected) and provide helpful error messages.
+
+### File 2: `client/src/App.jsx` - Main App Component
+
+```javascript
+import React, { useState } from 'react';
+import AgentConversation from './components/AgentConversation';
+import './App.css';
+
+function App() {
+  const [requestKey, setRequestKey] = useState(0);
+
+  const handleNewRequest = () => {
+    setRequestKey(prev => prev + 1);
+  };
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <h1>🌤️ Weather Agent - x402 Payment Demo</h1>
+        <p>Test AI-to-AI payments with the x402 protocol</p>
+      </header>
+
+      <main className="app-main">
+        <AgentConversation key={requestKey} onComplete={handleNewRequest} />
+      </main>
+
+      <footer className="app-footer">
+        <p>
+          Built with <a href="https://x402.org" target="_blank" rel="noopener noreferrer">x402</a> protocol
+        </p>
+      </footer>
+    </div>
+  );
+}
+
+export default App;
+```
+
+---
+
+## How x402 Payment Flow Works
+
+Let's trace through what happens when a client makes a request:
+
+### Step 1: Initial Request (No Payment)
+
+```javascript
+// Client makes request
+GET /forecast?location=New%20York
+
+// Server responds with 402
+HTTP/1.1 402 Payment Required
+Content-Type: application/json
+
+{
+  "error": "Payment Required",
+  "accepts": [{
+    "scheme": "exact",
+    "price": "$0.001",
+    "network": "eip155:84532",
+    "payTo": "0x23792579e2979a98d12a33a85e35914079304a56",
+    "maxTimeoutSeconds": 60
+  }]
+}
+```
+
+### Step 2: Client Creates Payment Payload
+
+The `@x402/axios` client automatically:
+1. Extracts payment requirements from the 402 response
+2. Creates an EIP-712 typed data structure
+3. Prompts the wallet to sign the payment authorization
+4. Constructs the payment payload
+
+### Step 3: Retry with Payment
+
+```javascript
+// Client retries with X-PAYMENT header
+GET /forecast?location=New%20York
+X-PAYMENT: <base64-encoded-payment-payload>
+
+// Server verifies payment via facilitator
+// Facilitator checks:
+// - Signature is valid
+// - Payment amount matches requirements
+// - Payment hasn't expired
+// - Account has sufficient balance
+
+// Server responds with resource
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-PAYMENT-RESPONSE: <settlement-response>
+
+{
+  "status": "success",
+  "data": {
+    "location": "New York",
+    "temperature": 72,
+    "condition": "Sunny",
+    ...
+  }
+}
+```
+
+### Step 4: Payment Settlement
+
+The facilitator automatically:
+1. Submits the payment transaction to the blockchain
+2. Waits for confirmation
+3. Returns settlement details to the server
+4. Server includes settlement info in `X-PAYMENT-RESPONSE` header
+
+---
+
+## Testing the Implementation
+
+### Step 1: Start the Server
+
+```bash
+cd server
+npm run dev
+```
+
+You should see:
+```
+🚀 Forecast Agent server running on http://localhost:8000
+💰 Recipient: 0x23792579e2979a98d12a33a85e35914079304a56
+🌐 Network: eip155:84532 (Base Sepolia)
+📡 Facilitator: https://x402.org/facilitator
+✅ x402 payment middleware registered
+```
+
+### Step 2: Test with cURL (Manual Payment Flow)
+
+First, make a request without payment:
+
+```bash
+curl "http://localhost:8000/forecast?location=New%20York"
+```
+
+You'll get a 402 response with payment requirements.
+
+### Step 3: Start the Client
+
+```bash
+cd client
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser.
+
+### Step 4: Test the Full Flow
+
+1. Enter a location (e.g., "New York, NY")
+2. Click "Start Request"
+3. Connect your MetaMask wallet when prompted
+4. Approve the payment signature
+5. Watch as the payment is processed automatically
+6. See the weather data appear
+
+---
+
+## Understanding the x402 SDK Architecture
+
+The x402 SDK is built in layers:
+
+### Layer 1: Core Protocol (`@x402/core`)
+- Defines payment payload structures
+- Handles facilitator communication
+- Manages payment verification
+
+### Layer 2: Network-Specific Schemes (`@x402/evm`)
+- Implements EIP-3009 for EVM networks
+- Handles EIP-712 signature creation
+- Manages network-specific logic
+
+### Layer 3: Framework Integrations (`@x402/express`, `@x402/axios`)
+- Express middleware for servers
+- Axios interceptors for clients
+- Framework-specific abstractions
+
+### Layer 4: Your Application
+- Your business logic
+- Your API endpoints
+- Your UI components
+
+This layered architecture means you can:
+- Use different facilitators
+- Support multiple networks
+- Integrate with any HTTP framework
+- Build custom payment flows
+
+---
+
+## Advanced Configuration
+
+### Using Custom Tokens
+
+By default, x402 uses USDC. To use a custom EIP-3009 token:
+
+```javascript
+{
+  'GET /forecast': {
+    accepts: [
+      {
+        scheme: 'exact',
+        asset: '0xYourTokenAddress', // Custom token address
+        maxAmountRequired: '1000', // Amount in atomic units (6 decimals for USDC)
+        network: 'eip155:84532',
+        payTo: RECIPIENT_ADDRESS,
+        eip712: {
+          name: 'Your Token Name',
+          version: '2'
+        }
+      }
+    ]
+  }
+}
+```
+
+### Production Configuration
+
+For production, use the CDP facilitator:
+
+```javascript
+import { facilitator } from '@coinbase/x402';
+
+// Use CDP facilitator instead of HTTP client
+const resourceServer = new x402ResourceServer(facilitator)
+  .register('eip155:8453', new ExactEvmScheme()); // Base mainnet
+```
+
+You'll need CDP API keys. See the [CDP Quickstart](https://docs.cdp.coinbase.com/x402/quickstart) for details.
+
+### Making Services Discoverable
+
+Add metadata to make your service discoverable in the x402 Bazaar:
+
+```javascript
+app.use(
+  paymentMiddleware(
+    {
+      'GET /forecast': {
+        accepts: [
+          {
+            scheme: 'exact',
+            price: '$0.001',
+            network: 'eip155:84532',
+            payTo: RECIPIENT_ADDRESS,
+          },
+        ],
+        description: 'Get weather forecast data for any location',
+        mimeType: 'application/json',
+        discoverable: true, // Make discoverable in Bazaar
+        inputSchema: {
+          queryParams: {
+            location: {
+              type: 'string',
+              description: 'City name or coordinates',
+              required: true
+            }
+          }
+        },
+        outputSchema: {
+          type: 'object',
+          properties: {
+            location: { type: 'string' },
+            temperature: { type: 'number' },
+            condition: { type: 'string' },
+            humidity: { type: 'number' },
+            windSpeed: { type: 'number' }
+          }
+        }
+      },
+    },
+    resourceServer
+  )
+);
+```
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: "Payment middleware not active"
+
+**Cause**: Facilitator connection failed or network not supported.
+
+**Solution**: 
+- Check facilitator URL is correct
+- Verify network ID matches facilitator support
+- Check CORS settings
+
+### Issue 2: "Payment rejected (403)"
+
+**Cause**: Payment signature invalid, insufficient balance, or expired authorization.
+
+**Solution**:
+- Ensure wallet has USDC on Base Sepolia
+- Check wallet is connected to correct network
+- Verify payment wasn't created too far in advance
+
+### Issue 3: "Failed to parse payment requirements"
+
+**Cause**: Server response doesn't match x402 spec.
+
+**Solution**:
+- Verify middleware is correctly configured
+- Check route configuration matches expected format
+- Ensure facilitator is responding correctly
+
+---
+
+## What We Learned
+
+By building this system, we've learned:
+
+1. **x402 makes payments HTTP-native**: No accounts, no forms, just HTTP requests and responses.
+
+2. **Facilitators simplify everything**: They handle verification, settlement, and gas sponsorship.
+
+3. **EIP-3009 enables gasless payments**: Users sign once, facilitator sponsors gas.
+
+4. **The SDK handles complexity**: `@x402/axios` automatically handles 402 responses and payment flows.
+
+5. **AI agents can pay autonomously**: With x402, agents can discover, understand, and pay for services without human intervention.
+
+---
+
+<Quiz    
+  questions={[
+    {
+      question: "What HTTP status code does x402 use to request payment?",
+      options: ["HTTP 200", "HTTP 402", "HTTP 403", "HTTP 404"],
+      answer: 1
+    },
+    {
+      question: "Which Ethereum standard is x402 built on?",
+      options: [
+        "EIP-721",
+        "EIP-3009",
+        "EIP-155",
+        "EIP-20"
+      ],
+      answer: 1
+    },
+    {
+      question: "What is the role of a facilitator in the x402 protocol?",
+      options: [
+        "To create payment payloads",
+        "To verify payments and settle them on-chain, sponsoring gas fees",
+        "To store wallet addresses",
+        "To generate API keys"
+      ],
+      answer: 1
+    },
+    {
+      question: "Which package automatically handles 402 responses and payment flows in client applications?",
+      options: [
+        "@x402/core",
+        "@x402/express",
+        "@x402/axios",
+        "@x402/evm"
+      ],
+      answer: 2
+    },
+    {
+      question: "What network is used in this tutorial for testing x402 payments?",
+      options: [
+        "Ethereum Mainnet",
+        "Base Sepolia",
+        "Polygon",
+        "Arbitrum"
+      ],
+      answer: 1
+    },
+    {
+      question: "What header does the client send with payment information when retrying a request?",
+      options: [
+        "X-AUTHORIZATION",
+        "X-PAYMENT",
+        "X-API-KEY",
+        "Authorization"
+      ],
+      answer: 1
+    }
+  ]}
+/>
+
+---
+
+## Next Steps
+
+1. **Deploy to production**: Set up CDP facilitator for mainnet
+2. **Add more endpoints**: Protect multiple routes with different prices
+3. **Explore the Bazaar**: Make your service discoverable
+4. **Build AI agent integrations**: Use x402 with MCP or other agent frameworks
+5. **Customize payment flows**: Add custom logic for payment verification
+
+---
+
+## Resources
+
+- [Full Implementation Repository](https://github.com/Stephen-Kimoi/AI-to-AI-Purchase-Tutorial) - Complete codebase for this tutorial
+- [x402 Documentation](https://x402.gitbook.io/x402)
+- [x402 GitHub Repository](https://github.com/coinbase/x402)
+- [CDP Facilitator Docs](https://docs.cdp.coinbase.com/x402)
+- [EIP-3009 Specification](https://eips.ethereum.org/EIPS/eip-3009)
+
+---
+
+*You've built a complete AI-to-AI payment system. The internet finally has a native payment layer. What will you build next?*
