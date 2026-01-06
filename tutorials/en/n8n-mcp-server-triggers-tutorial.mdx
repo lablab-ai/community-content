@@ -86,17 +86,17 @@ Let's start by creating the foundation of our MCP server. This workflow will ser
 1. Sign up or sign in to your n8n account
 2. Navigate to `/home/workflows` and click the **"Create Workflow"** button in the top right corner
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601405/Screenshot_2026-01-05_at_11.21.18_s3tfug.png" alt="Create workflow button in n8n" caption="Click the Create Workflow button to start building your MCP server" />
+![Create workflow button in n8n](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601405/Screenshot_2026-01-05_at_11.21.18_s3tfug.png)
 
 3. Click on **"Add First Step"** and search for **"MCP Server triggers"**
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.01_mfsowl.png" alt="Add first step button" caption="Click Add First Step to begin configuring your workflow" />
+![Add first step button](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.01_mfsowl.png)
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.24_i1cmca.png" alt="MCP Server triggers node" caption="Select MCP Server triggers from the node options" />
+![MCP Server triggers node](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.24_i1cmca.png)
 
 4. Close the MCP Server modal by clicking the **"x"** button in the top right corner
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767601718/Screenshot_2026-01-05_at_11.27.44_reiovp.png" alt="MCP Server trigger node added" caption="Your MCP Server trigger node is now ready to accept tools" />
+![MCP Server trigger node added](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601718/Screenshot_2026-01-05_at_11.27.44_reiovp.png)
 
 #### Step 2: Building the GitHub Issue Tracker Tool
 
@@ -106,7 +106,7 @@ Now we'll create a GitHub issue tracker that fetches comprehensive issue details
 2. Search for **"GitHub"** tools and select it
 3. Configure the parameters as follows:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602203/Screenshot_2026-01-05_at_11.34.21_fuicy4.png" alt="GitHub tool configuration" caption="Configure the GitHub tool to fetch issue details" />
+![GitHub tool configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602203/Screenshot_2026-01-05_at_11.34.21_fuicy4.png)
 
 **Configuration Details:**
 
@@ -115,10 +115,10 @@ a. **Credential to connect with:**
    - If this is your first time connecting, you'll need to provide a GitHub personal access token
    - To create a token, go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
    - Generate a new token with the following permissions:
-     - `repo` (full control of private repositories)
-     - `issues:read` (read issues)
-     - `issues:write` (write issues)
-     - `pull_requests:write` (create PRs)
+- `repo` (full control of private repositories)
+- `issues:read` (read issues)
+- `issues:write` (write issues)
+- `pull_requests:write` (create PRs)
 
 b. **Tool Description:**
    - Set this to **"Manually"**
@@ -145,11 +145,11 @@ g. **Repository Name:**
 
 6. Hover over the MCP Server trigger node and click the three dots menu → **"Open"**
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.50_nhgphl.png" alt="Opening MCP Server triggers" caption="Access the MCP Server trigger settings" />
+![Opening MCP Server triggers](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.50_nhgphl.png)
 
 7. Copy the test URL provided and save it for later use
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.58_zbx1eo.png" alt="Copying the test URL" caption="Save the test URL to connect Cursor to your MCP server" />
+![Copying the test URL](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.58_zbx1eo.png)
 
 #### Step 3: Testing the Issue Tracker
 
@@ -157,7 +157,7 @@ Now let's connect your MCP server to Cursor and test the issue tracker functiona
 
 1. Open Cursor IDE and navigate to **Settings → Tools & MCP**
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767603053/Screenshot_2026-01-05_at_11.47.48_g2okiq.png" alt="Cursor settings MCP tools" caption="Access MCP settings in Cursor" />
+![Cursor settings MCP tools](https://res.cloudinary.com/dygkv9gam/image/upload/v1767603053/Screenshot_2026-01-05_at_11.47.48_g2okiq.png)
 
 2. Click on **"New MCP Server"** to open the `mcp.json` file
 3. Replace the URL with the test URL you copied earlier:
@@ -174,7 +174,7 @@ Now let's connect your MCP server to Cursor and test the issue tracker functiona
 
 4. Wait for the tools to load. You'll see a green dot appear, indicating that Cursor is successfully connected to your MCP server
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767604802/Screenshot_2026-01-05_at_12.19.12_zqscd8.png" alt="MCP Server connected to cursor" caption="Green dot indicates successful connection to your MCP server" />
+![MCP Server connected to cursor](https://res.cloudinary.com/dygkv9gam/image/upload/v1767604802/Screenshot_2026-01-05_at_12.19.12_zqscd8.png)
 
 5. Open the chat section in Cursor (press `CMD + L` on Mac or `CTRL + L` on Windows/Linux) and test with a request like:
 
@@ -198,7 +198,7 @@ Let's create a new workflow that will be triggered by our MCP server to handle P
 2. Click **"Add first step"** and select **"When executed by another workflow"**
 3. In the parameter section, select **"Accept all data"**
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767605616/Screenshot_2026-01-05_at_12.32.30_kidbwl.png" alt="When executed by another workflow" caption="Set up the workflow trigger to accept data from the MCP server" />
+![When executed by another workflow](https://res.cloudinary.com/dygkv9gam/image/upload/v1767605616/Screenshot_2026-01-05_at_12.32.30_kidbwl.png)
 
 ### Step 5: Creating the Repository Info Extraction Agent
 
@@ -211,7 +211,7 @@ We'll use an AI agent to intelligently extract repository information from natur
 3. Rename it to **"Extract repository info"**
 4. Configure the parameters as shown:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606159/Screenshot_2026-01-05_at_12.36.53_s9bvap.png" alt="Extract repository info parameters" caption="Configure the AI Agent to extract repository information" />
+![Extract repository info parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606159/Screenshot_2026-01-05_at_12.36.53_s9bvap.png)
 
 **Parameter Settings:**
 
@@ -227,9 +227,9 @@ c. **Require Specific Output Format:**
 d. **Options:**
    - Add a **"System Message"** option
    - Set the system message to:
-   ```
-   You are a data extraction assistant. Your task is to extract structured repository information from natural language queries about GitHub pull requests. Always provide all four fields: owner, repo, branch_name, and base_branch. Use the defaults provided when information is not explicitly mentioned in the query.
-   ```
+```
+You are a data extraction assistant. Your task is to extract structured repository information from natural language queries about GitHub pull requests. Always provide all four fields: owner, repo, branch_name, and base_branch. Use the defaults provided when information is not explicitly mentioned in the query.
+``` 
 
 #### Setting Up the Chat Model
 
@@ -237,7 +237,7 @@ d. **Options:**
 2. Select **"Groq Chat Model"**
 3. Configure as follows:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606552/Screenshot_2026-01-05_at_12.47.43_f5kem4.png" alt="Groq Chat Mode Parameters" caption="Configure Groq as the chat model provider" />
+![Groq Chat Mode Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606552/Screenshot_2026-01-05_at_12.47.43_f5kem4.png)
 
 a. **Credential to connect with:**
    - Connect your Groq account (get your API key from [console.groq.com](https://console.groq.com))
@@ -251,21 +251,21 @@ b. **Model:**
 2. Select **"Structured Output Parser"**
 3. Configure the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767606761/Screenshot_2026-01-05_at_12.51.58_mfqtue.png" alt="Structured Output Parameters" caption="Set up structured output parsing for consistent data extraction" />
+![Structured Output Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606761/Screenshot_2026-01-05_at_12.51.58_mfqtue.png)
 
 a. **Schema Type:**
    - Select **"Generate From JSON Example"**
 
 b. **JSON Example:**
    - Insert this schema:
-   ```json
-   {
-     "owner": "GitHub repository owner username",
-     "repo": "GitHub repository name",
-     "branch_name": "Source branch name for the pull request",
-     "base_branch": "Target branch name (usually main or master)"
-   }
-   ``` 
+```json
+{
+	"owner": "GitHub repository owner username",
+	"repo": "GitHub repository name",
+	"branch_name": "Source branch name for the pull request",
+	"base_branch": "Target branch name (usually main or master)"
+}
+``` 
 
 ### Step 6: Fetching Commit History
 
@@ -277,7 +277,7 @@ Now we'll retrieve the commit messages from the specified branch to analyze what
 2. Search for and select **"HTTP Request"**
 3. Configure the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767607045/Screenshot_2026-01-05_at_12.57.10_cbuzj6.png" alt="Get commits HTTP request parameters" caption="Configure the HTTP request to fetch commits from GitHub" />
+![Get commits HTTP request parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767607045/Screenshot_2026-01-05_at_12.57.10_cbuzj6.png)
 
 **Configuration:**
 
@@ -314,7 +314,7 @@ g. **Specify Query Parameters:**
 3. Rename it to **"Check for Repository error"**
 4. Configure the condition:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767607911/Screenshot_2026-01-05_at_13.10.19_zf59as.png" alt="Check for repository error" caption="Add error handling for invalid repositories or branches" />
+![Check for repository error](https://res.cloudinary.com/dygkv9gam/image/upload/v1767607911/Screenshot_2026-01-05_at_13.10.19_zf59as.png)
 
 **If the condition is "true" (error occurred):**
 
@@ -322,7 +322,7 @@ g. **Specify Query Parameters:**
 2. Select **"Edit Fields"**
 3. Configure as follows:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608083/Screenshot_2026-01-05_at_13.14.18_u7v7ky.png" alt="Error message parameters" caption="Set up error message formatting" />
+![Error message parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608083/Screenshot_2026-01-05_at_13.14.18_u7v7ky.png)
 
 a. **Mode:**
    - Select **"Manual Mapping"**
@@ -331,9 +331,9 @@ b. **Fields to Set:**
    - Click **"Add field"**
    - **name:** `result`
    - **value:** 
-   ```
-   Error: I couldn't find the repository "{{ $('Extract Repository Info').item.json.output.owner }}/{{ $('Extract Repository Info').item.json.output.repo }}" or branch "{{ $('Extract Repository Info').item.json.output.branch_name }}". Please double-check the spelling or ensure the repo is public and the branch exists.
-   ```
+```
+Error: I couldn't find the repository "{{ $('Extract Repository Info').item.json.output.owner }}/{{ $('Extract Repository Info').item.json.output.repo }}" or branch "{{ $('Extract Repository Info').item.json.output.branch_name }}". Please double-check the spelling or ensure the repo is public and the branch exists.
+```
 
 **If the condition is "false" (success):**
 
@@ -357,7 +357,7 @@ b. **Fields to Set:**
 1. Click the **"+"** button and search for **"Summarize"**
 2. Configure the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608587/Screenshot_2026-01-05_at_13.21.12_oojefn.png" alt="Summarize commits parameters" caption="Configure commit message summarization" />
+![Summarize commits parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608587/Screenshot_2026-01-05_at_13.21.12_oojefn.png)
 
 a. **Aggregation:**
    - Select **"Concatenate"**
@@ -376,7 +376,7 @@ Now we'll use an LLM to analyze the commit messages and generate a professional 
 2. Search for and select **"Basic LLM Chain"**
 3. Configure the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767608922/Screenshot_2026-01-05_at_13.28.30_nl1x3n.png" alt="Basic LLM Chain parameters" caption="Configure the LLM chain to generate PR descriptions" />
+![Basic LLM Chain parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608922/Screenshot_2026-01-05_at_13.28.30_nl1x3n.png)
 
 **Parameter Settings:**
 
@@ -385,21 +385,21 @@ a. **Source for Prompt (User Message):**
 
 b. **Prompt (User Message):**
    - Set to:
-   ```js
-   Here are all the commit messages for this branch:
-   {{ $('summarize_commits').first().json.concatenated_message }}
+```js
+Here are all the commit messages for this branch:
+{{ $('summarize_commits').first().json.concatenated_message }}
 
-   Please write a professional Pull Request:
-   1. A Title that summarizes the overall goal of these changes (max 72 characters).
-   2. A Description that lists the key changes in bullet points.
+Please write a professional Pull Request:
+1. A Title that summarizes the overall goal of these changes (max 72 characters).
+2. A Description that lists the key changes in bullet points.
 
-   IMPORTANT: Return ONLY plain text without any markdown formatting. Do not use asterisks (**), bold, italics, or any other markdown syntax.
+IMPORTANT: Return ONLY plain text without any markdown formatting. Do not use asterisks (**), bold, italics, or any other markdown syntax.
 
-   Format your response as:
-   Title: [your title here]
-   Description:
-   [your description here]
-   ```
+Format your response as:
+Title: [your title here]
+Description:
+[your description here]
+``` 
 
 #### Configuring the Model
 
@@ -407,7 +407,7 @@ b. **Prompt (User Message):**
 2. Select **"Groq Chat Model"**
 3. Configure:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609076/Screenshot_2026-01-05_at_13.31.04_lwovjj.png" alt="Groq model configuration" caption="Set up Groq as the LLM provider for PR generation" />
+![Groq model configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609076/Screenshot_2026-01-05_at_13.31.04_lwovjj.png)
 
 a. **Credential to connect with:**
    - Select **"Groq Account"**
@@ -423,7 +423,7 @@ Finally, we'll send the PR creation request to GitHub using the AI-generated tit
 2. Select **"HTTP Request"**
 3. Configure the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609296/Screenshot_2026-01-05_at_13.34.43_oqd0z2.png" alt="GitHub PR creation parameters" caption="Configure the HTTP request to create the pull request" />
+![GitHub PR creation parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609296/Screenshot_2026-01-05_at_13.34.43_oqd0z2.png)
 
 **Parameter Configuration:**
 
@@ -460,7 +460,7 @@ h. **Specify Body:**
 
 Once configured, your complete n8n workflow should look like this:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609750/Screenshot_2026-01-05_at_13.41.26_wrry1d.png" alt="Final n8n workflow" caption="Your complete PR creation workflow is now ready" />
+![Final n8n workflow](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609750/Screenshot_2026-01-05_at_13.41.26_wrry1d.png)
 
 1. Click **"Save"** to preserve your work
 2. Click **"Publish"** to make the workflow available
@@ -473,20 +473,20 @@ Now we need to connect our PR creation workflow to the MCP server so Cursor can 
 1. Go back to your first workflow (the one with the MCP Server trigger)
 2. Click on the **"create_github_pr"** workflow tool in the MCP Server trigger node
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609897/Screenshot_2026-01-05_at_13.44.32_ichifd.png" alt="MCP server workflow tools" caption="Access the workflow tools in your MCP Server trigger" />
+![MCP server workflow tools](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609897/Screenshot_2026-01-05_at_13.44.32_ichifd.png)
 
 3. Open the **"create_github_pr"** tool configuration
 4. Set the parameters:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1767609963/Screenshot_2026-01-05_at_13.45.20_dtizvg.png" alt="Set PR creation tool parameters" caption="Configure the PR creation tool for the MCP server" />
+![Set PR creation tool parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609963/Screenshot_2026-01-05_at_13.45.20_dtizvg.png)
 
 **Configuration:**
 
 a. **Description:**
    - Set to:
-   ```
-   Creates a GitHub Pull Request. IMPORTANT: You must provide the full repository owner and name (e.g., 'Stephen-Kimoi/Example-Auth-Service') even if you have a local git context, so the backend API can route the request correctly.
-   ```
+```
+Creates a GitHub Pull Request. IMPORTANT: You must provide the full repository owner and name (e.g., 'Stephen-Kimoi/Example-Auth-Service') even if you have a local git context, so the backend API can route the request correctly.
+```
 
 b. **Source:**
    - Select **"Database"**
