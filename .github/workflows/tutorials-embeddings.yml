@@ -25,6 +25,5 @@ jobs:
 
       - name: Run Script
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
         run: node scripts/embedTutorials.js
