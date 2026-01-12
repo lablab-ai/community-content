@@ -114,23 +114,23 @@ Paste the code above and save the file. *Remember to adjust the `webots_path` va
 
 In the Webots **Scene Tree** (left panel), find the **Panda** robot.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/panda_ddssni.png" alt="Panda robot in scene tree" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/panda_ddssni.png" alt="Panda robot in scene tree" caption="Locate the Panda robot node in the Webots Scene Tree" />
 
 Expand the node and find the **controller** field.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/panda-controller_abf1mn.png" alt="Panda Controller Field" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/panda-controller_abf1mn.png" alt="Panda Controller Field" caption="Find the controller field for the Panda robot in the Scene Tree" />
 
 Click **Select...** and choose `llm_robot_planner` from the list.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/select-controller_weyb43.png" alt="Select Controller" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/select-controller_weyb43.png" alt="Select Controller" caption="Open the controller selection dialog for the Panda robot" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198367/select-llm-robot-planner_tggglp.png" alt="Select LLM Robot planner" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198367/select-llm-robot-planner_tggglp.png" alt="Select LLM Robot planner" caption="Choose the llm_robot_planner controller from the list of available controllers" />
 
 *Note:* Because we placed it in the system directory, it will now appear as a native option.
 
 Now click on the play button on the top part of the screen, and you'll see your robot arm moving 90 degrees.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/robot-arm-moving_k2lia2.png" alt="Robot arm moving" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/robot-arm-moving_k2lia2.png" alt="Robot arm moving" caption="Watch the Panda arm rotate 90 degrees after running the controller" />
 
 ### Configuring Python
 
@@ -144,9 +144,9 @@ To avoid "Controller failed to start" errors, point Webots to your system's Pyth
 
 *Tip: You can find your Python 3 path by running `which python3` (macOS/Linux) or `where python` (Windows) in your terminal.*
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/perferences_wpqwoc.png" alt="Preferences menu" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/perferences_wpqwoc.png" alt="Preferences menu" caption="Open the Webots Preferences window from the application menu" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/preferences-general_ksmlyc.png" alt="General preferences" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/preferences-general_ksmlyc.png" alt="General preferences" caption="Configure the Python command under the General tab in Webots Preferences" />
 
 ## Integrating Gemini AI
 
@@ -349,19 +349,19 @@ This architecture creates a feedback loop: the AI receives context about the rob
 
 In the Webots Scene Tree, select the Panda robot. Find the field supervisor and change it from FALSE to TRUE. Save the world and reload the simulation.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768199242/panda-supervisor_lje0zo.png" alt="Panda supervisor setting" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768199242/panda-supervisor_lje0zo.png" alt="Panda supervisor setting" caption="Enable the supervisor flag for the Panda robot in the Webots Scene Tree" />
 
 ### Selecting the Controller
 
 Select controller choice to `llm_robot_planner`.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-controller-choice_ul0vlc.png" alt="LLM Robot planner selection" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-controller-choice_ul0vlc.png" alt="LLM Robot planner selection" caption="Confirm llm_robot_planner as the active controller for the Panda robot" />
 
 ### Testing Your AI-Powered Robot
 
 Now enter your instruction of what you want the robot to do:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/command-input_htziec.png" alt="Enter command dialog" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/command-input_htziec.png" alt="Enter command dialog" caption="Type a natural language command for the robot into the popup dialog window" />
 
 Enter a command like: "Pick up the WOODEN_BOX and lift it up"
 
