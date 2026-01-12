@@ -254,6 +254,60 @@ while robot.step(timestep) != -1:
     for _ in range(60): robot.step(timestep)
 ```
 
+### Understanding the AI Controller Code
+
+Let's break down this code to understand how it transforms natural language into robotic actions:
+
+**Imports and Setup (Lines 148-171)**
+
+The code begins by importing necessary libraries:
+- `tkinter` for creating a simple dialog interface to receive user commands
+- `google.genai` for accessing the Gemini AI model
+- `controller.Supervisor` which gives us advanced control over the robot and world state
+
+The setup section initializes:
+- The Gemini API client using your API key from environment variables
+- The robot as a `Supervisor` (which allows us to access world objects, not just the robot itself)
+- All 7 joint motors and 2 finger grippers
+- Position sensors for each joint to track the robot's current state
+
+**Status Helper Function (Lines 174-188)**
+
+The `get_robot_status()` function serves as the robot's "awareness" system:
+- It searches for objects in the scene (like a wooden block) by trying multiple possible names
+- If found, it reports the object's 3D position (X, Y, Z coordinates)
+- It reads all joint angles from the position sensors
+- Returns both a formatted status message and block information that will be sent to the AI
+
+**The AI Brain (Lines 191-215)**
+
+The `get_ai_instruction()` function is where the magic happens:
+- It first gathers the current robot status (joint positions and object locations)
+- Constructs a system prompt that tells Gemini it's controlling a robot, provides context about the environment, and specifies the exact output format required
+- Sends the user's natural language command to Gemini with a low temperature (0.1) for consistent, deterministic responses
+- Parses the AI's response, which should be in the format `COMMAND|VALUE` (e.g., "LEFT|0.52" or "PICK|0")
+- Returns the command and value, or handles errors gracefully
+
+**Main Control Loop (Lines 218-254)**
+
+The main loop is the execution engine:
+- Creates a hidden tkinter window for the input dialog
+- Continuously runs the simulation step-by-step
+- Prompts the user for a command via a dialog box
+- Sends the command to the AI and receives back a parsed command and value
+- Executes the appropriate movement based on the command:
+  - **LEFT/RIGHT**: Rotates the base joint (joint 0) left or right
+  - **UP/DOWN**: Adjusts multiple joints (1 and 3) to move the arm vertically
+  - **PICK**: Performs a complex multi-step sequence:
+    1. Opens the gripper
+    2. Reaches forward and down
+    3. Closes the gripper to grab
+    4. Lifts the object up
+  - **RESET**: Returns all joints to their default positions
+- Allows physics to settle by running multiple simulation steps after each movement
+
+This architecture creates a feedback loop: the AI receives context about the robot's state, interprets natural language, and the robot executes the resulting commands, creating an interactive AI-powered robotic system.
+
 ### Enabling Supervisor Mode
 
 In the Webots Scene Tree, select the Panda robot. Find the field supervisor and change it from FALSE to TRUE. Save the world and reload the simulation.
