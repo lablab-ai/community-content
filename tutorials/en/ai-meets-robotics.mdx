@@ -1,6 +1,292 @@
 ---
-title: 'AI Meets Robotics: Control a Simulated Robot Using Gemini'
-description: 'This tutorial shows you how to bridge the gap between human conversation and machine motion, turning simple English instructions into real-world robotic actions.'
-image: ''
-authorUsername: 'stevekimoi'
+title: "AI Meets Robotics: Control a Simulated Robot Using Gemini"
+description: "This tutorial shows you how to bridge the gap between human conversation and machine motion, turning simple English instructions into real-world robotic actions."
+image: ""
+authorUsername: "stevekimoi"
 ---
+
+## Introduction to AI-Powered Robotics
+
+This tutorial shows you how to bridge the gap between human conversation and machine motion, turning simple English instructions into real-world robotic actions. We'll use Google's Gemini AI model to control a simulated Franka Emika Panda robot arm in Webots, demonstrating how natural language can be transformed into precise robotic movements.
+
+## Setting Up Your Environment
+
+### Installing Webots Simulator
+
+To get started, you'll need to download and install **Webots R2025a**. Once installed, open the built-in **Franka Emika Panda** sample world. You can locate this via `File > Open Sample World` and search for "Panda."
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/open-sample-world_lmfpm0.png" alt="Sample world menu" caption="Files -> Sample World" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-sample-world_xtmbxk.png" alt="Open Sample world" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/opened-panda-sample_e8qlac.png" alt="Opened Panda Sample" />
+
+### Creating the Controller Setup (macOS)
+
+To ensure the robot "brain" is always available in the simulator's internal library, we use a manual injection method via the Terminal.
+
+**Create the Controller Folder:** Open your Terminal and run the following command to create a dedicated space for your AI script inside the Webots application:
+
+```bash
+sudo mkdir -p /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner
+```
+
+**Initialize the Script:** Create your Python file (`llm_robot_planner.py`) and move it into that directory.
+
+**Set Permissions:** Ensure Webots has permission to execute your code:
+
+```bash
+sudo chmod -R 777 /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner
+```
+
+**Create the Initial Controller Code:** Open the python code (`llm_robot_planner.py`) via your preferred IDE or terminal and insert this code:
+
+```python
+import os
+import sys
+
+# Manually add Webots library path for macOS
+sys.path.append('/Applications/Webots.app/Contents/lib/controller/python')
+from controller import Robot
+
+# Initialize the Robot
+robot = Robot()
+timestep = int(robot.getBasicTimeStep())
+
+# 1. Get Motor Handles (The Panda has 7 joints + a gripper)
+# We'll start by controlling just one for this test
+joint_1 = robot.getDevice('panda_joint1')
+
+def move_arm(position):
+    """Simple high-level function for the LLM to call"""
+    print(f"Executing movement to position: {position}")
+    joint_1.setPosition(position)
+
+# 2. Main Simulation Loop
+while robot.step(timestep) != -1:
+    # This is where we will eventually 'listen' for LLM commands
+    # For now, let's just test a basic movement
+    move_arm(1.57) # Rotates the base 90 degrees
+    break
+```
+
+You can do this by running:
+
+```bash
+nano /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner/llm_robot_planner.py
+```
+
+And pasting the code there.
+
+### Linking the Controller to the Robot
+
+In the Webots **Scene Tree** (left panel), find the **Panda** robot.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/panda_ddssni.png" alt="Panda robot in scene tree" />
+
+Expand the node and find the **controller** field.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/panda-controller_abf1mn.png" alt="Panda Controller Field" />
+
+Click **Select...** and choose `llm_robot_planner` from the list.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/select-controller_weyb43.png" alt="Select Controller" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198367/select-llm-robot-planner_tggglp.png" alt="Select LLM Robot planner" />
+
+*Note:* Because we placed it in the system directory, it will now appear as a native option.
+
+Now click on the play button on the top part of the screen, and you'll see your robot arm moving 90 degrees.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/robot-arm-moving_k2lia2.png" alt="Robot arm moving" />
+
+### Configuring Python for macOS
+
+To avoid "Controller failed to start" errors, point Webots to your system's Python 3:
+
+* Go to **Webots > Preferences > General**.
+* Set the **Python command** to `/usr/bin/python3`.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/perferences_wpqwoc.png" alt="Preferences menu" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/preferences-general_ksmlyc.png" alt="General preferences" />
+
+## Integrating Gemini AI
+
+Now we transform our static script into an AI-powered planner that can understand natural language commands.
+
+### Installing the Google Gen AI SDK
+
+Open your terminal and install the Google Gen AI library within your controller's virtual environment:
+
+```bash
+./venv/bin/pip install google-genai
+```
+
+### Setting Up Your API Key
+
+Get your API key from [Google AI Studio](https://aistudio.google.com/u/1/api-keys).
+
+Insert your API key in the `runtime.ini` file:
+
+```bash
+nano runtime.ini
+```
+
+Inside your `runtime.ini` file:
+
+```
+[environment variables]
+GEMINI_API_KEY=YOUR_API_KEY_HERE
+```
+
+### Implementing the AI Controller
+
+Modify your code to include Gemini AI integration:
+
+```python
+import os
+import sys
+import tkinter as tk
+from tkinter import simpledialog
+from google import genai
+from google.genai import types
+from controller import Supervisor
+
+def log(msg):
+    print(f"[LOG] {msg}")
+
+# --- 1. SETUP ---
+API_KEY = os.getenv('GEMINI_API_KEY')
+client = genai.Client(api_key=API_KEY)
+MODEL_ID = 'gemini-2.0-flash'
+
+robot = Supervisor() 
+timestep = int(robot.getBasicTimeStep())
+
+# Joints and Sensors
+joints = [robot.getDevice(f'panda_joint{i}') for i in range(1, 8)]
+fingers = [robot.getDevice('panda_finger::left'), robot.getDevice('panda_finger::right')]
+sensors = [j.getPositionSensor() for j in joints]
+for s in sensors: s.enable(timestep)
+
+# --- 2. STATUS HELPER ---
+def get_robot_status():
+    # Attempt to find the block by multiple possible names
+    block = None
+    for name in ["WOODEN_BOX", "PANDA_BLOCK", "CUBE", "solid"]:
+        block = robot.getFromDef(name)
+        if block: break
+    
+    if block:
+        p = block.getField("translation").getSFVec3f()
+        block_str = f"BLOCK FOUND AT: X={p[0]:.2f}, Y={p[1]:.2f}, Z={p[2]:.2f}"
+    else:
+        block_str = "BLOCK NOT FOUND (Verify DEF name in Webots)"
+    
+    angles = [round(s.getValue(), 2) for s in sensors]
+    return f"\n--- STATUS ---\n{block_str}\nJOINTS: {angles}\n--------------", block_str
+
+# --- 3. THE BRAIN ---
+def get_ai_instruction(user_text):
+    status_msg, block_info = get_robot_status()
+    log(status_msg)
+
+    sys_msg = f"""You are a Panda Robot Controller.
+    {block_info}
+    
+    Return ONLY 'COMMAND|VALUE'. 
+    Example: '30 degrees left' -> LEFT|0.52
+    Example: 'Pick it up' -> PICK|0
+    
+    COMMANDS: LEFT, RIGHT, UP, DOWN, PICK, DROP, RESET.
+    If you don't know the value, use 0. Never return 'NULL' or 'TRUE'."""
+    
+    try:
+        response = client.models.generate_content(
+            model=MODEL_ID, contents=user_text,
+            config=types.GenerateContentConfig(system_instruction=sys_msg, temperature=0.1)
+        )
+        parts = response.text.strip().split("|")
+        if len(parts) != 2: return "ERROR", 0.0
+        return parts[0].upper(), float(parts[1])
+    except Exception as e:
+        log(f"AI Error: {e}")
+        return "ERROR", 0.0
+
+# --- 4. MAIN LOOP ---
+root = tk.Tk(); root.withdraw()
+
+while robot.step(timestep) != -1:
+    user_cmd = simpledialog.askstring("Robot Input", "What should I do?")
+    if not user_cmd: break
+        
+    cmd, val = get_ai_instruction(user_cmd)
+    
+    # Execute Movements
+    if cmd == "LEFT":
+        joints[0].setPosition(joints[0].getTargetPosition() + val)
+    elif cmd == "RIGHT":
+        joints[0].setPosition(joints[0].getTargetPosition() - val)
+    elif cmd == "UP":
+        joints[1].setPosition(joints[1].getTargetPosition() - (val * 0.4))
+        joints[3].setPosition(joints[3].getTargetPosition() + val)
+    elif cmd == "DOWN":
+        joints[1].setPosition(joints[1].getTargetPosition() + (val * 0.4))
+        joints[3].setPosition(joints[3].getTargetPosition() - val)
+    elif cmd == "PICK":
+        log("Skill: PICK (Reaching forward/down)")
+        # 1. Open
+        for f in fingers: f.setPosition(0.04)
+        # 2. Reach (J2 lean forward, J4 curl down)
+        joints[1].setPosition(0.5); joints[3].setPosition(-2.4)
+        for _ in range(100): robot.step(timestep)
+        # 3. Grab
+        for f in fingers: f.setPosition(0.012)
+        for _ in range(50): robot.step(timestep)
+        # 4. Lift
+        joints[1].setPosition(0.0); joints[3].setPosition(-1.5)
+    elif cmd == "RESET":
+        for i, pos in enumerate([0, -0.7, 0, -2.3, 0, 1.6, 0.7]):
+            joints[i].setPosition(pos)
+
+    # Let physics catch up
+    for _ in range(60): robot.step(timestep)
+```
+
+### Enabling Supervisor Mode
+
+In the Webots Scene Tree, select the Panda robot. Find the field supervisor and change it from FALSE to TRUE. Save the world and reload the simulation.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768199242/panda-supervisor_lje0zo.png" alt="Panda supervisor setting" />
+
+### Selecting the Controller
+
+Select controller choice to `llm_robot_planner`.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-controller-choice_ul0vlc.png" alt="LLM Robot planner selection" />
+
+### Testing Your AI-Powered Robot
+
+Now enter your instruction of what you want the robot to do:
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/command-input_htziec.png" alt="Enter command dialog" />
+
+Enter a command like: "Pick up the WOODEN_BOX and lift it up"
+
+## Summary
+
+In this tutorial, we've successfully bridged the gap between natural language and robotic control by:
+
+1. **Setting up Webots** with the Franka Emika Panda robot simulation
+2. **Creating a custom controller** that integrates with Webots' Python API
+3. **Integrating Gemini AI** to interpret natural language commands
+4. **Implementing movement commands** that translate AI instructions into precise robotic actions
+
+This foundation opens up endless possibilities for AI-powered robotics applications. You can extend this system to handle more complex commands, integrate computer vision for object detection, or add more sophisticated planning algorithms.
+
+## Resources
+
+* [Master Webots Youtube Tutorial](https://youtu.be/ID1vUX9sAoY?si=EWgfE4CYkPI-VvFs)
+* [Github Google python genapis library](https://github.com/googleapis/python-genai)
+* [Google Gen AI SDK official page](https://googleapis.github.io/python-genai/)
