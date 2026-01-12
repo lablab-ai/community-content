@@ -15,31 +15,55 @@ This tutorial shows you how to bridge the gap between human conversation and mac
 
 To get started, you'll need to download and install **Webots R2025a**. Once installed, open the built-in **Franka Emika Panda** sample world. You can locate this via `File > Open Sample World` and search for "Panda."
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/open-sample-world_lmfpm0.png" alt="Sample world menu" caption="Files -> Sample World" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/open-sample-world_lmfpm0.png" alt="Sample world menu" caption="Step 1: Navigate to File > Open Sample World from the menu bar" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-sample-world_xtmbxk.png" alt="Open Sample world" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-sample-world_xtmbxk.png" alt="Open Sample world" caption="Step 2: Search for 'Panda' in the sample world selection dialog" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/opened-panda-sample_e8qlac.png" alt="Opened Panda Sample" />
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/opened-panda-sample_e8qlac.png" alt="Opened Panda Sample" caption="Step 3: The Panda robot simulation world is now loaded and ready" />
 
-### Creating the Controller Setup (macOS)
+### Creating the Controller Setup
 
-To ensure the robot "brain" is always available in the simulator's internal library, we use a manual injection method via the Terminal.
+To ensure the robot "brain" is always available in the simulator's internal library, we use a manual injection method via the Terminal/Command Prompt.
 
-**Create the Controller Folder:** Open your Terminal and run the following command to create a dedicated space for your AI script inside the Webots application:
+**Important:** First, you need to locate your Webots installation path. The default paths are:
+- **macOS**: `/Applications/Webots.app/Contents/`
+- **Windows**: `C:\Program Files\Webots\` (or `C:\Program Files (x86)\Webots\`)
+- **Linux**: `/usr/local/webots/` or `/opt/webots/`
 
+If Webots is installed in a different location, you can find it by checking where Webots is installed on your system.
+
+**Create the Controller Folder:** Open your Terminal (macOS/Linux) or Command Prompt/PowerShell (Windows) and run the appropriate command for your operating system:
+
+**macOS:**
 ```bash
 sudo mkdir -p /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner
 ```
 
-**Initialize the Script:** Create your Python file (`llm_robot_planner.py`) and move it into that directory.
+**Windows (PowerShell as Administrator):**
+```powershell
+New-Item -ItemType Directory -Force -Path "C:\Program Files\Webots\projects\robots\franka_emika\panda\controllers\llm_robot_planner"
+```
 
-**Set Permissions:** Ensure Webots has permission to execute your code:
+**Linux:**
+```bash
+sudo mkdir -p /usr/local/webots/projects/robots/franka_emika/panda/controllers/llm_robot_planner
+```
 
+*Note: Adjust the path if your Webots installation is in a different location.*
+
+**Set Permissions (macOS/Linux only):** Ensure Webots has permission to execute your code:
+
+**macOS:**
 ```bash
 sudo chmod -R 777 /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner
 ```
 
-**Create the Initial Controller Code:** Open the python code (`llm_robot_planner.py`) via your preferred IDE or terminal and insert this code:
+**Linux:**
+```bash
+sudo chmod -R 777 /usr/local/webots/projects/robots/franka_emika/panda/controllers/llm_robot_planner
+```
+
+**Create the Initial Controller Code:** Create your Python file (`llm_robot_planner.py`) in the controller directory. The code below includes platform-specific path handling:
 
 ```python
 import os
@@ -70,13 +94,21 @@ while robot.step(timestep) != -1:
     break
 ```
 
-You can do this by running:
+**Create the file using your preferred method:**
 
+**macOS/Linux:**
 ```bash
+# Replace the path with your actual Webots installation path
 nano /Applications/Webots.app/Contents/projects/robots/franka_emika/panda/controllers/llm_robot_planner/llm_robot_planner.py
 ```
 
-And pasting the code there.
+**Windows:**
+```powershell
+# Replace the path with your actual Webots installation path
+notepad "C:\Program Files\Webots\projects\robots\franka_emika\panda\controllers\llm_robot_planner\llm_robot_planner.py"
+```
+
+Paste the code above and save the file. *Remember to adjust the `webots_path` variable in the code if your Webots installation is in a different location.*
 
 ### Linking the Controller to the Robot
 
@@ -100,12 +132,17 @@ Now click on the play button on the top part of the screen, and you'll see your 
 
 <Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/robot-arm-moving_k2lia2.png" alt="Robot arm moving" />
 
-### Configuring Python for macOS
+### Configuring Python
 
 To avoid "Controller failed to start" errors, point Webots to your system's Python 3:
 
 * Go to **Webots > Preferences > General**.
-* Set the **Python command** to `/usr/bin/python3`.
+* Set the **Python command** to your system's Python 3 path:
+  * **macOS**: `/usr/bin/python3` or `/usr/local/bin/python3`
+  * **Windows**: `python` or `py` (if Python is in your PATH) or the full path like `C:\Python39\python.exe`
+  * **Linux**: `/usr/bin/python3` or `/usr/local/bin/python3`
+
+*Tip: You can find your Python 3 path by running `which python3` (macOS/Linux) or `where python` (Windows) in your terminal.*
 
 <Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/perferences_wpqwoc.png" alt="Preferences menu" />
 
