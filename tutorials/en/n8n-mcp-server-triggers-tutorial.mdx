@@ -75,7 +75,7 @@ Make sure your branch has active commits. The system will analyze the commit his
 Before we begin, make sure you have the following accounts and tools set up:
 
 1. **n8n Account** - Sign up at [app.n8n.cloud/register](https://app.n8n.cloud/register) if you don't have one yet
-2. **Groq Account** - Create an account at [console.groq.com/](https://console.groq.com/) for LLM access (we'll use this for AI-powered PR descriptions)
+2. **Gemini Account** - Get your API key from [Google AI Studio](https://aistudio.google.com/u/1/api-keys) for LLM access (we'll use this for AI-powered PR descriptions)
 3. **Cursor IDE** - Download and install from [cursor.com/download](https://cursor.com/download)
 4. **GitHub Account** - You'll need a GitHub personal access token with appropriate permissions
 
@@ -236,16 +236,16 @@ You are a data extraction assistant. Your task is to extract structured reposito
 #### Setting Up the Chat Model
 
 1. Click the **"+"** icon in the **"Chat Mode"** section
-2. Select **"Groq Chat Model"**
+2. Select **"Gemini Chat Model"** or **"Google Gemini Chat Model"**
 3. Configure as follows:
 
-![Groq Chat Mode Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606552/Screenshot_2026-01-05_at_12.47.43_f5kem4.png)
+![Gemini Chat Mode Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606552/Screenshot_2026-01-05_at_12.47.43_f5kem4.png)
 
 a. **Credential to connect with:**
-   - Connect your Groq account (get your API key from [console.groq.com](https://console.groq.com))
+   - Connect your Gemini account (get your API key from [Google AI Studio](https://aistudio.google.com/u/1/api-keys))
 
 b. **Model:**
-   - Select **"openai/gpt-oss-120b"**
+   - Select **"google/gemini-2.0-flash"**
 
 #### Configuring the Output Parser
 
@@ -406,16 +406,16 @@ Description:
 #### Configuring the Model
 
 1. Click the **"+"** icon in the **"Model"** section
-2. Select **"Groq Chat Model"**
+2. Select **"Gemini Chat Model"** or **"Google Gemini Chat Model"**
 3. Configure:
 
-![Groq model configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609076/Screenshot_2026-01-05_at_13.31.04_lwovjj.png)
+![Gemini model configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1768978269/Screenshot_2026-01-21_at_09.47.16_sw44l2.png)
 
 a. **Credential to connect with:**
-   - Select **"Groq Account"**
+   - Select **"Gemini Account"**
 
 b. **Model:**
-   - Select **"openai/gpt-oss-120b"**
+   - Select **"google/gemini-2.0-flash"**
 
 ### Step 8: Creating the Pull Request
 
