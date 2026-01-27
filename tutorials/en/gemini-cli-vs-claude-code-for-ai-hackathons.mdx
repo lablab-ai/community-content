@@ -102,14 +102,14 @@ We tasked both tools with understanding the 50k+ line requests library. And ther
 
 #### The Prompts
 
+*Goal: Understand the architecture of the entire `psf/requests` repository.*
+
 To ensure transparency and reproducibility, here are the exact prompts we used for this challenge:
 
 **Gemini CLI:**
 ```
 Analyze the entire psf/requests repository cloned in my current directory. Provide a concise summary of: 1) The overall project architecture and main modules, 2) The public API entry points as seen by an end-user, 3) Key dependencies and how they are used. Base this on all .py files in src/, the README.md, and pyproject.toml.
 ```
-
-*Note: The files were attached via the CLI's `@src/` syntax before this prompt was sent.*
 
 **Claude Code:**
 ```
@@ -142,6 +142,8 @@ To build the same comprehensive understanding, I had to act as a guide: "Now loo
 We asked both tools to perform a simple audit: "Find all user-configurable timeout settings."
 
 #### The Prompts
+
+*Goal: Find all user-configurable timeout settings across the codebase.*
 
 **Gemini CLI:**
 ```
@@ -180,6 +182,8 @@ We asked both tools to summarize release notes for a version (``2.32.5``) releas
 
 #### The Prompts
 
+*Goal: Get information about a release (`v2.32.5`) published after the models' training data.*
+
 **Gemini CLI:**
 ```
 Let's assume you have access to the internet via an MCP server. Search for the release notes or changelog for requests version 2.32.5 and summarize the key changes.
@@ -214,6 +218,8 @@ For questions about a library's broader ecosystem, recent CVEs not documented lo
 This was the most revealing test. We gave both the same, straightforward task: "**Add comprehensive type hints to** ``src/requests/utils.py``."
 
 #### The Prompts
+
+*Goal: Add comprehensive type hints to a large utility file.*
 
 **Gemini CLI:**
 ```
