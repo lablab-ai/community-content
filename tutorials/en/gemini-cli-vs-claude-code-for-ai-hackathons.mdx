@@ -22,6 +22,78 @@ In this tutorial, we'll compare Gemini CLI and Claude Code across four real-worl
 
 By the end, you'll have a strategic decision framework to choose the right tool for each scenario.
 
+### Prerequisites
+
+- A [Claude subscription](https://claude.com/pricing) (Pro, Max, Teams, or Enterprise) or [Claude Console](https://console.anthropic.com/) account
+- Node.js and npm installed (for Gemini CLI)
+- Git installed
+
+## Setup
+
+Before we dive into the challenges, let's set up both tools and prepare the test repository.
+
+### Installing Claude Code
+
+Install Claude Code using one of the following methods:
+
+**macOS, Linux, WSL:**
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+**Windows PowerShell:**
+
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
+
+**Windows CMD:**
+
+```batch
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
+
+Alternatively, you can use Homebrew (macOS):
+
+```bash
+brew install --cask claude-code
+```
+
+Or WinGet (Windows):
+
+```powershell
+winget install Anthropic.ClaudeCode
+```
+
+On first use, you'll be prompted to log in with your Claude account.
+
+### Installing Gemini CLI
+
+Install Gemini CLI globally using npm:
+
+```bash
+npm install -g @google/gemini-cli
+```
+
+### Cloning the Test Repository
+
+We'll be testing both tools on the [psf/requests](https://github.com/psf/requests) repository, a popular Python HTTP library with over 50,000 lines of code. Clone the repository:
+
+```bash
+git clone https://github.com/psf/requests.git
+cd requests
+```
+
+Note: When cloning the Requests repository, you may need to add the `-c fetch.fsck.badTimezone=ignore` flag to avoid an error about a bad commit timestamp:
+
+```bash
+git clone -c fetch.fsck.badTimezone=ignore https://github.com/psf/requests.git
+cd requests
+```
+
+You're now ready to test both tools! Navigate to the `requests` directory and you can start using either `claude` or `gemini` commands.
+
 ## Discussion
 
 ### Challenge 1: Mapping the Territory, "What the hell is this codebase?"
