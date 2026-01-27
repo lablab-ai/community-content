@@ -100,6 +100,22 @@ You're now ready to test both tools! Navigate to the `requests` directory and yo
 
 We tasked both tools with understanding the 50k+ line requests library. And there was a big difference in the output quality. Here's what I discovered:
 
+#### The Prompts
+
+To ensure transparency and reproducibility, here are the exact prompts we used for this challenge:
+
+**Gemini CLI:**
+```
+Analyze the entire psf/requests repository cloned in my current directory. Provide a concise summary of: 1) The overall project architecture and main modules, 2) The public API entry points as seen by an end-user, 3) Key dependencies and how they are used. Base this on all .py files in src/, the README.md, and pyproject.toml.
+```
+
+*Note: The files were attached via the CLI's `@src/` syntax before this prompt was sent.*
+
+**Claude Code:**
+```
+I need to understand the architecture of the requests library. Start by summarizing the README.md. Then, we'll explore the src/requests/ directory step by step.
+```
+
 #### Gemini CLI: The Aerial Survey
 
 With its **1M+ token context**, Gemini ingested the **entire repository—source**, config, and docs—in one go. In under 15 seconds, it returned a structured JSON report explaining the library's four-layer architecture, pinpointing the critical ``Session``/``Adapter`` split, and listing key dependencies.
@@ -124,6 +140,18 @@ To build the same comprehensive understanding, I had to act as a guide: "Now loo
 ### Challenge 2: The Project-Wide Audit
 
 We asked both tools to perform a simple audit: "Find all user-configurable timeout settings."
+
+#### The Prompts
+
+**Gemini CLI:**
+```
+Search all Python files in the repository for user-configurable timeout settings. Find every constant, default variable, or configuration point related to connect_timeout, read_timeout, or a general timeout. List each file, the variable name, its default value, and a one-line description of its purpose.
+```
+
+**Claude Code:**
+```
+Help me find all user-configurable timeout settings in the requests library.
+```
 
 #### Gemini CLI: The Compliance Officer
 
@@ -150,6 +178,18 @@ This is the ideal output when you're learning a new codebase or designing a feat
 
 We asked both tools to summarize release notes for a version (``2.32.5``) released after their training data.
 
+#### The Prompts
+
+**Gemini CLI:**
+```
+Let's assume you have access to the internet via an MCP server. Search for the release notes or changelog for requests version 2.32.5 and summarize the key changes.
+```
+
+**Claude Code:**
+```
+What are the key changes in the requests library version 2.32.5 compared to the previous version? Can you summarize the release notes?
+```
+
 #### Claude Code: The Codebase Detective
 
 Claude didn't know the answer from memory. Instead, it executed a flawless investigation _within the repository_: It checked the version file, searched for changelogs, found ``HISTORY.md``, and synthesized a detailed report. It provided crucial context about the reverted SSL caching feature and the version's place in the release lineage. It found truth _locally_.
@@ -172,6 +212,20 @@ For questions about a library's broader ecosystem, recent CVEs not documented lo
 ### Challenge 4: The Grunt Work ("Just get it done.")
 
 This was the most revealing test. We gave both the same, straightforward task: "**Add comprehensive type hints to** ``src/requests/utils.py``."
+
+#### The Prompts
+
+**Gemini CLI:**
+```
+Add comprehensive type hints (using Python's typing module) to all functions in the file 'src/requests/utils.py'. Preserve all existing code and logic, only add the type annotations. Output the complete, modified file.
+```
+
+**Claude Code:**
+```
+Add comprehensive type hints (using Python's typing module) to all functions in the file 'src/requests/utils.py'. Preserve all existing code and logic, only add the type annotations. Output the complete, modified file.
+```
+
+*Note: This prompt was identical for both tools, making it a fair comparison of their execution models.*
 
 #### Gemini CLI: The Automated Engineer
 
