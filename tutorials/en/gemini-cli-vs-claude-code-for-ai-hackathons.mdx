@@ -7,7 +7,7 @@ authorUsername: "stevekimoi"
 
 ## Introduction
 
-The consensus is clear: developers **love Claude Code for its precision and reasoning**. But what if I told you that for critical, real-world tasks—like **understanding a massive legacy codebase** overnight—another tool is not just better, but in a different league? Let's put both tools through their paces on the [psf/requests](https://github.com/psf/requests) repository and build a decision framework you can use today.
+The consensus is clear: developers **love Claude Code for its precision and reasoning**. But what if I told you that for critical, real-world tasks, like **understanding a massive legacy codebase** overnight, another tool is not just better, but in a different league? Let's put both tools through their paces on the [psf/requests](https://github.com/psf/requests) repository and build a decision framework you can use today.
 
 The result is a crystal-clear map of **when to use which tool, and why**.
 
@@ -134,8 +134,8 @@ To build the same comprehensive understanding, I had to act as a guide: "Now loo
 
 #### The Verdict
 
-- **For the "I need the full picture NOW" scenario** (due diligence, security audit, pre-refactor analysis), **Gemini CLI is unmatched**. Its massive context window isn't a spec sheet bullet point; it's a transformative capability that changes how you onboard.
-- Claude Code wins when you want a thoughtful pair programmer to explore with you, not when you need an immediate, autonomous report.
+- If you need the **full picture fast** (due diligence, security review, pre-refactor), Gemini CLI is the tool you reach for first. Its huge context window means you can throw the whole repo at it and get a clear, high-level map back in a single pass.
+- Claude Code is the better fit when you want to **walk the codebase together**—asking follow-ups, poking at edge cases, and refining your understanding step by step.
 
 ### Challenge 2: The Project-Wide Audit
 
@@ -211,7 +211,7 @@ For questions about a library's broader ecosystem, recent CVEs not documented lo
 #### The Verdict: A Question of Source
 
 - **For questions where the definitive answer lies within your project's own files, Claude Code's investigative approach is superior**. It treats your codebase as the primary source.
-- **For questions about the wider world—new CVEs, latest blog posts, or APIs changed after your last commit, Gemini CLI's MCP-powered web search is your only option**. It connects your development environment to the live internet.
+- **For questions about the wider world, new CVEs, latest blog posts, or APIs changed after your last commit, Gemini CLI's MCP-powered web search is your only option**. It connects your development environment to the live internet.
 
 ### Challenge 4: The Grunt Work ("Just get it done.")
 
@@ -259,14 +259,14 @@ This isn't about speed. It's about **execution model**.
 
 Choosing between Gemini CLI and Claude Code isn't about picking the "best coder." It's about **matching the tool to the task**. Here is your cheat sheet:
 
-| If your primary need is... | You should default to... | Because it excels at... |
-|----------------------------|-------------------------|------------------------|
-| Comprehensive Discovery | Gemini CLI | Analyzing entire codebases in one shot (1M+ token context). |
-| Precision & Explanation | Claude Code | Deep, contextual understanding and reasoning. |
-| Audits & Data Extraction | Gemini CLI | Fast, complete scanning and returning scoped results. |
-| Live, External Knowledge | Gemini CLI | Web search integration via MCP (CVEs, latest docs). |
-| Autonomous Execution | Gemini CLI | Multi-step tasks (write → verify → fix) without hand-holding. |
-| Interactive Pair Programming | Claude Code | Conversational, step-by-step development with oversight. |
+| If your primary need is...   | You should default to... | Because it excels at...                                                      |
+| ---------------------------- | ------------------------ | -----------------------------------------------------------------------------|
+| Comprehensive discovery      | Gemini CLI               | Analyzing entire codebases in one shot (1M+ token context).                  |
+| Precision & explanation      | Claude Code              | Deep, contextual understanding and reasoning.                                 |
+| Audits & data extraction     | Gemini CLI               | Fast, complete scanning and returning scoped results.                         |
+| Live, external knowledge     | Gemini CLI               | Web search integration via MCP (CVEs, latest docs).                           |
+| Autonomous execution         | Gemini CLI               | Multi-step tasks (write → verify → fix) without hand-holding.                |
+| Interactive pair programming | Claude Code              | Conversational, step-by-step development with oversight.                      |
 
 ### The Hybrid Workflow: The Pro's Setup
 
