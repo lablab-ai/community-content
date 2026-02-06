@@ -24,12 +24,13 @@ By the end of this tutorial, you'll have created a complete AI-powered monitorin
 
 Before you begin, make sure you have:
 
-1. **Vultr Account** - Sign up at [vultr.com](https://www.vultr.com/) and add a payment method
-2. **MindsDB** - We'll install this via Docker in the tutorial
-3. **Google Gemini API Key** - Get one free at [Google AI Studio](https://aistudio.google.com/apikey)
-4. **Docker** - Install from [docker.com](https://www.docker.com/get-started/)
-5. **Basic Knowledge** - Familiarity with SQL, Python, and command line basics
-6. **Python 3.8+** - Installed on your local machine
+1. **Repository** – Clone [smart-robot-monitor-with-AI-alerts](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts) to get the full project (simulator, database schema, MindsDB scripts, `requirements.txt`, and `.env.example`).
+2. **Vultr Account** - Sign up at [vultr.com](https://www.vultr.com/) and add a payment method
+3. **MindsDB** - We'll install this via Docker in the tutorial
+4. **Google Gemini API Key** - Get one free at [Google AI Studio](https://aistudio.google.com/apikey)
+5. **Docker** - Install from [docker.com](https://www.docker.com/get-started/)
+6. **Basic Knowledge** - Familiarity with SQL, Python, and command line basics
+7. **Python 3.8+** - Installed on your local machine
 
 ---
 
@@ -56,12 +57,12 @@ The simulator generates realistic robot telemetry with the following features:
 - **Temperature Range**: 40-70°C under normal conditions, can spike to 95°C during anomalies
 - **Database**: Uses PostgreSQL with automatic transaction handling
 
-The simulator consists of three main files in the [`simulator/`](./simulator) directory:
-- [`robot_simulator.py`](./simulator/robot_simulator.py) - Main simulator script with database connectivity
-- [`config.py`](./simulator/config.py) - Configuration settings loaded from environment variables
-- `__init__.py` - Python package initialization
+The simulator consists of three main files in the [`simulator/`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/tree/main/simulator) directory:
+- [`robot_simulator.py`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/simulator/robot_simulator.py) - Main simulator script with database connectivity
+- [`config.py`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/simulator/config.py) - Configuration settings loaded from environment variables
+- [`__init__.py`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/simulator/__init__.py) - Python package initialization
 
-> 📁 **View the complete simulator code**: [simulator/](./simulator)
+> 📁 **View the complete simulator code**: [simulator/](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/tree/main/simulator)
 
 ### How It Works
 
@@ -175,14 +176,15 @@ exit
 You can use our pre-made schema file or create it manually:
 
 **Option 1: Use the provided schema file**
-```bash
-# Download or use the schema from the repository
-# File location: database/setup_database.sql
 
+Get the schema from the [repository](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts) (clone the repo on this server or download the file). From the repo root, run:
+
+```bash
+# Schema file is in the repo: database/setup_database.sql
 sudo -u postgres psql -d robot_monitor_db -f database/setup_database.sql
 ```
 
-> 📁 **View the database schema**: [`database/setup_database.sql`](./database/setup_database.sql)
+> 📁 **View the database schema**: [`database/setup_database.sql`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/database/setup_database.sql)
 
 **Option 2: Create manually**
 ```bash
@@ -272,9 +274,12 @@ Now let's run the robot simulator on your local machine and connect it to the da
 
 ### Step 3.1: Set Up Your Local Environment
 
+Clone the repository (if you haven't already), then create a virtual environment and install dependencies:
+
 ```bash
-# Navigate to the project directory
-cd vultr-mindsdb-gemini
+# Clone the repository
+git clone https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts.git
+cd smart-robot-monitor-with-AI-alerts
 
 # Create a virtual environment
 python3 -m venv venv
@@ -285,7 +290,7 @@ source venv/bin/activate
 # On Windows:
 # venv\Scripts\activate
 
-# Install dependencies
+# Install dependencies (requirements.txt is in the repo)
 pip install -r requirements.txt
 ```
 
@@ -543,9 +548,9 @@ Now let's connect MindsDB to your actual robot telemetry database.
 
 ### Step 5.3: Set Up Your Robot Monitoring System
 
-Copy and paste the contents of [`mindsdb_setup.sql`](./mindsdb/mindsdb_setup.sql) into the SQL Editor. This comprehensive script will:
+Copy and paste the contents of [`mindsdb_setup.sql`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/mindsdb/mindsdb_setup.sql) into the SQL Editor. This comprehensive script will:
 
-> 📁 **View the complete MindsDB setup script**: [`mindsdb/mindsdb_setup.sql`](./mindsdb/mindsdb_setup.sql)
+> 📁 **View the complete MindsDB setup script**: [`mindsdb/mindsdb_setup.sql`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/mindsdb/mindsdb_setup.sql)
 
 **Step 1: Connect to PostgreSQL** (if you didn't do it via UI)
 ```sql
@@ -672,9 +677,9 @@ Now let's create an agent that can answer natural language questions about your 
    <Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770362089/robot-monitor/create-agent-mindsdb.png" alt="MindsDB Create an Agent" caption="MindsDB Create an Agent"/>
 
 3. **Add Agent Code**
-   Replace the default code with the contents of [`create_agent.sql`](./mindsdb/create_agent.sql):
+   Replace the default code with the contents of [`create_agent.sql`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/mindsdb/create_agent.sql):
 
-> 📁 **View the agent creation script**: [`mindsdb/create_agent.sql`](./mindsdb/create_agent.sql)
+> 📁 **View the agent creation script**: [`mindsdb/create_agent.sql`](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts/blob/main/mindsdb/create_agent.sql)
 
 ```sql
 -- ============================================================================
@@ -930,6 +935,7 @@ To put this into practice in a time-boxed setting, join an [online AI hackathon 
 
 ## Learning Resources
 
+- **Full project code**: [smart-robot-monitor-with-AI-alerts](https://github.com/Stephen-Kimoi/smart-robot-monitor-with-AI-alerts) – simulator, database schema, MindsDB scripts, and config files
 - **MindsDB Documentation**: [docs.mindsdb.com](https://docs.mindsdb.com)
 - **Gemini API Reference**: [ai.google.dev](https://ai.google.dev)
 - **Vultr Tutorials**: [vultr.com/docs](https://www.vultr.com/docs/)
