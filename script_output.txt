@@ -1,27 +1,63 @@
-Processing file: blog/en/day-5-12-openai-chatgpt-goes-native-on-2-billion-apple-devices.mdx
-Downloading image from URL: https://iili.io/2WrRKrX.md.jpg
-Successfully downloaded image to: images/2WrRKrX.md.jpg
-Uploading image: images/2WrRKrX.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c441e48-c819-4f9e-c8af-55772a512700/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c441e48-c819-4f9e-c8af-55772a512700/full
-Deleted local image: images/2WrRKrX.md.jpg
-Downloading image from URL: https://iili.io/2WrRB7s.md.jpg
-Successfully downloaded image to: images/2WrRB7s.md.jpg
-Uploading image: images/2WrRB7s.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e5089f92-a916-4b4a-94b4-504f3671ee00/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e5089f92-a916-4b4a-94b4-504f3671ee00/full
-Deleted local image: images/2WrRB7s.md.jpg
-Downloading image from URL: https://iili.io/2WrRq2n.md.jpg
-Successfully downloaded image to: images/2WrRq2n.md.jpg
-Uploading image: images/2WrRq2n.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28100a0f-73ee-4fa0-6513-3a968d9a0500/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28100a0f-73ee-4fa0-6513-3a968d9a0500/full
-Deleted local image: images/2WrRq2n.md.jpg
-Downloading image from URL: https://iili.io/2WrRCkG.md.jpg
-Successfully downloaded image to: images/2WrRCkG.md.jpg
-Uploading image: images/2WrRCkG.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a621c10a-3bf4-4c37-c6ce-3e17aae73200/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a621c10a-3bf4-4c37-c6ce-3e17aae73200/full
-Deleted local image: images/2WrRCkG.md.jpg
-Successfully processed file: blog/en/day-5-12-openai-chatgpt-goes-native-on-2-billion-apple-devices.mdx
+Processing file: blog/en/deepseek-2-5-making-advanced-ai-actually-accessible.mdx
+Downloading image from URL: https://iili.io/2OvFbi7.md.png
+Successfully downloaded image to: images/2OvFbi7.md.png
+Uploading image: images/2OvFbi7.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8234f103-0b38-4246-aebc-061d7fe48b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8234f103-0b38-4246-aebc-061d7fe48b00/full
+Deleted local image: images/2OvFbi7.md.png
+Downloading image from URL: https://iili.io/2OvFc9j.md.png
+Successfully downloaded image to: images/2OvFc9j.md.png
+Uploading image: images/2OvFc9j.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/10752a6b-7a91-4291-5c79-ec749d3d9800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/10752a6b-7a91-4291-5c79-ec749d3d9800/full
+Deleted local image: images/2OvFc9j.md.png
+Downloading image from URL: https://iili.io/2O84giN.md.jpg
+Successfully downloaded image to: images/2O84giN.md.jpg
+Uploading image: images/2O84giN.md.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bfc369a9-cecd-49c0-afaf-b32b316a7e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bfc369a9-cecd-49c0-afaf-b32b316a7e00/full
+Deleted local image: images/2O84giN.md.jpg
+Downloading image from URL: https://iili.io/2O8ZDvI.md.gif
+Successfully downloaded image to: images/2O8ZDvI.md.gif
+Uploading image: images/2O8ZDvI.md.gif
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7cb5d821-7b78-4255-d8a8-3b9daeb06700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7cb5d821-7b78-4255-d8a8-3b9daeb06700/full
+Deleted local image: images/2O8ZDvI.md.gif
+Downloading image from URL: https://iili.io/2O8Zbpt.md.gif
+Successfully downloaded image to: images/2O8Zbpt.md.gif
+Uploading image: images/2O8Zbpt.md.gif
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c72779c5-3951-4803-5c6c-f7c82e9c5b00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c72779c5-3951-4803-5c6c-f7c82e9c5b00/full
+Deleted local image: images/2O8Zbpt.md.gif
+Downloading image from URL: https://iili.io/2O8ZtYN.md.gif
+Successfully downloaded image to: images/2O8ZtYN.md.gif
+Uploading image: images/2O8ZtYN.md.gif
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9befa96a-88ef-40d5-57de-f7e622a80400/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9befa96a-88ef-40d5-57de-f7e622a80400/full
+Deleted local image: images/2O8ZtYN.md.gif
+Downloading image from URL: https://iili.io/2O844fI.md.png
+Successfully downloaded image to: images/2O844fI.md.png
+Uploading image: images/2O844fI.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/80b199e6-d032-40ca-ad77-ac7e425ee800/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/80b199e6-d032-40ca-ad77-ac7e425ee800/full
+Deleted local image: images/2O844fI.md.png
+Downloading image from URL: https://iili.io/2O84UVp.md.png
+Successfully downloaded image to: images/2O84UVp.md.png
+Uploading image: images/2O84UVp.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f9996136-b662-4d80-c359-32007cf02d00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f9996136-b662-4d80-c359-32007cf02d00/full
+Deleted local image: images/2O84UVp.md.png
+Downloading image from URL: https://iili.io/2O846lt.md.jpg
+Successfully downloaded image to: images/2O846lt.md.jpg
+Uploading image: images/2O846lt.md.jpg
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/77402e4f-9e43-4ca4-8891-2ee7cec6a000/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/77402e4f-9e43-4ca4-8891-2ee7cec6a000/full
+Deleted local image: images/2O846lt.md.jpg
+Downloading image from URL: https://iili.io/2O8ZpTX.md.gif
+Successfully downloaded image to: images/2O8ZpTX.md.gif
+Uploading image: images/2O8ZpTX.md.gif
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3f123c18-aa32-419f-8872-ff418fa9a600/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3f123c18-aa32-419f-8872-ff418fa9a600/full
+Deleted local image: images/2O8ZpTX.md.gif
+Successfully processed file: blog/en/deepseek-2-5-making-advanced-ai-actually-accessible.mdx
 CHANGES_MADE
