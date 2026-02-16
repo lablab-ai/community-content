@@ -10,6 +10,8 @@ authorUsername: "stevekimoi"
 ## Introduction
 This tutorial provides a comprehensive guide to setting up and utilizing OpenClaw AI agents for managing autonomous cryptocurrency wallets on both the Base and Solana networks. You will learn how to deploy OpenClaw on a Hostinger instance, configure messaging channels for interaction, and perform secure transactions on testnets before transitioning to mainnets. This first part focuses on the initial setup and wallet creation on the Base network, followed by a brief overview of Solana wallet setup.
 
+> Participate in the **SURGE x Openclaw** hackathon [here](https://lablab.ai/ai-hackathons/surge-moltbook-hackathon).
+
 ## Setting Up OpenClaw and Messaging Channels
 
 ### Hostinger Instance and OpenClaw Installation
@@ -26,7 +28,7 @@ Navigate to **Docker Manager** > **Projects** > **Terminal**.
 
 <Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770738042/vrih5xzglljqqxmplyqx.png" alt="Docker terminal chat section" caption="Docker terminal chat section"/>
 
-Install OpenClaw by running the command:
+Once the terminal is open, you can install OpenClaw by running the command:
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
@@ -82,6 +84,8 @@ The bot will then prompt you to:
 
 Feel free to customize these settings to align with your preferences.
 
+> Participate in the **SURGE x Openclaw** hackathon [here](https://lablab.ai/ai-hackathons/surge-moltbook-hackathon).
+
 ## Creating a Wallet on Base
 
 ### Wallet Creation
@@ -122,6 +126,8 @@ I have just sent 1 test USDC to your Base Sepolia wallet from the Coinbase Devel
 3) the hash, block number, and timestamp of the latest incoming USDC transaction.
 ```
 
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241334/lablab-ai/ssepr7nn6v4hhthvvkdq.png" alt="Sending prompt to confirm funds have been deposited" caption="Prompt for funds Deposited Confirmation"/>
+
 This will be the expected response:
 
 <Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241335/lablab-ai/qcuvz7vsx19dmwcrrdfr.png" alt="Funds Deposited Confirmation" caption="Funds Deposited Confirmation"/>
@@ -134,7 +140,7 @@ Open your MetaMask wallet (or any other wallet you use) and ensure it's connecte
 
 Then, select the receiving address for Base Sepolia USDC.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241338/lablab-ai/awv0p5ckvrllsbomasji.png" alt="receive base sepolia USDC" caption="receive base sepolia USDC"/>
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770738068/mhbkycv0qq5oohuvksgm.png" alt="receive base sepolia USDC" caption="receive base sepolia USDC"/>
 
 Copy the address and tell the agent to send 0.3 USDC to that address: 
 
@@ -146,11 +152,11 @@ Send 0.3 USDC from your Base Sepolia wallet to the following recipient address o
 
 Once the transaction successfully completes, the expected output is: 
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241334/lablab-ai/ssepr7nn6v4hhthvvkdq.png" alt="Expected output" caption="Expected output"/>
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241340/lablab-ai/wa8fbkub1shhuid6jk3v.png" alt="Expected output" caption="Expected output"/>
 
 And you can also confirm it in the [Block Explorer](https://sepolia-explorer.base.org)
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241340/lablab-ai/wa8fbkub1shhuid6jk3v.png" alt="Block explorer confirmation" caption="Block explorer confirmation"/>
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770738073/fpyhdjc6d8h4qjaxospc.png" alt="Block explorer confirmation" caption="Block explorer confirmation"/>
 
 And you can see the balance goes from 1 USDC to 0.7 USDC 
 
@@ -187,7 +193,7 @@ Go to a [Solana devnet faucet](https://faucet.solana.com) such as the official S
 2. Request **SOL** to the agent’s Solana devnet address (for gas fees)
 3. Optionally, use a devnet USDC faucet or test-token mint (if available) to send **USDC** to the same address
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241346/lablab-ai/zhahx3gaxdrzuf2lkbyl.png" alt="Solana Devnet funds receive" caption="Solana Devnet funds receive"/>
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770738078/ou3vdhakf7rclzzrgkix.png" alt="Solana Devnet funds receive" caption="Solana Devnet funds receive"/>
 
 Afterward, send a prompt to confirm the receipt of the test funds: 
 
@@ -210,7 +216,7 @@ Open your Solana wallet (for example, Phantom) and switch it to the Devnet netwo
 
 Then, click on the ``SOL`` address to receive funds from your OpenClaw agent.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771241350/lablab-ai/x3o3ietich5tcsfoiv7t.png" alt="Phantom Wallet Receive" caption="Phantom Wallet Receive"/>
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1770738085/i6tbzf6n66uluygratsh.png" alt="Phantom Wallet Receive" caption="Phantom Wallet Receive"/>
 
 Copy your wallet’s Solana devnet receiving address.
 
@@ -231,4 +237,4 @@ This tutorial has demonstrated the powerful capability of OpenClaw AI agents to 
 
 We encourage you to explore the potential of autonomous agents further and discover how they can streamline your interactions with various blockchain platforms.
 
-Participate in the **SURGE x Openclaw** hackathon [here](https://lablab.ai/ai-hackathons/surge-moltbook-hackathon)
+> Participate in the **SURGE x Openclaw** hackathon [here](https://lablab.ai/ai-hackathons/surge-moltbook-hackathon).
