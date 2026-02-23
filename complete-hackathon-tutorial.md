@@ -122,3 +122,43 @@ Read product specs from /product/ before creating materials.
 Save outputs to /marketing/ folder.
 ```
 
+Once it is done, go to the agent url and refresh the page. 
+
+Then head over to the ``Growth Strategist`` tab and insert your prompt. 
+
+![Growth strategist agent tab]()
+
+```bash
+Read /product/scheduling-product-spec.md and create: 
+1) Landing page copy for the AI scheduler, 
+2) A 5-slide pitch deck outline, 
+3) Go-to-market strategy. Save everything to /marketing/ folder.
+``` 
+
+![Growth Strategies content outputted]()
+
+### Making your agents live in the workspace: 
+
+Go to your [spaces directory](https://app.complete.dev/spaces)
+
+![Click on API Key in the spaces directory]()
+
+Then click on the Generate API Key button 
+
+![Generate New API Key button]()
+
+Go back to the ``#general`` chat and send the prompt to the agent builder: 
+```base
+Here is my API KEY: sk_xxxxxx, make the agents live in the workspace. 
+```
+
+Go to your platform admin settings (the dashboard where this space was created)
+Find API Keys or Environment Variables section
+Get the values for CORE_API_BASE_URL and API_KEY
+Add them as Space environment variables — I'll pick them up automatically via the env vars MCP and complete the registration
+
+### Step 5: Orchestrate Multi-Agent Collaboration
+
+Now we're going to demonstrate the agents working together. 
+
+![]
