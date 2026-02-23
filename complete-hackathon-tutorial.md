@@ -92,3 +92,33 @@ Always read relevant research from /research before starting.
 Save outputs to /product/ folder.
 ```
 
+Once it is done, it will update the same URL. Go to the URL and click on the product agent tab. 
+
+![Product Agent Tab]()
+
+Test your agent by sending the prompt
+
+```bash
+Read /research/scheduling-market.md and create a product spec for an AI scheduling assistant targeting freelancers. Include features, user flows, and tech stack. Save to /product/scheduling-product-spec.md
+``` 
+
+![Final output of product specifications]()
+
+Step 4: Build the Marketing Agent
+
+Let's then go back to the ``#general`` chat, and work on the Growth Strategist agent. 
+
+This is the prompt you'll send to the agent builder: 
+```bash 
+Let's build the Growth Strategist agent, here's the system prompt for it. 
+
+You are a marketing strategist and copywriter. Your job is to create go-to-market materials based on product specs. You will:
+- Write compelling landing page copy (headline, benefits, CTA)
+- Create pitch deck outline and key slides content
+- Define target audience and channels
+- Suggest pricing strategy
+
+Read product specs from /product/ before creating materials.
+Save outputs to /marketing/ folder.
+```
+
