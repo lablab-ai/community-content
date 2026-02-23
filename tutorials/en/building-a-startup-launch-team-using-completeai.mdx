@@ -1,0 +1,188 @@
+---
+title: "Building a Startup Launch Team using CompleteAI"
+description: "Learn how you can create 3 agents that work together to manage a SaaS product from concept to launch-ready."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1771876005/LabLab_Build_with_CompleteAI_a7x2zz.png"
+authorUsername: "stevekimoi"
+---
+
+# Building a Startup Launch Team using CompleteAI
+
+Learn how you can create 3 agents that work together to manage a SaaS product.
+
+We are going to Build 3 collaborating AI Agents that work together to take a startup idea from concept to launch-ready; including market research, product definition, pitch deck, and landing page copy.
+
+## What you'll build:
+
+* Research Agent — Analyzes competitors, identifies market gaps, summarizes findings
+* Product Agent — Defines features, user flows, and technical requirements
+* Marketing Agent — Creates pitch deck content, landing page copy, and go-to-market strategy
+
+## Prerequisites: 
+* [Complete.dev](https://app.complete.dev/) account
+* Basic familiarity with Agent Builder
+
+## Step 1: Set Up Your Shared Workspace: 
+
+1. Create a new workspace in Complete.dev called "Startup Launch Team"
+2. FIll in the Space Name, Description & members that you would like to add. 
+3. Invite your teammates (if any)
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875447/fagmr49e9cnhbjclyg6u.png" alt="Click on 'Create Space' button" caption="Click on 'Create Space' button" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875448/rciwke8k0shyyodeuakc.png" alt="Fill in the details of your space" caption="Fill in the details of your space" />
+
+## Step 2: Build the Research Agent: 
+
+Go to your `dashboard` button and click on `Add member`.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875449/hfblsvpjs1oakdmrhccj.png" alt="Clicking on dashboard & clicking on add member button" caption="Clicking on dashboard & clicking on add member button" />
+
+Type in `Agent Builder`
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875450/ztrsanbkt5ynxu57i0vf.png" alt="Typing and selecting Agent Builder" caption="Typing and selecting Agent Builder" />
+
+Add the agent builder and go back to general chat, then send in the prompt: 
+```bash
+Create the Agent called "Market Researcher" that is responsible for analyzing competitors, identifying market trends, and finding gaps in the market. This is the system prompt:
+You are a market research analyst. Your job is to analyze competitors, identify market trends, and find gaps in the market. Always provide structured output with:
+
+Executive Summary
+Competitor Analysis (3-5 key players)
+Market Gap/Opportunity
+Recommendations
+Save all outputs to the /research folder.
+```
+
+But first of all ensure you've inserted your preferred model API key, in our case we will use Gemini API. 
+
+Go to [google ai studio](https://aistudio.google.com/api-keys) and get your API Key there, then send it as part of the prompt: 
+```bash
+GOOGLE_API_KEY=xxxxxxxx
+``` 
+
+Once it's done, this is what you'll see as the output.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875451/b0wcqaa9tvnewjav1sr8.png" alt="Agent builder completing the Research agent" caption="Agent builder completing the Research agent" />
+
+When you go to `Code` --> `General` --> `market_researcher.py` you can see and verify the agent code that has just been created for your Researcher Agent. 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875452/ufxmfidxhay1wqoglqvs.png" alt="Research Agent Final code" caption="Research Agent Final code" />
+
+### Testing your market research agent: 
+
+Agent Builder provides a URL to a live test application, if it hasn't, you can specifically prompt it to do that. 
+
+Now you can test the agent using the prompt: 
+```bash
+Research the AI scheduling assistant market. Who are the main competitors? What features are missing? Save your analysis to /research/scheduling-market.md
+```
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875454/qqdlnmhs5lie46jhqx0k.png" alt="Testing market research agent - sending the prompt" caption="Testing market research agent - sending the prompt" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875456/jmle6un1gym2iwpl4mkk.png" alt="Final results of market research prompt" caption="Final results of market research prompt" />
+
+## Step 3: Build the Product Agent
+
+Now let's go back to the `#general` chat and build the product agent. This is the prompt you'll use: 
+
+```bash 
+Now let's build the product agent, this is the system prompt: 
+You are a product manager and technical architect. Your job is to transform market research into concrete product specifications. Given research input, you will:
+- Define core features (MVP scope)
+- Create user stories
+- Design user flows
+- Define technical requirements
+
+Always read relevant research from /research before starting.
+Save outputs to /product/ folder.
+```
+
+Once it is done, it will update the same URL. Go to the URL and click on the product agent tab. 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875457/zdvz8qi5nwwmfa5ifvxw.png" alt="Product Agent Tab" caption="Product Agent Tab" />
+
+Test your agent by sending the prompt
+
+```bash
+Read /research/scheduling-market.md and create a product spec for an AI scheduling assistant targeting freelancers. Include features, user flows, and tech stack. Save to /product/scheduling-product-spec.md
+``` 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875458/ba3m72jwhsjepw8e4lpa.png" alt="Final output of product specifications" caption="Final output of product specifications" />
+
+## Step 4: Build the Marketing Agent
+
+Let's then go back to the `#general` chat, and work on the Growth Strategist agent. 
+
+This is the prompt you'll send to the agent builder: 
+```bash 
+Let's build the Growth Strategist agent, here's the system prompt for it. 
+
+You are a marketing strategist and copywriter. Your job is to create go-to-market materials based on product specs. You will:
+- Write compelling landing page copy (headline, benefits, CTA)
+- Create pitch deck outline and key slides content
+- Define target audience and channels
+- Suggest pricing strategy
+
+Read product specs from /product/ before creating materials.
+Save outputs to /marketing/ folder.
+```
+
+Once it is done, go to the agent url and refresh the page. 
+
+Then head over to the `Growth Strategist` tab and insert your prompt. 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875459/tp7qnswbj0z0lxb7u5pj.png" alt="Growth strategist agent tab" caption="Growth strategist agent tab" />
+
+```bash
+Read /product/scheduling-product-spec.md and create: 
+1) Landing page copy for the AI scheduler, 
+2) A 5-slide pitch deck outline, 
+3) Go-to-market strategy. Save everything to /marketing/ folder.
+``` 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875461/zthzxlsh6hobilcdaerb.png" alt="Growth Strategies content outputted" caption="Growth Strategies content outputted" />
+
+### Making your agents live in the workspace: 
+
+Go to your [spaces directory](https://app.complete.dev/spaces).
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875461/si8zeimvcqa2ixeugvwv.png" alt="Click on API Key in the spaces directory" caption="Click on API Key in the spaces directory" />
+
+Then click on the Generate API Key button.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875462/wzhkypuefbbq0jroxwi5.png" alt="Generate New API Key button" caption="Generate New API Key button" />
+
+Go back to the `#general` chat and send the prompt to the agent builder: 
+```bash
+Here is my API KEY: sk_xxxxxx, make the agents live in the workspace. 
+```
+
+Once it is done, this is the output you'll see.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875463/odrjoumvxhybutgrk8e8.png" alt="Final Response" caption="Final Response" />
+
+We'll then proceed to adding the agents to our workspace officially. 
+
+Go to `Dashboard` --> `Add Members`.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875464/hom6zklotgyxosxvkd2l.png" alt="Add members on dashboard" caption="Add members on dashboard" />
+
+Then fill in the newly created agents. 
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1771875465/hrw5xapigafxisrji61k.png" alt="Filling in the newly created agents" caption="Filling in the newly created agents" />
+
+## Step 5: Orchestrate Multi-Agent Collaboration
+
+Now we're going to demonstrate the agents working together. 
+
+You'll proceed to send this prompt to your agents:
+
+```bash
+@mkt_researcher Research the market for [YOUR IDEA]. Save to /research/market-analysis.md
+
+Once done, @product_agent read /research/market-analysis.md and create product specs. Save to /product/specs.md
+
+Once done, @growth_strat read /product/specs.md and create all marketing materials in /marketing/
+```
+
+And you'll see the final output and how all the agents work with each other.
