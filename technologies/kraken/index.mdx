@@ -1,0 +1,52 @@
+---
+title: "Kraken"
+description: "Kraken is a high-performance digital asset exchange and financial infrastructure platform offering advanced APIs, low-latency execution, and the Ink Layer-2."
+---
+
+# Kraken 
+
+Kraken, operated primarily under the corporate umbrella of Payward Inc., represents a highly evolved shared financial infrastructure layer and digital asset exchange. Founded in 2011, the platform provides unified liquidity, centralized risk management, and a globally compliant infrastructure to serve diverse client segments.
+
+| General | |
+| --- | --- |
+| Provider / Author | Kraken  |
+| Founded | 2011 |
+| Type | High-Performance Digital Asset Exchange & Financial Infrastructure |
+| Primary Architecture | Polyglot Microservices (Rust gRPC backend, C++ matching engine) |
+| Website | https://www.kraken.com/en-gb/lp/platform |
+| Developer Documentation | https://docs.kraken.com/ |
+| Open-Source Repository | https://github.com/krakenfx |
+
+## Start building with Kraken products
+
+Kraken provides an institutional-grade trading ecosystem capable of sub-2 millisecond round-trip latencies and handling up to 15,000 algorithmic orders per second. The underlying architecture utilizes a highly optimized microservices topology, with the ultra-hot path matching engine engineered in C++ for deterministic execution and the backend primarily built in Rust. Furthermore, Kraken offers developers the "Ink" Layer-2 blockchain, a scaling solution built on the Optimism OP Stack that seamlessly bridges centralized exchange liquidity with decentralized finance (DeFi). We highly encourage you to check out the innovative Web3 apps and algorithmic trading bots created with this technology during lablab.ai hackathons!
+
+<TechTutorials/>
+
+## Key Platform Features
+
+* **Polyglot Microservices:** Utilizes Rust and the Tokio asynchronous runtime for highly efficient network I/O and routing, while relying on Python (Django) with strict static type checking (mypy) for API layer logic.
+* **Deterministic Latency & Colocation:** Offers dedicated colocation services through partnerships with the Beeks Group, allowing institutional traders to physically host their servers in the same data centers as the matching engine.
+* **Dynamic Rate Limiting:** Employs a sophisticated mathematical decay model that assigns penalty points based on computational burden and order resting time, rewarding efficient algorithmic behavior and detering malicious spoofing.
+* **Cryptographic Proof of Reserves:** Uses a mathematically verifiable Merkle Tree data structure, independently attested by a CPA firm, enabling clients to cryptographically verify their included balances without compromising privacy.
+* **The Ink Layer-2 Blockchain:** An optimistic rollup anchored to Ethereum that provides deep integration with Kraken's centralized infrastructure, empowering frictionless transitions to decentralized applications (dApps) without relinquishing private key custody.
+
+### Official Links and Resources
+
+* [Kraken Developer Documentation](https://docs.kraken.com/): The central gateway for algorithmic integration and REST/WebSocket documentation.
+* [Kraken GitHub Organization](https://github.com/krakenfx): The primary open-source repository for the developer community, offering maintained SDKs and tools under the MIT license.
+* [Kraken Engineering Blog](https://engineering.kraken.tech/): Technical deep dives spanning architecture, performance, and security.
+
+### Libraries and SDKs
+
+* [API Specifications (api-specs)](https://github.com/krakenfx): Machine-readable open-source specifications utilizing OpenAPI for REST and AsyncAPI for WebSocket channels.
+* [Golang Implementation (api-go)](https://github.com/krakenfx): An officially maintained, highly concurrent Go module designed for rapid interaction with Spot and Derivatives API endpoints.
+* [Python WebSocket Client (kraken-wsclient-py)](https://github.com/krakenfx): A native Python client optimized for establishing robust, persistent WebSocket connections for real-time order book feeds.
+* [python-kraken-sdk](https://github.com/btschwertfeger/python-kraken-sdk): A community-driven Python SDK featuring built-in handlers for automated nonce calculation, REST retries, and asynchronous handling of WebSocket feeds.
+* [KrakenTools](https://github.com/krakenfx): A public utility toolkit offering mathematical helper functions for cryptographic payload signing and data structuring.
+
+### Boilerplates
+
+* [Decentralized Web Wallet (wallet)](https://github.com/krakenfx): A self-custodial wallet framework written entirely in TypeScript, foundational for Web3 integration.
+* [Futures Trading Bot Template](https://python-kraken-sdk.readthedocs.io/en/v3.2.0/examples/trading_bot_templates/futures_bot_template.html): A deeply documented template demonstrating complex algorithmic execution and advanced error handling.
+* [Freqtrade Integration](https://github.com/freqtrade/freqtrade): An open-source crypto trading bot allowing developers to test and deploy machine learning models and statistical arbitrage strategies live against the Kraken API.
