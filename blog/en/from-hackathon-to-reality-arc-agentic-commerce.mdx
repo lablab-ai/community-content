@@ -1,13 +1,15 @@
 ---
-title: "From Hackathon to Reality: How Builders Are Using Arc for Agentic Commerce"
-description: "Discover how 1,200+ builders at the Agentic Commerce on Arc hackathon are turning autonomous AI finance into production-ready systems using Arc L1, Circle's USDC infrastructure, and the x402 protocol."
+title: "From AI Hackathon to Reality: How Builders Are Using Arc for Agentic Commerce"
+description: "Learn how builders at the Agentic Commerce on Arc AI hackathon are turning autonomous AI finance into production-ready systems using Arc L1 and Circle infrastructure."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1773329376/LabLab_Hackathon_to_Reality_n8p1hn.png"
 authorUsername: "stevekimoi"
 ---
 
-# From Hackathon to Reality: How Builders Are Using Arc for Agentic Commerce
+# From AI Hackathon to Reality: How Builders Are Using Arc for Agentic Commerce
 
-The emergence of agentic commerce represents a paradigm shift in the digital economy, moving from human-directed transactions to an era where autonomous artificial intelligence entities possess the agency to negotiate, coordinate, and settle value independently. This evolution is fundamentally underpinned by the convergence of high-performance blockchain architecture and sophisticated large language models. The Agentic Commerce on Arc hybrid hackathon, held in early 2026, served as a primary catalyst for this transformation, bringing together over 1,200 participants to build on the [Arc Layer-1 blockchain](https://docs.arc.network/arc/concepts/welcome-to-arc) and Circle's stablecoin infrastructure. This report analyzes the technical foundations, developer innovations, and practical use cases that emerged from this event, illustrating how builders are transitioning from experimental prototypes to production-ready financial systems.
+The emergence of agentic commerce represents a paradigm shift in the digital economy, moving from human-directed transactions to an era where autonomous artificial intelligence entities possess the agency to negotiate, coordinate, and settle value independently. This evolution is fundamentally underpinned by the convergence of high-performance blockchain architecture and sophisticated large language models. The Agentic Commerce on Arc hybrid **AI hackathon**, held in early 2026, served as a primary catalyst for this transformation, bringing together over 1,200 participants to build on the [Arc Layer-1 blockchain](https://docs.arc.network/arc/concepts/welcome-to-arc) and Circle's stablecoin infrastructure. This report analyzes the technical foundations, developer innovations, and practical use cases that emerged from this event, illustrating how builders are transitioning from experimental prototypes to production-ready financial systems.
+
+> **Note:** All submissions from the hackathon are now live. Explore them here: [Agentic Commerce on Arc projects](https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/projects).
 
 ## The Economic Operating System: Technical Architecture of Arc
 
@@ -25,7 +27,7 @@ While Arc provides the settlement layer, Circle's infrastructure provides the pr
 
 ### Developer-Controlled Wallets for Agentic Treasuries
 
-A fundamental challenge in agentic commerce is the secure management of private keys. Handing a raw private key to an autonomous AI agent is a security risk, as hallucinations or prompt injections could lead to the unauthorized draining of funds. Circle's Developer-Controlled Wallets solve this by allowing developers to embed wallets directly into their applications, where the application manages the keys on behalf of the agent through a secure API. This architecture enables builders to implement programmatic guardrails — such as spending limits and recipient whitelists — ensuring that the agent can execute commerce tasks while the developer retains ultimate control over the treasury.
+A fundamental challenge in agentic commerce is the secure management of private keys. Handing a raw private key to an autonomous AI agent is a security risk, as hallucinations or prompt injections could lead to the unauthorized draining of funds. Circle's Developer-Controlled Wallets solve this by allowing developers to embed wallets directly into their applications, where the application manages the keys on behalf of the agent through a secure API. This architecture enables builders to implement programmatic guardrails, such as spending limits and recipient whitelists, ensuring that the agent can execute commerce tasks while the developer retains ultimate control over the treasury.
 
 ### Cross-Chain Interoperability via CCTP and Gateway
 
@@ -44,6 +46,8 @@ For applications requiring even lower latency, Circle Gateway offers a "unified 
 ## Standout Project Analysis: Innovation in Agentic Workflows
 
 The Agentic Commerce on Arc hackathon showcased a diverse array of projects that translated theoretical concepts into functional tools. Five projects stand out for their technical depth, practical utility, and potential to redefine commercial interactions.
+
+> **Note:** Check out more [global AI hackathons](https://lablab.ai/ai-hackathons) on [LabLab.ai](https://lablab.ai) if you're ready to build your next AI hackathon project.
 
 ### [OmniAgentPay](https://lablab.ai/ai-hackathons/agentic-commerce-on-arc/omniarc/omniagentpay-payment-infrastructure-for-ai-agent): The Stripe for AI Agents
 
@@ -77,7 +81,7 @@ The Financial Entity Intelligence Network (FEIN) addresses the "missing link" in
 
 #### Reasoning-Driven Treasury Management
 
-FEIN integrates Google Gemini 2.5 Flash to provide the cognitive layer for autonomous treasury management. This reasoning capability is used to implement a "Compliance Guardrail," where every transaction intent is cross-referenced against global sanctions lists — using TRM Labs or Chainalysis mocks — before execution.
+FEIN integrates Google Gemini 2.5 Flash to provide the cognitive layer for autonomous treasury management. This reasoning capability is used to implement a "Compliance Guardrail," where every transaction intent is cross-referenced against global sanctions lists, using TRM Labs or Chainalysis mocks, before execution.
 
 One of FEIN's most innovative features is the visualization of the AI's "Chain of Thought" through an Execution Timeline. This provides 100% auditability, allowing human overseers to see the logical steps the agent took to reach a financial decision. This cryptographic evidence ensures that "the proof never goes poof," making autonomous commerce enterprise-safe.
 
@@ -103,7 +107,7 @@ The "Autonomous Wallet Agent Tutorial" provides the foundational steps for devel
 
 ### Building the Reasoning Loop
 
-The tutorial emphasizes the importance of structured AI decision-making. Developers use Gemini to parse a user's natural language intent — such as "Pay my cloud bill and rebalance my portfolio" — and convert it into a set of conditional financial actions. This reasoning loop must handle error states, such as insufficient balances or failed API responses, ensuring that the agent does not attempt invalid transactions.
+The tutorial emphasizes the importance of structured AI decision-making. Developers use Gemini to parse a user's natural language intent, such as "Pay my cloud bill and rebalance my portfolio", and convert it into a set of conditional financial actions. This reasoning loop must handle error states, such as insufficient balances or failed API responses, ensuring that the agent does not attempt invalid transactions.
 
 ### Orchestrating On-Chain Settlement
 
@@ -125,7 +129,7 @@ A recurring theme in the hackathon was the revival and standardization of the HT
 
 The x402 protocol embeds value exchange directly into the HTTP request-response loop. When an agent makes a request to a monetized API (e.g., `GET /premium-data`), the server responds with an HTTP 402 code and a `PAYMENT-REQUIRED` header. This header contains the price in stablecoins, the destination wallet address, and the supported blockchain (such as Arc or Base).
 
-The agent then signs a gasless USDC transfer authorization and retries the request with a `PAYMENT-SIGNATURE` header. A "Facilitator" handles the on-chain settlement on behalf of the client, allowing the server to verify the payment and deliver the resource instantly. This protocol-level integration allows agents to pay for services on a per-use basis — such as paying for image generation per request or data processing per word — creating a granular, real-time marketplace for machine services.
+The agent then signs a gasless USDC transfer authorization and retries the request with a `PAYMENT-SIGNATURE` header. A "Facilitator" handles the on-chain settlement on behalf of the client, allowing the server to verify the payment and deliver the resource instantly. This protocol-level integration allows agents to pay for services on a per-use basis, such as paying for image generation per request or data processing per word, creating a granular, real-time marketplace for machine services.
 
 | Header Name | Direction | Data Transmitted |
 | :---- | :---- | :---- |
@@ -137,9 +141,11 @@ The agent then signs a gasless USDC transfer authorization and retries the reque
 
 As agents move from hobbyist projects to enterprise tools, the focus on security and regulatory compliance becomes paramount. The hackathon participants demonstrated several "Governance Layers" designed to make autonomous commerce safe and auditable.
 
+> **Note:** To stay connected with Arc builders and upcoming events, consider joining [Arc's Community Hub](https://arc.network/community).
+
 ### The Role of "Robot Consciences"
 
-Projects such as "Sovereign AI Robotics Ops" and "Ridhwan" act as an interceptor layer between an agent's planning and execution. This layer evaluates every proposed action against high-level safety policies and ethical standards — such as ISO 42001 or the EU AI Act — before allowing a movement or transaction to execute. For financial agents, this means ensuring that a transaction does not violate money laundering regulations or internal corporate budget policies.
+Projects such as "Sovereign AI Robotics Ops" and "Ridhwan" act as an interceptor layer between an agent's planning and execution. This layer evaluates every proposed action against high-level safety policies and ethical standards, such as ISO 42001 or the EU AI Act, before allowing a movement or transaction to execute. For financial agents, this means ensuring that a transaction does not violate money laundering regulations or internal corporate budget policies.
 
 ### Verifiable Credentials and Audit Trails
 
