@@ -392,6 +392,8 @@ Once Claude Desktop is restarted, you can give it instructions in plain English.
 
 Claude calls `gmail_search` with `query: "has:attachment filename:pdf newer_than:30d"`.
 
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678848/gl01rfpharht0xebxb26.png" alt="Claude Desktop showing gmail_search tool being triggered and returning a summary of 14 emails with PDF attachments from last month" caption="Claude calls gmail_search and returns a grouped summary of matching emails" />
+
 **Read a specific email:**
 > "What does that email say?"
 
@@ -414,6 +416,10 @@ Claude calls `drive_list_files` with `query: "mimeType='application/pdf'"`.
 
 Claude calls `drive_create_folder` with `name: "Invoices 2024"`.
 
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678866/oao1zxgo99a4gomvy7ww.png" alt="Claude Desktop showing drive_create_folder tool being triggered and returning a direct link to the newly created Invoices 2024 folder" caption="Claude creates the folder and immediately returns a clickable Drive link" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678870/loe5rejryu7q02dytjj4.png" alt="Google Drive showing the newly created empty Invoices 2024 folder" caption="The Invoices 2024 folder appears in Google Drive, ready to receive files" />
+
 **Upload a file:**
 > "Upload the file at /tmp/report.pdf to my Drive into the Invoices 2024 folder"
 
@@ -423,6 +429,18 @@ Claude calls `drive_list_files` to find the folder ID, then `drive_upload_file` 
 > "Move the report I just uploaded into the Archive folder"
 
 Claude calls `drive_move_file` with the file's ID and the Archive folder's ID.
+
+### Inbox Triage Example
+
+You can also use the tools for real-time inbox triage:
+
+> "Read through all the unread emails for today and tell me if I have any urgent matter I need to attend to"
+
+Claude chains `gmail_search` and `gmail_get_message` across multiple messages, scanning subjects and full content where needed.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678874/rp5ypvrydp6vhtpy9zzn.png" alt="Claude Desktop calling gmail_search then gmail_get_message in sequence to triage 20 unread emails" caption="Claude chains gmail_search and gmail_get_message to scan all unread emails" />
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678878/hq2xghoqsegvwclwm1ml.png" alt="Claude's triage output highlighting a Google Security Alert and GitHub pull request review requests as urgent items" caption="Claude surfaces only the truly urgent items — security alerts and PRs needing review — and deprioritizes newsletters" />
 
 ### Chaining Tools Together
 
@@ -572,9 +590,57 @@ After any change: fully quit Claude Desktop with **Cmd+Q** before reopening.
 
 The first time you run `gws auth login`, it stores a refresh token in `~/.config/gws/credentials.json`. Subsequent runs use this token silently — no browser window needed. For CI/CD or remote servers, use `gws auth export` to serialize the credentials to a file you can inject as an environment variable or secret.
 
-### Can I use this with [Python](https://lablab.ai/tech/python) instead of Claude Desktop?
+### Can I use this with python instead of Claude Desktop?
 
 Yes. The MCP server approach (Parts 2–3) is the simplest path, but you can also build a Python orchestrator that calls `gws` directly via `subprocess`. Use the `safe_gmail_search` pattern from Phase 4 as your foundation — it handles serialization and keeps the shell out of the picture. You can then wire the output to any LLM, including [OpenAI](https://lablab.ai/tech/openai) models or [Claude](https://lablab.ai/tech/anthropic/claude) via the API.
+
+### Claude says "issue connecting to Gmail" and tools return 403 insufficientPermissions
+
+This means gws has no stored OAuth credentials. Confirm it by running:
+
+```bash
+gws auth status
+```
+
+If you see `"auth_method": "none"` and no `credentials.enc` listed, the token cache is empty. Re-authenticate with explicit scopes:
+
+```bash
+gws auth login -s gmail,drive
+```
+
+A terminal scope-selection screen will appear. Use the arrow keys to navigate and `Space` to toggle. Select at minimum:
+- `gmail.readonly` — to read and search emails
+- `drive` — for full Drive access (list, upload, move, create folders)
+
+Avoid selecting **Full Access / all scopes**. It includes restricted scopes that trigger Google's "Access blocked" screen (see below).
+
+Press `Enter` to confirm. A browser window will open for Google OAuth. After you approve, you'll see a success message like:
+
+```json
+{
+  "account": "you@gmail.com",
+  "credentials_file": "/Users/yourname/.config/gws/credentials.enc",
+  "message": "Authentication successful. Encrypted credentials saved.",
+  "status": "success"
+}
+```
+
+Fully quit Claude Desktop (**Cmd+Q**) and reopen it so the MCP server picks up the new credentials.
+
+**Why this happens:** `gws auth setup` configures your OAuth client but does not grant API access. You must always run `gws auth login` afterward. The credentials file can also go missing if the `~/.config/gws/` directory is cleared or the OS keychain is reset.
+
+### I selected all scopes and now see an "Access blocked" screen
+
+Selecting **Full Access** includes restricted scopes (like `cloud-platform`). Google blocks those unless your Google account is explicitly added as a test user in your GCP project.
+
+To add yourself as a test user:
+
+1. Go to [console.cloud.google.com](https://console.cloud.google.com/) and select your project
+2. Navigate to **APIs & Services** → click **Audience** in the left sidebar (the new GCP UI moved test users here — it is no longer on the main OAuth consent screen page)
+3. Scroll down to **Test users** → click **+ Add Users**
+4. Add your Google account email and save
+
+Then re-run `gws auth login -s gmail,drive` and select only `gmail.readonly` and `drive` instead of full access. With just those two scopes you won't hit this block.
 
 ### What Google APIs do I need to enable?
 
