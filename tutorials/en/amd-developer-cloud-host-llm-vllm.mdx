@@ -275,6 +275,65 @@ print(response.choices[0].message.content)
 
 Any code that works with OpenAI's `gpt-4o` works with your AMD-hosted model, just change the `base_url` and `model` name.
 
+### Testing With a Chat UI
+
+If you'd rather test your endpoint through a proper chat interface instead of curl commands, you can use this single-file HTML chat template built specifically for vLLM and OpenAI-compatible endpoints: [vllm-chat-template](https://github.com/Stephen-Kimoi/vllm-chat-template).
+
+No build step, no dependencies — clone it, open the file in a browser, and you're chatting with your AMD-hosted model.
+
+<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1774382604/Screenshot_2026-03-24_at_23.02.24_zjuhjd.png" alt="vLLM Chat Template UI showing a live chat interface connected to an AMD-hosted model" caption="The vLLM Chat Template connected to a live Qwen model on AMD Developer Cloud"/>
+
+**Step 1 — Clone the repo:**
+
+```bash
+git clone https://github.com/Stephen-Kimoi/vllm-chat-template
+cd vllm-chat-template
+```
+
+**Step 2 — Enable CORS on your vLLM server.**
+
+By default, the browser will block requests from a local HTML file to your remote server. Restart vLLM with CORS enabled:
+
+```bash
+# Stop the current server
+pkill -f vllm
+
+# Restart with CORS allowed
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype float16 \
+  --allowed-origins '["*"]' \
+  > /tmp/vllm.log 2>&1 &
+```
+
+**Step 3 — Configure the template.**
+
+Open `index.html` and update the `CONFIG` block near the top of the `<script>` section:
+
+```js
+const CONFIG = {
+  apiUrl: 'http://<your-droplet-ip>:8000/v1/chat/completions',
+  model:  'Qwen/Qwen2.5-1.5B-Instruct',
+
+  badge:       'vLLM',
+  headerTitle: 'Chat — AMD MI300X',
+  statusText:  'Connected',
+  footerInfo:  'vLLM · OpenAI-Compatible API',
+
+  specs: [
+    { label: 'Endpoint', value: '<your-droplet-ip>:8000', accent: true },
+    { label: 'Model',    value: 'Qwen2.5-1.5B-Instruct' },
+    { label: 'Hardware', value: 'AMD MI300X' },
+  ],
+};
+```
+
+Replace `<your-droplet-ip>` with your droplet's public IP, save the file, and open it directly in your browser (`open index.html` on Mac or double-click on Windows).
+
+The UI shows a full chat interface on the left and the raw request/response JSON on the right — useful for seeing exactly what your endpoint is returning.
+
 ---
 
 ## Phase 5: Loading Larger Models
