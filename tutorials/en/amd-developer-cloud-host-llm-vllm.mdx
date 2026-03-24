@@ -25,12 +25,17 @@ In this tutorial you'll go from zero to a live, publicly accessible AI API endpo
 
 Before diving in, here's why this setup makes sense for developers building AI applications:
 
-| Feature | AMD MI300X | NVIDIA H100 |
-|---|---|---|
-| VRAM | 192 GB | 80 GB |
-| Memory bandwidth | 5.3 TB/s | 3.35 TB/s |
-| Price (cloud) | \$1.99/hr | ~\$4-6/hr |
-| Open-source stack | ROCm (fully open) | CUDA (proprietary) |
+<table>
+  <thead>
+    <tr><th>Feature</th><th>AMD MI300X</th><th>NVIDIA H100</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>VRAM</td><td>192 GB</td><td>80 GB</td></tr>
+    <tr><td>Memory bandwidth</td><td>5.3 TB/s</td><td>3.35 TB/s</td></tr>
+    <tr><td>Price (cloud)</td><td>$1.99/hr</td><td>~$4-6/hr</td></tr>
+    <tr><td>Open-source stack</td><td>ROCm (fully open)</td><td>CUDA (proprietary)</td></tr>
+  </tbody>
+</table>
 
 The MI300X is the only GPU that can run Llama 3.1 405B on a **single node** without multi-GPU sharding. For inference serving, vLLM on MI300X achieves 1.5x higher throughput and 1.7x faster time-to-first-token compared to other setups. For a hackathon or a prototype, it's the highest-value GPU you can access today.
 
@@ -88,15 +93,20 @@ Choose **ATL1 (Atlanta)** as it consistently has MI300X availability. If you see
 
 #### GPU Plan: MI300X (1 GPU)
 
-| Spec | Value |
-|---|---|
-| GPU | 1x AMD Instinct MI300X |
-| VRAM | 192 GB HBM3 |
-| vCPU | 20 |
-| RAM | 240 GB |
-| Boot disk | 720 GB NVMe |
-| Scratch disk | 5 TB |
-| Cost | \$1.99/hr |
+<table>
+  <thead>
+    <tr><th>Spec</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>GPU</td><td>1x AMD Instinct MI300X</td></tr>
+    <tr><td>VRAM</td><td>192 GB HBM3</td></tr>
+    <tr><td>vCPU</td><td>20</td></tr>
+    <tr><td>RAM</td><td>240 GB</td></tr>
+    <tr><td>Boot disk</td><td>720 GB NVMe</td></tr>
+    <tr><td>Scratch disk</td><td>5 TB</td></tr>
+    <tr><td>Cost</td><td>$1.99/hr</td></tr>
+  </tbody>
+</table>
 
 The single MI300X is the right choice for running and serving a model. The 8x MI300X option (\$15.92/hr) is for large distributed training jobs or serving 70B+ parameter models at scale, overkill for a first deployment.
 
@@ -104,13 +114,18 @@ The single MI300X is the right choice for running and serving a model. The 8x MI
 
 When selecting the image, you'll see several options:
 
-| Image | What it is |
-|---|---|
-| vLLM (recommended) | Pre-configured LLM inference engine with OpenAI-compatible API |
-| ROCm Software | Bare AMD GPU environment, requires manual setup |
-| SGLang | Alternative inference framework |
-| PyTorch | Raw PyTorch, for training not serving |
-| Megatron | Large-scale distributed training only |
+<table>
+  <thead>
+    <tr><th>Image</th><th>What it is</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>vLLM (recommended)</td><td>Pre-configured LLM inference engine with OpenAI-compatible API</td></tr>
+    <tr><td>ROCm Software</td><td>Bare AMD GPU environment, requires manual setup</td></tr>
+    <tr><td>SGLang</td><td>Alternative inference framework</td></tr>
+    <tr><td>PyTorch</td><td>Raw PyTorch, for training not serving</td></tr>
+    <tr><td>Megatron</td><td>Large-scale distributed training only</td></tr>
+  </tbody>
+</table>
 
 Select the **vLLM** Quick Start image. This gives you a pre-built Docker container with vLLM, ROCm, and all dependencies already installed and configured. Zero setup time.
 
@@ -425,26 +440,36 @@ Snapshots incur a small storage cost but let you restore the exact state of your
 
 ### Cost Breakdown
 
-| Resource | Rate | Notes |
-|---|---|---|
-| MI300X (1 GPU) | \$1.99/hr | Covered by \$100 credits |
-| MI300X (8 GPU) | \$15.92/hr | For large-scale training only |
-| Bandwidth | Included | Standard transfer pool |
-| Snapshot storage | ~\$0.05/GB/month | Optional |
+<table>
+  <thead>
+    <tr><th>Resource</th><th>Rate</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>MI300X (1 GPU)</td><td>$1.99/hr</td><td>Covered by $100 credits</td></tr>
+    <tr><td>MI300X (8 GPU)</td><td>$15.92/hr</td><td>For large-scale training only</td></tr>
+    <tr><td>Bandwidth</td><td>Included</td><td>Standard transfer pool</td></tr>
+    <tr><td>Snapshot storage</td><td>~$0.05/GB/month</td><td>Optional</td></tr>
+  </tbody>
+</table>
 
 ---
 
 ## Summary: What You Built
 
-| Component | Detail |
-|---|---|
-| Hardware | AMD Instinct MI300X, 192 GB HBM3 VRAM |
-| Platform | AMD Developer Cloud (DigitalOcean) |
-| Inference engine | vLLM (OpenAI-compatible) |
-| Model | Qwen/Qwen2.5-1.5B-Instruct |
-| API endpoint | POST /v1/chat/completions |
-| Accessible from | Anywhere via public IP |
-| Cost | \$1.99/hr, ~50 hrs covered by free credits |
+<table>
+  <thead>
+    <tr><th>Component</th><th>Detail</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Hardware</td><td>AMD Instinct MI300X, 192 GB HBM3 VRAM</td></tr>
+    <tr><td>Platform</td><td>AMD Developer Cloud (DigitalOcean)</td></tr>
+    <tr><td>Inference engine</td><td>vLLM (OpenAI-compatible)</td></tr>
+    <tr><td>Model</td><td>Qwen/Qwen2.5-1.5B-Instruct</td></tr>
+    <tr><td>API endpoint</td><td>POST /v1/chat/completions</td></tr>
+    <tr><td>Accessible from</td><td>Anywhere via public IP</td></tr>
+    <tr><td>Cost</td><td>$1.99/hr, ~50 hrs covered by free credits</td></tr>
+  </tbody>
+</table>
 
 You now have a live LLM endpoint running on AMD GPU hardware, the same infrastructure that powers production AI at Meta, Microsoft, and Oracle. From here you can swap in any model from HuggingFace, connect it to a LangChain agent, a RAG pipeline, or any application that speaks the OpenAI API format.
 
