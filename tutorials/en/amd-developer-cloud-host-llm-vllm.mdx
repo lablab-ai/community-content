@@ -1,6 +1,6 @@
 ---
-title: "Host Your First LLM on an AMD GPU: A Developer's Guide to AMD Developer Cloud and vLLM"
-description: "Learn how to spin up an AMD MI300X GPU instance on AMD Developer Cloud, deploy a language model using vLLM, and expose it as a live OpenAI-compatible API endpoint — no hardware required."
+title: "AMD Developer Cloud Tutorial: Host Your First LLM on AMD GPU for AI Hackathons"
+description: "AI Hackathon guide: spin up an AMD MI300X on AMD Developer Cloud, deploy a model with vLLM, and expose a live OpenAI-compatible API endpoint in under 30 minutes. No hardware required."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1774378258/amd_developer_hackathon_xbjfkl.webp"
 authorUsername: "stevekimoi"
 ---
@@ -16,6 +16,8 @@ In this tutorial you'll go from zero to a live, publicly accessible AI API endpo
 1. Sign up for the AMD AI Developer Program and claim your free credits
 2. Create a GPU Droplet pre-loaded with vLLM
 3. SSH in, launch a model, and hit the API from your laptop
+
+This setup is particularly practical for **AI hackathons**, where you need a real inference endpoint running fast without spending days on infrastructure. Having your own AMD-hosted model gives you full control over latency, model selection, and cost — a real advantage when working under hackathon time constraints. If you're looking for upcoming [AI hackathons](https://lablab.ai/ai-hackathons) to put this into practice, lablab.ai runs global events year-round.
 
 > Participate in the **[AMD Developer Hackathon](https://lablab.ai/ai-hackathons/amd-developer)** on lablab.ai and put this stack to work.
 
@@ -472,6 +474,25 @@ Snapshots incur a small storage cost but let you restore the exact state of your
 </table>
 
 You now have a live LLM endpoint running on AMD GPU hardware, the same infrastructure that powers production AI at Meta, Microsoft, and Oracle. From here you can swap in any model from HuggingFace, connect it to a LangChain agent, a RAG pipeline, or any application that speaks the OpenAI API format.
+
+---
+
+## Frequently Asked Questions
+
+### Can I use AMD Developer Cloud for an AI hackathon?
+Yes. AMD Developer Cloud is well-suited for AI hackathons. For $1.99/hr (or free with the $100 credit grant from the AMD AI Developer Program), you get a dedicated MI300X instance with 192 GB of VRAM that can run any open-source model available today. The vLLM Quick Start image means you can have a live API endpoint in under 30 minutes, which matters when you're working against a hackathon deadline.
+
+### Do I need GPU or Linux experience to follow this tutorial?
+No prior GPU experience is required. The tutorial uses a pre-configured vLLM Docker image that handles the entire ROCm and CUDA-equivalent setup for you. Basic terminal comfort (SSH, running commands) is all you need.
+
+### What AI hackathon projects can I build once I have this endpoint running?
+Once you have a live OpenAI-compatible endpoint, you can build anything that normally connects to a GPT model: AI agents with LangChain or CrewAI, RAG systems, domain-specific chatbots, multi-model pipelines, and agentic workflows. The AMD MI300X's 192 GB of VRAM also makes it practical for vision and multimodal models, opening up computer vision and document understanding use cases.
+
+### How long does it take to get the endpoint running?
+Under 30 minutes from scratch. Droplet provisioning takes 2-4 minutes. The first model load (Qwen2.5-1.5B) takes about 30 seconds. After the first run, model weights are cached and subsequent starts take under 10 seconds.
+
+### Is AMD Developer Cloud free for AI hackathons?
+The AMD AI Developer Program gives you $100 in credits (about 50 hours on a single MI300X) just for signing up. For hackathons specifically, AMD also provides bulk GPU credit grants to event organizers, so participants may receive additional credits depending on the event.
 
 ---
 
