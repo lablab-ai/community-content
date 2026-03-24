@@ -1,0 +1,406 @@
+---
+title: "Host Your First LLM on an AMD GPU: A Developer's Guide to AMD Developer Cloud and vLLM"
+description: "Learn how to spin up an AMD MI300X GPU instance on AMD Developer Cloud, deploy a language model using vLLM, and expose it as a live OpenAI-compatible API endpoint — no hardware required."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1774378258/amd_developer_hackathon_xbjfkl.webp"
+authorUsername: "stevekimoi"
+---
+
+# Host Your First LLM on an AMD GPU: A Developer's Guide to AMD Developer Cloud and vLLM
+
+## Introduction
+
+If you've been building AI applications but relying entirely on managed API endpoints, this tutorial is your entry point into running models on raw GPU hardware — your own endpoint, your own model, your own infrastructure.
+
+AMD Developer Cloud gives you on-demand access to the **AMD Instinct MI300X** — the GPU with 192 GB of VRAM that Meta uses to run 100% of live Llama 405B traffic in production. You don't need physical hardware, a data center, or an NVIDIA tax. For $1.99/hour (or free with credits), you get a machine that can load almost any open-source model available today.
+
+In this tutorial you'll go from zero to a live, publicly accessible AI API endpoint in under 30 minutes:
+
+1. Sign up for AMD Developer Cloud and claim your free credits
+2. Create a GPU Droplet pre-loaded with vLLM
+3. SSH in, launch a model, and hit the API from your laptop
+
+> Participate in the **AMD Developer Hackathon** on [lablab.ai](https://lablab.ai/event) and put this stack to work.
+
+---
+
+## Why AMD Developer Cloud?
+
+Before diving in, here's why this setup makes sense for developers building AI applications:
+
+| Feature | AMD MI300X | NVIDIA H100 |
+|---|---|---|
+| VRAM | 192 GB | 80 GB |
+| Memory bandwidth | 5.3 TB/s | 3.35 TB/s |
+| Price (cloud) | $1.99/hr | ~$4–6/hr |
+| Open-source stack | ROCm (fully open) | CUDA (proprietary) |
+
+The MI300X is the only GPU that can run Llama 3.1 405B on a **single node** without multi-GPU sharding. For inference serving, vLLM on MI300X achieves 1.5x higher throughput and 1.7x faster time-to-first-token compared to other setups. For a hackathon or a prototype, it's the highest-value GPU you can access today.
+
+---
+
+## Prerequisites
+
+- A computer with a terminal (Mac, Linux, or Windows with WSL)
+- An SSH key pair (you'll generate one if you don't have one)
+- A credit card on file (required to unlock GPU access — charges are covered by free credits)
+
+---
+
+## Phase 1: Getting Access and Credits
+
+### Joining the AMD AI Developer Program
+
+The fastest way to get GPU credits is through the **AMD AI Developer Program**. It gives you **$100 in credits (~50 hours on a single MI300X)** just for signing up — no approval process.
+
+1. Go to [amd.com/en/developer/ai-dev-program.html](https://www.amd.com/en/developer/ai-dev-program.html)
+2. Create a free account
+3. Credits are applied automatically to your AMD Developer Cloud account
+
+As a bonus, the program also includes a private Discord with AMD engineers and a one-month DeepLearning.AI pro membership.
+
+### Accessing AMD Developer Cloud
+
+AMD Developer Cloud is powered by DigitalOcean. The portal lives at a separate URL from standard DigitalOcean:
+
+**URL:** `amd.digitalocean.com`
+
+Sign in with your AMD Developer account. You'll land on a standard DigitalOcean-style dashboard, but this instance gives you access to AMD Instinct GPU hardware that isn't available on the regular DigitalOcean.
+
+### Adding a Payment Method
+
+Before you can create a GPU Droplet, the platform requires a valid payment method on file — even if your $100 credits will cover everything. Without a card, the "Create GPU Droplet" button stays grayed out.
+
+Go to **Billing** in the left sidebar and add a card. Your credits will be consumed first; the card is a safety net for overage.
+
+> **Cost reference:** At $1.99/hr for a single MI300X, $100 gives you approximately 50 hours of GPU time. Credits typically expire 30 days after being applied — check your expiry date under Billing.
+
+---
+
+## Phase 2: Creating the GPU Droplet
+
+### Choosing Your Configuration
+
+Navigate to **GPU Droplets** in the sidebar and click **Create GPU Droplet**.
+
+You'll be presented with several choices. Here's what to select and why:
+
+#### Region
+Choose **ATL1 (Atlanta)** — it consistently has MI300X availability. If you see capacity issues, try the other available region.
+
+#### GPU Plan: MI300X (1 GPU)
+
+| Spec | Value |
+|---|---|
+| GPU | 1× AMD Instinct MI300X |
+| VRAM | 192 GB HBM3 |
+| vCPU | 20 |
+| RAM | 240 GB |
+| Boot disk | 720 GB NVMe |
+| Scratch disk | 5 TB |
+| **Cost** | **$1.99/hr** |
+
+The single MI300X is the right choice for running and serving a model. The 8× MI300X option ($15.92/hr) is for large distributed training jobs or serving 70B+ parameter models at scale — overkill for a first deployment.
+
+#### Image: vLLM Quick Start Package
+
+When selecting the image, you'll see several options:
+
+| Image | What it is |
+|---|---|
+| **vLLM (recommended)** | Pre-configured LLM inference engine with OpenAI-compatible API |
+| ROCm™ Software | Bare AMD GPU environment — requires manual setup |
+| SGLang | Alternative inference framework |
+| PyTorch | Raw PyTorch — for training, not serving |
+| Megatron | Large-scale distributed training only |
+
+Select the **vLLM** Quick Start image. This gives you a pre-built Docker container with vLLM, ROCm, and all dependencies already installed and configured. Zero setup time.
+
+#### SSH Key
+
+GPU Droplets require SSH key authentication — no password login. If you already have a key pair, add your public key here. If not, generate one:
+
+```bash
+ssh-keygen -t ed25519 -C "your@email.com"
+```
+
+Your public key is at `~/.ssh/id_ed25519.pub`. Copy its contents and paste it into the SSH key field.
+
+### Creating the Droplet
+
+Click **Create GPU Droplet**. The droplet takes 2–4 minutes to provision. You'll see it move from **Creating** to **Active** in the dashboard. Once active, copy the **Public IP address** — you'll need it for the next step.
+
+---
+
+## Phase 3: Connecting and Launching a Model
+
+### SSH Into the Droplet
+
+Once the droplet is active, connect to it from your terminal:
+
+```bash
+ssh root@<your-droplet-ip>
+```
+
+Replace `<your-droplet-ip>` with the public IP from the dashboard. If your SSH key is in a non-default location, specify it with `-i`:
+
+```bash
+ssh -i ~/.ssh/id_ed25519 root@<your-droplet-ip>
+```
+
+You'll land in a root shell on Ubuntu 24.04.
+
+### Entering the vLLM Container
+
+The vLLM Quick Start image runs a pre-built Docker container named `rocm`. Enter it:
+
+```bash
+docker exec -it rocm /bin/bash
+```
+
+You're now inside the container where vLLM is installed and the AMD ROCm stack is ready.
+
+### Launching Your First Model
+
+Run the following command to start the vLLM API server with **Qwen2.5-1.5B-Instruct**:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype float16 \
+  > /tmp/vllm.log 2>&1 &
+```
+
+**Why Qwen2.5-1.5B?**
+
+- Downloads freely from HuggingFace with no authentication (unlike Llama, which requires accepting Meta's license)
+- At 1.5B parameters (~3 GB), it loads in seconds on the MI300X's 192 GB of VRAM
+- Supports the OpenAI chat format (`/v1/chat/completions`) out of the box
+- Produces quality responses for demos and prototypes
+
+**Why `--dtype float16`?**
+
+The model's default dtype is bfloat16, but float16 has broader compatibility with AMD ROCm at this stage. vLLM will warn you about this — casting to float16 is the correct choice here.
+
+**Why run it in the background with `&`?**
+
+Running in the foreground locks your terminal. The background flag (`&`) plus log redirect (`> /tmp/vllm.log 2>&1`) lets you monitor startup progress while keeping your shell free.
+
+### Monitoring Startup
+
+Watch the logs until the server is ready:
+
+```bash
+tail -f /tmp/vllm.log
+```
+
+You'll see the model weights download from HuggingFace, load into GPU memory, and the ROCm graph compilation complete. The whole process takes about 25–30 seconds on first run. Wait for this line:
+
+```
+INFO:     Application startup complete.
+```
+
+Then press `Ctrl+C` to stop tailing the log. Your server is live.
+
+---
+
+## Phase 4: Testing the API
+
+### Test From Inside the Droplet
+
+With the server running, run a quick test from inside the container:
+
+```bash
+curl -s http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+You'll get a response like:
+
+```json
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "choices": [{
+    "message": {
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?"
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 30,
+    "completion_tokens": 10,
+    "total_tokens": 40
+  }
+}
+```
+
+### Test From Your Laptop
+
+Open a new terminal on your local machine and call the public IP directly:
+
+```bash
+curl -s http://<your-droplet-ip>:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "messages": [{"role": "user", "content": "Explain ROCm in one sentence."}]
+  }'
+```
+
+Port 8000 is accessible from the public internet because the vLLM Docker container maps it directly via iptables (Docker bypasses UFW firewall rules when using port mapping). Your endpoint is live.
+
+### Calling it Like the OpenAI SDK
+
+Because vLLM exposes an OpenAI-compatible API, you can use the standard `openai` Python client by pointing it at your droplet:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://<your-droplet-ip>:8000/v1",
+    api_key="not-required"  # vLLM doesn't require auth by default
+)
+
+response = client.chat.completions.create(
+    model="Qwen/Qwen2.5-1.5B-Instruct",
+    messages=[{"role": "user", "content": "What can you do?"}]
+)
+
+print(response.choices[0].message.content)
+```
+
+Any code that works with OpenAI's `gpt-4o` works with your AMD-hosted model — just change the `base_url` and `model` name.
+
+---
+
+## Phase 5: Loading Larger Models
+
+### Running a 7B Model
+
+Once you've confirmed the basic setup works, try a larger model. The MI300X's 192 GB of VRAM means you have room to run models that would require multiple GPUs elsewhere:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-7B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype float16 \
+  > /tmp/vllm.log 2>&1 &
+```
+
+At 7B parameters (~14 GB), this model loads in about a minute and produces significantly better outputs than the 1.5B variant.
+
+### Running Llama Models
+
+For Llama 3.x models, you'll need to accept Meta's license on HuggingFace first, then pass your token:
+
+```bash
+python -m vllm.entrypoints.openai.api_server \
+  --model meta-llama/Llama-3.2-3B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype float16 \
+  --hf-token <your-huggingface-token> \
+  > /tmp/vllm.log 2>&1 &
+```
+
+### Checking GPU Memory Usage
+
+To see how much VRAM your model is using:
+
+```bash
+rocm-smi
+```
+
+This is the AMD equivalent of `nvidia-smi`. You'll see GPU utilization, memory usage, and temperature.
+
+---
+
+## Phase 6: Cost Management
+
+### The Most Important Rule
+
+**Even when the droplet is powered off, you are still billed.** To stop charges completely, you must **Destroy** the droplet from the dashboard, not just power it off.
+
+### Quick Reference — Stop and Restart
+
+**Stop vLLM (inside the container):**
+
+```bash
+pkill -f vllm
+```
+
+**Full restart sequence from your laptop:**
+
+```bash
+# 1. SSH in
+ssh root@<your-droplet-ip>
+
+# 2. Enter the container
+docker exec -it rocm /bin/bash
+
+# 3. Start vLLM
+python -m vllm.entrypoints.openai.api_server \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --dtype float16 \
+  > /tmp/vllm.log 2>&1 &
+
+# 4. Wait for startup (~30s on subsequent runs — weights are cached)
+tail -f /tmp/vllm.log
+```
+
+### Snapshots
+
+If you want to save your environment and restore it later, take a snapshot before destroying:
+
+```
+AMD Developer Cloud → GPU Droplets → your droplet → Snapshots → Take Snapshot
+```
+
+Snapshots incur a small storage cost but let you restore the exact state of your droplet without re-running setup.
+
+### Cost Breakdown
+
+| Resource | Rate | Notes |
+|---|---|---|
+| MI300X (1 GPU) | $1.99/hr | Covered by $100 credits |
+| MI300X (8 GPU) | $15.92/hr | For large-scale training only |
+| Bandwidth | Included | Standard transfer pool |
+| Snapshot storage | ~$0.05/GB/month | Optional |
+
+---
+
+## Summary — What You Built
+
+| Component | Detail |
+|---|---|
+| Hardware | AMD Instinct MI300X, 192 GB HBM3 VRAM |
+| Platform | AMD Developer Cloud (DigitalOcean) |
+| Inference engine | vLLM (OpenAI-compatible) |
+| Model | Qwen/Qwen2.5-1.5B-Instruct |
+| API format | `POST /v1/chat/completions` |
+| Accessible from | Anywhere via public IP |
+| Cost | $1.99/hr (~50 hrs with free credits) |
+
+You now have a live LLM endpoint running on AMD GPU hardware — the same infrastructure that powers production AI at Meta, Microsoft, and Oracle. From here you can swap in any model from HuggingFace, connect it to a LangChain agent, a RAG pipeline, or any application that speaks the OpenAI API format.
+
+---
+
+## Resources
+
+- [AMD Developer Cloud — Main Portal](https://www.amd.com/en/developer/resources/cloud-access/amd-developer-cloud.html)
+- [AMD AI Developer Program (free credits)](https://www.amd.com/en/developer/ai-dev-program.html)
+- [Getting Started on AMD Developer Cloud](https://www.amd.com/en/developer/resources/technical-articles/2025/how-to-get-started-on-the-amd-developer-cloud-.html)
+- [ROCm Documentation](https://rocm.docs.amd.com/)
+- [vLLM AMD/ROCm Installation Guide](https://docs.vllm.ai/en/v0.6.5/getting_started/amd-installation.html)
+- [AMD AI Academy — Free Training & ROCm Certification](https://www.amd.com/en/developer/resources/training/amd-ai-academy.html)
+
+> Build your next AI project on AMD GPUs — join the **AMD Developer Hackathon** on [lablab.ai](https://lablab.ai/event).
