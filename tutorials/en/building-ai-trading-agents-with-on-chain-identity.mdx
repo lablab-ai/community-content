@@ -58,82 +58,6 @@ This `agentId` (the ERC-721 token ID) becomes the agent's **persistent on-chain 
 
 ---
 
-## Why on-chain agent identity matters
-
-### 1. The identity layer is already built
-
-By using ERC-8004, every team's agent automatically gets a verifiable identity without having to invent their own scheme. The registry is the shared ground truth.
-
-### 2. Reputation becomes composable
-
-Because `agentId` is persistent and tied to on-chain activity, every trade, every checkpoint, every vault interaction is linked to that identity. Future systems could build reputation scores, whitelists, or risk tiers on top of this.
-
-### 3. The scaffolding stays the same
-
-This is the "reusable template" angle: the identity, reputation system, and validation scaffolding (ERC-8004 → Vault → RiskRouter → EIP-712) stay constant across teams. What changes is the strategy inside. Your agent's identity doesn't care if you're running a momentum strategy, an LLM, or a neural network.
-
----
-
-## The AgentRegistry contract
-
-Here's the core registration function ([`contracts/AgentRegistry.sol` L92–L120](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/contracts/AgentRegistry.sol#L92-L120)):
-
-```solidity
-function register(
-    address agentWallet,
-    string calldata name,
-    string calldata description,
-    string[] calldata capabilities,
-    string calldata agentURI
-) external returns (uint256 agentId) {
-    require(bytes(name).length > 0, "AgentRegistry: name required");
-    require(agentWallet != address(0), "AgentRegistry: invalid agentWallet");
-
-    agentId = _nextAgentId++;
-    _mint(msg.sender, agentId);        // ERC-721 mint
-    _setTokenURI(agentId, agentURI);
-
-    agents[agentId] = AgentRegistration({
-        operatorWallet: msg.sender,
-        agentWallet: agentWallet,
-        name: name,
-        description: description,
-        capabilities: capabilities,
-        registeredAt: block.timestamp,
-        active: true
-    });
-
-    walletToAgentId[agentWallet] = agentId;
-    emit AgentRegistered(agentId, msg.sender, agentWallet, name);
-}
-```
-
-Key properties:
-- **Mints an ERC-721 token**: your agent identity is a transferable NFT
-- **Two wallet roles**: `operatorWallet` (owns the token) and `agentWallet` (signs trades at runtime)
-- **Auto-incrementing agentId**: starts at 0, stable and unique forever
-- **Emits an event**: `AgentRegistered(agentId, operatorWallet, agentWallet, name)` — queryable on Etherscan
-
----
-
-## Next step
-
-In Part 2, you'll deploy the AgentRegistry to Sepolia and register your first agent.
-
----
-
-# Part 2: Registering Your Agent On-Chain (ERC-721)
-
-## Why ERC-721?
-
-Your agent's identity is an NFT. This means:
-- **agentId** is a `uint256` token ID, stable, unique, gas-efficient to store
-- The token is **transferable**: sell a well-performing agent along with its on-chain reputation
-- Standard ERC-721 interfaces mean wallets, marketplaces, and indexers understand it natively
-- Token URI points to your Agent Registration JSON (metadata about capabilities and endpoints)
-
----
-
 ## Prerequisites
 
 - Node.js 20+ installed
@@ -260,6 +184,76 @@ AgentRegistered
 ```
 
 You can also check the **ERC-721 Transfers** tab, you'll see the mint event transferring token ID `0` from the zero address to your wallet.
+
+---
+
+## Why on-chain agent identity matters
+
+### 1. The identity layer is already built
+
+By using ERC-8004, every team's agent automatically gets a verifiable identity without having to invent their own scheme. The registry is the shared ground truth.
+
+### 2. Reputation becomes composable
+
+Because `agentId` is persistent and tied to on-chain activity, every trade, every checkpoint, every vault interaction is linked to that identity. Future systems could build reputation scores, whitelists, or risk tiers on top of this.
+
+### 3. The scaffolding stays the same
+
+This is the "reusable template" angle: the identity, reputation system, and validation scaffolding (ERC-8004 → Vault → RiskRouter → EIP-712) stay constant across teams. What changes is the strategy inside. Your agent's identity doesn't care if you're running a momentum strategy, an LLM, or a neural network.
+
+---
+
+## The AgentRegistry contract
+
+Here's the core registration function ([`contracts/AgentRegistry.sol` L92–L120](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/contracts/AgentRegistry.sol#L92-L120)):
+
+```solidity
+function register(
+    address agentWallet,
+    string calldata name,
+    string calldata description,
+    string[] calldata capabilities,
+    string calldata agentURI
+) external returns (uint256 agentId) {
+    require(bytes(name).length > 0, "AgentRegistry: name required");
+    require(agentWallet != address(0), "AgentRegistry: invalid agentWallet");
+
+    agentId = _nextAgentId++;
+    _mint(msg.sender, agentId);        // ERC-721 mint
+    _setTokenURI(agentId, agentURI);
+
+    agents[agentId] = AgentRegistration({
+        operatorWallet: msg.sender,
+        agentWallet: agentWallet,
+        name: name,
+        description: description,
+        capabilities: capabilities,
+        registeredAt: block.timestamp,
+        active: true
+    });
+
+    walletToAgentId[agentWallet] = agentId;
+    emit AgentRegistered(agentId, msg.sender, agentWallet, name);
+}
+```
+
+Key properties:
+- **Mints an ERC-721 token**: your agent identity is a transferable NFT
+- **Two wallet roles**: `operatorWallet` (owns the token) and `agentWallet` (signs trades at runtime)
+- **Auto-incrementing agentId**: starts at 0, stable and unique forever
+- **Emits an event**: `AgentRegistered(agentId, operatorWallet, agentWallet, name)` — queryable on Etherscan
+
+---
+
+# Part 2: Registering Your Agent On-Chain (ERC-721)
+
+## Why ERC-721?
+
+Your agent's identity is an NFT. This means:
+- **agentId** is a `uint256` token ID, stable, unique, gas-efficient to store
+- The token is **transferable**: sell a well-performing agent along with its on-chain reputation
+- Standard ERC-721 interfaces mean wallets, marketplaces, and indexers understand it natively
+- Token URI points to your Agent Registration JSON (metadata about capabilities and endpoints)
 
 ---
 
