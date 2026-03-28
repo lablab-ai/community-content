@@ -1,0 +1,1050 @@
+---
+title: "Building AI Trading Agents with On-Chain Identity: A Complete Guide"
+description: "Learn how to build a production-ready AI trading agent with on-chain identity via ERC-8004, trade execution through Kraken CLI, capital management with a Vault and Risk Router, and cryptographic explainability via EIP-712 signed checkpoints."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1774705679/LabLab_Black-Box_to_Trader_lfx7xe.png"
+authorUsername: "stevekimoi"
+---
+
+# Building AI Trading Agents with On-Chain Identity
+
+## Introduction
+
+This tutorial walks you through a complete, reusable AI trading agent template with four core layers:
+
+- **On-chain identity** via ERC-8004 Agent Registry (Sepolia)
+- **Trade execution** via Kraken CLI (paper trading supported)
+- **Capital management** via Hackathon Vault + Risk Router contracts
+- **Cryptographic explainability** via EIP-712 signed checkpoints
+
+Any team can pick this up, swap in their own model or strategy, and run it. The identity, risk, and audit layers stay the same — only the strategy changes.
+
+### Architecture
+
+```
+Your Strategy (TradingStrategy interface)
+       ↓
+  [Identity] ERC-8004 AgentRegistry (Sepolia)
+       ↓
+  [On-chain] RiskRouter.validateTrade()
+       ↓
+  [Exchange] Kraken.placeOrder()
+       ↓
+  [Explainability] formatExplanation() + generateCheckpoint()
+       ↓
+  checkpoints.jsonl  (signed audit log)
+```
+
+---
+
+## Part 1: What Is ERC-8004 and Why Does It Matter?
+
+### The problem: your AI agent is a ghost
+
+You build a trading bot. It runs, it trades, it makes decisions. But from the blockchain's perspective, it doesn't exist. There's just a wallet address — no identity, no record of what the agent is, who operates it, or what it's supposed to do.
+
+This creates real problems:
+- **No accountability**: anyone can claim any wallet address is their "AI agent"
+- **No discoverability**: other contracts can't verify they're talking to an authorized agent
+- **No reputation**: the agent builds no on-chain history that others can trust
+
+ERC-8004 solves this.
+
+### What ERC-8004 is
+
+ERC-8004 is a standard for **AI Agent Identity Registry** on Ethereum. It defines a registry contract where agents can be registered with structured metadata, and every registration produces a unique, verifiable `agentId`.
+
+Think of it like ENS (Ethereum Name Service), but for AI agents instead of human-readable names.
+
+### What gets stored on-chain
+
+From [`contracts/AgentRegistry.sol` L33–L41](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/contracts/AgentRegistry.sol#L33-L41):
+
+```solidity
+struct AgentRegistration {
+    address operatorWallet;  // Owns the ERC-721 token, pays gas
+    address agentWallet;     // Hot wallet the agent uses for signing
+    string  name;
+    string  description;
+    string[] capabilities;   // e.g. ["trading", "analysis", "eip712-signing"]
+    uint256 registeredAt;
+    bool    active;
+}
+```
+
+### What you get back: `agentId`
+
+When you call `register()`, the contract mints an ERC-721 token and returns its ID:
+
+```solidity
+agentId = _nextAgentId++;   // auto-incrementing uint256
+_mint(msg.sender, agentId); // ERC-721 mint — you own this token
+```
+
+This `agentId` (the ERC-721 token ID) becomes the agent's **persistent on-chain identity** — used for:
+- Capital allocation in the agent Vault
+- Risk validation in the Risk Router
+- Cryptographic signing in EIP-712 checkpoints
+
+### Why on-chain agent identity matters
+
+**1. The identity layer is already built**
+
+By using ERC-8004, every team's agent automatically gets a verifiable identity without having to invent their own scheme. The registry is the shared ground truth.
+
+**2. Reputation becomes composable**
+
+Because `agentId` is persistent and tied to on-chain activity, every trade, every checkpoint, every vault interaction is linked to that identity. Future systems could build reputation scores, whitelists, or risk tiers on top of this.
+
+**3. The scaffolding stays the same**
+
+This is the "reusable template" angle: the identity, reputation system, and validation scaffolding (ERC-8004 → Vault → RiskRouter → EIP-712) stay constant across teams. What changes is the strategy inside. Your agent's identity doesn't care if you're running a momentum strategy, an LLM, or a neural network.
+
+### The AgentRegistry contract
+
+Here's the core registration function ([`contracts/AgentRegistry.sol` L92–L120](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/contracts/AgentRegistry.sol#L92-L120)):
+
+```solidity
+function register(
+    address agentWallet,
+    string calldata name,
+    string calldata description,
+    string[] calldata capabilities,
+    string calldata agentURI
+) external returns (uint256 agentId) {
+    require(bytes(name).length > 0, "AgentRegistry: name required");
+    require(agentWallet != address(0), "AgentRegistry: invalid agentWallet");
+
+    agentId = _nextAgentId++;
+    _mint(msg.sender, agentId);        // ERC-721 mint
+    _setTokenURI(agentId, agentURI);
+
+    agents[agentId] = AgentRegistration({
+        operatorWallet: msg.sender,
+        agentWallet: agentWallet,
+        name: name,
+        description: description,
+        capabilities: capabilities,
+        registeredAt: block.timestamp,
+        active: true
+    });
+
+    walletToAgentId[agentWallet] = agentId;
+    emit AgentRegistered(agentId, msg.sender, agentWallet, name);
+}
+```
+
+Key properties:
+- **Mints an ERC-721 token**: your agent identity is a transferable NFT
+- **Two wallet roles**: `operatorWallet` (owns the token) and `agentWallet` (signs trades at runtime)
+- **Auto-incrementing agentId**: starts at 0, stable and unique forever
+- **Emits an event**: `AgentRegistered(agentId, operatorWallet, agentWallet, name)` — queryable on Etherscan
+
+---
+
+## Part 2: Registering Your Agent On-Chain (ERC-721)
+
+### Why ERC-721?
+
+Your agent's identity is an NFT. This means:
+- **agentId** is a `uint256` token ID — stable, unique, gas-efficient to store
+- The token is **transferable**: sell a well-performing agent along with its on-chain reputation
+- Standard ERC-721 interfaces mean wallets, marketplaces, and indexers understand it natively
+- Token URI points to your Agent Registration JSON (metadata about capabilities and endpoints)
+
+### Prerequisites
+
+- Node.js 20+ installed
+- Sepolia ETH (get from [sepoliafaucet.com](https://sepoliafaucet.com))
+- Infura or Alchemy Sepolia RPC URL
+- Kraken CLI installed (see Part 3)
+
+### Step 1: Clone the repo and install dependencies
+
+```bash
+git clone https://github.com/Stephen-Kimoi/ai-trading-agent-template
+cd ai-trading-agent-template
+npm install
+```
+
+### Step 2: Configure your environment
+
+```bash
+cp .env.example .env
+```
+
+Fill in at minimum:
+
+```env
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
+PRIVATE_KEY=0xYOUR_OPERATOR_WALLET_PRIVATE_KEY
+
+# Optional: separate hot wallet for signing. Defaults to PRIVATE_KEY.
+AGENT_WALLET_PRIVATE_KEY=0xYOUR_HOT_WALLET_KEY
+```
+
+**Two wallet roles:**
+
+| Wallet | Role | Recommended |
+|--------|------|-------------|
+| `PRIVATE_KEY` (operatorWallet) | Owns the ERC-721 token, pays gas | Cold wallet / hardware wallet |
+| `AGENT_WALLET_PRIVATE_KEY` (agentWallet) | Signs TradeIntents + checkpoints at runtime | Separate hot wallet |
+
+For testing, the same key for both is fine.
+
+### Step 3: Deploy the five contracts
+
+```bash
+npx hardhat run scripts/deploy.ts --network sepolia
+```
+
+Output:
+
+```
+1/5 Deploying AgentRegistry (ERC-721)...
+   AgentRegistry: 0xABC...
+2/5 Deploying HackathonVault...
+   HackathonVault: 0xDEF...
+3/5 Deploying RiskRouter...
+   RiskRouter: 0xGHI...
+4/5 Deploying ReputationRegistry...
+   ReputationRegistry: 0xJKL...
+5/5 Deploying ValidationRegistry...
+   ValidationRegistry: 0xMNO...
+
+── Add these to your .env ──────────────────────────────────────────
+AGENT_REGISTRY_ADDRESS=0xABC...
+HACKATHON_VAULT_ADDRESS=0xDEF...
+RISK_ROUTER_ADDRESS=0xGHI...
+REPUTATION_REGISTRY_ADDRESS=0xJKL...
+VALIDATION_REGISTRY_ADDRESS=0xMNO...
+────────────────────────────────────────────────────────────────────
+```
+
+Copy all five addresses to your `.env`.
+
+> **Note:** If you're integrating with an existing deployment (e.g. a shared registry or vault someone else deployed), use those contract addresses instead and skip this step. Deploying your own contracts is recommended for local development and testing.
+
+### Step 4: Register your agent
+
+```bash
+npm run register
+```
+
+Output:
+
+```
+Operator wallet: 0xYourOperatorAddress
+Agent wallet:    0xYourAgentWalletAddress
+AgentRegistry:   0xABC...
+
+[identity] Registering new agent on-chain (ERC-721 mint)...
+[identity] Registration tx: 0xTXHASH...
+[identity] Agent registered! Token ID (agentId): 0
+[identity] Add to .env: AGENT_ID=0
+[identity] Saved to agent-id.json
+
+Agent registered!
+agentId (ERC-721 token ID): 0
+
+Add to .env:
+  AGENT_ID=0
+
+Setting default risk params on RiskRouter...
+Risk params set: maxPosition=$500, maxDrawdown=5%, maxTrades/hr=10
+```
+
+Add `AGENT_ID=0` (or whatever token ID you received) to your `.env`.
+
+### Step 5: Verify on Etherscan
+
+Open Sepolia Etherscan → your `AGENT_REGISTRY_ADDRESS` → **Events** tab:
+
+```
+AgentRegistered
+  agentId (token ID): 0
+  operatorWallet:     0xYourOperatorAddress
+  agentWallet:        0xYourAgentWalletAddress
+  name:               AITradingAgent
+```
+
+You can also check the **ERC-721 Transfers** tab — you'll see the mint event transferring token ID `0` from the zero address to your wallet.
+
+### What the registration looks like under the hood
+
+[`scripts/register-agent.ts` L47](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/scripts/register-agent.ts#L47) calls [`src/agent/identity.ts` L46–L68](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/identity.ts#L46-L68):
+
+```typescript
+const agentId = await getAgentId(operatorSigner, registryAddress, {
+  name: "AITradingAgent",
+  agentWallet: agentWallet.address,
+  capabilities: ["trading", "analysis", "eip712-signing"],
+  agentURI: "ipfs://...",  // or data URI
+  ...
+});
+```
+
+The token ID is auto-incrementing from 0. Your `agentId` is unique and permanent.
+
+> **Why this matters:** Once registered, your `agentId` is the identity anchor for everything your agent does — capital allocation, risk validation, EIP-712 checkpoint signing, and on-chain attestations. This is how agents build verifiable on-chain reputation over time. Swapping your strategy never touches this layer.
+
+---
+
+## Part 3: Connecting to Kraken CLI
+
+### Why the CLI, not raw REST?
+
+When building an AI trading agent, you want your code to stay focused on strategy and decision-making — not exchange plumbing. The Kraken CLI handles all of that automatically:
+
+- Cryptographic nonce management (no clock drift issues)
+- HMAC-SHA512 request signing (no manual auth code)
+- Rate-limit retries (no 429 handling needed)
+- Built-in paper trading sandbox (`--sandbox` flag)
+- **Built-in MCP server** — exposes Kraken as structured tools for AI agents
+
+### Installing the Kraken CLI
+
+```bash
+# install script (Linux/macOS)
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/krakenfx/kraken-cli/releases/latest/download/kraken-cli-installer.sh | sh
+
+# check out the version
+kraken --version
+```
+
+Add to your `.env`:
+
+```env
+KRAKEN_API_KEY=your_api_key
+KRAKEN_API_SECRET=your_api_secret
+KRAKEN_SANDBOX=true          # start with sandbox!
+KRAKEN_CLI_PATH=kraken       # only needed if binary isn't on PATH
+```
+
+### Getting Kraken API keys
+
+1. Log into [kraken.com](https://kraken.com) → choose **Kraken Pro** (Advanced trading)
+2. Go to **Settings → API** and create a new key
+3. Tick exactly these permissions:
+
+**Funds permissions**
+- Query — required for `getBalance()`
+
+**Orders and trades**
+- Query open orders & trades — required for `getOpenOrders()`
+- Create & modify orders — required for `placeOrder()`
+- Cancel & close orders — required if the agent needs to cancel orders
+
+Leave everything else unchecked (no Deposit, Withdraw, Earn, Data, or WebSocket).
+
+4. Copy the key + secret into `.env`
+
+### Using the CLI directly
+
+The CLI is useful to verify your setup before running the agent:
+
+```bash
+# Check ticker (no auth needed)
+kraken --json ticker --pair XBTUSD
+
+# Check balance (requires API key)
+kraken --json --api-key $KRAKEN_API_KEY --api-secret $KRAKEN_API_SECRET balance
+
+# Paper trade (sandbox mode)
+kraken --sandbox --json --api-key $KRAKEN_API_KEY --api-secret $KRAKEN_API_SECRET \
+  order add --pair XBTUSD --type buy --ordertype market --volume 0.001
+```
+
+### How the TypeScript client wraps the CLI
+
+[`src/exchange/kraken.ts` L64–L87](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/exchange/kraken.ts#L64-L87) spawns the CLI as a subprocess:
+
+```typescript
+private async run(subcommand: string[], isPrivate = false): Promise<unknown> {
+  const args: string[] = [];
+  if (isPrivate && !this.sandbox) {
+    args.push("--api-key", this.apiKey, "--api-secret", this.apiSecret);
+  }
+  args.push(...subcommand);
+  args.push("-o", "json");
+
+  const { stdout } = await execFileAsync(KRAKEN_BIN, args, { timeout: 15000 });
+  return JSON.parse(stdout.trim());
+}
+```
+
+All three public methods use this:
+
+```typescript
+// Fetch market data
+const market = await kraken.getTicker("XBTUSD");
+// → { price: 95420.5, bid: 95418, ask: 95423, volume: 1204, ... }
+
+// Place order (paper trade in sandbox)
+const result = await kraken.placeOrder({
+  pair: "XBTUSD", type: "buy", ordertype: "market", volume: "0.001"
+});
+// → { txid: ["OTXID-..."], descr: { order: "buy 0.001 XBTUSD @ market" } }
+```
+
+### MCP server mode (alternative)
+
+The CLI ships with a built-in MCP server — the preferred integration for agents that already use the Model Context Protocol:
+
+```bash
+# Start the MCP server
+kraken mcp serve --port 8080
+```
+
+Then use `KrakenMCPClient` in [`src/exchange/kraken.ts`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/exchange/kraken.ts):
+
+```typescript
+import { KrakenMCPClient } from "./src/exchange/kraken.js";
+const kraken = new KrakenMCPClient(8080);
+
+// Same interface as KrakenClient
+const market = await kraken.getTicker("XBTUSD");
+```
+
+This is the cleanest approach for LangChain/Claude tool-use integrations, since the MCP server exposes Kraken operations as first-class tools.
+
+### Sandbox vs. live
+
+| Setting | Behavior |
+|---------|----------|
+| `KRAKEN_SANDBOX=true` | Paper trading — orders logged but not executed |
+| `KRAKEN_SANDBOX=false` | Live trading — real funds, real orders |
+
+The agent reads this at startup. No code changes needed to switch modes.
+
+> **Template note:** The `KrakenClient` is the exchange adapter layer. Your strategy returns a `TradeDecision` — the agent loop calls `placeOrder()` automatically. You never touch the CLI directly. Swapping Kraken for a different exchange only requires replacing this one file.
+
+---
+
+## Part 4: The Vault, Risk Router, and TradeIntent Pattern
+
+### The full flow
+
+```
+Strategy decision (TradeDecision)
+       ↓
+  Build TradeIntent struct
+       ↓
+  Sign with EIP-712 (agentWallet)
+       ↓
+  RiskRouter.submitTradeIntent(intent, signature)
+       ├── verifies EIP-712 signature → agentWallet in AgentRegistry
+       ├── checks nonce (replay protection)
+       ├── checks deadline
+       ├── validates risk params (position size, trade frequency)
+       ├── emits TradeApproved or TradeRejected on-chain
+       ↓ (if approved)
+  Kraken CLI: placeOrder()
+       ↓
+  Vault tracks capital
+```
+
+Every step is on-chain. Every approval and rejection is a permanent event.
+
+### The TradeIntent struct
+
+Instead of the agent directly calling Kraken, it first constructs a **signed intent** — a commitment to a specific trade that's been cryptographically authorized ([`contracts/RiskRouter.sol` L35–L44](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/contracts/RiskRouter.sol#L35-L44)):
+
+```solidity
+struct TradeIntent {
+    uint256 agentId;
+    address agentWallet;       // must match AgentRegistry
+    string  pair;              // e.g. "XBTUSD"
+    string  action;            // "BUY" or "SELL"
+    uint256 amountUsdScaled;   // USD * 100 (e.g. 50000 = $500)
+    uint256 maxSlippageBps;    // max acceptable slippage
+    uint256 nonce;             // replay protection
+    uint256 deadline;          // Unix timestamp
+}
+```
+
+The nonce increments with each approved intent, so an old signature can't be replayed.
+
+### Building and signing a TradeIntent (TypeScript)
+
+[`src/onchain/riskRouter.ts` L72–L145](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/onchain/riskRouter.ts#L72-L145) handles this:
+
+```typescript
+const riskRouter = new RiskRouterClient(routerAddress, agentWallet, SEPOLIA_CHAIN_ID);
+
+// 1. Build intent (fetches current nonce from chain)
+const intent = await riskRouter.buildIntent(
+  agentId,
+  agentWallet.address,
+  "XBTUSD",
+  "BUY",
+  100,   // $100 USD
+  { maxSlippageBps: 50, deadlineSeconds: 300 }
+);
+
+// 2. Sign with EIP-712 (agentWallet is the hot signing key)
+const signed = await riskRouter.signIntent(intent, agentWallet);
+
+// 3. Submit to RiskRouter
+const result = await riskRouter.submitIntent(signed);
+
+if (result.approved) {
+  console.log("Trade approved — intentHash:", result.intentHash);
+} else {
+  console.warn("Trade rejected:", result.reason);
+}
+```
+
+The `intentHash` is carried into the EIP-712 checkpoint, linking the checkpoint to the specific approved intent.
+
+### What the RiskRouter checks
+
+```
+1. deadline        — is the intent still valid?
+2. nonce           — does it match the stored nonce (not replayed)?
+3. signature       — does it recover to the registered agentWallet?
+4. position size   — is amountUsdScaled ≤ maxPositionSize?
+5. trade frequency — are we within maxTradesPerHour?
+```
+
+Each check emits an event on Sepolia if it fails:
+
+```
+TradeRejected(agentId, intentHash, "Exceeds maxPositionSize")
+TradeRejected(agentId, intentHash, "Intent expired")
+```
+
+If all checks pass:
+
+```
+TradeApproved(agentId, intentHash, amountUsdScaled)
+```
+
+### Setting your risk params
+
+You don't need to do this manually — `npm run register` already sets default risk params as part of registration ([`scripts/register-agent.ts` L76–L83](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/scripts/register-agent.ts#L76-L83)):
+
+```typescript
+// Called automatically during npm run register
+await router.setRiskParams(
+  agentId,
+  BigInt(50000),  // maxPositionUsdScaled: $500 max per trade (500 * 100)
+  BigInt(500),    // maxDrawdownBps: 5%
+  BigInt(10)      // maxTradesPerHour: 10
+);
+```
+
+To change them later, use [`src/onchain/riskRouter.ts` L183–L196](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/onchain/riskRouter.ts#L183-L196):
+
+```typescript
+await riskRouter.setRiskParams(
+  agentId,
+  500,    // maxPositionUsd: $500 per trade
+  500,    // maxDrawdownBps: 5%
+  10      // maxTradesPerHour
+);
+```
+
+> **Why this matters:** The TradeIntent pattern gives every trade a cryptographic proof of intent that was validated on-chain before execution. This is what makes agent behavior auditable and trustworthy — anyone can verify that a specific trade was approved by a specific registered agent against a defined risk policy, without having to trust the agent's own logs.
+
+---
+
+## Part 5: Building the Explanation Layer
+
+### Why explainability matters for trading agents
+
+When an agent makes a trade, two questions need answers:
+1. **For humans**: *Why did it do that?* — in plain language, auditable after the fact
+2. **For machines**: *Can we verify it said what it claims to say?* — cryptographically
+
+This section covers the first question. Part 6 covers the second.
+
+### The `reasoning` field in every decision
+
+Every `TradeDecision` returned by your strategy must include a `reasoning` string ([`src/types/index.ts` L30–L37](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/types/index.ts#L30-L37)):
+
+```typescript
+interface TradeDecision {
+  action: "BUY" | "SELL" | "HOLD";
+  asset: string;
+  pair: string;
+  amount: number;
+  confidence: number;
+  reasoning: string;   // ← this is required
+}
+```
+
+This is what your strategy should return for `reasoning`:
+
+```
+// Good: specific, auditable
+"Price fell 1.2% over last 5 ticks while volume dropped 40% below average.
+Bearish divergence — selling to reduce exposure. Risk: potential support at
+$94,200 may reverse the move."
+
+// Bad: too vague
+"The market looks bad."
+```
+
+The reasoning field flows through three places automatically, once per tick (every 30 seconds by default):
+
+| Where | What you see |
+|-------|-------------|
+| **Terminal** | Printed immediately after each decision via `formatExplanation()` |
+| **Terminal (checkpoint block)** | Printed again inside the signed checkpoint summary via `formatCheckpointLog()` |
+| **EIP-712 signature** | `keccak256(reasoning)` is computed and included in the signed payload |
+| **`checkpoints.jsonl`** | Full reasoning string appended as JSON after every tick |
+| **Dashboard** | Shown on each checkpoint card under the action badge |
+
+You'll see the first output in the terminal **within 30 seconds** of starting `npm run run-agent` (the agent warms up for 5 ticks collecting price samples, then starts making decisions).
+
+### The `formatExplanation()` function
+
+[`src/explainability/reasoner.ts` L19–L51](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/reasoner.ts#L19-L51) wraps the decision + market context into a structured log line:
+
+```typescript
+import { formatExplanation } from "./src/explainability/reasoner.js";
+
+const explanation = formatExplanation(decision, market);
+console.log(explanation);
+```
+
+Output for a BUY:
+
+```
+[2024-01-15T10:30:00.000Z] BUY XBTUSD — $100.00 @ $95,420.50
+  Confidence: 78%
+  Reason: Upward momentum: price rose 0.62% over last 5 ticks. Spread is tight at 0.003%. Buying.
+  Market context: 24h high=96200, low=93800, VWAP=94980.20
+  Spread: 0.0052% | Volume: 1204.50
+```
+
+Output for a HOLD:
+
+```
+[2026-03-27T11:02:50.000Z] HOLD XBTUSD @ $66,422.60
+  Confidence: 50%
+  Reason: No clear momentum (0.09% change). Holding current position.
+  Market: bid=66421, ask=66421.1, spread=0.0002%, vol=2764.35
+```
+
+### Swapping in an LLM (optional)
+
+The demo runs `MomentumStrategy` — no LLM involved. Reasoning is generated directly from price arithmetic. That's intentional: the template works out of the box without any API keys beyond Kraken.
+
+When you're ready to replace the strategy with a model, the codebase includes a ready-to-wire `LLMStrategy` stub at [`src/agent/strategy.ts` L90–L135](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/strategy.ts#L90-L135):
+
+```typescript
+// const response = await this.client.messages.create({
+//   model: "claude-sonnet-4-6",
+//   max_tokens: 500,
+//   messages: [{
+//     role: "user",
+//     content: `You are a crypto trading agent. Here is the current market data:
+//       Pair: ${data.pair}
+//       Price: $${data.price}
+//       24h High: $${data.high}, Low: $${data.low}
+//       Volume: ${data.volume}
+//       VWAP: $${data.vwap}
+//
+//       Respond with JSON: { action: "BUY"|"SELL"|"HOLD", amount: number, confidence: 0-1, reasoning: string }`
+//   }]
+// });
+```
+
+Uncomment and fill in your client. The key constraint: **reasoning must reference actual market data values** (price, volume, VWAP). This makes the explanation auditable — anyone can cross-check the claim against historical market data.
+
+### Reading a full tick in the terminal
+
+Here's what one complete tick looks like:
+
+```
+[agent] XBTUSD @ $66,391.2                         ← live price fetch from Kraken
+
+[2026-03-28T12:27:05.553Z] HOLD XBTUSD @ $66,391.20  ← formatExplanation() output
+  Confidence: 50%
+  Reason: No clear momentum (-0.00% change).
+          Holding current position.
+  Market: bid=66391.2, ask=66391.3,
+          spread=0.0002%, vol=2287.42
+
+────────────────────────────────────────────────────────────────────────
+CHECKPOINT — HOLD XBTUSD                            ← formatCheckpointLog() output
+  Agent:     1
+  Timestamp: 2026-03-28T12:27:05.000Z
+  Amount:    $0
+  Price:     $66391.2
+  Confidence: 50%
+  Reasoning: No clear momentum (-0.00% change).
+             Holding current position.
+  Sig:       0x009aa74a5314926499...0d7940931c       ← EIP-712 signature
+  Signer:    0x13Ef924EB7408e90278B86b659960AFb00DDae61
+────────────────────────────────────────────────────────────────────────
+
+[agent] Checkpoint posted to ValidationRegistry: 0xca62bb0d47f2b53a1a...
+```
+
+The sequence within each tick:
+1. `kraken.getTicker()` — fetch live price from Kraken
+2. `strategy.analyze(market)` — strategy returns a `TradeDecision` (including `reasoning`)
+3. `formatExplanation()` — prints the human-readable summary
+4. `generateCheckpoint()` — signs the decision with EIP-712; reasoning is hashed into the signature
+5. `formatCheckpointLog()` — prints the signed checkpoint block
+6. ValidationRegistry post — checkpoint hash submitted on-chain to Sepolia
+7. `fs.appendFileSync()` — checkpoint appended to `checkpoints.jsonl`
+
+### The checkpoints.jsonl file
+
+Every checkpoint is appended to `checkpoints.jsonl` at the project root. Each line is a JSON object:
+
+```json
+{"agentId":"0x...","timestamp":1704067200,"action":"BUY","asset":"XBT","pair":"XBTUSD","amountUsd":100,"priceUsd":95420.5,"reasoning":"Upward momentum...","reasoningHash":"0x...","confidence":0.78,"signature":"0x...","signerAddress":"0x..."}
+```
+
+This file is your audit log. After a trading session you can:
+- Review every decision and the reasoning behind it
+- Verify any signature with `verifyCheckpoint()`
+- Check that reasoning strings weren't tampered with using `verifyReasoningIntegrity()`
+
+> **Why this matters:** The explanation layer is already wired into the agent loop — you don't need to call it manually. Your strategy's `reasoning` field is the only input required. The stronger and more specific your reasoning strings, the more useful your agent's audit trail becomes — for debugging, for trust, and for building reputation over time.
+
+---
+
+## Part 6: EIP-712 Signed Checkpoints
+
+### What problem this solves
+
+Your agent writes "I bought BTC because the momentum was strong" to a log file. But a log file is just text — anyone could edit it. How do you prove that:
+1. A specific agent made a specific decision
+2. At a specific time
+3. With a specific piece of reasoning
+4. And that nothing was tampered with afterward?
+
+**EIP-712 signatures** solve this. Every trade decision is cryptographically signed by the agent's private key over structured data that includes all of the above.
+
+### What EIP-712 is
+
+EIP-712 is the Ethereum standard for signing **typed structured data** (as opposed to raw bytes). It produces human-readable signing prompts in wallets and prevents signature replay attacks across different contracts and chains.
+
+A signature under EIP-712 proves:
+- The signer held the private key at signing time
+- The signed data has not been modified
+- The signature was intended for this specific contract + chain (via the domain separator)
+
+### The checkpoint schema
+
+[`src/explainability/checkpoint.ts` L28–L41](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L28-L41) defines the typed structure:
+
+```typescript
+const domain = {
+  name: "AITradingAgent",
+  version: "1",
+  chainId: 11155111,          // Sepolia
+  verifyingContract: REGISTRY_ADDRESS,
+};
+
+const types = {
+  TradeCheckpoint: [
+    { name: "agentId",           type: "uint256" }, // ERC-721 token ID
+    { name: "timestamp",         type: "uint256" },
+    { name: "action",            type: "string"  },
+    { name: "asset",             type: "string"  },
+    { name: "pair",              type: "string"  },
+    { name: "amountUsdScaled",   type: "uint256" }, // USD * 100
+    { name: "priceUsdScaled",    type: "uint256" }, // USD * 100
+    { name: "reasoningHash",     type: "bytes32" }, // keccak256(reasoning)
+    { name: "confidenceScaled",  type: "uint256" }, // confidence * 1000
+    { name: "intentHash",        type: "bytes32" }, // hash of the approved TradeIntent
+  ],
+};
+```
+
+Why `reasoningHash` instead of the full reasoning string?
+- Strings can be arbitrarily long; hashing keeps the signed payload compact
+- The hash is a commitment: if you have the hash and the original string, you can verify they match via `verifyReasoningIntegrity()`
+- The full reasoning string is stored alongside the checkpoint in `checkpoints.jsonl`
+
+### Generating a checkpoint
+
+[`src/explainability/checkpoint.ts` L59–L67](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L59-L67):
+
+```typescript
+import { generateCheckpoint } from "./src/explainability/checkpoint.js";
+
+const checkpoint = await generateCheckpoint(
+  agentId,         // uint256 ERC-721 token ID
+  decision,        // TradeDecision from your strategy
+  market,          // MarketData at decision time
+  signer,          // ethers.Wallet — the agent's signing key
+  registryAddress, // AgentRegistry address (for domain separator)
+  11155111         // Sepolia chain ID
+);
+
+// checkpoint.signature = "0x1a2b3c..."
+// checkpoint.signerAddress = "0xYourWalletAddress"
+// checkpoint.reasoningHash = keccak256(decision.reasoning)
+```
+
+Internally this calls `wallet.signTypedData(domain, types, value)` — ethers.js v6's EIP-712 signing method.
+
+### Verifying a checkpoint
+
+Anyone can verify a checkpoint without trusting any intermediary:
+
+```typescript
+import { verifyCheckpoint, verifyReasoningIntegrity } from "./src/explainability/checkpoint.js";
+
+// 1. Verify the signature recovers to the expected signer
+const sigValid = verifyCheckpoint(
+  checkpoint,
+  registryAddress,
+  11155111,
+  expectedSignerAddress
+);
+console.log(`Signature valid: ${sigValid}`);  // true
+
+// 2. Verify the reasoning string wasn't tampered with
+const reasoningValid = verifyReasoningIntegrity(checkpoint);
+console.log(`Reasoning hash matches: ${reasoningValid}`);  // true
+```
+
+Under the hood this uses `ethers.verifyTypedData()`:
+
+```typescript
+const recovered = ethers.verifyTypedData(domain, CHECKPOINT_TYPES, value, checkpoint.signature);
+return recovered.toLowerCase() === expectedSigner.toLowerCase();
+```
+
+### Reading checkpoints from checkpoints.jsonl
+
+```typescript
+import * as fs from "fs";
+import { verifyCheckpoint } from "./src/explainability/checkpoint.js";
+
+const lines = fs.readFileSync("checkpoints.jsonl", "utf8").trim().split("\n");
+const checkpoints = lines.map(l => JSON.parse(l));
+
+for (const cp of checkpoints) {
+  const valid = verifyCheckpoint(cp, registryAddress, 11155111, expectedSigner);
+  console.log(`${new Date(cp.timestamp * 1000).toISOString()} | ${cp.action} ${cp.pair} | valid: ${valid}`);
+}
+```
+
+### What you can build on top of this
+
+The signed checkpoint format is a foundation. With it you can:
+
+- **On-chain verification**: a smart contract could call `ecrecover` to verify a checkpoint was produced by a registered agent before allowing an action
+- **Reputation scoring**: aggregate checkpoint history to score agents by decision quality
+- **Dispute resolution**: if someone claims the agent made a bad decision, the signed checkpoint is the ground truth
+- **Compliance**: verifiable audit trail that specific reasoning led to specific trades
+
+> **Why this matters:** Checkpoint generation is automatic — the agent loop calls `generateCheckpoint()` after every decision, including HOLDs. Every action your agent takes is cryptographically signed and tied to its registered `agentId`. This is the foundation for building on-chain reputation: a verifiable, tamper-proof history of decisions that anyone can audit.
+
+---
+
+## Part 7: Using This as a Reusable Template
+
+### The architecture in one picture
+
+```
+┌────────────────────────────────────────────────────────────────┐
+│                     YOUR STRATEGY (swap here)                  │
+│  implements TradingStrategy { analyze(MarketData): TradeDecision }  │
+└──────────────────────────────┬─────────────────────────────────┘
+                               │ TradeDecision
+                               ▼
+┌────────────────────────────────────────────────────────────────┐
+│                     FIXED SCAFFOLDING                          │
+│                                                                │
+│  Identity     ERC-8004 AgentRegistry (Sepolia)                │
+│  Vault        Vault.allocatedCapital[agentId]                 │
+│  Risk         RiskRouter.validateTrade(agentId, size)         │
+│  Exchange     Kraken REST API (paper or live)                 │
+│  Explain      formatExplanation(decision, market)             │
+│  Checkpoint   EIP-712 signTypedData → checkpoints.jsonl       │
+└────────────────────────────────────────────────────────────────┘
+```
+
+Everything below the dashed line is provided by this template. You only need to implement `analyze()`.
+
+### How to swap in your own strategy
+
+**Option A: Simple algorithmic strategy**
+
+Implement [`TradingStrategy`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/strategy.ts) directly:
+
+```typescript
+// src/agent/my-strategy.ts
+import { MarketData, TradeDecision, TradingStrategy } from "../types/index";
+
+export class MyStrategy implements TradingStrategy {
+  async analyze(data: MarketData): Promise<TradeDecision> {
+    // Your logic here — technical indicators, ML model, anything
+    const action = data.price > data.vwap ? "BUY" : "SELL";
+
+    return {
+      action,
+      asset: "XBT",
+      pair: data.pair,
+      amount: 100,
+      confidence: 0.7,
+      reasoning: `Price ($${data.price}) is ${action === "BUY" ? "above" : "below"} VWAP ($${data.vwap.toFixed(2)}). ${action}.`,
+    };
+  }
+}
+```
+
+Then in `src/agent/index.ts`, swap the strategy import:
+
+```typescript
+// Before:
+import { MomentumStrategy } from "./strategy";
+const strategy = new MomentumStrategy(5, 100);
+
+// After:
+import { MyStrategy } from "./my-strategy.js";
+const strategy = new MyStrategy();
+```
+
+That's it. Everything else — identity, vault, risk checks, Kraken execution, checkpoints — runs unchanged.
+
+---
+
+**Option B: Claude API strategy**
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+import { MarketData, TradeDecision, TradingStrategy } from "../types/index";
+
+export class ClaudeStrategy implements TradingStrategy {
+  private client = new Anthropic();
+
+  async analyze(data: MarketData): Promise<TradeDecision> {
+    const response = await this.client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 500,
+      system: `You are a crypto trading agent. Respond ONLY with valid JSON matching:
+        { action: "BUY"|"SELL"|"HOLD", amount: number, confidence: number, reasoning: string }
+        reasoning must reference specific numbers from the market data.`,
+      messages: [{
+        role: "user",
+        content: `Analyze: pair=${data.pair} price=${data.price} high=${data.high} low=${data.low} vwap=${data.vwap} volume=${data.volume}`,
+      }],
+    });
+
+    const parsed = JSON.parse(response.content[0].type === "text" ? response.content[0].text : "{}");
+    return {
+      ...parsed,
+      asset: data.pair.replace("USD", ""),
+      pair: data.pair,
+    };
+  }
+}
+```
+
+Add to `.env`: `ANTHROPIC_API_KEY=your_key`
+
+---
+
+**Option C: Groq / Llama strategy**
+
+```typescript
+import Groq from "groq-sdk";
+import { MarketData, TradeDecision, TradingStrategy } from "../types/index";
+
+export class GroqStrategy implements TradingStrategy {
+  private client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+  async analyze(data: MarketData): Promise<TradeDecision> {
+    const completion = await this.client.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content: `Trading agent. Return JSON: { action, amount, confidence, reasoning }`,
+        },
+        {
+          role: "user",
+          content: JSON.stringify({ pair: data.pair, price: data.price, high: data.high, low: data.low, vwap: data.vwap }),
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+
+    const parsed = JSON.parse(completion.choices[0].message.content || "{}");
+    return { ...parsed, asset: data.pair.replace("USD", ""), pair: data.pair };
+  }
+}
+```
+
+### What teams can customize
+
+| Layer | Customizable? | How |
+|-------|--------------|-----|
+| Trading strategy / model | Yes | Implement `TradingStrategy` |
+| Trading pair | Yes | `TRADING_PAIR` in `.env` |
+| Poll interval | Yes | `POLL_INTERVAL_MS` in `.env` |
+| Risk parameters | Yes | `setRiskParams()` call |
+| Agent metadata | Yes | Edit name/description/capabilities in `register-agent.ts` |
+| ERC-8004 identity scheme | Fixed | Same for all agents |
+| Vault + RiskRouter contracts | Fixed | Same contracts, per-agent config |
+| Kraken API client | Fixed | `src/exchange/kraken.ts` |
+| EIP-712 checkpoint format | Fixed | `src/explainability/checkpoint.ts` |
+
+### Checklist for a new team
+
+1. Clone the repo: `git clone https://github.com/Stephen-Kimoi/ai-trading-agent-template`
+2. `npm install`
+3. `cp .env.example .env` and fill in keys
+4. `npx hardhat run scripts/deploy.ts --network sepolia` — deploy contracts
+5. Add all 5 contract addresses to `.env`
+6. `npm run register` — register your agent on-chain
+7. Add `AGENT_ID` to `.env`
+8. Write your strategy in `src/agent/my-strategy.ts`
+9. Swap the strategy import in `src/agent/index.ts`
+10. Run the agent and dashboard in two terminals:
+
+```bash
+npm run run-agent    # Terminal 1
+npm run dashboard    # Terminal 2 → http://localhost:3000
+```
+
+### Going to production
+
+When you're ready to trade for real:
+1. Set `KRAKEN_SANDBOX=false` in `.env`
+2. Ensure your vault has allocated capital for your agent
+3. Set sensible risk params via `setRiskParams()`
+4. Monitor the dashboard (`npm run dashboard`) for live decisions and signed checkpoints
+5. All checkpoints are also written to `checkpoints.jsonl` for offline audit
+
+### Dashboard
+
+The project ships with a live web dashboard ([`scripts/dashboard.ts`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/scripts/dashboard.ts)) that reads from `checkpoints.jsonl` and auto-refreshes every 5 seconds:
+
+```bash
+npm run dashboard   # → http://localhost:3000
+```
+
+It shows:
+- **Live BTC price** with tick-by-tick change
+- **Last decision** (HOLD / BUY / SELL) with colour indicator
+- **Price chart** of the last 20 ticks
+- **Agent info** — agentId, wallet, pair, checkpoint count
+- **Checkpoint feed** — every decision as a card with reasoning, confidence bar, and truncated EIP-712 signature
+
+Run it alongside `npm run run-agent` for a complete view of the agent in action.
+
+---
+
+## Conclusion
+
+You now have a production-ready AI trading agent with:
+- **On-chain identity** via ERC-8004 (ERC-721 token) — verifiable, transferable, composable
+- **Risk controls** via the RiskRouter — every trade validated against defined limits before execution
+- **Cryptographic explainability** via EIP-712 checkpoints — every decision signed, hashed, and auditable
+- **Live dashboard** — full visibility into agent behavior in real time
+
+The key insight is the separation of concerns: the strategy layer (your code) is fully decoupled from the infrastructure layer (identity, risk, exchange, checkpoints). Swap in any model — Claude, Llama, Groq, or a simple algorithm — and the rest runs unchanged.
+
+Explore the full source at [github.com/Stephen-Kimoi/ai-trading-agent-template](https://github.com/Stephen-Kimoi/ai-trading-agent-template).
