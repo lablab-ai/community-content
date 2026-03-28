@@ -94,10 +94,15 @@ AGENT_WALLET_PRIVATE_KEY=0xYOUR_HOT_WALLET_KEY
 ```
 
 **Two wallet roles:**
-| Wallet | Role | Recommended |
-|--------|------|-------------|
-| `PRIVATE_KEY` (operatorWallet) | Owns the ERC-721 token, pays gas | Cold wallet / hardware wallet |
-| `AGENT_WALLET_PRIVATE_KEY` (agentWallet) | Signs TradeIntents + checkpoints at runtime | Separate hot wallet |
+<table>
+  <thead>
+    <tr><th>Wallet</th><th>Role</th><th>Recommended</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>PRIVATE_KEY</code> (operatorWallet)</td><td>Owns the <a href="https://eips.ethereum.org/EIPS/eip-721">ERC-721</a> token, pays gas</td><td>Cold wallet / hardware wallet</td></tr>
+    <tr><td><code>AGENT_WALLET_PRIVATE_KEY</code> (agentWallet)</td><td>Signs TradeIntents + checkpoints at runtime</td><td>Separate hot wallet</td></tr>
+  </tbody>
+</table>
 
 For testing, the same key for both is fine.
 
@@ -173,7 +178,7 @@ Add `AGENT_ID=0` (or whatever token ID you received) to your `.env`.
 
 ## Step 5: Verify on Etherscan
 
-Open Sepolia Etherscan → your `AGENT_REGISTRY_ADDRESS` → **Events** tab:
+Open [Sepolia Etherscan](https://sepolia.etherscan.io) → your `AGENT_REGISTRY_ADDRESS` → **Events** tab:
 
 ```
 AgentRegistered
@@ -183,7 +188,7 @@ AgentRegistered
   name:               AITradingAgent
 ```
 
-You can also check the **ERC-721 Transfers** tab, you'll see the mint event transferring token ID `0` from the zero address to your wallet.
+You can also check the **[ERC-721 Transfers](https://sepolia.etherscan.io)** tab, you'll see the mint event transferring token ID `0` from the zero address to your wallet.
 
 ---
 
@@ -295,7 +300,7 @@ The token ID is auto-incrementing from 0. Your `agentId` is unique and permanent
 
 ## Template note
 
-> **Why this matters:** Once registered, your `agentId` is the identity anchor for everything your agent does — capital allocation, risk validation, EIP-712 checkpoint signing, and on-chain attestations. This is how agents build verifiable on-chain reputation over time. Swapping your strategy never touches this layer.
+> **Why this matters:** Once registered, your `agentId` is the identity anchor for everything your agent does, capital allocation, risk validation, EIP-712 checkpoint signing, and on-chain attestations. This is how agents build verifiable on-chain reputation over time. Swapping your strategy never touches this layer.
 
 ---
 
@@ -309,7 +314,7 @@ When building an AI trading agent, you want your code to stay focused on strateg
 - HMAC-SHA512 request signing (no manual auth code)
 - Rate-limit retries (no 429 handling needed)
 - Built-in paper trading sandbox (`--sandbox` flag)
-- **Built-in MCP server** — exposes Kraken as structured tools for AI agents
+- **Built-in MCP server**: exposes Kraken as structured tools for AI agents
 
 ---
 
@@ -430,10 +435,15 @@ This is the cleanest approach for LangChain/Claude tool-use integrations, since 
 
 ## Sandbox vs. live
 
-| Setting | Behavior |
-|---------|----------|
-| `KRAKEN_SANDBOX=true` | Paper trading — orders logged but not executed |
-| `KRAKEN_SANDBOX=false` | Live trading — real funds, real orders |
+<table>
+  <thead>
+    <tr><th>Setting</th><th>Behavior</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>KRAKEN_SANDBOX=true</code></td><td>Paper trading — orders logged but not executed</td></tr>
+    <tr><td><code>KRAKEN_SANDBOX=false</code></td><td>Live trading — real funds, real orders</td></tr>
+  </tbody>
+</table>
 
 The agent reads this at startup. No code changes needed to switch modes.
 
@@ -624,13 +634,18 @@ $94,200 may reverse the move."
 
 The reasoning field flows through three places automatically, once per tick (every 30 seconds by default):
 
-| Where | What you see | Code reference |
-|-------|-------------|----------------|
-| **Terminal** | Printed immediately after each decision via `formatExplanation()` | [`src/agent/index.ts` L119](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L119) |
-| **Terminal (checkpoint block)** | Printed again inside the signed checkpoint summary via `formatCheckpointLog()` | [`src/agent/index.ts` L174](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L174) |
-| **EIP-712 signature** | `keccak256(reasoning)` is computed and included in the signed payload | [`src/explainability/checkpoint.ts` L69](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L69) |
-| **`checkpoints.jsonl`** | Full reasoning string appended as JSON after every tick | [`src/agent/index.ts` L193](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L193) |
-| **Dashboard** | Shown on each checkpoint card under the action badge | `http://localhost:3000` (poll every 5s) |
+<table>
+  <thead>
+    <tr><th>Where</th><th>What you see</th><th>Code reference</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Terminal</strong></td><td>Printed immediately after each decision via <code>formatExplanation()</code></td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L119"><code>src/agent/index.ts</code> L119</a></td></tr>
+    <tr><td><strong>Terminal (checkpoint block)</strong></td><td>Printed again inside the signed checkpoint summary via <code>formatCheckpointLog()</code></td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L174"><code>src/agent/index.ts</code> L174</a></td></tr>
+    <tr><td><strong>EIP-712 signature</strong></td><td><code>keccak256(reasoning)</code> is computed and included in the signed payload</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L69"><code>src/explainability/checkpoint.ts</code> L69</a></td></tr>
+    <tr><td><strong><code>checkpoints.jsonl</code></strong></td><td>Full reasoning string appended as JSON after every tick</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L193"><code>src/agent/index.ts</code> L193</a></td></tr>
+    <tr><td><strong>Dashboard</strong></td><td>Shown on each checkpoint card under the action badge</td><td><code>http://localhost:3000</code> (poll every 5s)</td></tr>
+  </tbody>
+</table>
 
 You'll see the first output in the terminal **within 30 seconds** of starting `npm run run-agent` (the agent warms up for 5 ticks collecting price samples, then starts making decisions). The default interval is set in [`src/agent/index.ts` L42](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L42) and can be overridden with `POLL_INTERVAL_MS` in `.env`.
 
@@ -1072,17 +1087,22 @@ export class GroqStrategy implements TradingStrategy {
 
 ## What teams can customize
 
-| Layer | Customizable? | How |
-|-------|--------------|-----|
-| Trading strategy / model | ✅ Yes | Implement [`TradingStrategy`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/strategy.ts#L27) |
-| Trading pair | ✅ Yes | [`TRADING_PAIR`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L41) in `.env` |
-| Poll interval | ✅ Yes | [`POLL_INTERVAL_MS`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L42) in `.env` |
-| Risk parameters | ✅ Yes | [`setRiskParams()`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/onchain/riskRouter.ts#L183) call |
-| Agent metadata | ✅ Yes | Edit name/description/capabilities in [`register-agent.ts`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/scripts/register-agent.ts#L48) |
-| ERC-8004 identity scheme | ❌ Fixed | Same for all agents |
-| Vault + RiskRouter contracts | ❌ Fixed | Same contracts, per-agent config |
-| Kraken API client | ❌ Fixed | [`src/exchange/kraken.ts`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/exchange/kraken.ts) |
-| EIP-712 checkpoint format | ❌ Fixed | [`src/explainability/checkpoint.ts`](https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L28) |
+<table>
+  <thead>
+    <tr><th>Layer</th><th>Customizable?</th><th>How</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Trading strategy / model</td><td>✅ Yes</td><td>Implement <a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/strategy.ts#L27"><code>TradingStrategy</code></a></td></tr>
+    <tr><td>Trading pair</td><td>✅ Yes</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L41"><code>TRADING_PAIR</code></a> in <code>.env</code></td></tr>
+    <tr><td>Poll interval</td><td>✅ Yes</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/agent/index.ts#L42"><code>POLL_INTERVAL_MS</code></a> in <code>.env</code></td></tr>
+    <tr><td>Risk parameters</td><td>✅ Yes</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/onchain/riskRouter.ts#L183"><code>setRiskParams()</code></a> call</td></tr>
+    <tr><td>Agent metadata</td><td>✅ Yes</td><td>Edit name/description/capabilities in <a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/scripts/register-agent.ts#L48"><code>register-agent.ts</code></a></td></tr>
+    <tr><td>ERC-8004 identity scheme</td><td>❌ Fixed</td><td>Same for all agents</td></tr>
+    <tr><td>Vault + RiskRouter contracts</td><td>❌ Fixed</td><td>Same contracts, per-agent config</td></tr>
+    <tr><td>Kraken API client</td><td>❌ Fixed</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/exchange/kraken.ts"><code>src/exchange/kraken.ts</code></a></td></tr>
+    <tr><td>EIP-712 checkpoint format</td><td>❌ Fixed</td><td><a href="https://github.com/Stephen-Kimoi/ai-trading-agent-template/blob/main/src/explainability/checkpoint.ts#L28"><code>src/explainability/checkpoint.ts</code></a></td></tr>
+  </tbody>
+</table>
 
 ---
 
