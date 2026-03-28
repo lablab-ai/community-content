@@ -1,0 +1,57 @@
+---
+title: "PRISM API"
+description: "The PRISM API encompasses an elite agentic finance SDK for sub-50ms market data and a universal multi-model AI gateway by Dapto for intelligent routing."
+---
+
+# PRISM API
+
+| General | |
+| --- | --- |
+| Author | OpenClaw / Dapto  |
+| Documentation | https://dapto.ai/solutions/api/  |
+| Technology Type | Agentic Finance SDK & Multi-Model Gateway  |
+
+## Start building with PRISM API products
+
+The PRISM API ecosystem provides developer-first interfaces that unify high-fidelity financial data retrieval and abstract the complexities of the generative AI ecosystem. By leveraging the sub-50ms Prism Finance SDK and the Dapto multi-model gateway, developers can transition from simple API wrappers to building deeply sophisticated, enterprise-ready autonomous agents . We highly encourage all participants in the global lablab.ai hackathons to integrate these predictable request structures to engineer resilient, data-rich applications and innovative workflows.
+
+<TechTutorials/>
+
+## Taxonomic Disambiguation
+
+Within the broader AI and software engineering sectors, the "Prism" nomenclature is utilized by several disparate technologies. To prevent integration errors during rapid hackathon prototyping, note that this documentation does **not** cover Stoplight's HTTP mock server , Salesforce's Einstein Data Prism for RAG , Prisma's database ORM , or Palo Alto Networks' Prisma AIRS security interceptor. 
+
+This page explicitly focuses on two critical infrastructures frequently utilized in lablab.ai events: the **Prism Finance SDK** (`api.prismapi.ai`) and the **Dapto Prism Multi-Model API**.
+
+## Architecting Autonomous Workflows
+
+Developers can construct deeply sophisticated autonomous agents by utilizing the PRISM APIs as an execution layer, 473. A standard workflow might involve querying the `api.prismapi.ai` endpoint for stock fundamentals, formatting the data, and routing it through the Dapto gateway for LLM summarization. 
+
+### Prism Financial Agentic SDK
+The Prism Finance SDK is engineered to provide high-fidelity, low-latency market data specifically for autonomous AI systems. 
+* **Cache-First Architecture:** Manages rate limits at the edge, delivering sub-50 millisecond latency without requiring developers to build complex middleware like Redis clusters.
+
+* **Canonical Asset Resolution:** Automatically resolves fragmented asset nomenclature (e.g., grouping BTC, WBTC, cbBTC) into a single canonical entity, drastically reducing the cognitive load and token consumption for downstream LLMs.
+* **Operational Boundaries:** All endpoints are strictly read-only. It is designed for analysis, backtesting, and feature generation, and must be paired with a dedicated execution environment for live trading. Integration requires securing the `PRISM_API_KEY` in your `.env` file.
+
+### Dapto PRISM Multi-Model Gateway
+The Dapto PRISM API serves as a unified execution and routing layer, completely abstracting the complexities of multi-model AI integration.
+* **Universal Abstraction:** Interfaces with Open AI, Anthropic, Google, and Meta models using a singular, unified RESTful structure, heavily reducing codebase complexity. 
+
+* **Intelligent Routing & Fallbacks:** Evaluates the active model ecosystem and automatically routes payloads based on task complexity, cost, or latency. It also features automated fallback guardrails to maintain stability during provider outages.
+* **Enterprise Governance:** Automatically redacts sensitive PII and PHI data before it reaches third-party model providers, offering comprehensive bidirectional filtering.
+
+### Endpoint Mechanics and Payload Schema
+
+The primary chat endpoint for the Dapto gateway acts as the central nervous system for multi-model interactions, allowing developers to configure routing logic and governance simultaneously.
+
+**Endpoint:** `POST https://api.dapto.ai/v1/chat/completions`
+
+| Payload Parameter | Data Type | Functional Description |
+| --- | --- | --- |
+| `messages` | Array of Objects | Contains standard role/content string pairs defining the prompt context. |
+| `routing_configuration` | Object | Defines the operational strategy (e.g., "quality_first") and specifies fallback models. |
+| `context` | Object | Identifies the workspace and project for accurate token and cost tracking. |
+| `governance` | Object | Contains the `redact_sensitive` boolean flag and specific audit requirements. |
+
+---

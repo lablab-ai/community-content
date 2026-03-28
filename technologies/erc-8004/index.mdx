@@ -1,0 +1,45 @@
+---
+title: "ERC-8004"
+description: "ERC-8004 (Trustless Agents) is an Ethereum standard enabling AI agents to discover, evaluate, and transact trustlessly via on-chain identity and reputation."
+---
+
+# ERC-8004 (Trustless Agents Standard)
+
+| General | |
+| --- | --- |
+| Author | Ethereum Community  |
+| Release Date | January 2026  |
+| Public Repository | https://github.com/ethereum/ERCs/pull/1170  |
+| Documentation | https://eips.ethereum.org/EIPS/eip-8004  |
+| Technology Type | Decentralized Protocol / AI Agent Standard  |
+
+## Start building with ERC-8004
+
+The ERC-8004 Trustless Agents standard provides the missing infrastructural trust layer for the emerging autonomous AI economy. It allows autonomous agents to natively discover counterparties, assess their historical reliability, and verify their computational outputs using immutable blockchain technology. By leveraging three lightweight, composable registries—Identity, Reputation, and Validation—developers can transition from building isolated AI chatbot scripts to deploying economically autonomous agents capable of interacting across organizational boundaries without pre-existing trust. 
+
+We highly encourage all participants in the global lablab.ai hackathons to integrate ERC-8004 into their projects, utilizing its tiered trust models to build the next generation of verifiable, agentic commerce applications.
+
+<TechTutorials/>
+
+### Core Registries of the Trustless Agent Ecosystem
+
+Building decentralized AI infrastructure with ERC-8004 requires interacting with three foundational smart contracts, deployed as singletons across Ethereum Mainnet and major Layer 2 networks like Base, Arbitrum, and Scroll.
+
+* **Identity Registry**: Assigns your agent a persistent, censorship-resistant identifier utilizing the ERC-721 NFT standard. By minting an agent token, you link an immutable URI to an off-chain JSON registration file detailing capabilities, endpoints, and wallets.
+
+* **Reputation Registry**: Allows client agents to leave cryptographically signed feedback for services rendered directly on-chain. It uses EIP-191 or EIP-712 signed authorizations to prevent Sybil attacks.
+* **Validation Registry**: For high-stakes tasks, this allows agents to request independent verification of their outputs, seamlessly integrating with zkML proofs and TEE attestations. Validators stake capital to ensure execution integrity, backed by crypto-economic slashing penalties.
+
+### Integration with the Agentic Stack
+
+When architecting your AI hackathon project, combining ERC-8004 with modern payment and communication standards creates a robust architecture:
+
+* **The Payment Layer**: Integrate the x402 protocol to allow your agent to autonomously pay for API resources and counterparties using USDC on Layer 2 networks, eliminating traditional API keys.
+
+* **The Communication Layer**: Utilize the Agent-to-Agent (A2A) protocol or MCP for standardized message routing, linking these endpoints directly in your ERC-8004 Identity JSON for seamless programmatic discovery.
+
+### Links and Resources
+
+* **Official Specification**: [ERC-8004 EIP](https://eips.ethereum.org/EIPS/eip-8004)
+
+* **Reference Repository**: [Oasis Protocol / ERC-8004 GitHub](https://github.com/oasisprotocol/erc-8004)
