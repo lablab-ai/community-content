@@ -1,0 +1,377 @@
+---
+title: "Pay-Per-Call LLM API with Circle USDC Nano Payments"
+description: "Build a pay-per-call AI inference API using Circle's x402 Gateway, gasless USDC micropayments, and a live React demo UI. No subscriptions, no credit cards — agents pay per call."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1775740984/lablab-tutorials/bg6kmz0vhyrkmqoww6ia.png"
+authorUsername: "stevekimoi"
+---
+
+# Pay-Per-Call LLM API with Circle USDC Nano Payments
+
+## Introduction
+
+Every AI API on the internet today bills the same way: you sign up, enter a credit card, pick a plan, and get billed at the end of the month. That model works for humans. It completely breaks for AI agents.
+
+An autonomous agent making thousands of API calls per session cannot sign up for subscriptions or hold credit cards. It needs to pay per action, programmatically, with no human in the loop. That gap — between what AI agents need and what today's billing infrastructure provides — is exactly what Circle's Gateway Nano Payments solve.
+
+In this tutorial, you'll build a working pay-per-call LLM API. A user (or agent) sends a message, the server demands $0.01 USDC, the buyer pays automatically using a gasless offchain signature, and the LLM responds. No wallet pop-ups. No gas fees per call. No billing portal. You'll also build a React demo UI that visualizes the full payment flow in real time.
+
+This project was built for the [Arc Agentic Economy Hackathon](https://lablab.ai/event) powered by Circle. The full source code is at [github.com/Stephen-Kimoi/nanopayments-with-usdc](https://github.com/Stephen-Kimoi/nanopayments-with-usdc).
+
+### What you'll build
+
+- An Express server (the **seller**) that protects a `/chat` endpoint with Circle Gateway payment middleware — one line of code to require payment
+- A `GatewayClient` (the **buyer**) that automatically handles the 402 → sign → settle → response cycle
+- A React + TypeScript demo UI showing the five-step payment pipeline animating in real time, with a receipt card after each successful call
+- Two demo endpoints (`/demo/balance`, `/demo/chat`) so the UI can trigger real payments without exposing private keys in the browser
+
+---
+
+## Prerequisites
+
+- **Node.js 18+** and npm
+- **An EVM wallet** with USDC on Base Sepolia (the buyer wallet)
+- **An EVM address** to receive payments (the seller address — can be the same wallet)
+- **OpenAI API key** for the LLM backend
+- Basic familiarity with TypeScript and Express
+
+### Get testnet USDC
+
+If you don't have USDC on Base Sepolia yet:
+
+1. Get Base Sepolia ETH from [sepoliafaucet.com](https://sepoliafaucet.com/) or [faucet.quicknode.com](https://faucet.quicknode.com/base/sepolia)
+2. Get testnet USDC from the [Circle Testnet Faucet](https://faucet.circle.com/) — select **Base Sepolia**
+
+---
+
+## Quick Start: Get It Running First
+
+Let's get the project running before we explain how it works. Clone the repo, install dependencies, configure your environment, and start both the server and the UI.
+
+### Clone and install
+
+```bash
+git clone https://github.com/Stephen-Kimoi/nanopayments-with-usdc.git
+cd nanopayments-with-usdc
+npm install
+cd ui && npm install && cd ..
+```
+
+### Configure environment
+
+Copy the example file and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and set:
+
+```bash
+# Your wallet address — this receives the $0.01 USDC on each call
+EVM_ADDRESS=0xYourSellerWalletAddressHere
+
+# Your private key — this is the buyer wallet that pays per call
+# The server uses this internally so the browser never touches it
+EVM_PRIVATE_KEY=0xYourBuyerPrivateKeyHere
+
+# OpenAI
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+
+# Server URL (leave as-is for local dev)
+RESOURCE_SERVER_URL=http://localhost:4021
+```
+
+### Deposit USDC into your Circle Gateway Wallet
+
+Before the first payment can go through, the buyer wallet needs USDC deposited into the Circle Gateway. This is a one-time setup — the Gateway Wallet is a smart contract that holds your balance for gasless payments.
+
+```bash
+npm run deposit -- 0.10
+```
+
+This deposits 0.10 USDC. Base Sepolia takes **13–19 minutes** for Circle to credit the deposit. You can watch it arrive:
+
+```bash
+npm run balance
+```
+
+When you see the Gateway balance go above 0, you're ready.
+
+### Start the server and UI
+
+Open two terminals:
+
+```bash
+# Terminal 1 — Express server on port 4021
+npm run server
+
+# Terminal 2 — Vite dev server on port 5173
+npm run ui
+```
+
+Open `http://localhost:5173`. Type a question, hit Send, and watch the payment flow animate.
+
+<Img src="https://i.ibb.co/Df7H0nfd/tmpbq938ckf.png" alt="NanoAI demo UI showing the 5-step payment pipeline and chat interface" caption="The live demo UI — the right panel shows each step of the payment flow animating in real time." />
+
+---
+
+## How the Demo Works
+
+When you hit Send in the UI, here is exactly what happens:
+
+**Step 1 — Request sent.** The UI calls `POST /demo/chat` on the Express server. This is a demo-only endpoint that acts as the buyer on your behalf (so the browser never handles private keys).
+
+**Step 2 — 402 Payment Required.** Inside `/demo/chat`, the server's embedded `GatewayClient` calls the real `POST /chat` endpoint. The Circle Gateway middleware sees no payment proof and returns HTTP 402 with machine-readable payment requirements: the price, the network, the payment scheme.
+
+**Step 3 — Sign authorization.** The `GatewayClient` reads the 402 response and creates an EIP-3009 `TransferWithAuthorization` signature. This is a cryptographic message — it authorizes Circle to move $0.01 USDC from the buyer's Gateway Wallet to the seller. Critically, this happens **offchain** — no blockchain transaction, no gas fee.
+
+**Step 4 — Circle Gateway settle.** The client retries the request with the signature attached. The middleware forwards it to Circle's settle API, which validates the signature and queues the transfer. Circle batches these offchain signatures and settles them onchain periodically — this is why there's no gas per call.
+
+**Step 5 — Response delivered.** The server calls OpenAI, gets the LLM response, and returns it along with a payment receipt: amount paid, network, scheme, and balance before/after.
+
+The whole cycle — from the first request to the LLM response — takes about two seconds.
+
+---
+
+## The Code Explained
+
+### Seller side: one line to require payment
+
+The server is a standard Express app with Circle's Gateway middleware. The entire payment logic is:
+
+```typescript
+import { createGatewayMiddleware } from "@circle-fin/x402-batching/server";
+
+const gateway = createGatewayMiddleware({
+  sellerAddress: SELLER_ADDRESS,  // your receiving wallet
+  networks: ["eip155:84532"],     // Base Sepolia
+});
+
+// Any request to POST /chat must include valid payment proof
+app.post("/chat", gateway.require("$0.01"), async (req, res) => {
+  // req.payment is populated by the middleware on success
+  const { payer, amount, network } = req.payment;
+  console.log(`Payment: ${amount} USDC from ${payer}`);
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: req.body.messages,
+  });
+
+  res.json({ reply: completion.choices[0].message.content });
+});
+```
+
+`gateway.require("$0.01")` is the entire payment gate. If the request arrives without a valid payment proof, the middleware returns 402 automatically. If the payment is valid, it populates `req.payment` and calls `next()`. Your route handler only runs if the payment cleared.
+
+### Buyer side: automatic payment handling
+
+The buyer client uses `GatewayClient.pay()`, which wraps any HTTP call with automatic 402 handling:
+
+```typescript
+import { GatewayClient } from "@circle-fin/x402-batching/client";
+
+const client = new GatewayClient({
+  chain: "baseSepolia",
+  privateKey: PRIVATE_KEY,
+});
+
+// This single call handles the full flow:
+// send request → receive 402 → sign EIP-3009 → retry → get response
+const { data } = await client.pay("http://localhost:4021/chat", {
+  method: "POST",
+  body: JSON.stringify({ messages }),
+  headers: { "Content-Type": "application/json" },
+});
+
+console.log(data.reply);
+```
+
+The caller doesn't need to know anything about payment. `pay()` handles the 402 cycle transparently and returns the final response.
+
+### Demo endpoints for the UI
+
+The UI calls `/demo/balance` and `/demo/chat` — these are wrapper endpoints on the same server that embed the buyer client, so the browser never needs a private key:
+
+```typescript
+// GET /demo/balance — live gateway balance for the header
+app.get("/demo/balance", async (_req, res) => {
+  const b = await buyerClient.getBalances();
+  res.json({
+    gateway: b.gateway.formattedAvailable,
+    wallet: b.wallet.formatted,
+  });
+});
+
+// POST /demo/chat — runs the full payment cycle server-side
+app.post("/demo/chat", async (req, res) => {
+  const before = await buyerClient.getBalances();
+
+  // pay() calls the real /chat endpoint (which requires payment)
+  const { data } = await buyerClient.pay("http://localhost:4021/chat", {
+    method: "POST",
+    body: JSON.stringify({ messages: req.body.messages }),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const after = await buyerClient.getBalances();
+
+  res.json({
+    reply: data.reply,
+    payment: {
+      amount: "0.01",
+      currency: "USDC",
+      network: "Base Sepolia",
+      scheme: "GatewayWalletBatched",
+      balanceBefore: before.gateway.formattedAvailable,
+      balanceAfter: after.gateway.formattedAvailable,
+    },
+  });
+});
+```
+
+---
+
+## How an AI Agent Would Actually Use This
+
+The seller code above could be deployed to any public URL — say, `https://nanoai.example.com/chat`. An AI agent that needs to call it would run exactly what's in `client/pay.ts`:
+
+```typescript
+const client = new GatewayClient({
+  chain: "baseSepolia",
+  privateKey: AGENT_PRIVATE_KEY,   // the agent's funded wallet
+});
+
+const { data } = await client.pay("https://nanoai.example.com/chat", {
+  method: "POST",
+  body: JSON.stringify({
+    messages: [{ role: "user", content: agentQuery }],
+  }),
+  headers: { "Content-Type": "application/json" },
+});
+```
+
+That's it. The agent doesn't sign up for an account, doesn't hold an API key, doesn't have a subscription. It has USDC in a Gateway Wallet, and it pays per call. The operator of the AI service receives USDC in real time, per request, with no billing infrastructure to maintain.
+
+An orchestrator framework like LangChain, AutoGen, or a custom agent loop would wrap all outbound HTTP calls with `GatewayClient.pay()`. When the agent picks "call the LLM tool," the payment happens transparently inside the tool implementation.
+
+---
+
+## Why This Matters: The Economics of Nano Payments
+
+Traditional payment rails have a minimum viable transaction cost of roughly $0.30 (Stripe's fixed fee alone). That floor makes anything under ~$1 per call economically impossible — you'd pay more in fees than the service is worth. So every AI API is forced into subscriptions or credit bundles.
+
+Circle Gateway removes that floor entirely:
+
+| | Traditional API billing | Circle Gateway Nano Payments |
+|---|---|---|
+| Minimum viable price | ~$1+ per call | $0.001 per call |
+| Gas per payment | N/A (but card fees apply) | $0.00 |
+| Human required to set up | Yes (account, card, plan) | No |
+| Autonomous agent compatible | No | Yes |
+| Payment settled | Monthly invoice | Near real-time, batched onchain |
+
+The $0.01/call price in this project is arbitrary — you could charge $0.001, $0.005, or $0.10. The payment mechanics work at any of those price points. For an agent making 10,000 calls per day, the difference between subscription billing (flat monthly fee) and per-call billing (pay exactly for what you use) is enormous — especially when the agent's usage is unpredictable.
+
+---
+
+## The Payment Scheme: GatewayWalletBatched
+
+Circle's scheme is called **GatewayWalletBatched**. It's built on [EIP-3009](https://eips.ethereum.org/EIPS/eip-3009) (`transferWithAuthorization`), which allows an authorized party to transfer tokens on a holder's behalf using a cryptographic signature — without the holder submitting a transaction.
+
+The flow in detail:
+
+1. **Deposit** — the buyer deposits USDC into a Gateway Wallet smart contract (`0x0077777d7EBA4688BDeF3E311b846F25870A19B9` on all EVM testnets)
+2. **Sign** — for each payment, the buyer signs an EIP-3009 message offchain: "I authorize Circle to transfer $X from my gateway balance to seller Y, valid between timestamp A and B"
+3. **Submit** — Circle collects these signatures and settles them onchain in batches. Each individual call costs zero gas because it's the batch that goes onchain, not each individual transfer.
+4. **Receive** — the seller's address receives USDC onchain, net of any Circle fees.
+
+The key insight is that the signature is the payment proof. The middleware can verify a signature instantly without waiting for a blockchain transaction. Settlement happens asynchronously in the background.
+
+---
+
+## Project Structure
+
+```
+nanopayments-with-usdc/
+├── server/
+│   └── index.ts          # Express seller + embedded buyer for /demo/* routes
+├── client/
+│   ├── pay.ts            # Standalone buyer client (run from terminal)
+│   ├── deposit.ts        # One-time USDC deposit into Gateway Wallet
+│   └── check-balance.ts  # Poll balance until deposit is credited
+├── ui/
+│   ├── src/
+│   │   ├── App.tsx       # Full React demo UI (all components inline)
+│   │   └── index.css     # Tailwind + custom animations
+│   └── vite.config.ts    # Vite config — proxies /demo/* to port 4021
+├── .env.example
+└── package.json
+```
+
+---
+
+## Testing Without the UI
+
+You can also test the payment flow directly from the terminal using the standalone client:
+
+```bash
+npm run client
+```
+
+Output:
+
+```
+Gateway balance : 0.09 USDC
+Wallet USDC     : 2.60 USDC
+
+Calling : POST http://localhost:4021/chat
+Prompt  : Explain what Circle USDC nano payments are in two sentences.
+
+Status : 200
+Reply  : Circle USDC nano payments enable micropayments at the HTTP layer...
+Model  : gpt-4o-mini
+
+Gateway balance after : 0.08 USDC
+```
+
+The server logs the incoming payment on its side:
+
+```
+Payment received: 10000 USDC units from 0xYourBuyerAddress on eip155:84532
+```
+
+---
+
+## Common Issues
+
+**Gateway balance shows 0 after deposit** — Base Sepolia takes 13–19 minutes for Circle to credit a deposit after the onchain transaction confirms. Run `npm run balance` to poll every 60 seconds until it appears.
+
+**"PRIVATE_KEY is required" error** — make sure your `.env` has `EVM_PRIVATE_KEY` set. The client reads `PRIVATE_KEY` or `EVM_PRIVATE_KEY` and normalizes it to include the `0x` prefix automatically.
+
+**Server returns 402 repeatedly** — this means the client's Gateway balance is 0 or below the $0.01 threshold. Deposit more USDC and wait for Circle to credit it.
+
+**`/demo/chat` returns 503** — the server couldn't find a buyer private key in the environment. Check that `EVM_PRIVATE_KEY` is set and the server was restarted after changing `.env`.
+
+---
+
+## Next Steps
+
+- **Deploy the server** to a public URL (Railway, Render, or a VPS) — any agent with a funded Gateway Wallet can use it immediately, no sign-up required
+- **Change the price** — try `gateway.require("$0.001")` for sub-cent calls, or `gateway.require("$0.10")` for heavier models
+- **Protect multiple endpoints** — each route can have a different price: `gateway.require("$0.01")` for a fast model, `gateway.require("$0.05")` for a larger one
+- **Add the buyer to an agent framework** — wrap `GatewayClient.pay()` as a LangChain tool or MCP tool and drop it into any agent that needs LLM access
+- **Mainnet** — the same code works on Base mainnet by changing `chain: "base"` and `networks: ["eip155:8453"]`
+
+---
+
+## Resources
+
+- [Full source code](https://github.com/Stephen-Kimoi/nanopayments-with-usdc)
+- [Circle Gateway documentation](https://developers.circle.com/stablecoins/gateway-overview)
+- [`@circle-fin/x402-batching` npm package](https://www.npmjs.com/package/@circle-fin/x402-batching)
+- [EIP-3009 specification](https://eips.ethereum.org/EIPS/eip-3009)
+- [Base Sepolia block explorer](https://sepolia.basescan.org/)
+- [Circle Testnet Faucet](https://faucet.circle.com/)
+- [Arc Agentic Economy Hackathon on LabLab](https://lablab.ai/event)
