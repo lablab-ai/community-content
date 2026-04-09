@@ -209,13 +209,18 @@ Traditional payment rails carry a minimum viable transaction cost of roughly $0.
 
 Circle Gateway removes that floor entirely:
 
-| Feature | Traditional API billing | Circle Gateway Nano Payments |
-| --- | --- | --- |
-| Minimum viable price | ~$1+ per call | $0.001 per call |
-| Gas per payment | N/A (card fees apply) | $0.00 |
-| Human required to set up | Yes (account, card, plan) | No |
-| Autonomous agent compatible | No | Yes |
-| Payment settled | Monthly invoice | Near real-time, batched onchain |
+<table>
+  <thead>
+    <tr><th>Feature</th><th>Traditional API billing</th><th>Circle Gateway Nano Payments</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Minimum viable price</td><td>~$1+ per call</td><td>$0.001 per call</td></tr>
+    <tr><td>Gas per payment</td><td>N/A (card fees apply)</td><td>$0.00</td></tr>
+    <tr><td>Human required to set up</td><td>Yes (account, card, plan)</td><td>No</td></tr>
+    <tr><td>Autonomous agent compatible</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Payment settled</td><td>Monthly invoice</td><td>Near real-time, batched onchain</td></tr>
+  </tbody>
+</table>
 
 The $0.01/call price in this project is arbitrary. You could charge $0.001, $0.005, or $0.10. The payment mechanics work at any of those price points. For an agent making 10,000 calls per day, the difference between a flat monthly subscription and paying exactly for what you use is enormous, especially when usage patterns are unpredictable.
 
