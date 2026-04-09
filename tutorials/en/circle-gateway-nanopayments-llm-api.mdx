@@ -50,7 +50,7 @@ This project was built for the [Arc Agentic Economy Hackathon](https://lablab.ai
 
 ### Get testnet USDC
 
-If you don't have USDC on Base Sepolia yet, you need two things: testnet ETH for gas, and testnet USDC to actually pay with.
+If you don't have USDC on Base Sepolia yet, you need two things: testnet ETH for gas, and testnet USDC to pay with.
 
 **Testnet ETH (for gas on deposits):**
 - [sepoliafaucet.com](https://sepoliafaucet.com/)
@@ -107,34 +107,7 @@ Before the first payment can go through, the buyer wallet needs USDC deposited i
 
 Per Circle's [Gateway documentation](https://developers.circle.com/stablecoins/gateway-overview), depositing funds moves USDC from your regular wallet into this contract so Circle can later settle signed payment authorizations on your behalf without requiring you to submit individual transactions.
 
-The deposit script lives at [`client/deposit.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/deposit.ts). Here is what it does:
-
-```typescript
-// client/deposit.ts (lines 25–48)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/deposit.ts#L25-L48
-
-const client = new GatewayClient({
-  chain: "baseSepolia",
-  privateKey: PRIVATE_KEY,
-});
-
-// Check your current balances before depositing
-const before = await client.getBalances();
-console.log(`Wallet USDC     : ${before.wallet.formatted} USDC`);
-console.log(`Gateway balance : ${before.gateway.formattedAvailable} USDC`);
-
-// client.deposit() handles two onchain transactions automatically:
-//   1. Approve — allow the Gateway contract to spend your USDC
-//   2. Deposit — move USDC from your wallet into the Gateway Wallet
-const deposit = await client.deposit(depositAmount);
-console.log(`Deposit tx: ${deposit.depositTxHash}`);
-
-// Balance won't reflect immediately — Circle takes ~13-19 min on Base Sepolia
-const after = await client.getBalances();
-console.log(`New Gateway balance : ${after.gateway.formattedAvailable} USDC`);
-```
-
-`GatewayClient.deposit()` is the key call here. Under the hood it sends two transactions: an ERC-20 `approve` so the Gateway contract can pull your USDC, then a `deposit` call into the contract. Once the deposit confirms onchain, Circle picks it up and makes the balance available for gasless payments.
+The deposit script lives at [`client/deposit.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/deposit.ts). The core of it is [`client.deposit(depositAmount)` at line 42](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/deposit.ts#L42), which under the hood sends two onchain transactions: an ERC-20 `approve` so the Gateway contract can pull your USDC, then a `deposit` call into the contract. The balance check before and after ([lines 30–32 and 46–47](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/deposit.ts#L30-L47)) lets you confirm the funds moved.
 
 Run the deposit:
 
@@ -148,9 +121,7 @@ Base Sepolia takes **13 to 19 minutes** for Circle to credit the deposit after t
 npm run balance
 ```
 
-The balance polling script is at [`client/check-balance.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/check-balance.ts#L14-L19). It calls `client.getBalances()` every 60 seconds and exits when the Gateway balance goes above zero.
-
-When you see the Gateway balance go above 0, you are ready.
+The balance polling script at [`client/check-balance.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/check-balance.ts) calls `client.getBalances()` every 60 seconds and exits when the Gateway balance goes above zero. When you see the Gateway balance go above 0, you are ready.
 
 ### Start the server and UI
 
@@ -172,17 +143,27 @@ Open `http://localhost:5173`. Type a question, hit Send, and watch the payment f
 
 ## How the Demo Works
 
-When you hit Send in the UI, here is exactly what happens:
+When you hit Send in the UI, here is exactly what happens at the code level.
 
-**Step 1: Request sent.** The UI calls `POST /demo/chat` on the Express server. This is a demo-only endpoint that acts as the buyer on your behalf, so the browser never handles private keys.
+### Step 1: Request sent
 
-**Step 2: 402 Payment Required.** Inside `/demo/chat`, the server's embedded `GatewayClient` calls the real `POST /chat` endpoint. The Circle Gateway middleware sees no payment proof and returns HTTP 402 with machine-readable payment requirements: the price, the network, the payment scheme.
+The [`send()` function in `ui/src/App.tsx` (lines 235–253)](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/ui/src/App.tsx#L235-L253) fires. It advances the pipeline animation to step 1 and posts the full conversation history to `POST /demo/chat`. This is a demo-only wrapper endpoint on the Express server — the browser never touches private keys.
 
-**Step 3: Sign authorization.** The `GatewayClient` reads the 402 response and creates an EIP-3009 `TransferWithAuthorization` signature. This is a cryptographic message that authorizes Circle to move $0.01 USDC from the buyer's Gateway Wallet to the seller. This happens **offchain**: no blockchain transaction, no gas fee.
+### Step 2: 402 Payment Required
 
-**Step 4: Circle Gateway settle.** The client retries the request with the signature attached. The middleware forwards it to Circle's settle API, which validates the signature and queues the transfer. Circle batches these offchain signatures and settles them onchain periodically. This is why there is no gas per call.
+Inside [`/demo/chat` (server/index.ts lines 59–82)](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L59-L82), the server's embedded `buyerClient` calls the real `POST /chat`. That route is protected by `gateway.require("$0.01")` at [lines 35–38](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L35-L38), so the first call comes back as HTTP 402 with machine-readable payment requirements: the price, the network, and the payment scheme.
 
-**Step 5: Response delivered.** The server calls OpenAI, gets the LLM response, and returns it along with a payment receipt: amount paid, network, scheme, and balance before and after.
+### Step 3: Sign authorization
+
+`GatewayClient.pay()` intercepts the 402 automatically. It reads the payment requirements and creates an EIP-3009 `TransferWithAuthorization` signature — a cryptographic message that authorizes Circle to move $0.01 USDC from the buyer's Gateway Wallet to the seller. This happens **offchain**: no blockchain transaction, no gas fee. The SDK import that powers this is at [line 5 of `server/index.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L5).
+
+### Step 4: Circle Gateway settle
+
+`GatewayClient.pay()` retries the original request with the signature attached as a header. The `createGatewayMiddleware` at [lines 35–38](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L35-L38) forwards the signature to Circle's settle API, which validates it and queues the transfer. Circle batches these offchain signatures and settles them onchain periodically — this is why there is no gas per call.
+
+### Step 5: Response delivered
+
+Once payment clears, the middleware calls `next()` and the [`/chat` handler (lines 118–142)](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L118-L142) runs, calls OpenAI, and returns the reply. Back in `/demo/chat`, the server snapshots the balance before and after the payment and builds the receipt at [lines 84–100](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L84-L100). The UI receives it all at [lines 256–264 of `App.tsx`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/ui/src/App.tsx#L256-L264), advances the pipeline to step 5, then renders the reply and the receipt card.
 
 The whole cycle from the first request to the LLM response takes about two seconds.
 
@@ -194,178 +175,31 @@ The whole cycle from the first request to the LLM response takes about two secon
 
 The server is a standard Express app with Circle's Gateway middleware. See the full file at [`server/index.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts).
 
-The middleware is set up at [lines 35–38](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L35-L38):
+`createGatewayMiddleware` is imported and configured at [lines 4 and 35–38](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L35-L38). It takes your seller address and the target network (`eip155:84532` for Base Sepolia). From there, the entire payment gate for the `/chat` route is a single middleware call: `gateway.require("$0.01")`, applied at [line 118](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L118).
 
-```typescript
-// server/index.ts (lines 1–38)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L1-L38
-
-import { createGatewayMiddleware } from "@circle-fin/x402-batching/server";
-
-const gateway = createGatewayMiddleware({
-  sellerAddress: SELLER_ADDRESS,  // your receiving wallet
-  networks: ["eip155:84532"],     // Base Sepolia
-});
-```
-
-The protected route is at [lines 118–142](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L118-L142):
-
-```typescript
-// server/index.ts (lines 118–142)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L118-L142
-
-app.post("/chat", gateway.require("$0.01"), async (req, res) => {
-  // req.payment is populated by the middleware on success
-  const { payer, amount, network } = (req as any).payment;
-  console.log(`Payment received: ${amount} USDC from ${payer} on ${network}`);
-
-  const completion = await openai.chat.completions.create({
-    model: MODEL,
-    messages: req.body.messages,
-  });
-
-  res.json({
-    reply: completion.choices[0].message.content,
-    model: completion.model,
-    usage: completion.usage,
-  });
-});
-```
-
-`gateway.require("$0.01")` is the entire payment gate. If the request arrives without a valid payment proof, the middleware returns 402 automatically. If the payment is valid, it populates `req.payment` and calls `next()`. Your route handler only runs after the payment has cleared.
+If the request arrives without a valid payment proof, the middleware returns 402 automatically. If the payment is valid, it populates `req.payment` with the payer address, amount, and network, then calls `next()`. The OpenAI call inside the handler at [lines 128–134](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L128-L134) only runs after the payment has cleared.
 
 ### Buyer side: automatic payment handling
 
-The standalone buyer client is at [`client/pay.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts). The key section is [lines 26–68](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L26-L68):
+The standalone buyer client is at [`client/pay.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts). It initializes a `GatewayClient` at [lines 26–29](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L26-L29), checks that the Gateway balance is above the $0.01 threshold at [lines 36–39](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L36-L39), and then calls `client.pay()` at [lines 46–59](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L46-L59). That single `pay()` call handles the entire flow — send request, receive 402, sign EIP-3009 offchain, retry with the signature, get the response — without the caller knowing any payment happened.
 
-```typescript
-// client/pay.ts (lines 26–68)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L26-L68
-
-const client = new GatewayClient({
-  chain: "baseSepolia",
-  privateKey: PRIVATE_KEY,
-});
-
-// Check balance before attempting payment
-const balances = await client.getBalances();
-console.log(`Gateway balance : ${balances.gateway.formattedAvailable} USDC`);
-
-if (balances.gateway.available < 10_000n) {
-  console.log("Gateway balance too low. Run: npm run deposit");
-  process.exit(1);
-}
-
-// GatewayClient.pay() handles the full x402 flow automatically:
-//   send request → receive 402 → sign EIP-3009 → retry → get response
-const { data, status } = await client.pay(url, {
-  method: "POST",
-  body: JSON.stringify({ messages }),
-  headers: { "Content-Type": "application/json" },
-});
-
-console.log(`Status : ${status}`);
-console.log(`Reply  : ${data.reply}`);
-```
-
-The caller doesn't need to know anything about payment. `pay()` handles the 402 cycle transparently and returns the final response.
-
-The private key normalization (handling wallets that export keys without `0x`) happens at [lines 17–19](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L17-L19):
-
-```typescript
-// client/pay.ts (lines 17–19)
-const rawKey = process.env.PRIVATE_KEY || process.env.EVM_PRIVATE_KEY || "";
-const PRIVATE_KEY = (rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`) as `0x${string}`;
-```
+Private keys exported without a `0x` prefix are normalized automatically at [lines 17–19](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts#L17-L19), so the client works regardless of how your wallet exports keys.
 
 ### Demo endpoints for the UI
 
-The UI calls `/demo/balance` and `/demo/chat`. These are wrapper endpoints on the same server that embed a `GatewayClient` instance, so the browser never needs a private key.
+The UI calls `/demo/balance` and `/demo/chat`. These are wrapper endpoints on the same Express server that embed their own `GatewayClient` instance, so the browser never needs a private key.
 
-The embedded buyer client is initialized at [lines 18–26](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L18-L26):
-
-```typescript
-// server/index.ts (lines 18–26)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L18-L26
-
-const rawKey = process.env.PRIVATE_KEY || process.env.EVM_PRIVATE_KEY || "";
-const buyerClient = rawKey
-  ? new GatewayClient({
-      chain: "baseSepolia",
-      privateKey: (rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`) as `0x${string}`,
-    })
-  : null;
-```
-
-The `/demo/balance` endpoint is at [lines 42–57](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L42-L57) and the `/demo/chat` endpoint at [lines 59–105](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L59-L105):
-
-```typescript
-// server/index.ts (lines 42–105)
-// https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L42-L105
-
-// GET /demo/balance: returns live gateway + wallet balances for the header
-app.get("/demo/balance", async (_req, res) => {
-  const b = await buyerClient.getBalances();
-  res.json({
-    gateway: b.gateway.formattedAvailable,
-    wallet: b.wallet.formatted,
-  });
-});
-
-// POST /demo/chat: runs the full payment cycle server-side
-app.post("/demo/chat", async (req, res) => {
-  const before = await buyerClient.getBalances();
-  const balanceBefore = before.gateway.formattedAvailable;
-
-  // pay() calls the real /chat endpoint, which requires $0.01 USDC
-  const { data } = await buyerClient.pay(`${SERVER_URL}/chat`, {
-    method: "POST",
-    body: JSON.stringify({ messages: req.body.messages }),
-    headers: { "Content-Type": "application/json" },
-  });
-
-  const after = await buyerClient.getBalances();
-
-  res.json({
-    reply: data.reply,
-    model: data.model,
-    usage: data.usage,
-    payment: {
-      amount: "0.01",
-      currency: "USDC",
-      network: "Base Sepolia",
-      scheme: "GatewayWalletBatched",
-      balanceBefore,
-      balanceAfter: after.gateway.formattedAvailable,
-    },
-  });
-});
-```
+The embedded buyer client is initialized at [lines 18–26 of `server/index.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L18-L26) using the same `EVM_PRIVATE_KEY` environment variable. The `/demo/balance` endpoint at [lines 42–57](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L42-L57) returns live gateway and wallet balances for the header. The `/demo/chat` endpoint at [lines 59–105](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/server/index.ts#L59-L105) snapshots the balance before calling `buyerClient.pay()`, calls the real `/chat` route (which demands payment), snapshots the balance after, and returns the reply alongside the full payment receipt.
 
 ---
 
 ## How an AI Agent Would Actually Use This
 
-The seller code above could be deployed to any public URL, for example `https://nanoai.example.com/chat`. An AI agent that needs to call it would run exactly what is in [`client/pay.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts):
-
-```typescript
-const client = new GatewayClient({
-  chain: "baseSepolia",
-  privateKey: AGENT_PRIVATE_KEY,   // the agent's funded wallet
-});
-
-const { data } = await client.pay("https://nanoai.example.com/chat", {
-  method: "POST",
-  body: JSON.stringify({
-    messages: [{ role: "user", content: agentQuery }],
-  }),
-  headers: { "Content-Type": "application/json" },
-});
-```
+The seller code above could be deployed to any public URL, for example `https://nanoai.example.com/chat`. An AI agent that needs to call it would run essentially the same code as [`client/pay.ts`](https://github.com/Stephen-Kimoi/nanopayments-with-usdc/blob/main/client/pay.ts) — initialize a `GatewayClient` with a funded private key, then call `client.pay()` with the endpoint URL and the message payload. That is the entire integration.
 
 The agent doesn't sign up for an account, doesn't hold an API key, and doesn't have a subscription. It has USDC in a Gateway Wallet and pays per call. The operator of the AI service receives USDC in real time, per request, with no billing infrastructure to maintain.
 
-An orchestrator framework like LangChain, AutoGen, or a custom agent loop would wrap all outbound HTTP calls with `GatewayClient.pay()`. When the agent picks "call the LLM tool," the payment happens transparently inside the tool implementation. The agent never needs to know payment is involved.
+An orchestrator framework like LangChain, AutoGen, or a custom agent loop would wrap outbound HTTP calls with `GatewayClient.pay()`. When the agent picks "call the LLM tool," the payment happens transparently inside the tool implementation. The agent never needs to know payment is involved.
 
 ---
 
