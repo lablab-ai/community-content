@@ -97,7 +97,7 @@ not a list of headlines, but a single observation about what the week meant. No 
 
 ---
 
-## [Thematic Section Title — groups 2–3 related stories]
+## [Thematic Section Title — groups 2–3 related stories, e.g. "The Open-Source Race" or "OpenAI vs. Everyone"]
 
 ### [Story Headline]
 [2–3 sentences: what happened, why it matters, any concrete numbers. Source linked inline on
@@ -122,7 +122,7 @@ the most important claim. End with the implication — one sentence, no hedging.
 
 - **[Company/topic]:** [One sentence. Source linked.]
 - **[Company/topic]:** [One sentence. Source linked.]
-- [4–6 bullet points for smaller stories]
+- [4–6 bullet points for smaller stories that don't need a full breakdown]
 
 ---
 
