@@ -43,3 +43,4 @@ Four agent skills live in `.agents/skills/` and cover the full content lifecycle
 - All new content goes on a feature branch, never directly to `main`
 - Branch naming: `add-[slug]`, `update-[slug]`, `fix-[slug]`
 - PRs target the upstream `lablab-ai/community-content` repo
+- **No `Co-Authored-By` lines in commits** — do not add Claude Code attribution to any commit message
