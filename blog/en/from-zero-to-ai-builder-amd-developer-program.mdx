@@ -1,0 +1,132 @@
+---
+title: "From Zero to AI Builder with AMD: MI300X GPUs for AI Hackathons"
+description: "Build AI hackathon projects on AMD MI300X GPUs with $100 in free credits, ROCm open-source stack, and free courses from the AMD Developer Program. No corporate budget required."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1776333027/from-zero-to-ai-builder-amd.png"
+authorUsername: "stevekimoi"
+---
+
+Most developers assume serious AI infrastructure requires a corporate budget. The [AMD Developer Program](https://www.amd.com/en/developer/ai-dev-program.html?utm_source=generic&utm_medium=referral&utm_campaign=lablab-ai&utm_content=generic) changes that math. With $100 in free GPU credits, an open-source inference stack, and a free learning platform (all accessible from a browser) you can go from zero to a running LLM endpoint in under an hour, at $1.99/hr for hardware that outperforms the most widely used alternatives.
+
+Building on AMD is particularly relevant if you're participating in [AI hackathons](https://lablab.ai/event), where time is limited, compute costs matter, and your stack needs to actually run at demo time.
+
+---
+
+## What's in the AMD Developer Program
+
+The program bundles three things that would otherwise require separate accounts, budgets, and setups:
+
+**1. AMD Developer Cloud ($100 in free GPU credits)**
+Direct access to AMD Instinct MI300X GPUs (the same hardware running Llama 405B in production at Meta) through the [AMD Developer Cloud](https://www.amd.com/en/developer/resources/cloud-access/amd-developer-cloud.html?utm_source=generic&utm_medium=referral&utm_campaign=lablab-ai&utm_content=generic), a DigitalOcean-powered cloud platform. The $100 promotion covers roughly 50 hours of MI300X time at $1.99/hr. You sign up, add a payment method (required even with credits), and have a GPU Droplet running in minutes. No waiting list, no enterprise contract.
+
+**2. AMD AI Academy (free courses)**
+A full course catalog covering everything from running your first model on AMD hardware, to fine-tuning with Unsloth, to deploying multi-agent systems with Google ADK. All free. All hands-on. Courses run in AMD Developer Cloud, so you're practicing on the actual hardware, not a simulator. We'll come back to the specific courses worth starting with.
+
+**3. ROCm: the open-source GPU compute stack**
+ROCm is AMD's answer to CUDA, fully open-source, covering the full stack from compiler to runtime. Most PyTorch, HuggingFace, and vLLM workflows port with minimal changes. ROCm 7 (2025) [delivers 3.5x more inference capability](https://www.amd.com/en/blogs/2025/enabling-the-future-of-ai-introducing-amd-rocm-7-and-the-amd-developer-cloud.html) than ROCm 6. The gap with NVIDIA is closing fast, and you're not locked into a proprietary runtime.
+
+---
+
+## The Hardware, Explained Plainly
+
+The MI300X has 192 GB of HBM3 memory on a single GPU. That number matters more than it sounds:
+
+- Running a 70B parameter model comfortably requires ~140 GB of VRAM. On NVIDIA H100 (80 GB), that means splitting across two GPUs. On MI300X, it runs on one: simpler setup, lower latency, and no multi-GPU coordination overhead.
+- Llama 3.1 405B, the largest open-source model available, runs on a **single MI300X node**. No other GPU can do that.
+- More VRAM also means larger KV caches, which means longer context windows without truncation. For agents processing long conversations or documents, this matters directly.
+
+For cost comparison: a single MI300X on AMD Developer Cloud is $1.99/hr. An H100 on a major cloud provider runs $3–6/hr for equivalent capability on large models. On workloads where MI300X needs half the GPUs, the savings compound.
+
+Microsoft Azure's EVP [publicly called MI300X](https://ir.amd.com/news-events/press-releases/detail/1198/amd-instinct-mi300x-accelerators-power-microsoft-azure-openai-service-workloads-and-new-azure-nd-mi300x-v5-vms) "the most cost-effective GPU out there right now for Azure OpenAI."
+
+---
+
+## Step 1: Claim Your $100 in Free Credits
+
+Head to [AMD Developer Cloud](https://amd.digitalocean.com), create an account, and add a payment method. The $100 AMD GPU Promotion credit is applied automatically. You won't be charged unless you go over. With MI300X at $1.99/hr, $100 gives you roughly 50 hours of GPU time.
+
+Once your account is set up, you're one click away from a GPU Droplet with vLLM and Ubuntu pre-installed. AMD also has an official [getting started guide](https://www.amd.com/en/developer/resources/technical-articles/2025/how-to-get-started-on-the-amd-developer-cloud-.html?utm_source=generic&utm_medium=referral&utm_campaign=lablab-ai&utm_content=generic) if you want the full walkthrough directly from the source.
+
+---
+
+## Step 2: Spin Up Your First GPU Instance
+
+The full walkthrough, from creating a Droplet to running a live vLLM endpoint, is covered step by step in the [AMD Developer Cloud tutorial on Lablab](https://lablab.ai/ai-tutorials/amd-developer-cloud-host-llm-vllm). The short version: you select the vLLM Quick Start image, pick the MI300X plan, wait ~3 minutes for the Droplet to initialize, and you have an OpenAI-compatible API endpoint running a Llama or Qwen model.
+
+The key setup choices covered in that tutorial:
+- Which GPU plan to pick (single MI300X vs. 8x; single is right for most use cases)
+- How to SSH in and verify the vLLM server is running
+- How to get your endpoint URL and test it with a curl request
+
+---
+
+## Step 3: Hit the API
+
+Once your vLLM server is running, your endpoint follows the OpenAI `/v1/chat/completions` format exactly. Any code or tool that works with OpenAI's API works here. You just swap the base URL:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://YOUR_DROPLET_IP:8000/v1",
+    api_key="not-required",  # vLLM doesn't enforce auth by default
+)
+
+response = client.chat.completions.create(
+    model="Qwen/Qwen2.5-1.5B-Instruct",  # use the model you deployed
+    messages=[{"role": "user", "content": "Hello from AMD!"}],
+)
+print(response.choices[0].message.content)
+```
+
+For a quick way to verify your endpoint is working before building anything serious, the [vLLM Chat Template](https://github.com/stevekimoi/vllm-chat-template) is a single HTML file you can open in any browser. Update the `apiUrl` and `model` fields in the config block, open the file, and you're chatting with your AMD-hosted model. No install, no build step. From there, you can extend it into whatever stack you're building: React, Python backend, mobile.
+
+---
+
+## What to Build From Here
+
+You have enterprise-grade hardware, an OpenAI-compatible endpoint, and a free learning platform. The [AMD Developer Hackathon](https://lablab.ai/ai-hackathons/amd-developer) has four tracks that map directly to what's possible on MI300X:
+
+**AI Agents & Agentic Workflows**
+The most accessible entry point. Use LangChain, CrewAI, or AutoGen with your vLLM endpoint as the model backend. The 192 GB VRAM means you can run a large reasoning model (70B+) as your "brain" without the latency penalty of quantization. Agents that need long context (research assistants, coding agents, multi-step planners) work noticeably better with the memory headroom MI300X provides.
+
+**Fine-Tuning on AMD GPUs**
+MI300X's [5.3 TB/s memory bandwidth](https://www.amd.com/en/products/accelerators/instinct/mi300/mi300x.html) makes it well-suited for training workloads. The AMD AI Academy's fine-tuning course walks through a complete GRPO workflow on a single MI300X. Domain-specific fine-tunes (healthcare, legal, finance, code) are the right scope for a hackathon project in this track.
+
+**Vision & Multimodal AI**
+Models like Llama 3.2 Vision and Qwen-VL are memory-hungry. On hardware with less VRAM, running them at full resolution or with long context requires aggressive quantization. On MI300X, you run them at full precision. Medical imaging, industrial inspection, and multimodal assistants are all tractable projects here.
+
+**Build in Public**
+If you're documenting your build process, sharing what works, what doesn't, and what surprised you about the AMD stack, the [AMD Developer Hackathon](https://lablab.ai/ai-hackathons/amd-developer) has a dedicated prize track for it. Three or more technical posts on X or LinkedIn with `#AMDDevHackathon` qualifies. This is worth doing regardless of track, because the feedback is directly useful to AMD's product team.
+
+### AMD AI Academy: Where to Start
+
+The Academy courses are genuinely well-structured for getting productive on AMD quickly. The ones worth prioritizing:
+
+- **AI on AMD** (Course 1): 1 hour, builds a chatbot on MI300X with vLLM. The fastest path from zero to something running.
+- **AI Agents 101: Building AI Agents with MCP and Open-Source Inference** (Course 3): covers ReAct agents, PydanticAI, and MCP servers on AMD. Directly applicable to the Agents track.
+- **LLM Serving Inference with vLLM and MI300X GPUs** (Course 7): the infrastructure deep-dive. Covers benchmarking, TTFT/TPOT metrics, chunked prefill, and production tuning. Essential if you're doing anything latency-sensitive.
+- **Finetuning Your Own R1 Reasoning Model on Unsloth** (Course 6): for the Fine-Tuning track. Full GRPO workflow on a single MI300X.
+
+All courses are free at [AMD AI Academy](https://academy.amd.com).
+
+---
+
+## Frequently Asked Questions
+
+**How do I access the AMD MI300X for an AI hackathon?**
+Sign up via the [AMD AI Developer Program](https://www.amd.com/en/developer/ai-dev-program.html?utm_source=generic&utm_medium=referral&utm_campaign=lablab-ai&utm_content=generic). New accounts get $100 in GPU credits, which covers roughly 50 hours on a single MI300X at $1.99/hr. That's more than enough to build and demo a project at the [AMD Developer Hackathon](https://lablab.ai/ai-hackathons/amd-developer).
+
+**Do I need to know ROCm to use AMD GPUs for AI hackathons?**
+No. If you're using vLLM, PyTorch, or HuggingFace, you don't interact with ROCm directly; it runs underneath. ROCm matters if you're writing custom GPU kernels or doing low-level optimization, but for application-layer AI development, the stack looks identical to NVIDIA.
+
+**What AI hackathon projects work well on AMD MI300X?**
+Anything that needs large models or long context: multi-step agents, document processing, vision models at full resolution, and domain fine-tunes. The 192 GB VRAM unlocks model configurations that are impractical on smaller GPUs.
+
+**What's the cost difference between AMD and NVIDIA for AI hackathon projects?**
+For large models, MI300X often needs half the GPUs of an H100 (192 GB vs. 80 GB VRAM). At $1.99/hr vs. $3–6/hr, you pay less per GPU and need fewer of them. The savings compound quickly on 70B+ workloads.
+
+---
+
+The AMD Developer Program removes the three barriers that usually stop developers from working with enterprise-grade AI infrastructure: cost, complexity, and access. $100 in free credits, pre-built images, and a free learning platform that runs on the actual hardware. The rest is up to what you build.
+
+If you're ready to put this into practice, the [AMD Developer Hackathon](https://lablab.ai/ai-hackathons/amd-developer) is running now with $1.1M in prizes across four tracks. Register and start building.
