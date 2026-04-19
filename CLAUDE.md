@@ -23,12 +23,13 @@ topics/           — Topic index pages
 
 ## Skills
 
-Three agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
+Four agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
 
 | Skill | When to use |
 |-------|-------------|
 | [`content-start`](.agents/skills/content-start/SKILL.md) | Before writing any new article or tutorial — runs uniqueness check, gathers sources, confirms angle, sets Notion task to In Progress |
 | [`publish-check`](.agents/skills/publish-check/SKILL.md) | When a draft is complete — runs the full publishing checklist and updates Notion to Done |
+| [`seo-apply`](.agents/skills/seo-apply/SKILL.md) | After a draft passes publish-check — reads this week's Notion SEO clusters and applies surgical keyword improvements without changing tone |
 | [`weekly-ai-recap`](.agents/skills/weekly-ai-recap/SKILL.md) | Every Monday — researches the week's top AI news, writes the recap article, produces the social post brief |
 
 ## Notion
@@ -42,3 +43,4 @@ Three agent skills live in `.agents/skills/` and cover the full content lifecycl
 - All new content goes on a feature branch, never directly to `main`
 - Branch naming: `add-[slug]`, `update-[slug]`, `fix-[slug]`
 - PRs target the upstream `lablab-ai/community-content` repo
+- **No `Co-Authored-By` lines in commits** — do not add Claude Code attribution to any commit message

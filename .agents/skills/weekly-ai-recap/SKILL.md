@@ -1,7 +1,7 @@
 ---
 name: weekly-ai-recap
 description: Research, write, and publish the weekly "What happened in AI this week" article for Lablab. Run every Monday — searches for the past week's top AI news, writes a skimmable recap article, and produces a social post brief for Gosia/Soto. Updates the Notion task on completion.
-compatibility: Designed for Claude Code. Requires Exa MCP or Brave Search MCP (WebSearch fallback), Cloudinary for images, and Notion token in ~/.claude/settings.local.json (uses workspace automation token from ~/claude-workspace-automation/.env).
+compatibility: Designed for Claude Code. Requires Exa MCP or Brave Search MCP (WebSearch fallback), Cloudinary for images, and Notion token in ~/claude-workspace-automation/.env (NOTION_TOKEN).
 ---
 
 ## Steps
@@ -15,10 +15,21 @@ Ask the user (if not already clear):
 Derive:
 - `WEEK_END` = publication date (the Monday)
 - `WEEK_START` = 7 days prior (the previous Monday)
-- `SLUG` = `ai-news-recap-YYYY-MM-DD` (using the publication date)
-- `FILE_PATH` = `tutorials-and-articles/articles/ai-news-recap-YYYY-MM-DD.md`
+- `SLUG` = `this-week-in-ai-YYYY-MM-DD` (using the publication date)
+- `FILE_PATH` = `blog/en/this-week-in-ai-YYYY-MM-DD.mdx`
+- `BRANCH` = `add-this-week-in-ai-YYYY-MM-DD`
 
-### 2. Check Notion for the task
+### 2. Create a feature branch
+
+Per the git workflow in CLAUDE.md, all new content goes on a feature branch:
+
+```bash
+git checkout -b add-this-week-in-ai-YYYY-MM-DD
+```
+
+Never write directly to `main`.
+
+### 3. Check Notion for the task
 
 Fetch the matching task from DB `2cab4088-66ca-4d1f-aeb9-8fe29dafb470`:
 - Use the workspace automation token from `~/claude-workspace-automation/.env` (`NOTION_TOKEN`)
@@ -26,7 +37,7 @@ Fetch the matching task from DB `2cab4088-66ca-4d1f-aeb9-8fe29dafb470`:
 - If found: read the Notes field for any pre-captured story ideas or instructions
 - If not found: create a task using the `notion-task` global skill before continuing
 
-### 3. Research — find the top AI news of the week
+### 4. Research — find the top AI news of the week
 
 Search for major AI news from `WEEK_START` to `WEEK_END`. Run all available search tools in parallel:
 
@@ -53,11 +64,20 @@ Search for major AI news from `WEEK_START` to `WEEK_END`. Run all available sear
 
 Discard: minor blog posts, opinion pieces, redundant coverage of the same story.
 
-### 4. Write the article
+### 5. Write the article
 
-Write to `other-lablab-work/tutorials-and-articles/articles/ai-news-recap-YYYY-MM-DD.md`.
+Write to `blog/en/this-week-in-ai-YYYY-MM-DD.mdx`. The file must start with MDX frontmatter:
 
-**Format:**
+```mdx
+---
+title: "[Story 1], [Story 2], [Story 3]"
+description: "[2-sentence SEO summary naming key companies and the month/year. No hype words.]"
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/lablab-static/this-week-in-ai-cover.jpg"
+authorUsername: "stevekimoi"
+---
+```
+
+Then the article body:
 
 ```markdown
 # [Story 1], [Story 2], [Story 3]
@@ -65,9 +85,7 @@ Write to `other-lablab-work/tutorials-and-articles/articles/ai-news-recap-YYYY-M
 *This Week in AI — [Month Day–Day, Year]*
 
 [2–3 sentence thematic intro. Capture the mood and the thread connecting this week's stories —
-not a list of headlines, but a single observation about what the week meant. Examples of the
-right register: "Three seismic shifts in one week." / "A quiet week on announcements, a loud
-one on implications." No "In this article..." openers.]
+not a list of headlines, but a single observation about what the week meant. No "In this article..." openers.]
 
 ## Key Takeaways
 
@@ -100,13 +118,8 @@ the most important claim. End with the implication — one sentence, no hedging.
 
 ---
 
-[Repeat thematic sections until all major stories are covered — aim for 2–3 sections of 2 stories each]
-
----
-
 ## Quick Hits
 
-- **[Company/topic]:** [One sentence. Source linked.] 
 - **[Company/topic]:** [One sentence. Source linked.]
 - **[Company/topic]:** [One sentence. Source linked.]
 - [4–6 bullet points for smaller stories that don't need a full breakdown]
@@ -128,7 +141,7 @@ the most important claim. End with the implication — one sentence, no hedging.
 - **Total word count:** 700–1,100 words. Skimmable but substantive.
 - **SEO:** The intro and Key Takeaways naturally include the major company names and "AI news [month year]" — do not force it, let coverage drive it.
 
-### 5. Produce the social post brief
+### 6. Produce the social post brief
 
 After the article is drafted, create a separate brief for Gosia and Soto at the bottom of the article file under a `---` separator, or as a note to the user:
 
@@ -153,25 +166,28 @@ Tone: Clean, minimal, no buzzwords. Reference: @evolving.ai on Instagram.
 Template: Soto to create reusable carousel template for this series.
 ```
 
-### 6. Run publish-check
+### 7. Run publish-check
 
 Before marking done, run the `publish-check` skill on the draft:
 - Confirm no placeholders, no skeleton sections, no unverified stats
-- Confirm word count is 600–1,000 words
+- Confirm MDX frontmatter is complete (title, description, image, authorUsername)
+- Confirm word count is 700–1,100 words
 - Confirm all source links are present
 
 Fix any issues before continuing.
 
-### 7. Update Notion
+### 8. Update Notion
 
 Once publish-check passes:
 - Set Notion task Status → `In Progress` (article written, pending publication)
-- Append to Notes: `Draft written. File: [FILE_PATH]. Social brief included. Date: [today].`
+- Append to Notes: `Draft written. File: [FILE_PATH]. Branch: [BRANCH]. Social brief included. Date: [today].`
 
-### 8. Hand off
+### 9. Hand off
 
 Confirm to the user:
+- [ ] Feature branch created: `[BRANCH]`
 - [ ] Article draft written at `[FILE_PATH]`
+- [ ] MDX frontmatter complete
 - [ ] Social post brief produced
 - [ ] Notion task updated to In Progress
 - [ ] Publish-check passed
@@ -179,9 +195,9 @@ Confirm to the user:
 Next steps for the user:
 1. Review the article and edit as needed
 2. Share the social brief with Gosia + Soto
-3. Publish the article on Lablab
-4. Gosia posts the carousel same day
-5. After publishing, run `publish-check` again and set Notion task → Done
+3. Open a PR from `[BRANCH]` → `main` targeting the lablab-ai/community-content upstream
+4. After PR merges and article is live, run `publish-check` again and set Notion task → Done
+5. Gosia posts the carousel same day
 
 ## Series tracking
 
