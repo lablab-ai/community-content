@@ -1,7 +1,7 @@
 ---
 title: "Perplexity Computer: Stop Prompting, Start Delegating"
 description: "A practical guide to Perplexity Computer: multi-model orchestration, setup and credits, prompting for outcomes, workflows, APIs, and limitations."
-image: ""
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/44a84bd9-7c91-4024-895e-c7a17fc0ac00/full"
 authorUsername: "TommyA"
 ---
 
@@ -36,7 +36,9 @@ Perplexity CEO Aravind Srinivas framed the alternative by quoting Steve Jobs: *"
 
 ### What Computer actually does
 
-When you give Computer a goal, here is what happens behind the scenes
+When you give Computer a goal, here is what happens behind the scenes:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e828c243-33d5-4d87-91a6-a61bd2ecca00/full" alt="flow chart of Perplexity Computer in Action" caption="Perplexity Computer in Action"/>
 
 Each sub-agent runs in an isolated **Firecracker microVM** (the same technology AWS uses for Lambda): 2 vCPUs, 8 GB RAM, ~20 GB disk, booting in under 125 milliseconds. When a sub-agent encounters an unexpected problem, it spawns additional sub-agents to solve it autonomously. Sub-agents communicate via the filesystem, not APIs, making their interactions inspectable. OAuth tokens are stored server-side; the sandbox never sees your credentials.
 
