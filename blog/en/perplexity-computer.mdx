@@ -1,0 +1,577 @@
+---
+title: "Perplexity Computer: Stop Prompting, Start Delegating"
+description: "A practical guide to Perplexity Computer: multi-model orchestration, setup and credits, prompting for outcomes, workflows, APIs, and limitations."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/44a84bd9-7c91-4024-895e-c7a17fc0ac00/full"
+authorUsername: "TommyA"
+---
+
+# Perplexity Computer: Stop Prompting, Start Delegating
+
+## Introduction
+
+Most people who open **[Perplexity Computer](https://perplexity.ai/computer)** for the first time treat it like a fancy search bar. They type a question, read the answer, and close the tab. That's like hiring a general contractor and only asking them to hang a picture.
+
+**[Perplexity Computer](https://perplexity.ai/computer)** is a **general-purpose autonomous agent**, a digital co-worker that accepts high-level goals in plain English, breaks them into parallel subtasks, delegates those to 19+ specialized AI models, and returns finished work products: PDFs, spreadsheets, websites, slide decks, deployed applications, sent emails, and filled-out forms. It can run for hours unattended and resume exactly where it left off.
+
+This guide is for anyone who wants to move beyond prompting and start **assigning work**. Whether you're a developer building a product, a founder researching a market, an analyst automating reports, a designer exploring ideas, or someone bringing something to life for the first time.
+
+### What we cover
+
+- How Computer's 19-model orchestration actually works under the hood
+- Getting set up, choosing the right plan, and avoiding the credit trap
+- Prompt engineering strategies that produce better output and spend fewer credits
+- Real workflow patterns across industries and use cases
+- The developer APIs for building Computer's capabilities into your own products
+- Honest limitations and when to reach for a different tool
+
+---
+
+## Part 1: What Perplexity Computer actually is
+
+### The problem with single-model AI
+
+Every major AI assistant (ChatGPT, Claude, Gemini) is built on the assumption that one very capable model can handle everything. That assumption has a ceiling. No single model is simultaneously the best at real-time search, deep reasoning, code generation, image synthesis, and video production. Routing all tasks through one model means accepting its weaknesses across the board.
+
+Perplexity CEO Aravind Srinivas framed the alternative by quoting Steve Jobs: *"Musicians play their instruments, I play the orchestra."* Computer's thesis, validated by Perplexity's own enterprise data showing no single model commanding more than 25% of query volume, is that **orchestration beats optimization**. Routing each subtask to the model best suited for it beats running everything through one generalist.
+
+### What Computer actually does
+
+When you give Computer a goal, here is what happens behind the scenes:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e828c243-33d5-4d87-91a6-a61bd2ecca00/full" alt="flow chart of Perplexity Computer in Action" caption="Perplexity Computer in Action"/>
+
+Each sub-agent runs in an isolated **Firecracker microVM** (the same technology AWS uses for Lambda): 2 vCPUs, 8 GB RAM, ~20 GB disk, booting in under 125 milliseconds. When a sub-agent encounters an unexpected problem, it spawns additional sub-agents to solve it autonomously. Sub-agents communicate via the filesystem, not APIs, making their interactions inspectable. OAuth tokens are stored server-side; the sandbox never sees your credentials.
+
+The **Model Council** (shipped March 6, 2026) is particularly powerful for research-heavy work: three models run the same question in parallel and the orchestrator synthesizes where they agree, where they differ, and what each uniquely contributes. This is how Computer can produce research with 30+ citations and document benchmark discrepancies across sources automatically.
+
+### The 19-model roster
+
+Computer launched with 19 models, growing to 20+ by March 2026. Six are publicly identified:
+
+
+| Model           | Provider  | Primary role                              |
+| --------------- | --------- | ----------------------------------------- |
+| Claude Opus 4.6 | Anthropic | Core reasoning, orchestration, coding     |
+| Gemini 3.1 Pro  | Google    | Deep research, sub-agent creation         |
+| GPT-5.2         | OpenAI    | Long-context recall, expansive web search |
+| Grok            | xAI       | Speed-sensitive lightweight tasks         |
+| Nano Banana     | Google    | Image generation                          |
+| Veo 3.1         | Google    | Video production                          |
+
+
+The remaining 13+ are undisclosed. The roster is not fixed. As better models emerge, Perplexity swaps them in. You can also manually assign specific models to specific subtasks to control cost and quality.
+
+---
+
+## Part 2: Getting set up correctly
+
+### Choosing your plan
+
+
+| Plan           | Monthly cost | Computer access       | Credits/month |
+| -------------- | ------------ | --------------------- | ------------- |
+| Free           | $0           | None                  |               |
+| Pro            | $20          | Limited access        | 500           |
+| **Max**        | **$200**     | **Full access**       | **10,000**    |
+| Enterprise Max | $325/seat    | Full + admin controls | 15,000        |
+
+
+Credits are Computer's internal currency. Every action (web search, model call, tool use) costs credits. There is no per-task cost estimate before you run a task, which is the platform's biggest friction point. We cover how to manage this in Part 3.
+
+Pro subscribers received limited Computer access on March 13, 2026, enough for light research tasks but not sustained multi-step workflows. For serious use, Max is the entry point.
+
+### Your first session setup
+
+**Step 1: Navigate to perplexity.ai/computer** or click the Computer icon in the left sidebar. Before typing anything real, click "Live Examples" and watch a few demos play back. This is free and gives you a strong intuition for what kinds of prompts produce what kinds of outputs.
+
+**Step 2: Set the single most important custom instruction.** This was discovered by multiple power users independently as the highest-leverage configuration change:
+
+```
+Always come back to me and clarify any misunderstandings and 
+challenge my thinking to make sure you're very clear on the 
+stated outcome, and let's create a brief short plan before 
+we build anything.
+```
+
+Without this, Computer will interpret ambiguous prompts charitably and begin working, burning credits on the wrong output. With it, Computer confirms intent first, which costs a few seconds and zero credits.
+
+**Step 3: Set a spending cap.** Go to Settings > Billing and set a monthly cap below your maximum tolerance. The default is your full allowance. A runaway workflow can exhaust your entire monthly budget in minutes.
+
+**Step 4: Connect your tools.** Computer supports 400+ OAuth connectors including Gmail, Slack, GitHub, Notion, Linear, Salesforce, Snowflake, and many more. Connect the ones relevant to your work before starting tasks. Test any integration you plan to rely on, as connector quality varies significantly.
+
+---
+
+## Part 3: Prompt engineering that actually works
+
+### The core principle
+
+Computer handles orchestration. You own judgment calls. Your job is to be **specific about WHAT you want, not HOW to get there**. Micromanaging steps is both unnecessary and counterproductive since it prevents Computer from routing subtasks to the right models.
+
+Vague prompts are also expensive. A prompt Computer cannot interpret clearly triggers clarification loops and retry cycles, burning credits before producing anything useful.
+
+### The Prompt Spec pattern
+
+For any non-trivial task, structure your prompt like this:
+
+```markdown
+## Context
+I'm a [role] working on [project/situation].
+The goal is [specific outcome].
+
+## Task
+[Clear, bounded description of what to produce]
+
+## Output Format
+- Format: [PDF / Spreadsheet / Web app / Slide deck / Email]
+- Length or scope: [Specific constraints]
+- Structure: [Name each section, tab, or component]
+
+## Quality Criteria
+- Cross-reference findings across 3+ independent sources
+- Flag any claim supported by only a single source
+- Include citations for every factual claim
+
+## Constraints
+- Do not speculate; if data is unavailable, say so explicitly
+- Stay within [topic or domain boundaries]
+```
+
+This pattern consistently produces better first-pass results and fewer revision cycles across all task types: research, writing, coding, design, and data analysis.
+
+### Six prompt patterns with examples
+
+**1. Outcome-first prompting** (describe the deliverable, not the steps):
+
+```
+❌ "Search for competitors in the meal kit space, 
+    then make a spreadsheet, then analyze pricing..."
+
+✅ "Produce a competitive analysis of the meal kit delivery 
+    market covering 6 major players. Output as a spreadsheet 
+    with 4 tabs: Overview, Pricing Breakdown, Feature 
+    Comparison, and Market Positioning. Cite every data point."
+```
+
+**2. Cross-reference triggering** (force source validation):
+
+```
+"Research [topic]. What do the top sources disagree on? 
+Flag any claims supported by fewer than 3 independent sources."
+```
+
+This is especially valuable for market research, technical decisions, and anything where outdated information carries risk.
+
+**3. Collaborator framing** (unlock strategic thinking):
+
+```
+"What questions should I be asking about [topic] that I 
+haven't thought of? Then research and answer those questions."
+```
+
+This consistently surfaces blind spots that a direct research prompt would miss.
+
+**4. Visualization-first** (triggers richer, more structured output):
+
+```
+"Create a chart showing [data relationship] rather than 
+explaining it in prose."
+```
+
+Computer will write code to generate the visualization programmatically, not just describe it.
+
+**5. Recursive refinement** (continue, don't restart):
+
+```
+"Based on the research you just completed, now [next step]."
+```
+
+Continuing an existing session preserves context and is significantly cheaper than starting a new task from scratch. Build workflows as chains, not independent prompts.
+
+**6. Model-specific routing** (control cost and quality):
+
+```
+"Use Grok for the initial data gathering (speed priority) 
+and Claude Opus for the final analysis and synthesis 
+(reasoning priority)."
+```
+
+### Credit consumption benchmarks
+
+Based on community testing across many users:
+
+
+| Task type                              | Typical credit range  |
+| -------------------------------------- | --------------------- |
+| Simple research query                  | Under 40 credits      |
+| Research-heavy analysis with citations | 50–70 credits         |
+| Setting up a reusable automation       | 100+ credits          |
+| Complex due diligence or deep research | 500–2,000 credits     |
+| Full app build with iteration          | 2,000–10,000+ credits |
+
+
+---
+
+## Part 4: Skills - the most underused feature
+
+**Skills** are Computer's reusable workflow templates. They are instruction sets that Computer remembers and activates automatically based on query type. Once created, a single word or phrase triggers the entire workflow.
+
+Built-in skills include Slides, Research, and Chart creation. You can create custom skills conversationally or import them via YAML. Skills can be chained: a Research skill feeding a Formatting skill feeding a Slides skill, all triggered by one prompt.
+
+### Creating a custom skill
+
+```
+"Create a new skill called 'Market Brief' that:
+1. Researches the named market across size, growth rate, 
+   key players, and recent developments
+2. Cross-references findings across 3+ independent sources
+3. Flags any data points with only a single source
+4. Identifies the top 3 underserved customer segments
+5. Outputs a structured 2-page PDF with citations
+6. Ends with a 'What we don't know yet' section"
+```
+
+Once saved, typing "Market Brief: electric vertical takeoff vehicles" executes the entire workflow automatically.
+
+### Example skills by role
+
+**For developers:**
+
+```
+Skill: "Tech Stack Audit"
+Given a GitHub repo URL, analyze: dependencies and their 
+versions, known CVEs in current dependencies, migration 
+paths for outdated packages, and estimated refactor effort. 
+Output as a prioritized issue list.
+```
+
+**For researchers and analysts:**
+
+```
+Skill: "Literature Sweep"
+Search academic databases and preprint servers for papers 
+on [topic] from the last 24 months. Summarize each paper's 
+key finding in one sentence, flag contradictory findings 
+across papers, and produce a structured literature table 
+with links.
+```
+
+**For founders and product people:**
+
+```
+Skill: "Competitor Watch"
+Weekly: check each competitor in [list] for pricing changes, 
+new feature announcements, job postings (especially in 
+product/engineering), and funding news. Flag any significant 
+changes and email a summary every Monday at 9am.
+```
+
+**For anyone who writes:**
+
+```
+Skill: "First Draft"
+Given a topic and target audience, research the subject, 
+produce an outline, then write a full draft. Return the 
+draft with a list of the claims that need human verification 
+before publishing.
+```
+
+---
+
+## Part 5: Real-world workflow patterns
+
+### Research-intensive work
+
+Computer's strongest capability is synthesizing large volumes of information from heterogeneous sources. It runs seven search types simultaneously: web, academic, people, image, video, shopping, and social, reading full source pages rather than snippets. One documented example produced a spreadsheet with 4 sheets, 33 cited sources, and 10 documented benchmark discrepancies in 7 minutes and 7 seconds.
+
+Works well for: competitive intelligence, due diligence, literature reviews, technical landscape analysis, regulatory research, and market sizing.
+
+**Sample prompt:**
+
+```
+"Research the regulatory landscape for drone delivery in 
+the European Union. Cover: current regulations by country, 
+pending legislative changes, key regulatory bodies, recent 
+enforcement actions, and how regulations compare to the US. 
+Output as a structured report with a country-by-country 
+appendix. Cite everything."
+```
+
+### End-to-end document production
+
+Computer can take a research task and continue through formatting, design, and delivery without human handoffs. A single workflow can research, write, format, and email a finished PDF.
+
+**Sample workflow chain:**
+
+```
+1. "Research and produce a brief on [topic]"
+   > Structured research output
+
+2. "Convert this brief into a slide deck using the 
+    Slides skill. Include a summary table on slide 2 
+    and a sources slide at the end."
+   > Designed presentation
+
+3. "Export as PDF and email to [address] with subject 
+    line: [Topic] — [Date]"
+   > Sent
+```
+
+### Automated monitoring and alerts
+
+Max users get up to 10 scheduled tasks. Computer watches external signals and acts proactively.
+
+**Sample setup:**
+
+```
+"Every weekday at 7am:
+- Check if any of [competitor list] has published a 
+  press release, updated pricing, or posted a job 
+  opening in product or engineering
+- Check Google News for mentions of [industry keyword]
+- If anything significant, send me a Slack message 
+  summarizing it. If nothing, skip the message."
+```
+
+### Multi-tool workflows
+
+Computer can chain external services together: research something, push it somewhere, trigger a follow-up action.
+
+**Sample prompt:**
+
+```
+"Research the 10 most active open-source LLM projects 
+on GitHub right now. For each, pull: star count, last 
+commit date, open issues, license, and primary use case. 
+Add all 10 as cards in my Notion database [link], 
+then post a summary to #research in Slack."
+```
+
+### Rapid prototyping and ideation
+
+For builders with an idea but no team, Computer can produce the artifacts that normally require specialists.
+
+**Sample prompt:**
+
+```
+"I'm building a tool that helps independent consultants 
+manage client relationships. Help me:
+1. Research the top 5 competitors with pricing and 
+   differentiation
+2. Identify the 3 most underserved user pain points 
+   based on G2 and Reddit reviews
+3. Produce a one-page product positioning statement
+4. Draft a 10-slide pitch deck for early adopters
+Output each as a separate deliverable."
+```
+
+### Data analysis and visualization
+
+Upload a dataset or point Computer at a data source and ask for analysis:
+
+```
+"Analyze the attached CSV of customer support tickets 
+from the last 90 days. Identify: the top 5 issue categories 
+by volume, average resolution time per category, tickets 
+that went unresolved for more than 5 business days, and 
+any patterns suggesting a systemic product problem. 
+Create a dashboard-style visual summary."
+```
+
+---
+
+## Part 6: The developer APIs
+
+At its Ask 2026 developer conference (March 11, 2026), Perplexity released the building blocks powering Computer as four programmable APIs. This means you can embed Computer's capabilities directly into your own applications.
+
+### Sonar API (search-grounded chat completions)
+
+The simplest entry point. OpenAI-compatible, drop-in replacement:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_PERPLEXITY_API_KEY",
+    base_url="https://api.perplexity.ai/v1"
+)
+
+response = client.chat.completions.create(
+    model="sonar-pro",  # 200K context, citations included
+    messages=[
+        {
+            "role": "system",
+            "content": "You are a helpful research assistant. Always cite sources."
+        },
+        {
+            "role": "user",
+            "content": "What are the most significant AI regulatory developments in 2026?"
+        }
+    ],
+    web_search_options={"search_context_size": "high"}
+)
+
+print(response.choices[0].message.content)
+# Citations are embedded in the response text
+```
+
+Available Sonar models:
+
+
+| Model                 | Best for                                | Pricing           |
+| --------------------- | --------------------------------------- | ----------------- |
+| `sonar`               | Fast, lightweight queries               | $1/M input tokens |
+| `sonar-pro`           | Complex queries, 200K context           | Higher            |
+| `sonar-reasoning-pro` | Chain-of-thought with citations         | Higher            |
+| `sonar-deep-research` | Multi-step, adjustable reasoning effort | Highest           |
+
+
+### Search API (raw web search at scale)
+
+Direct access to Perplexity's search index of 200+ billion URLs, without LLM synthesis:
+
+```bash
+curl -X POST https://api.perplexity.ai/search \
+  -H "Authorization: Bearer $PERPLEXITY_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "latest AI agent frameworks 2026",
+    "date_range": "past_month",
+    "domains_allow": ["github.com", "arxiv.org"]
+  }'
+```
+
+Pricing: $5 per 1,000 requests. Supports domain allow/deny lists, date range filters, regional targeting, and bundling up to 5 queries per call.
+
+### Agent API (multi-model orchestration for developers)
+
+Access any model in Computer's roster with built-in web search tools, at direct-provider pricing with no markup:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_PERPLEXITY_API_KEY",
+    base_url="https://api.perplexity.ai/v1"
+)
+
+response = client.responses.create(
+    model="anthropic/claude-opus-4-6",
+    input="Analyze the competitive landscape for AI coding tools in 2026",
+    tools=[
+        {"type": "web_search"},   # $0.005 per invocation
+        {"type": "fetch_url"}
+    ]
+)
+
+print(response.output_text)
+```
+
+The Agent API is OpenAI Responses API compatible. Switch from OpenAI to Perplexity by changing one line (the base URL), making it a low-friction upgrade path for existing projects.
+
+### Sandbox API (beta, isolated code execution)
+
+Run code in isolated Kubernetes pods using the same infrastructure Computer uses internally:
+
+```python
+import requests
+
+response = requests.post(
+    "https://api.perplexity.ai/v1/sandbox/execute",
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={
+        "language": "python",
+        "code": """
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.DataFrame({'month': ['Jan', 'Feb', 'Mar'], 
+                   'revenue': [12000, 15000, 18500]})
+
+plt.figure(figsize=(10, 6))
+plt.bar(df['month'], df['revenue'])
+plt.title('Quarterly Revenue')
+plt.savefig('output/chart.png')
+print('Chart saved')
+        """,
+        "files": {}
+    }
+)
+
+result = response.json()
+print(result["stdout"])  # "Chart saved"
+# Access generated files at result["output_files"]["chart.png"]
+```
+
+No direct network access inside the sandbox; outbound traffic routes through a controlled egress proxy. Code never sees raw API keys. Supports Python, JavaScript, and SQL.
+
+### MCP integration
+
+Perplexity's official MCP server gives any MCP-compatible tool (Claude Desktop, Cursor, VS Code with Continue, Claude Code) live web search capabilities:
+
+```json
+{
+  "mcpServers": {
+    "perplexity": {
+      "command": "npx",
+      "args": ["-y", "@perplexity-ai/mcp-server"],
+      "env": {
+        "PERPLEXITY_API_KEY": "your_key_here"
+      }
+    }
+  }
+}
+```
+
+Exposed tools: `perplexity_search`, `perplexity_ask`, `perplexity_research`, and `perplexity_reason`. For developers building coding assistants, research agents, or any tool that benefits from real-time web access, this is the fastest integration path.
+
+---
+
+## Part 7: Limitations and when to use something else
+
+### The credit trap
+
+This is Computer's most significant operational risk. There is no per-task cost estimate. You cannot see what a task will cost before it runs. Failed runs consume credits. Misunderstood prompts trigger retry loops that compound costs. Community testing includes a user burning 21,000 credits scanning a 280,000-line codebase, and another losing 15,000 credits in 40 minutes on a workflow that misinterpreted the goal.
+
+What to do: Always use the "clarify first" custom instruction. Set a monthly spending cap below your maximum tolerance. Run small calibration tasks before committing to expensive workflows. Watch new workflows actively until you trust the pattern.
+
+### The coding black box
+
+Computer's sandbox has no live preview, no hot reloading, and no visibility into what is happening during execution. Iterating on UI or debugging requires full cloud redeployments (2 to 3 minutes each). Builder.io's multi-day technical test burned approximately $200 in credits when an npm install failure sent Computer into a silent loop of broken Vercel deployments. For iterative development work, Claude Code or Cursor provide far better feedback loops.
+
+What to do: Use Computer for research, scaffolding, and architecture decisions. Use purpose-built coding tools for the actual development loop.
+
+### Connector fragility
+
+Of 400+ advertised integrations, real-world quality varies significantly. Vercel OAuth tokens expire each session. Some connectors surface only partial data. GitHub required manual Personal Access Token workarounds in testing. Test any integration you plan to depend on before relying on it.
+
+### Context loss in long sessions
+
+Computer handles context compaction by summarizing earlier parts of a long session to stay within model context windows, but this can result in nuance being dropped from complex, extended workflows. For very long projects, periodically summarize your session state explicitly and paste it into a new session.
+
+### When to reach for a different tool
+
+
+| Need                                        | Better choice                       |
+| ------------------------------------------- | ----------------------------------- |
+| Iterative coding and debugging              | Claude Code, Cursor, GitHub Copilot |
+| Predictable API costs                       | Sonar API directly                  |
+| Local file access or privacy-sensitive work | Local models (Ollama, LM Studio)    |
+| Precise database queries                    | Direct SQL + your own scripts       |
+| Real-time streaming data                    | Custom pipelines                    |
+
+
+Computer is strongest when tasks are complex, multi-source, multi-step, and would normally require coordinating several different people or tools. That is where its orchestration architecture delivers returns that no single-model tool can match. For simple, bounded, or cost-sensitive tasks, simpler tools are the better choice.
+
+---
+
+## Conclusion
+
+Perplexity Computer's core insight is that orchestrating the right models beats optimizing one model, and that is validated by what it can actually produce: research deliverables in minutes that would take a team hours, autonomous multi-step workflows that chain tools together without handoffs, and an API surface that makes all of this programmable.
+
+The key to using it well is treating it like a capable co-worker rather than a search engine. Give it outcomes, not steps. Build reusable Skills instead of repeating prompts. Chain tasks instead of restarting sessions. Watch your credits the way you would watch a cloud bill.
+
+The platform is still maturing. Connector reliability, coding visibility, and cost predictability all have room to improve. But for research-heavy work, document production, automated monitoring, and rapid ideation across any domain, it already delivers something genuinely new.
+
+---
+
+*Further reading: [Perplexity Computer official blog](https://www.perplexity.ai/hub/blog/introducing-perplexity-computer) · [Sonar API docs](https://docs.perplexity.ai) · [Agent API docs](https://docs.perplexity.ai) · [Official MCP server*](https://github.com/perplexityai/modelcontextprotocol)
