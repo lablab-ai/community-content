@@ -1,7 +1,7 @@
 ---
 name: content-ideate
 description: Generate an article or tutorial concept from a source (tweet, article, or raw idea). Use when you have a piece of content or an idea and want to turn it into a lablab content concept — outputs a working title and brief ready to hand off to content-start.
-compatibility: Designed for Claude Code. Requires WebSearch or Brave Search MCP for uniqueness check, WebFetch for URL sources, and uv for the Notion script.
+compatibility: Designed for Claude Code. Requires WebSearch or Brave Search MCP for uniqueness check, WebFetch for URL sources, and python3 with requests installed.
 ---
 
 ## Steps
@@ -47,7 +47,7 @@ Wait for the user to confirm title and angle.
 Once confirmed, run:
 
 ```bash
-uv run scripts/post_to_notion.py \
+python3 scripts/post_to_notion.py \
   --title "confirmed title" \
   --type "Article" \
   --hook "hook sentence" \
