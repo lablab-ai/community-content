@@ -1,6 +1,6 @@
 ---
-title: "Build Your First Agent Harness with Claude Code"
-description: "Learn how to build a real agentic system using the Claude Agent SDK. You will set up CLAUDE.md, configure tools and permissions, and run an agent that autonomously finds and fixes bugs in a Python project."
+title: "Build Your First Claude Code Agent Harness for AI Hackathons"
+description: "Build a Claude Code agent harness for AI hackathons. Configure CLAUDE.md, tool permissions, and run an autonomous bug-fixing agent using the Claude Agent SDK."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/tutorials/claude-code-agent-harness/cover"
 authorUsername: "stevekimoi"
 ---
@@ -12,6 +12,8 @@ When people talk about Claude Code being "powerful," they are usually describing
 Anthropic tested this directly. The same Claude Opus model scored **78% on the CORE coding benchmark when run inside Claude Code's harness, and only 42% when run with a minimal setup**. The harness is the multiplier.
 
 The Claude Agent SDK packages that same harness so you can build your own agents on top of it. In this tutorial you will build a codebase health agent that takes a buggy Python project, runs the tests, reads the failures, fixes every bug, and confirms all tests pass, without you touching a single line of source code.
+
+At AI hackathons, the difference between a prototype that works and one that breaks under pressure is often the agent's ability to verify its own output. By the end of this tutorial you will have a working harness pattern you can adapt for any automated task at your next [AI hackathon](https://lablab.ai/event): code review, data validation, test generation, and more.
 
 ## What you will build
 
@@ -189,6 +191,20 @@ Step back and look at what the agent did without being told explicitly:
 
 This is the agentic loop: gather context, take action, verify results, and it ran entirely inside the harness. Your `CLAUDE.md` constrained the behavior, `allowed_tools` bounded the blast radius, and `permission_mode` removed the friction for a trusted local task.
 
+## Frequently Asked Questions
+
+**Q: Can I use this agent harness pattern in an AI hackathon project?**
+Yes. The pattern in this tutorial — CLAUDE.md for constraints, `allowed_tools` for permissions, `permission_mode` for trust level — is the same one you would use in any hackathon build. Swap out the bug-fixing prompt for whatever your agent needs to do: generate tests, review a PR, validate data, or call an external API.
+
+**Q: What is the difference between the Claude Agent SDK and the Anthropic client SDK?**
+The Anthropic client SDK gives you direct API access: you send prompts and implement the tool execution loop yourself. The Claude Agent SDK handles tool execution for you — `Read`, `Bash`, `Edit`, and others are built in. You write a prompt and options; the harness runs the loop.
+
+**Q: Why use CLAUDE.md instead of putting all instructions in the prompt?**
+Instructions in a prompt last for one run. CLAUDE.md loads at the start of every session, so constraints like "never modify test files" or "always run tests before making changes" are enforced automatically without you repeating them. It also keeps your `agent.py` short and the agent's rules auditable in version control.
+
+**Q: How do I stop the agent from running commands I haven't approved?**
+Remove `permission_mode="acceptEdits"` from `ClaudeAgentOptions`. Without it the agent will pause and ask for confirmation before each file edit. To lock down shell commands too, restrict `allowed_tools` to exclude `Bash`, or pass specific command allowlists via hooks.
+
 ## Where to go next
 
 This agent handles one file. Real projects have dozens. A few natural extensions:
@@ -197,4 +213,4 @@ This agent handles one file. Real projects have dozens. A few natural extensions
 - **Add a `PostToolUse` hook** to log every file the agent edits to an audit file
 - **Spawn a subagent** to handle security review separately from bug fixing, then combine both reports
 
-The full Claude Agent SDK docs are at [code.claude.com/docs](https://code.claude.com/docs/en/agent-sdk/overview). The starter repo for this tutorial is at [github.com/Stephen-Kimoi/claude-code-agent-harness](https://github.com/Stephen-Kimoi/claude-code-agent-harness).
+The full Claude Agent SDK docs are at [code.claude.com/docs](https://code.claude.com/docs/en/agent-sdk/overview). The starter repo for this tutorial is at [github.com/Stephen-Kimoi/claude-code-agent-harness](https://github.com/Stephen-Kimoi/claude-code-agent-harness). If you want to put this into practice, browse [upcoming AI hackathons on Lablab](https://lablab.ai/ai-hackathons) — most multi-day events are exactly the right scope for building and shipping an agent like this.
