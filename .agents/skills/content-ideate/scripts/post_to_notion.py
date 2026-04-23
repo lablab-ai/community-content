@@ -6,12 +6,15 @@ import argparse
 import os
 import re
 import sys
+from pathlib import Path
 
 import requests
 
 
 def load_token():
-    env_path = os.path.expanduser("~/claude-workspace-automation/.env")
+    # __file__ = .agents/skills/content-ideate/scripts/post_to_notion.py
+    # resolve up to .agents/skills/.env
+    env_path = Path(__file__).resolve().parent.parent.parent / ".env"
     try:
         with open(env_path) as f:
             for line in f:
@@ -20,7 +23,7 @@ def load_token():
                     return m.group(1)
     except FileNotFoundError:
         sys.exit(f"Error: env file not found at {env_path}")
-    sys.exit("Error: NOTION_TOKEN not found in ~/claude-workspace-automation/.env")
+    sys.exit(f"Error: NOTION_TOKEN not found in {env_path}")
 
 
 def main():
@@ -43,9 +46,10 @@ def main():
             "Content-Type": "application/json",
         },
         json={
-            "parent": {"database_id": "2c05a26f4693802c9ae3e010354b45fa"},
+            "parent": {"database_id": "2c75a26f469380c39b6ef150ebcf97c3"},
             "properties": {
-                "Name": {"title": [{"text": {"content": args.title}}]}
+                "Task Name": {"title": [{"text": {"content": args.title}}]},
+                "Status": {"status": {"name": "Idea - to approve"}},
             },
             "children": [
                 _para(f"Type: {args.type}"),
