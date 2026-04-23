@@ -1,27 +1,21 @@
-Processing file: blog/en/day-5-12-openai-chatgpt-goes-native-on-2-billion-apple-devices.mdx
-Downloading image from URL: https://iili.io/2WrRKrX.md.jpg
-Successfully downloaded image to: images/2WrRKrX.md.jpg
-Uploading image: images/2WrRKrX.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c441e48-c819-4f9e-c8af-55772a512700/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0c441e48-c819-4f9e-c8af-55772a512700/full
-Deleted local image: images/2WrRKrX.md.jpg
-Downloading image from URL: https://iili.io/2WrRB7s.md.jpg
-Successfully downloaded image to: images/2WrRB7s.md.jpg
-Uploading image: images/2WrRB7s.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e5089f92-a916-4b4a-94b4-504f3671ee00/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e5089f92-a916-4b4a-94b4-504f3671ee00/full
-Deleted local image: images/2WrRB7s.md.jpg
-Downloading image from URL: https://iili.io/2WrRq2n.md.jpg
-Successfully downloaded image to: images/2WrRq2n.md.jpg
-Uploading image: images/2WrRq2n.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28100a0f-73ee-4fa0-6513-3a968d9a0500/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/28100a0f-73ee-4fa0-6513-3a968d9a0500/full
-Deleted local image: images/2WrRq2n.md.jpg
-Downloading image from URL: https://iili.io/2WrRCkG.md.jpg
-Successfully downloaded image to: images/2WrRCkG.md.jpg
-Uploading image: images/2WrRCkG.md.jpg
-Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a621c10a-3bf4-4c37-c6ce-3e17aae73200/full
-Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a621c10a-3bf4-4c37-c6ce-3e17aae73200/full
-Deleted local image: images/2WrRCkG.md.jpg
-Successfully processed file: blog/en/day-5-12-openai-chatgpt-goes-native-on-2-billion-apple-devices.mdx
+Processing file: tutorials/en/how-i-made-claude-search-any-book-instantly-with-anthropics-new-protocol.mdx
+Downloading image from URL: https://iili.io/2OxuBJS.md.png
+Successfully downloaded image to: images/2OxuBJS.md.png
+Uploading image: images/2OxuBJS.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e2c52c00-e905-4dc7-2782-e927c7296100/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e2c52c00-e905-4dc7-2782-e927c7296100/full
+Deleted local image: images/2OxuBJS.md.png
+Downloading image from URL: https://iili.io/2OxuK0l.md.png
+Successfully downloaded image to: images/2OxuK0l.md.png
+Uploading image: images/2OxuK0l.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67988a90-feaa-4416-f220-9c1aeb968e00/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67988a90-feaa-4416-f220-9c1aeb968e00/full
+Deleted local image: images/2OxuK0l.md.png
+Downloading image from URL: https://iili.io/2Oxufg2.md.png
+Successfully downloaded image to: images/2Oxufg2.md.png
+Uploading image: images/2Oxufg2.md.png
+Successfully uploaded image. Variant URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bad78444-433f-42df-ed13-7bf0fb3a9700/full
+Replaced image with new URL: https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bad78444-433f-42df-ed13-7bf0fb3a9700/full
+Deleted local image: images/2Oxufg2.md.png
+Successfully processed file: tutorials/en/how-i-made-claude-search-any-book-instantly-with-anthropics-new-protocol.mdx
 CHANGES_MADE
