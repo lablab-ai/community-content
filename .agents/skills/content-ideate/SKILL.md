@@ -15,10 +15,22 @@ Accept a tweet URL/text, article URL/text, or raw idea. Fetch URLs. Extract the 
 - **Tutorial** if there's something to build; **Article** if it's a trend, comparison, or opinion.
 - Pick one reader level: Beginner / Intermediate / Advanced.
 
-### 3. Quick uniqueness check
+### 3. Deep uniqueness check
 
-- `site:lablab.ai [topic]` — already covered? Suggest a fresher angle.
-- One broader search (Medium, dev.to, Hashnode) — note the gap we're filling.
+The goal is to find an angle **no one has written yet**. Run all of these:
+
+1. `site:lablab.ai [topic]` — if covered, the angle must be meaningfully different
+2. `[topic] tutorial` — broad web search, scan top 10 results across all platforms
+3. `[topic] site:medium.com OR site:dev.to OR site:hashnode.com OR site:towardsdatascience.com`
+4. `[topic] site:youtube.com` — video coverage signals a saturated angle; find what they missed
+5. `[specific tool/API combo] tutorial [current year]` — check for recency gaps
+
+After all searches, answer:
+- What exact angles already exist? (list titles + platforms)
+- What angle is **missing entirely** — a combination of tools, a use case, or a reader level no one has addressed?
+- Is there a recency gap — old tutorials on a rapidly-changing tool?
+
+Only proceed with an angle that passes: **"I could not find this written anywhere."** If everything is covered, reframe around the gap rather than retreading existing ground.
 
 ### 4. Generate titles
 
