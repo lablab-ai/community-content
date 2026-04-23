@@ -1,0 +1,200 @@
+---
+title: "Build Your First Agent Harness with Claude Code"
+description: "Learn how to build a real agentic system using the Claude Agent SDK. You will set up CLAUDE.md, configure tools and permissions, and run an agent that autonomously finds and fixes bugs in a Python project."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/tutorials/claude-code-agent-harness/cover"
+authorUsername: "stevekimoi"
+---
+
+## What is an agent harness?
+
+When people talk about Claude Code being "powerful," they are usually describing the harness, not just the model. The harness is the layer that wraps the language model and gives it the ability to act: read files, run commands, search codebases, and loop until a task is complete.
+
+Anthropic tested this directly. The same Claude Opus model scored **78% on the CORE coding benchmark when run inside Claude Code's harness, and only 42% when run with a minimal setup**. The harness is the multiplier.
+
+The Claude Agent SDK packages that same harness so you can build your own agents on top of it. In this tutorial you will build a codebase health agent that takes a buggy Python project, runs the tests, reads the failures, fixes every bug, and confirms all tests pass, without you touching a single line of source code.
+
+## What you will build
+
+A Python script (`agent.py`) that points the Claude Agent SDK at a small buggy project and lets the agent fix it autonomously. The agent will:
+
+1. Run `pytest` to see what is failing
+2. Read the source files to understand each bug
+3. Edit the source files to fix them
+4. Run `pytest` again to confirm all tests pass
+
+This exercises every core harness concept: persistent instructions via `CLAUDE.md`, tool permissions, the gather-act-verify loop, and autonomous file editing.
+
+## Prerequisites
+
+- Python 3.10 or higher
+- An [Anthropic API key](https://platform.claude.com/)
+- Basic familiarity with Python and pytest
+
+## Step 1: Clone the starter project
+
+The starter project contains a small utility library with three seeded bugs and a pytest suite that covers them. Clone it and set up a virtual environment:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/claude-code-agent-harness.git
+cd claude-code-agent-harness
+python3 -m venv venv
+source venv/bin/activate
+pip install claude-agent-sdk pytest
+```
+
+Set your API key:
+
+```bash
+export ANTHROPIC_API_KEY=your-api-key-here
+```
+
+## Step 2: Understand the buggy project
+
+Open `stats.py`. It has three functions — `mean`, `median`, and `normalize` — each with a deliberate bug:
+
+```python
+def mean(numbers):
+    return sum(numbers) / len(numbers) - 1  # subtracts 1 from every result
+
+
+def median(numbers):
+    sorted_data = sorted(numbers)
+    mid = len(sorted_data) // 2
+    if len(sorted_data) % 2 == 0:
+        return sorted_data[mid]  # should average the two middle elements
+    return sorted_data[mid]
+
+
+def normalize(numbers):
+    min_val = min(numbers)
+    max_val = max(numbers)
+    return [(x - min_val) / (max_val - min_val) for x in numbers]  # ZeroDivisionError when all values are equal
+```
+
+Run the tests to confirm they fail:
+
+```bash
+pytest test_stats.py -v
+```
+
+You should see 4 failures out of 6 tests. Good — the agent has real work to do.
+
+## Step 3: Write CLAUDE.md
+
+`CLAUDE.md` is how you give the agent persistent instructions. Think of it as the agent's job description: it loads at the start of every session and shapes every decision the agent makes throughout the run.
+
+Create `CLAUDE.md` in the project root:
+
+```markdown
+# Codebase Health Agent
+
+You are a codebase health agent. Your job is to find and fix bugs in Python source files.
+
+## Rules
+
+- Always run the test suite first to see what is failing before touching any code.
+- Fix only source files. Never modify test files.
+- After making all fixes, run the test suite again to confirm every test passes.
+- If a test is still failing after a fix attempt, read the error carefully and try again.
+- Report what you fixed and why at the end.
+```
+
+A few things to notice here:
+
+- The rule "never modify test files" is a hard constraint. The agent will respect it throughout the run without you having to repeat it in your prompt.
+- "Run tests before and after" encodes the verification loop into the agent's behavior. You are not telling it *how* to fix bugs — you are telling it *how to know* when it is done.
+- The final rule — report what you fixed — gives you a clean audit trail after each run.
+
+This is the core value of `CLAUDE.md`: you define the rules once, and the agent follows them autonomously across every step.
+
+## Step 4: Configure tools and permissions
+
+Now create `agent.py`. This is the script that starts the agent, gives it a task, and streams the output back to your terminal.
+
+```python
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+
+async def main():
+    print("Starting codebase health agent...\n")
+
+    async for message in query(
+        prompt=(
+            "Run the test suite to see what is failing. "
+            "Read the source files to understand the bugs. "
+            "Fix every bug in the source files. "
+            "Run the tests again to confirm all tests pass. "
+            "Do not modify test files."
+        ),
+        options=ClaudeAgentOptions(
+            allowed_tools=["Read", "Bash", "Edit", "Grep"],
+            permission_mode="acceptEdits",
+        ),
+    ):
+        if hasattr(message, "text"):
+            print(message.text, end="", flush=True)
+        elif hasattr(message, "result"):
+            print(f"\n\nResult: {message.result}")
+
+
+asyncio.run(main())
+```
+
+The two options doing the heavy lifting:
+
+**`allowed_tools`** is the permission boundary. It tells the harness exactly which tools the agent may use. `Read` and `Grep` let it explore files. `Bash` lets it run `pytest`. `Edit` lets it fix source files. Anything not on this list: creating new files, making network requests, running arbitrary shell commands, is blocked automatically.
+
+**`permission_mode="acceptEdits"`** auto-approves all file edits without prompting you each time. For a fix-my-bugs agent that you trust and have scoped tightly with `allowed_tools`, this is the right default. For an agent touching production infrastructure, you would drop this and let it prompt you for each action.
+
+## Step 5: Run the agent
+
+```bash
+python3 agent.py
+```
+
+Watch what happens. The agent runs `pytest`, reads the failure output, opens `stats.py`, locates each bug, edits the file, and runs `pytest` again to verify. No human intervention at any step.
+
+When it finishes you should see something like:
+
+```
+Result: All 6 tests now pass. Here's a summary of the 3 bugs that were found and fixed in stats.py:
+
+Bug 1 — mean: off-by-one subtraction
+The return expression was sum(numbers) / len(numbers) - 1, which incorrectly subtracted 1 from every result. Fix: removed the - 1.
+
+Bug 2 — median: wrong middle element for even-length lists
+Both branches returned sorted_data[mid], so even-length lists never averaged the two middle elements. Fix: changed the even branch to (sorted_data[mid - 1] + sorted_data[mid]) / 2.
+
+Bug 3 — normalize: division by zero when all values are equal
+When all values are the same, min_val == max_val, making the denominator zero. Fix: added a guard that returns a list of 0.0 values when the range is zero.
+```
+
+Confirm by running pytest directly:
+
+```bash
+pytest test_stats.py -v
+```
+
+All 6 pass.
+
+## What just happened
+
+Step back and look at what the agent did without being told explicitly:
+
+- It chose which files to read based on the test error output
+- It identified the root cause of each failure independently
+- It made surgical edits without touching unrelated code or test files
+- It verified its own work by re-running the tests
+
+This is the agentic loop: gather context, take action, verify results, and it ran entirely inside the harness. Your `CLAUDE.md` constrained the behavior, `allowed_tools` bounded the blast radius, and `permission_mode` removed the friction for a trusted local task.
+
+## Where to go next
+
+This agent handles one file. Real projects have dozens. A few natural extensions:
+
+- **Add `Glob`** to `allowed_tools` so the agent can find all Python files in a project automatically
+- **Add a `PostToolUse` hook** to log every file the agent edits to an audit file
+- **Spawn a subagent** to handle security review separately from bug fixing, then combine both reports
+
+The full Claude Agent SDK docs are at [code.claude.com/docs](https://code.claude.com/docs/en/agent-sdk/overview). The starter repo for this tutorial is at [github.com/Stephen-Kimoi/claude-code-agent-harness](https://github.com/Stephen-Kimoi/claude-code-agent-harness).
