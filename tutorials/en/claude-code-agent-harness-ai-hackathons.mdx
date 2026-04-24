@@ -1,0 +1,399 @@
+---
+title: "Using Agent Harnesses for AI Hackathons with Claude Code"
+description: "Build a Claude Agent SDK harness that autonomously finds and fixes bugs in a Python codebase. A practical guide for AI hackathon teams who need agents that work without babysitting."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1777024113/lablab-tutorials/claude-code-agent-harness-tutorial-cover.png"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+An agent harness is the scaffolding that lets an AI model operate autonomously on a real task: run tools, observe results, and loop until the job is done. Unlike a chat interface where you steer every turn, a harness hands the agent a goal and gets out of the way.
+
+In this tutorial you will build a codebase health agent. Give it a Python project with failing tests and it will run the test suite, read the failures, fix every bug in the source files, and verify the fixes, all without any input from you after the initial command. The agent uses the [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) and the starter repo is at [github.com/Stephen-Kimoi/claude-code-agent-harness](https://github.com/Stephen-Kimoi/claude-code-agent-harness).
+
+This pattern is directly applicable to [AI hackathons](https://lablab.ai/ai-hackathons): instead of manually triaging failures during a crunch, you fire the agent at a broken test suite and redirect your attention to the feature work that matters.
+
+### What You'll Build
+
+A Python script (`agent.py`) that:
+
+- Streams a full Claude Code session via the Agent SDK
+- Logs every tool call (Bash, Read, Edit, Grep) with color-coded output
+- Runs `pytest`, reads failures, edits source files, and re-runs tests
+- Reports cost and elapsed time when it finishes
+
+### Prerequisites
+
+- Python 3.10+
+- An [Anthropic API key](https://platform.claude.com/)
+- Basic familiarity with pytest
+
+---
+
+## Step 1: Clone the Repo and Inspect the Project
+
+```bash
+git clone https://github.com/Stephen-Kimoi/claude-code-agent-harness.git
+cd claude-code-agent-harness
+python3 -m venv venv
+source venv/bin/activate
+pip install claude-agent-sdk pytest
+export ANTHROPIC_API_KEY=your-api-key-here
+```
+
+The repo has four files that matter:
+
+| File | Purpose |
+|---|---|
+| `stats.py` | Python utility library with 3 seeded bugs |
+| `test_stats.py` | pytest suite, 4 failures out of 6 tests at the start |
+| `CLAUDE.md` | Persistent instructions loaded into every agent session |
+| `agent.py` | The harness: drives the SDK, streams output, logs tool calls |
+
+Confirm the tests are failing before you run the agent:
+
+```bash
+pytest test_stats.py -v
+# Expected: 4 failed, 2 passed
+```
+
+---
+
+## Step 2: Understand the Buggy Source File
+
+`stats.py` contains three intentional bugs that represent real categories of off-by-one and edge-case mistakes:
+
+```python
+# stats.py
+def mean(numbers):
+    return sum(numbers) / len(numbers) - 1        # bug: subtracts 1 from every result
+
+
+def median(numbers):
+    sorted_data = sorted(numbers)
+    mid = len(sorted_data) // 2
+    if len(sorted_data) % 2 == 0:
+        return sorted_data[mid]                   # bug: returns one middle element instead of averaging both
+    return sorted_data[mid]
+
+
+def normalize(numbers):
+    min_val = min(numbers)
+    max_val = max(numbers)
+    return [(x - min_val) / (max_val - min_val) for x in numbers]  # bug: ZeroDivisionError when all values are equal
+```
+
+The test suite in `test_stats.py` covers all three functions including the edge cases:
+
+```python
+# test_stats.py
+def test_mean_basic():
+    assert mean([1, 2, 3, 4, 5]) == 3.0
+
+def test_mean_two_values():
+    assert mean([10, 20]) == 15.0
+
+def test_median_odd():
+    assert median([3, 1, 2]) == 2
+
+def test_median_even():
+    assert median([1, 2, 3, 4]) == 2.5           # fails: gets 3 instead of 2.5
+
+def test_normalize_basic():
+    assert normalize([0, 5, 10]) == [0.0, 0.5, 1.0]
+
+def test_normalize_uniform():
+    assert normalize([5, 5, 5]) == [0.0, 0.0, 0.0]  # fails: ZeroDivisionError
+```
+
+The agent's job is to find these failures, trace them to the source, and fix them.
+
+---
+
+## Step 3: Write the Agent's Persistent Instructions (CLAUDE.md)
+
+`CLAUDE.md` is loaded into every Claude Code session automatically. For an agent harness it serves as the standing operating procedure: what the agent must always do, what it must never do, and how it should report results.
+
+```markdown
+# Codebase Health Agent
+
+You are a codebase health agent. Your job is to find and fix bugs in Python source files.
+
+## Rules
+
+- Always run the test suite first to see what is failing before touching any code.
+- Fix only source files. Never modify test files.
+- After making all fixes, run the test suite again to confirm every test passes.
+- If a test is still failing after a fix attempt, read the error carefully and try again.
+- Report what you fixed and why at the end.
+```
+
+Three things make this effective:
+
+1. **Test-first mandate** keeps the agent from guessing. It always has ground truth before editing.
+2. **"Never modify test files"** is the guardrail that matters most. Without it, an agent could trivially make tests pass by deleting assertions.
+3. **Verify-after-fix** prevents the agent from declaring success after an edit without confirming the tests actually pass.
+
+---
+
+## Step 4: Build the Harness (agent.py)
+
+### 4.1 Imports and Color Palette
+
+The harness imports the Agent SDK types and sets up ANSI colors so tool activity is easy to scan at a glance.
+
+```python
+# agent.py
+import asyncio
+import time
+from claude_agent_sdk import (
+    query,
+    ClaudeAgentOptions,
+    AssistantMessage,
+    UserMessage,
+    SystemMessage,
+    ResultMessage,
+    TextBlock,
+    ToolUseBlock,
+    ToolResultBlock,
+)
+
+RESET   = "\033[0m"
+BOLD    = "\033[1m"
+DIM     = "\033[2m"
+CYAN    = "\033[36m"
+GREEN   = "\033[32m"
+YELLOW  = "\033[33m"
+BLUE    = "\033[34m"
+MAGENTA = "\033[35m"
+RED     = "\033[31m"
+
+TOOL_COLORS = {
+    "Bash": CYAN,
+    "Read": BLUE,
+    "Edit": YELLOW,
+    "Grep": MAGENTA,
+}
+```
+
+Each tool gets a distinct color so you can track what the agent is doing (running commands, reading files, editing code, searching patterns) without reading the full output line by line.
+
+### 4.2 Tool Call Logger
+
+The `log_tool_call` function intercepts each `ToolUseBlock` before it executes and prints a readable summary. The Edit branch shows a mini-diff (up to 3 lines before/after) so you can see exactly what changed without reading the full file:
+
+```python
+# agent.py
+def log_tool_call(block: ToolUseBlock):
+    color = TOOL_COLORS.get(block.name, CYAN)
+    inp = block.input
+
+    if block.name == "Bash":
+        cmd = inp.get("command", "").strip()
+        print(f"\n{color}{BOLD}[{block.name}]{RESET} {cmd}")
+
+    elif block.name == "Read":
+        path = inp.get("file_path", "")
+        limit = inp.get("limit", "")
+        suffix = f"  (lines {inp['offset']}–{inp['offset']+limit})" if inp.get("offset") else ""
+        print(f"\n{color}{BOLD}[{block.name}]{RESET} {path}{DIM}{suffix}{RESET}")
+
+    elif block.name == "Edit":
+        path = inp.get("file_path", "")
+        old = inp.get("old_string", "").strip().splitlines()
+        new = inp.get("new_string", "").strip().splitlines()
+        print(f"\n{color}{BOLD}[{block.name}]{RESET} {path}")
+        for line in old[:3]:
+            print(f"  {RED}- {line}{RESET}")
+        for line in new[:3]:
+            print(f"  {GREEN}+ {line}{RESET}")
+        if len(old) > 3 or len(new) > 3:
+            print(f"  {DIM}... ({max(len(old), len(new))} lines total){RESET}")
+
+    elif block.name == "Grep":
+        pattern = inp.get("pattern", "")
+        path = inp.get("path", inp.get("include", ""))
+        print(f"\n{color}{BOLD}[{block.name}]{RESET} {pattern!r} in {path or '.'}")
+
+    else:
+        print(f"\n{color}{BOLD}[{block.name}]{RESET} {str(inp)[:120]}")
+```
+
+### 4.3 The Main Loop
+
+The core of the harness is an `async for` loop over the `query()` stream. The SDK emits typed message objects and you handle each type:
+
+```python
+# agent.py
+async def main():
+    start = time.time()
+    print(f"\n{BOLD}{'─' * 56}{RESET}")
+    print(f"{BOLD}  Codebase Health Agent  —  Claude Agent SDK{RESET}")
+    print(f"{BOLD}{'─' * 56}{RESET}\n")
+
+    async for message in query(
+        prompt=(
+            "Run the test suite to see what is failing. "
+            "Read the source files to understand the bugs. "
+            "Fix every bug in the source files. "
+            "Run the tests again to confirm all tests pass. "
+            "Do not modify test files."
+        ),
+        options=ClaudeAgentOptions(
+            allowed_tools=["Read", "Bash", "Edit", "Grep"],
+            permission_mode="acceptEdits",
+        ),
+    ):
+        if isinstance(message, SystemMessage):
+            if message.subtype == "init":
+                session_id = message.data.get("session_id", "")
+                print(f"{DIM}session  {session_id}{RESET}\n")
+
+        elif isinstance(message, AssistantMessage):
+            for block in message.content:
+                if isinstance(block, TextBlock) and block.text.strip():
+                    print(f"\n{DIM}{block.text.strip()}{RESET}")
+                elif isinstance(block, ToolUseBlock):
+                    log_tool_call(block)
+
+        elif isinstance(message, UserMessage):
+            if isinstance(message.content, list):
+                for block in message.content:
+                    if isinstance(block, ToolResultBlock):
+                        log_tool_result(block)
+
+        elif isinstance(message, ResultMessage):
+            elapsed = time.time() - start
+            cost = f"  ${message.total_cost_usd:.4f}" if message.total_cost_usd else ""
+            turns = f"  {message.num_turns} turns"
+            print(f"\n{BOLD}{GREEN}{'─' * 56}{RESET}")
+            print(f"{BOLD}{GREEN}  Done{RESET}{DIM}  {elapsed:.1f}s{turns}{cost}{RESET}")
+            print(f"{BOLD}{GREEN}{'─' * 56}{RESET}\n")
+            if message.result:
+                print(message.result)
+
+
+asyncio.run(main())
+```
+
+Two `ClaudeAgentOptions` fields control the permission boundary:
+
+- **`allowed_tools`**: only `Read`, `Bash`, `Edit`, and `Grep` are available. The agent cannot create files, make network calls, or access anything outside the working directory.
+- **`permission_mode="acceptEdits"`**: file edits are auto-approved without a prompt. This is safe here because the task is scoped to a local project and the `CLAUDE.md` rule prevents test file modification.
+
+---
+
+## Step 5: Run the Agent
+
+```bash
+python3 agent.py
+```
+
+The agent will:
+
+1. Run `pytest test_stats.py -v` and read the 4 failures
+2. Open `stats.py` and trace each failure to its root cause
+3. Edit `stats.py` three times, one fix per bug
+4. Re-run `pytest` to confirm all 6 tests pass
+5. Print a summary with elapsed time and API cost
+
+A typical run takes 30-60 seconds and costs under $0.05 at current Claude pricing.
+
+### What the output looks like
+
+```
+────────────────────────────────────────────────────────
+  Codebase Health Agent  —  Claude Agent SDK
+────────────────────────────────────────────────────────
+
+session  abc123...
+
+[Bash] pytest test_stats.py -v
+  FAILED test_stats.py::test_mean_basic
+  FAILED test_stats.py::test_mean_two_values
+  FAILED test_stats.py::test_median_even
+  FAILED test_stats.py::test_normalize_uniform
+
+[Read] stats.py
+
+[Edit] stats.py
+  - return sum(numbers) / len(numbers) - 1
+  + return sum(numbers) / len(numbers)
+
+[Edit] stats.py
+  - return sorted_data[mid]
+  + return (sorted_data[mid - 1] + sorted_data[mid]) / 2
+
+[Edit] stats.py
+  - return [(x - min_val) / (max_val - min_val) for x in numbers]
+  + ... (4 lines total)
+
+[Bash] pytest test_stats.py -v
+  6 passed
+
+────────────────────────────────────────────────────────
+  Done  42.3s  8 turns  $0.0312
+────────────────────────────────────────────────────────
+```
+
+---
+
+## Adapting the Harness for Your Own Projects
+
+The structure stays the same for any autonomous coding task. Three things change:
+
+**1. The prompt** in `main()` describes the goal. For a different task, swap it:
+
+```python
+prompt="Refactor all functions longer than 40 lines. Extract helpers. Keep tests passing."
+```
+
+**2. The `allowed_tools` list** defines what the agent can touch. Add `Write` if the task involves creating new files. Remove `Bash` if you want to block command execution entirely.
+
+**3. `CLAUDE.md`** sets standing rules for the project. Constraints that should apply to every run (never touch migrations, always update the changelog, run the linter after edits) belong here rather than in the prompt.
+
+---
+
+## Hackathon Tips
+
+At an [AI hackathon](https://lablab.ai/ai-hackathons) you rarely have time to triage every failing test manually. A harness like this fits naturally into a parallel workflow:
+
+- **Session 1:** run the harness against your test suite while you work on new features
+- **Session 2:** keep active development open in Claude Code Desktop
+- **Session 3:** run a separate harness pass focused on a specific module
+
+The harness is stateless and cheap to re-run. If the agent's fixes introduce a regression, re-run with the same prompt and let it self-correct.
+
+Want to practice this pattern under real time pressure? Browse [upcoming AI hackathons on LabLab.ai](https://lablab.ai/ai-hackathons).
+
+---
+
+## Frequently Asked Questions
+
+**Do I need Claude Code Desktop to use the Agent SDK?**
+
+No. The Agent SDK is a Python library that runs from any terminal. Claude Code Desktop is a separate product. The SDK communicates with the Anthropic API directly using your `ANTHROPIC_API_KEY`.
+
+**What does `permission_mode="acceptEdits"` actually do?**
+
+It tells the SDK to auto-approve any file write or edit the agent proposes, without prompting you. Use this only for trusted, scoped tasks. For tasks that touch production code or shared infrastructure, omit this option so you can review each edit before it lands.
+
+**Can the agent modify test files?**
+
+By default, nothing in the SDK prevents it. The protection in this harness comes from the `CLAUDE.md` rule ("Fix only source files. Never modify test files."). That instruction is loaded into every session and Claude follows it reliably for this task.
+
+**How do I point the agent at a different buggy codebase?**
+
+Change the working directory before running the script, or pass a `cwd` parameter to `ClaudeAgentOptions`. Update `CLAUDE.md` to match the test command for that project (for example, `npm test` instead of `pytest`).
+
+**What is the cost of a typical run?**
+
+A single run on this project costs roughly $0.02-0.05 at current Claude Sonnet pricing. The exact cost is printed in the `ResultMessage` at the end of every run via `message.total_cost_usd`.
+
+---
+
+## Conclusion
+
+You now have a working agent harness: a Python script that wraps the Claude Agent SDK, streams a full coding session, logs every tool call, and hands back control only when all tests pass. The same three-part structure (a goal prompt, a constrained tool list, and a `CLAUDE.md` rule set) scales to more complex tasks without changing the harness itself.
+
+The full starter repo is at [github.com/Stephen-Kimoi/claude-code-agent-harness](https://github.com/Stephen-Kimoi/claude-code-agent-harness). Claude Agent SDK reference is at [code.claude.com/docs/en/agent-sdk/overview](https://code.claude.com/docs/en/agent-sdk/overview). Ready to test this under real hackathon pressure? Find your next event at [lablab.ai/ai-hackathons](https://lablab.ai/ai-hackathons).
