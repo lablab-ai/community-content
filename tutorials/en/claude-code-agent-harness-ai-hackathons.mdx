@@ -43,12 +43,17 @@ export ANTHROPIC_API_KEY=your-api-key-here
 
 The repo has four files that matter:
 
-| File | Purpose |
-|---|---|
-| `stats.py` | Python utility library with 3 seeded bugs |
-| `test_stats.py` | pytest suite, 4 failures out of 6 tests at the start |
-| `CLAUDE.md` | Persistent instructions loaded into every agent session |
-| `agent.py` | The harness: drives the SDK, streams output, logs tool calls |
+<table>
+  <thead>
+    <tr><th>File</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>`stats.py`</td><td>Python utility library with 3 seeded bugs</td></tr>
+    <tr><td>`test_stats.py`</td><td>pytest suite, 4 failures out of 6 tests at the start</td></tr>
+    <tr><td>`CLAUDE.md`</td><td>Persistent instructions loaded into every agent session</td></tr>
+    <tr><td>`agent.py`</td><td>The harness: drives the SDK, streams output, logs tool calls</td></tr>
+  </tbody>
+</table>
 
 Confirm the tests are failing before you run the agent:
 
