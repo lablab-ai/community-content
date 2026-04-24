@@ -13,6 +13,12 @@ In this tutorial you will build a codebase health agent. Give it a Python projec
 
 This pattern is directly applicable to [AI hackathons](https://lablab.ai/ai-hackathons): instead of manually triaging failures during a crunch, you fire the agent at a broken test suite and redirect your attention to the feature work that matters.
 
+Here's a preview of the codebase health agent in action:
+
+<video controls width="100%" style={{borderRadius: "8px"}}>
+  <source src="https://res.cloudinary.com/dygkv9gam/video/upload/v1777043807/lablab-tutorials/claude-code-agent-harness-demo.mp4" type="video/mp4" />
+</video>
+
 ### What You'll Build
 
 A Python script (`agent.py`) that:
@@ -78,8 +84,9 @@ pytest test_stats.py -v
 
 `stats.py` contains three intentional bugs that represent real categories of off-by-one and edge-case mistakes:
 
+[`stats.py` lines 1–16 on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/stats.py#L1-L16)
+
 ```python
-# stats.py
 def mean(numbers):
     return sum(numbers) / len(numbers) - 1        # bug: subtracts 1 from every result
 
@@ -100,8 +107,9 @@ def normalize(numbers):
 
 The test suite in `test_stats.py` covers all three functions including the edge cases:
 
+[`test_stats.py` lines 5–26 on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/test_stats.py#L5-L26)
+
 ```python
-# test_stats.py
 def test_mean_basic():
     assert mean([1, 2, 3, 4, 5]) == 3.0
 
@@ -128,6 +136,8 @@ The agent's job is to find these failures, trace them to the source, and fix the
 ## Step 3: Write the Agent's Persistent Instructions (CLAUDE.md)
 
 `CLAUDE.md` is loaded into every Claude Code session automatically. For an agent harness it serves as the standing operating procedure: what the agent must always do, what it must never do, and how it should report results.
+
+[`CLAUDE.md` on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/CLAUDE.md)
 
 ```markdown
 # Codebase Health Agent
@@ -157,8 +167,9 @@ Three things make this effective:
 
 The harness imports the Agent SDK types and sets up ANSI colors so tool activity is easy to scan at a glance.
 
+[`agent.py` lines 1–31 on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/agent.py#L1-L31)
+
 ```python
-# agent.py
 import asyncio
 import time
 from claude_agent_sdk import (
@@ -197,8 +208,9 @@ Each tool gets a distinct color so you can track what the agent is doing (runnin
 
 The `log_tool_call` function intercepts each `ToolUseBlock` before it executes and prints a readable summary. The Edit branch shows a mini-diff (up to 3 lines before/after) so you can see exactly what changed without reading the full file:
 
+[`agent.py` lines 34–66 on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/agent.py#L34-L66)
+
 ```python
-# agent.py
 def log_tool_call(block: ToolUseBlock):
     color = TOOL_COLORS.get(block.name, CYAN)
     inp = block.input
@@ -238,8 +250,9 @@ def log_tool_call(block: ToolUseBlock):
 
 The core of the harness is an `async for` loop over the `query()` stream. The SDK emits typed message objects and you handle each type:
 
+[`agent.py` lines 83–135 on GitHub](https://github.com/Stephen-Kimoi/claude-code-agent-harness/blob/main/agent.py#L83-L135)
+
 ```python
-# agent.py
 async def main():
     start = time.time()
     print(f"\n{BOLD}{'─' * 56}{RESET}")
