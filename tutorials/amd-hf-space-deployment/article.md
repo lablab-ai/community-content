@@ -1,7 +1,7 @@
 ---
 title: "Build and Deploy an AI App on AMD MI300X as a HuggingFace Space"
 description: "Learn how to build a Gradio chat interface on top of a vLLM endpoint running on AMD MI300X and deploy it as a HuggingFace Space — turning your backend into a live, shareable demo in under 20 minutes."
-image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/tutorials/amd-hf-space-deployment/cover"
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png"
 authorUsername: "stevekimoi"
 ---
 
@@ -165,7 +165,9 @@ MODEL_NAME="Qwen/Qwen2.5-1.5B-Instruct" \
 python app.py
 ```
 
-Open `http://127.0.0.1:7860` in your browser and send a message. If the model responds, everything is wired up correctly. Testing locally first saves you a round-trip of pushing to the Space, waiting for the build, and debugging in the logs — catch issues here before they become Space build failures.
+Open `http://127.0.0.1:7860` in your browser and send a message. If the model responds, everything is wired up correctly.
+
+![Local Gradio chat interface responding from the AMD MI300X vLLM endpoint](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371964/tutorials/amd-hf-space-deployment/local-test.png) Testing locally first saves you a round-trip of pushing to the Space, waiting for the build, and debugging in the logs — catch issues here before they become Space build failures.
 
 Common problems at this stage:
 
@@ -231,6 +233,8 @@ Add them as **Secrets** (not Variables) — secrets are private and won't appear
 ## Step 7: Verify the Live Space
 
 Open your Space URL (`huggingface.co/spaces/your-org/your-space-name`) and send a message. You should see streaming responses from the model running on your AMD MI300X.
+
+![Live HuggingFace Space running on AMD MI300X via vLLM](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png)
 
 If the Space shows a build error, check the **Logs** tab — the most common issues are:
 
