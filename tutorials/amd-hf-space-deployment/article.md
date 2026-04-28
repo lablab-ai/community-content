@@ -11,7 +11,7 @@ The [AMD Developer Cloud tutorial](https://lablab.ai/ai-tutorials/amd-developer-
 
 This tutorial picks up from that point. You will build a Gradio chat interface that connects to your vLLM endpoint, push it to HuggingFace as a Space, and end up with a live, publicly accessible demo that anyone can use without touching your GPU.
 
-**What you'll build:** a working chat app hosted at `huggingface.co/spaces/your-org/your-space`, backed by a model running on AMD MI300X.
+**What you'll build:** a working chat app hosted under the [lablab-ai-amd-developer-hackathon](https://huggingface.co/spaces/lablab-ai-amd-developer-hackathon/) org on HuggingFace, backed by a model running on AMD MI300X.
 
 **Time:** under 20 minutes if your vLLM endpoint is already running.
 
@@ -151,7 +151,7 @@ Add these as Space secrets (Settings → Variables and secrets):
 | `MODEL_NAME` | Model ID loaded by vLLM, e.g. `Qwen/Qwen2.5-1.5B-Instruct` |
 ```
 
-The tags are important if you're submitting to the AMD hackathon. The `amd-hackathon-2026` tag makes your Space discoverable.
+The tags are important if you're submitting to the AMD hackathon. The `amd-hackathon-2026` tag makes your Space discoverable under the [lablab-ai-amd-developer-hackathon](https://huggingface.co/spaces/lablab-ai-amd-developer-hackathon/) org.
 
 ## Step 3: Test Locally Before Pushing
 
@@ -187,12 +187,12 @@ Common problems at this stage:
 
 Go to [huggingface.co/new-space](https://huggingface.co/new-space) and fill in the details:
 
-- **Owner:** your organization or personal account
+- **Owner:** `lablab-ai-amd-developer-hackathon` (select the [hackathon org](https://huggingface.co/spaces/lablab-ai-amd-developer-hackathon/))
 - **Space name:** choose a name (e.g. `amd-gradio-demo`)
 - **SDK:** Gradio
 - **Visibility:** Public (required for the hackathon prize) or Private during development
 
-Once created, you'll have an empty git repository at `huggingface.co/spaces/your-org/your-space`.
+Once created, you'll have an empty git repository at `huggingface.co/spaces/lablab-ai-amd-developer-hackathon/your-space-name`.
 
 ## Step 5: Push Your Files to the Space
 
@@ -207,7 +207,7 @@ for filename in ["app.py", "requirements.txt", "README.md"]:
     api.upload_file(
         path_or_fileobj=filename,
         path_in_repo=filename,
-        repo_id="your-org/your-space-name",
+        repo_id="lablab-ai-amd-developer-hackathon/your-space-name",
         repo_type="space",
     )
     print(f"Uploaded: {filename}")
@@ -217,7 +217,7 @@ Or push via git if you prefer:
 
 ```bash
 git init
-git remote add origin https://huggingface.co/spaces/your-org/your-space-name
+git remote add origin https://huggingface.co/spaces/lablab-ai-amd-developer-hackathon/your-space-name
 git add .
 git commit -m "Initial commit"
 git push origin main
@@ -240,7 +240,7 @@ Add them as **Secrets** (not Variables). Secrets are private and won't appear in
 
 ## Step 7: Verify the Live Space
 
-Open your Space URL (`huggingface.co/spaces/your-org/your-space-name`) and send a message. You should see streaming responses from the model running on your AMD MI300X.
+Open your Space URL (`huggingface.co/spaces/lablab-ai-amd-developer-hackathon/your-space-name`) and send a message. You should see streaming responses from the model running on your AMD MI300X.
 
 ![Live HuggingFace Space running on AMD MI300X via vLLM](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png)
 
