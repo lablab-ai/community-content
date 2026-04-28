@@ -1,13 +1,13 @@
 ---
 title: "Build and Deploy an AI App on AMD MI300X as a HuggingFace Space"
-description: "Learn how to build a Gradio chat interface on top of a vLLM endpoint running on AMD MI300X and deploy it as a HuggingFace Space — turning your backend into a live, shareable demo in under 20 minutes."
+description: "Learn how to build a Gradio chat interface on top of a vLLM endpoint running on AMD MI300X and deploy it as a HuggingFace Space, turning your backend into a live, shareable demo in under 20 minutes."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png"
 authorUsername: "stevekimoi"
 ---
 
 ## Introduction
 
-The [AMD Developer Cloud tutorial](https://lablab.ai/ai-tutorials/amd-developer-cloud-host-llm-vllm) gets you to a live vLLM API endpoint running on AMD MI300X hardware in under 30 minutes. That's your backend sorted. But a raw API endpoint isn't a demo — judges can't click on it, teammates can't try it, and it can't win the HuggingFace Category Prize.
+The [AMD Developer Cloud tutorial](https://lablab.ai/ai-tutorials/amd-developer-cloud-host-llm-vllm) gets you to a live vLLM API endpoint running on AMD MI300X hardware in under 30 minutes. That's your backend sorted. But a raw API endpoint isn't a demo. Judges can't click on it, teammates can't try it, and it can't win the HuggingFace Category Prize.
 
 This tutorial picks up from that point. You will build a Gradio chat interface that connects to your vLLM endpoint, push it to HuggingFace as a Space, and end up with a live, publicly accessible demo that anyone can use without touching your GPU.
 
@@ -52,7 +52,7 @@ You need three files: `app.py`, `requirements.txt`, and `README.md`.
 
 ### app.py
 
-This is the entire chat application — about 30 lines of Python:
+This is the entire chat application (about 30 lines of Python):
 
 ```python
 import os
@@ -68,7 +68,12 @@ client = OpenAI(base_url=VLLM_BASE_URL, api_key="not-required")
 def chat(message, history):
     messages = [{"role": "system", "content": "You are a helpful assistant."}]
     for item in history:
-        messages.append({"role": item["role"], "content": item["content"]})
+        if isinstance(item, dict):
+            messages.append({"role": item["role"], "content": item["content"]})
+        else:
+            messages.append({"role": "user", "content": item[0]})
+            if item[1]:
+                messages.append({"role": "assistant", "content": item[1]})
     messages.append({"role": "user", "content": message})
 
     stream = client.chat.completions.create(
@@ -90,6 +95,7 @@ demo = gr.ChatInterface(
     title="AMD MI300X AI Demo",
     description="Chat with an LLM running on AMD MI300X GPU via vLLM.",
     examples=["Explain what AMD MI300X is.", "Write a Python hello world."],
+    cache_examples=False,
 )
 
 if __name__ == "__main__":
@@ -98,9 +104,9 @@ if __name__ == "__main__":
 
 A few things worth noting:
 
-- `VLLM_BASE_URL` and `MODEL_NAME` are read from environment variables. This means you don't hardcode your endpoint — you configure it via HuggingFace Space secrets instead.
+- `VLLM_BASE_URL` and `MODEL_NAME` are read from environment variables. This means you don't hardcode your endpoint. You configure it via HuggingFace Space secrets instead.
 - The `OpenAI` client works directly with vLLM because vLLM exposes an OpenAI-compatible API at `/v1`.
-- The `chat` function is a generator — it yields partial responses as they stream in, which gives you the typing effect in the UI.
+- The `chat` function is a generator. It yields partial responses as they stream in, which gives you the typing effect in the UI.
 
 ### requirements.txt
 
@@ -108,7 +114,7 @@ A few things worth noting:
 openai>=1.0.0
 ```
 
-You don't list Gradio here — HuggingFace Spaces installs it automatically based on the `sdk_version` in your README.
+You don't list Gradio here. HuggingFace Spaces installs it automatically based on the `sdk_version` in your README.
 
 ### README.md
 
@@ -145,7 +151,7 @@ Add these as Space secrets (Settings → Variables and secrets):
 | `MODEL_NAME` | Model ID loaded by vLLM, e.g. `Qwen/Qwen2.5-1.5B-Instruct` |
 ```
 
-The tags are important if you're submitting to the AMD hackathon — `amd-hackathon-2026` makes your Space discoverable.
+The tags are important if you're submitting to the AMD hackathon. The `amd-hackathon-2026` tag makes your Space discoverable.
 
 ## Step 3: Test Locally Before Pushing
 
@@ -167,13 +173,15 @@ python app.py
 
 Open `http://127.0.0.1:7860` in your browser and send a message. If the model responds, everything is wired up correctly.
 
-![Local Gradio chat interface responding from the AMD MI300X vLLM endpoint](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371964/tutorials/amd-hf-space-deployment/local-test.png) Testing locally first saves you a round-trip of pushing to the Space, waiting for the build, and debugging in the logs — catch issues here before they become Space build failures.
+![Local Gradio chat interface responding from the AMD MI300X vLLM endpoint](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371964/tutorials/amd-hf-space-deployment/local-test.png)
+
+Testing locally first saves you a round-trip of pushing to the Space, waiting for the build, and debugging in the logs. Catch issues here before they become Space build failures.
 
 Common problems at this stage:
 
-- **Connection refused** — vLLM isn't running inside the container. SSH into the droplet and run `docker exec rocm ps aux | grep vllm` to check. If it's not there, restart it with `docker exec -d rocm bash -c 'vllm serve YOUR_MODEL --host 0.0.0.0 --port 8000 > /tmp/vllm.log 2>&1'`.
-- **Timeout** — port 8000 is still blocked. Run `ufw allow 8000` on the droplet.
-- **Model not found error** — `MODEL_NAME` doesn't match the model ID vLLM loaded. Check the exact ID with `curl -s http://YOUR_DROPLET_IP:8000/v1/models`.
+- **Connection refused:** vLLM isn't running inside the container. SSH into the droplet and run `docker exec rocm ps aux | grep vllm` to check. If it's not there, restart it with `docker exec -d rocm bash -c 'vllm serve YOUR_MODEL --host 0.0.0.0 --port 8000 > /tmp/vllm.log 2>&1'`.
+- **Timeout:** port 8000 is still blocked. Run `ufw allow 8000` on the droplet.
+- **Model not found error:** `MODEL_NAME` doesn't match the model ID vLLM loaded. Check the exact ID with `curl -s http://YOUR_DROPLET_IP:8000/v1/models`.
 
 ## Step 4: Create the HuggingFace Space
 
@@ -228,7 +236,7 @@ Go to your Space → **Settings** → **Variables and secrets** → **New secret
 | `VLLM_BASE_URL` | `http://YOUR_DROPLET_IP:8000/v1` |
 | `MODEL_NAME` | `Qwen/Qwen2.5-1.5B-Instruct` |
 
-Add them as **Secrets** (not Variables) — secrets are private and won't appear in your Space's public settings. The Space will restart automatically once you save.
+Add them as **Secrets** (not Variables). Secrets are private and won't appear in your Space's public settings. The Space will restart automatically once you save.
 
 ## Step 7: Verify the Live Space
 
@@ -236,7 +244,7 @@ Open your Space URL (`huggingface.co/spaces/your-org/your-space-name`) and send 
 
 ![Live HuggingFace Space running on AMD MI300X via vLLM](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png)
 
-If the Space shows a build error, check the **Logs** tab — the most common issues are:
+If the Space shows a build error, check the **Logs** tab. The most common issues are:
 
 - Wrong `sdk_version` in README.md (use `5.29.0` or higher)
 - Missing secrets (`VLLM_BASE_URL` not set)
@@ -246,6 +254,6 @@ If the Space shows a build error, check the **Logs** tab — the most common iss
 
 You now have a live AI app backed by AMD MI300X hardware, deployed as a HuggingFace Space that anyone can use. The full flow took three files and about 30 lines of Python.
 
-If you're submitting to the AMD Developer Hackathon, make sure your Space is public and tagged with `amd-hackathon-2026` before the deadline. The HuggingFace Category Prize goes to the Space with the most likes — share your link early.
+If you're submitting to the AMD Developer Hackathon, make sure your Space is public and tagged with `amd-hackathon-2026` before the deadline. The HuggingFace Category Prize goes to the Space with the most likes, so share your link early.
 
 The complete demo Space is available at [huggingface.co/spaces/lablab-ai-amd-developer-hackathon/amd-huggingface-demo](https://huggingface.co/spaces/lablab-ai-amd-developer-hackathon/amd-huggingface-demo).
