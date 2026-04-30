@@ -1,0 +1,87 @@
+---
+title: "AMD"
+description: "Advanced Micro Devices builds CPUs, GPUs, and open-source AI software (ROCm) that power LLM training, inference, and HPC workloads on Instinct accelerators."
+---
+
+# AMD
+
+Advanced Micro Devices (AMD) is a global semiconductor company that designs CPUs, GPUs, and accelerators for data centers, PCs, and embedded systems. Founded in 1969, AMD has built a significant AI infrastructure position through its AMD Instinct GPU line and the open-source ROCm software stack, which together serve as an alternative to proprietary GPU ecosystems for large-scale AI development.
+
+| General | |
+|---------|--|
+| **Company** | [Advanced Micro Devices, Inc.](https://www.amd.com) |
+| **Founded** | 1969 |
+| **Headquarters** | Santa Clara, California, USA |
+| **Website** | [amd.com](https://www.amd.com) |
+| **Documentation** | [ROCm Docs](https://rocm.docs.amd.com/) |
+| **GitHub** | [github.com/ROCm](https://github.com/ROCm) |
+| **Developer Hub** | [AMD ROCm Developer Hub](https://www.amd.com/en/developer/resources/rocm-hub.html) |
+| **Type** | Semiconductor / AI Infrastructure |
+
+---
+
+## Core Products
+
+### AMD Instinct GPU Accelerators
+
+The AMD Instinct series are data center GPUs built for AI training and inference at scale. The MI300X is based on the CDNA 3 architecture and supports up to 192GB of HBM3 memory, making it well-suited for large language model inference where memory capacity is a bottleneck. The MI325X extends this to 288GB of HBM3E memory. Seven of the ten largest model builders and AI companies, including Meta, OpenAI, Microsoft, and xAI, run production workloads on Instinct GPUs.
+
+### ROCm (Radeon Open Compute)
+
+ROCm is AMD's open-source software platform for GPU-accelerated computing. It supports HIP, OpenCL, and OpenMP programming interfaces and integrates with major ML frameworks including PyTorch, TensorFlow, and JAX. ROCm 7 is the current version, engineered for generative AI and HPC workloads with expanded hardware compatibility and new development tools.
+
+### HIP SDK
+
+The AMD HIP (Heterogeneous-compute Interface for Portability) SDK allows developers to write GPU-accelerated code that runs on AMD hardware. HIP code is also designed to be portable to CUDA, lowering the barrier for developers migrating workloads from other GPU platforms.
+
+### AMD Developer Cloud
+
+AMD provides a cloud environment where developers can access AMD Instinct GPU hardware for testing and benchmarking, along with free credits, training materials, and community support.
+
+---
+
+## Developer Resources
+
+AMD's open-source developer ecosystem is built around ROCm, with documentation, libraries, and tooling available for AI and HPC workloads on AMD hardware.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [ROCm Documentation](https://rocm.docs.amd.com/): full reference for installation, APIs, and libraries
+- [GitHub: ROCm](https://github.com/ROCm): open-source repos, examples, and issue tracking
+- [AMD Developer Hub](https://www.amd.com/en/developer/resources/rocm-hub.html): guides, training videos, and cloud credits
+- [HIP SDK](https://www.amd.com/en/developer/resources/rocm-hub/hip-sdk.html): SDK for Windows GPU development
+- [Instinct Accelerators](https://www.amd.com/en/products/accelerators/instinct.html): hardware specs and product pages
+
+---
+
+## Key Features
+
+**Open-source software stack**
+ROCm is fully open-source under the MIT and Apache 2.0 licenses, giving developers full visibility into the toolchain and the ability to contribute upstream.
+
+**Large memory capacity**
+The MI300X provides up to 192GB of HBM3 memory per GPU, enabling inference of very large models (70B+ parameter) on a single accelerator without model parallelism.
+
+**Framework compatibility**
+ROCm supports PyTorch, TensorFlow, JAX, and ONNX Runtime, allowing most standard AI training and inference pipelines to run without significant modification.
+
+**HIP portability**
+HIP code compiles for both AMD and NVIDIA hardware, reducing the cost of maintaining GPU-specific codebases across infrastructure environments.
+
+---
+
+## Use Cases
+
+**Large language model inference**
+The high HBM capacity of AMD Instinct GPUs makes them a practical choice for serving large models where VRAM is the primary constraint.
+
+**AI model training**
+Teams training custom models at scale use AMD Instinct GPUs through cloud providers and on-premise clusters as a cost-competitive alternative to other data center GPU options.
+
+**HPC workloads**
+ROCm's support for scientific computing libraries makes AMD hardware a common choice for high-performance computing in research and enterprise environments.
+
+**Hackathon and prototyping**
+AMD provides cloud access and credits for developers building AI prototypes, making it possible to test workloads on AMD hardware without upfront hardware costs. Explore [upcoming AI hackathons](https://lablab.ai/events) that use AMD infrastructure.
