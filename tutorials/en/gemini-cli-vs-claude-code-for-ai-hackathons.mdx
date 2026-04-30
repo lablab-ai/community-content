@@ -1,6 +1,6 @@
 ---
-title: "Gemini CLI vs Claude Code: A Practical Guide for AI Hackathons"
-description: "Learn how to use Gemini CLI and Claude Code for AI hackathons. See real-world comparisons, decision frameworks, and AI hackathon project workflows for strategic developers."
+title: "How to Use Gemini Like Claude Code (and Add Gemini Models to Claude Code)"
+description: "Learn how to use Gemini CLI like Claude Code, add Gemini models to Claude Code via MCP, and run both tools together for a more powerful AI coding workflow in 2026."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1773143537/LabLab_Gemini_Claude_h0fopk.png"
 authorUsername: "stevekimoi"
 ---
@@ -278,6 +278,88 @@ The most powerful approach uses **both**. Here's the tactical workflow:
 2. **Plan with Claude**: Feed Claude the complex modules: "**Help me design a safe refactor for this critical session logic**," and treat it like a senior teammate in a time-boxed **AI hackathon project**.
 3. **Execute & Verify with Gemini**: "Now, implement this plan across the 10 affected files and run the test suite after each," so you can rapidly prototype features that are demo-ready for **global AI hackathons**.
 4. **Update with Gemini web search**: "Search for any recent security discussions about the urllib3 version we're using," mirroring the kind of due diligence judges expect in serious **artificial intelligence hackathon** projects.
+
+## How to Use Gemini Like Claude Code
+
+One of the most common questions developers ask is: **how do you use Gemini CLI like Claude Code?** The good news is that the core workflow is nearly identical because both tools share the same terminal-first, agentic philosophy.
+
+### The Shared Workflow Pattern
+
+With Claude Code you navigate to a project folder and run `claude`. With Gemini CLI you run `gemini`. Both tools then enter an interactive loop where you give natural-language instructions and the tool reads files, runs commands, and edits code on your behalf.
+
+```bash
+# Claude Code workflow
+cd my-project
+claude
+> Refactor the auth module to use JWT
+
+# Gemini CLI — the same workflow
+cd my-project
+gemini
+> Refactor the auth module to use JWT
+```
+
+The key behavioral difference is execution model (covered in Challenge 4 above), not the interface. When learning to **use Gemini like Claude Code**, treat it as the same conversation-driven CLI but with a wider context window and a more autonomous finishing style.
+
+### Using Gemini for the Same Tasks You Give Claude Code
+
+| Claude Code task | Equivalent Gemini CLI command |
+|---|---|
+| `claude` → "Explain this codebase" | `gemini` → "Analyze every file in this repo and summarize the architecture" |
+| `claude` → "Find all TODO comments" | `gemini` → "Search all source files for TODO comments and list them by file" |
+| `claude` → "Add type hints to utils.py" | `gemini` → "Add comprehensive type hints to utils.py, then verify with py_compile" |
+| `claude --print "summarize README"` | `gemini -p "summarize README.md"` |
+
+The `-p` flag in Gemini CLI is the non-interactive equivalent of `--print` in Claude Code: both run a single prompt and exit.
+
+## How to Add Gemini to Claude Code
+
+**Adding Gemini to Claude Code** lets you access Gemini's 1M-token context window from inside your existing Claude Code sessions. There are two approaches.
+
+### Option 1: Add Gemini CLI as an MCP Server
+
+Claude Code supports the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/), which lets you surface any CLI tool as a callable tool. You can expose the `gemini` CLI through an MCP wrapper so Claude Code can delegate large-context tasks to Gemini mid-session.
+
+Create or edit your Claude Code MCP config at `~/.claude/mcp_servers.json`:
+
+```json
+{
+  "mcpServers": {
+    "gemini": {
+      "command": "npx",
+      "args": ["-y", "@google/gemini-cli", "--mcp"],
+      "env": {
+        "GEMINI_API_KEY": "<your-key>"
+      }
+    }
+  }
+}
+```
+
+After saving, restart Claude Code. You can now ask Claude Code to call Gemini for wide-context tasks:
+
+```
+> Use the gemini tool to read all files in src/ and produce an architecture summary
+```
+
+Claude Code handles reasoning and orchestration; Gemini handles the heavy context ingestion.
+
+### Option 2: Use Claude Code Alongside a Gemini Model via Custom Base URL
+
+Claude Code supports a custom `ANTHROPIC_BASE_URL` environment variable. If you have access to an OpenAI-compatible Gemini endpoint (such as via Google AI Studio's compatibility layer), you can point Claude Code at Gemini models:
+
+```bash
+export ANTHROPIC_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai"
+export ANTHROPIC_API_KEY="<your-google-ai-studio-key>"
+claude --model gemini-2.5-pro
+```
+
+This puts you in **Claude Code using the Gemini model** as its backend — you get Claude Code's editor integrations, slash commands, and tool-use scaffolding while the underlying LLM is Gemini 2.5 Pro. Note that this is an experimental configuration and some Claude-specific features (extended thinking, cache control headers) will not apply.
+
+### Which Approach Should You Use?
+
+- **MCP server**: keeps Claude Code as the primary driver; Gemini is a specialized tool for wide-context lookups. Best for projects where you already rely on Claude Code's workflow.
+- **Custom base URL**: replaces the underlying model entirely. Best when you want Gemini's reasoning on a specific task but prefer Claude Code's interface.
 
 ## Frequently Asked Questions
 
