@@ -1,6 +1,6 @@
 ---
-title: "Build an AI Agent for Gmail & Drive with the Google Workspace CLI"
-description: "Learn how to install and configure the gws CLI, wire it into an MCP server for Claude Desktop, and build a secure AI agent that reads email, downloads attachments, and organizes files in Google Drive."
+title: "GWS MCP: How to Set Up the @googleworkspace/cli npm Package for AI Agents"
+description: "Set up the gws MCP server with the @googleworkspace/cli npm package to build an AI agent that reads Gmail, downloads attachments, and organizes Drive."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1773665982/LabLab_GWS_mmq2ig.png"
 authorUsername: "stevekimoi"
 ---
@@ -572,6 +572,10 @@ def execute_agent_action(action_name: str, params: dict) -> dict:
 ---
 
 ## FAQ
+
+### What is the gws MCP server and how does @googleworkspace/cli fit in?
+
+The Google Workspace MCP server is a Node.js process that wraps the `@googleworkspace/cli` npm package and exposes Gmail and Drive operations as named tools that Claude Desktop can call directly. You install `@googleworkspace/cli` globally with `npm install -g @googleworkspace/cli`, build the thin MCP wrapper described in Phase 2, and register it in `claude_desktop_config.json`. Once that google workspace MCP server setup is complete, Claude handles tool routing automatically based on plain-English instructions, with no custom API integration code required.
 
 ### How do I avoid Google's "Access Blocked" error during a hackathon?
 
