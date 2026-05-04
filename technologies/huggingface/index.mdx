@@ -1,0 +1,95 @@
+---
+title: "Hugging Face"
+description: "Hugging Face is the open-source AI platform hosting 1M+ models, datasets, and Spaces, with libraries like Transformers and Diffusers used by millions of developers."
+---
+
+# Hugging Face
+
+Hugging Face, Inc. is an AI company founded in 2016 by Clément Delangue, Julien Chaumond, and Thomas Wolf in New York City. Originally launched as a chatbot application, it pivoted to become the central open-source platform for the machine learning community. The Hub now hosts over one million models, datasets, and interactive applications, and the Transformers library has become the de facto standard for working with modern neural networks.
+
+| General | |
+|---------|--|
+| **Company** | [Hugging Face, Inc.](https://huggingface.co) |
+| **Founded** | 2016 by Clément Delangue, Julien Chaumond, and Thomas Wolf |
+| **Headquarters** | New York, NY, USA |
+| **Website** | [huggingface.co](https://huggingface.co) |
+| **Documentation** | [huggingface.co/docs](https://huggingface.co/docs) |
+| **GitHub** | [github.com/huggingface](https://github.com/huggingface) |
+| **Type** | AI Platform / Open-source ML Community |
+
+---
+
+## Core Products
+
+### The Hub
+
+The Hugging Face Hub is a collaborative repository for models, datasets, and applications. Developers can host, version, and share any model type, including LLMs, diffusion models, embeddings, and classifiers. The Hub supports private and public repos, fine-tuned model versions, and model cards that document intended use and limitations.
+
+### Transformers
+
+The Transformers library is the most widely used open-source library for working with pretrained neural network models. It provides a unified API for loading, running, and fine-tuning models across text, vision, audio, and multimodal tasks. Over one million model checkpoints are available on the Hub for use with Transformers.
+
+### Spaces
+
+Spaces lets developers build and host interactive ML applications directly on Hugging Face infrastructure. Most Spaces are built with Gradio or Streamlit and connect to models from the Hub. Spaces can be deployed on free shared CPU instances or upgraded to GPU-backed hardware for faster inference.
+
+### Inference API and Endpoints
+
+The Inference API provides access to hosted models over HTTP. A free tier is available with rate limits (around 50 requests per hour on popular models). The paid Inference Endpoints service offers dedicated, fully managed deployments starting around $0.60 per hour, suitable for production workloads that need consistent latency and throughput.
+
+### Diffusers
+
+Diffusers is the Hugging Face library for diffusion models, supporting image, video, and audio generation. It provides pipelines for Stable Diffusion, FLUX, and other generative models with a consistent API for sampling and fine-tuning.
+
+### Datasets
+
+The Datasets library provides efficient access to thousands of curated datasets hosted on the Hub. It handles streaming, caching, and preprocessing for large-scale training data and integrates directly with Transformers training pipelines.
+
+---
+
+## Developer Resources
+
+Hugging Face maintains extensive documentation, open-source libraries, and a large community forum for developers building on its platform.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Documentation](https://huggingface.co/docs): full reference for all libraries and the Hub API
+- [GitHub: huggingface](https://github.com/huggingface): Transformers, Diffusers, Datasets, and more
+- [Spaces](https://huggingface.co/spaces): browse and deploy interactive ML demos
+- [Inference Providers](https://huggingface.co/docs/inference-providers/index): API access and pricing
+- [Community Forum](https://discuss.huggingface.co): questions, troubleshooting, and model discussion
+- [Hugging Face Pricing](https://huggingface.co/pricing): free tier and PRO plan details
+
+---
+
+## Key Features
+
+**Unified model hub**
+One repository format covers every model type, framework, and modality. Models download directly into Transformers, Diffusers, or any framework that supports the safetensors format.
+
+**Spaces for rapid prototyping**
+Spaces deploys a Gradio or Streamlit app in minutes with no infrastructure setup, making it a practical choice for building demos and prototypes during hackathons and sprints.
+
+**Free inference access**
+The shared Inference API lets developers test any public model without spinning up dedicated infrastructure, lowering the barrier to experimenting with new models.
+
+**Broad framework support**
+Transformers supports PyTorch, TensorFlow, JAX, and ONNX, and integrates with training frameworks including Accelerate, PEFT, and TRL for fine-tuning workflows.
+
+---
+
+## Use Cases
+
+**Rapid prototyping with pretrained models**
+Developers use the Hub and Transformers to load state-of-the-art models in a few lines of code, enabling fast iteration during [AI hackathons](https://lablab.ai/ai-hackathons) and project sprints.
+
+**Fine-tuning for specific tasks**
+Teams fine-tune open-weight base models on domain-specific data using PEFT and TRL, then host the resulting adapters privately on the Hub.
+
+**Building and sharing AI demos**
+Spaces provides a public URL for any Gradio or Streamlit application, making it straightforward to share working prototypes with collaborators, judges, or users.
+
+**Dataset management for training**
+The Datasets library handles large-scale data efficiently with streaming and arrow-based caching, supporting training pipelines that cannot fit full datasets in memory.
