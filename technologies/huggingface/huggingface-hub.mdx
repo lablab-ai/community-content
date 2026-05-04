@@ -1,0 +1,64 @@
+---
+title: "Hugging Face Hub"
+author: "Hugging Face"
+description: "Hugging Face Hub is the central repository for 1M+ open-source models, datasets, and Spaces that developers can access, fine-tune, and deploy for any AI use case."
+---
+
+# Hugging Face Hub
+
+The Hugging Face Hub is an open-source repository platform that hosts over one million machine learning models, datasets, and interactive applications. It serves as the central collaboration layer for the ML community, enabling developers to discover, share, version, and deploy models across every modality including text, vision, audio, and multimodal. Model checkpoints on the Hub are compatible with the Transformers, Diffusers, and Datasets libraries, and can be loaded in a few lines of code.
+
+| General | |
+|---------|--|
+| **Author** | [Hugging Face](https://huggingface.co) |
+| **Type** | ML Model Repository and Collaboration Platform |
+| **Website** | [huggingface.co](https://huggingface.co) |
+| **Documentation** | [Hub Documentation](https://huggingface.co/docs/hub) |
+| **Repository** | [github.com/huggingface/huggingface_hub](https://github.com/huggingface/huggingface_hub) |
+| **Models** | [huggingface.co/models](https://huggingface.co/models) |
+| **Datasets** | [huggingface.co/datasets](https://huggingface.co/datasets) |
+
+## Start building with Hugging Face Hub
+
+The Hub is the fastest way to get a pretrained model running in your project. Load any of the 1M+ checkpoints directly into Transformers or Diffusers with a single function call, or browse the Hub to find the right base model for your use case. You can host your own models privately and share fine-tuned adapters with the community without uploading full model weights. During AMD-sponsored hackathons on lablab.ai, participants pull models from the Hub, fine-tune or build on them using AMD Developer Cloud GPUs, and publish their final projects back to the Hub as a Space. Explore what the community has built at [Hugging Face Use Cases and Applications](/apps/tech/huggingface).
+
+### Hugging Face Hub Tutorials
+<TechTutorials/>
+
+---
+
+### Getting Started
+
+- [Hub Documentation](https://huggingface.co/docs/hub) Full reference for model cards, repos, and the Hub API
+- [huggingface_hub Python library](https://github.com/huggingface/huggingface_hub) Python SDK for interacting with the Hub programmatically
+- [Model Hub](https://huggingface.co/models) Browse all publicly available models by task, framework, and license
+- [Datasets Hub](https://huggingface.co/datasets) Browse curated datasets for training and evaluation
+
+---
+
+### Key Features
+
+**1M+ models**
+Text, vision, audio, multimodal, and specialized domain models from top research teams and companies including Meta, Mistral, Google, and Alibaba Cloud.
+
+**Private repositories**
+Host proprietary models and datasets with access controls. Upgrade to a PRO or Enterprise account for private inference endpoints.
+
+**Model cards**
+Structured documentation for model limitations, intended use, training details, and evaluation results — standardized across all public checkpoints.
+
+**Version control**
+Git-based versioning with LFS support for large files. Every model and dataset on the Hub has a full commit history.
+
+**Fine-tuned adapters**
+Share and reuse LoRA and PEFT adapters without uploading full model weights. Adapters reference their base model and load in seconds.
+
+---
+
+### Libraries
+
+- [Transformers](https://github.com/huggingface/transformers) Unified API for pretrained models across text, vision, and audio
+- [huggingface_hub](https://github.com/huggingface/huggingface_hub) Python SDK for Hub authentication, uploads, and downloads
+- [Datasets](https://github.com/huggingface/datasets) Efficient access to Hub datasets with streaming and arrow-based caching
+- [PEFT](https://github.com/huggingface/peft) Parameter-efficient fine-tuning (LoRA, QLoRA, prefix tuning)
+- [Optimum-AMD](https://github.com/huggingface/optimum-amd) Optimized inference and training for AMD hardware via ROCm
