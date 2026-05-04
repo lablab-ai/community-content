@@ -1,0 +1,57 @@
+---
+title: "ROCm"
+author: "AMD"
+description: "ROCm is AMD's open-source GPU computing platform supporting PyTorch, TensorFlow, and JAX for AI training, inference, and HPC workloads on AMD Instinct hardware."
+---
+
+# ROCm
+
+ROCm (Radeon Open Compute) is AMD's open-source software platform for GPU-accelerated computing. It is the AMD equivalent of NVIDIA's CUDA and provides a complete stack for running AI, machine learning, and HPC workloads on AMD GPUs. ROCm supports major ML frameworks including PyTorch, TensorFlow, JAX, and ONNX Runtime, and includes the HIP (Heterogeneous-compute Interface for Portability) programming model for writing GPU code that runs on both AMD and NVIDIA hardware.
+
+| General | |
+|---------|--|
+| **Author** | [AMD](https://www.amd.com) |
+| **Type** | Open-source GPU Computing Platform |
+| **Documentation** | [ROCm Docs](https://rocm.docs.amd.com/) |
+| **Repository** | [github.com/ROCm](https://github.com/ROCm) |
+| **Installation** | [ROCm Installation Guide](https://rocm.docs.amd.com/en/latest/deploy/linux/index.html) |
+| **Current Version** | ROCm 7 |
+| **License** | MIT and Apache 2.0 |
+
+## Start building with ROCm
+
+ROCm gives you a complete software stack to run AI training and inference workloads on AMD GPUs. It integrates directly with PyTorch, TensorFlow, and JAX so most standard pipelines run with minimal changes from a CUDA environment. Hugging Face Optimum-AMD and vLLM both support ROCm, making it straightforward to run transformer inference and fine-tuning jobs on AMD hardware. Check out the community-built [AMD Use Cases and Applications](/apps/tech/amd) to see what developers are running on ROCm today.
+
+### ROCm Tutorials
+<TechTutorials/>
+
+---
+
+### Documentation and Resources
+
+- [ROCm Documentation](https://rocm.docs.amd.com/) Full reference for installation, APIs, and libraries
+- [ROCm Installation Guide](https://rocm.docs.amd.com/en/latest/deploy/linux/index.html) Step-by-step setup for supported Linux distributions
+- [ROCm GitHub](https://github.com/ROCm) Open-source repositories, examples, and issue tracking
+- [HIP SDK](https://www.amd.com/en/developer/resources/rocm-hub/hip-sdk.html) SDK for writing portable GPU code for both AMD and NVIDIA hardware
+- [AMD Developer Hub](https://www.amd.com/en/developer/resources/rocm-hub.html) Guides, training videos, and cloud credits
+
+---
+
+### Framework Support
+
+- **PyTorch** Full support for training and inference, including integration with Hugging Face Accelerate and PEFT
+- **TensorFlow** GPU-accelerated training and inference on AMD hardware
+- **JAX** Supported via the ROCm JAX build
+- **ONNX Runtime** Cross-framework model deployment on AMD GPUs
+- **Hugging Face Optimum-AMD** Optimized inference and fine-tuning pipelines for transformer models
+- **vLLM** High-throughput LLM serving with a ROCm backend
+
+---
+
+### Libraries
+
+- [hipBLAS](https://github.com/ROCm/hipBLAS) BLAS implementation for AMD GPUs
+- [MIOpen](https://github.com/ROCm/MIOpen) Deep learning primitives library for AMD GPUs
+- [rocRAND](https://github.com/ROCm/rocRAND) Random number generation for AMD hardware
+- [hipSPARSE](https://github.com/ROCm/hipSPARSE) Sparse matrix operations on AMD GPUs
+- [rocBLAS](https://github.com/ROCm/rocBLAS) BLAS implementation optimized for AMD Instinct accelerators
