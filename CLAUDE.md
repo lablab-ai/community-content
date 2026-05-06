@@ -16,8 +16,8 @@ topics/           — Topic index pages
 ## Content standards
 
 - **Frontmatter required on every file:** `title`, `description`, `image`, `authorUsername`
-- **Images must use Cloudinary:** all image URLs must be `https://res.cloudinary.com/dygkv9gam/image/upload/...` — no local paths, no hotlinked external images
-- **Cloudinary cloud name:** `dygkv9gam` (credentials in env as `CLOUDINARY_URL`)
+- **Images must use Cloudflare Images:** all image URLs must be `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no hotlinked external images, no Cloudinary URLs
+- **Cloudflare Images account hash:** `K11gkZF3xaVyYzFESMdWIQ` (API token in `.agents/skills/.env` as `CLOUDFLARE_IMAGES_TOKEN`, account ID `df2eef4c5a85afb0880466202079da1b`)
 - **Author username:** `stevekimoi`
 - **SEO guidelines:** see `SEO_GUIDELINES.md` for keyword strategy and frontmatter formatting rules
 

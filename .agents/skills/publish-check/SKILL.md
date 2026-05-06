@@ -23,7 +23,7 @@ Read the full draft file.
 
 - [ ] **No placeholders** — no TODOs, no `[insert X here]`, no `...` in code blocks
 - [ ] **No skeleton sections** — every H2/H3 has real prose, not just a heading
-- [ ] **Images use Cloudinary** — all image URLs are `https://res.cloudinary.com/dygkv9gam/image/upload/...` — no local paths, no hotlinked external images
+- [ ] **Images use Cloudflare Images** — all image URLs are `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no Cloudinary URLs, no hotlinked external images. To upload a new image: POST to `https://api.cloudflare.com/client/v4/accounts/df2eef4c5a85afb0880466202079da1b/images/v1` with `Authorization: Bearer {CLOUDFLARE_IMAGES_TOKEN}` and the image as multipart `file`.
 - [ ] **No unverified stats** — any numbers or claims have a linked source in the text
 - [ ] **No marketing language** — scan for: "powerful", "revolutionary", "cutting-edge", "game-changing"
 
