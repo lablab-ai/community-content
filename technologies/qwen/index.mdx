@@ -1,0 +1,88 @@
+---
+title: "Qwen"
+description: "Qwen is a family of open-source and proprietary large language models developed by Alibaba Cloud, covering text, vision, and code, accessible via an OpenAI-compatible API."
+authorUsername: "stevekimoi"
+---
+
+# Qwen
+
+Qwen is a large language model family developed by the Qwen team at Alibaba Cloud. First released in 2023, the series spans dense and mixture-of-experts architectures across text, vision, and code, with most models published under the Apache 2.0 license. Developers can access Qwen models through Alibaba Cloud's Model Studio (DashScope) using an OpenAI-compatible API, or download weights directly from Hugging Face and GitHub.
+
+| General | |
+|---------|--|
+| **Company** | [Qwen / Alibaba Cloud](https://qwen.ai) |
+| **Founded** | 2023 (first model release) |
+| **Headquarters** | Hangzhou, China |
+| **Website** | [qwen.ai](https://qwen.ai) |
+| **Documentation** | [Qwen Docs](https://qwenlm.github.io) |
+| **GitHub** | [github.com/QwenLM](https://github.com/QwenLM) |
+| **Hugging Face** | [huggingface.co/Qwen](https://huggingface.co/Qwen) |
+| **Type** | LLM Provider / Open-Source AI Lab |
+
+---
+
+## Core Products
+
+### Qwen3 (Text LLMs)
+Qwen3 is the flagship text model family, released in April 2025 under Apache 2.0. It includes dense models from 0.6B to 32B parameters and mixture-of-experts models up to 235B total parameters (22B active). All models support multilingual text generation, reasoning, tool use, and agentic workflows.
+
+### Qwen3-Coder
+Qwen3-Coder is a coding-specialized model with 480B total parameters and 35B active, trained on 7.5 trillion tokens with a 70% code-focused dataset. Released in July 2025, it achieves state-of-the-art results among open models on SWE-Bench Verified.
+
+### Qwen3.6 (Vision-Language)
+Qwen3.6 is a multimodal model with a unified vision-language architecture trained on trillions of multimodal tokens. It supports text and image inputs across 201 languages and dialects, with capabilities covering reasoning, coding, and visual understanding.
+
+### Qwen-Image-2.0
+Qwen-Image-2.0 is a 7B-parameter image generation model supporting photorealism, professional typography, and unified generation-editing workflows, released in February 2026.
+
+### Qwen-MT
+Qwen-MT is a translation model covering 92 major languages and dialects, reaching over 95% of the global population. It is designed for high-quality translation in production pipelines.
+
+### Qwen Code
+Qwen Code is an open-source terminal coding agent optimized for the Qwen model series. It supports writing features, fixing bugs, navigating large codebases, and generating pull requests, with GitHub Actions integration available.
+
+---
+
+## Developer Resources
+
+Qwen models are accessible through Alibaba Cloud Model Studio (DashScope) via an OpenAI-compatible API, or as open weights on Hugging Face. The API supports both text-only and multimodal models.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Qwen Documentation](https://qwenlm.github.io) (model cards, quickstarts, and research notes)
+- [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/) (API reference and DashScope SDK docs)
+- [GitHub (QwenLM)](https://github.com/QwenLM) (open-source model weights, code, and tools)
+- [Hugging Face (Qwen)](https://huggingface.co/Qwen) (download model weights and datasets)
+- [Qwen API Platform](https://qwen.ai/apiplatform) (get an API key and start building)
+- [Qwen Studio](https://qwen.ai) (web interface for chat, image understanding, and generation)
+
+---
+
+## Key Features
+
+**Open weights under Apache 2.0**
+Most Qwen3 models are released under Apache 2.0, allowing commercial use, fine-tuning, and redistribution without restrictions.
+
+**OpenAI-compatible API**
+Qwen models are served through DashScope using the OpenAI-compatible endpoint format, making it straightforward to use Qwen models in existing OpenAI SDK integrations.
+
+**Multilingual coverage**
+Qwen3.6 supports 201 languages and dialects. Qwen-MT covers 92 major languages for dedicated translation tasks.
+
+**Mixture-of-Experts (MoE) architecture**
+The largest Qwen3 models use MoE, activating only a subset of total parameters per token (for example, 22B of 235B active). This reduces inference cost relative to comparably capable dense models.
+
+---
+
+## Use Cases
+
+**Agentic coding workflows**
+Qwen3-Coder and Qwen Code are designed for software development tasks: writing features, fixing bugs, navigating large codebases, and generating pull requests via the terminal or CI pipelines.
+
+**Multilingual applications**
+Qwen-MT and Qwen3.6's broad language support make them suitable for translation tools, multilingual chatbots, and localized content pipelines.
+
+**Multimodal document and image processing**
+Qwen3.6 handles image understanding, document analysis, and visual reasoning alongside text, enabling applications like document Q&A and visual search.
