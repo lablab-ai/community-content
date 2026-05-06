@@ -1,7 +1,7 @@
 ---
 title: "GWS MCP: How to Set Up the @googleworkspace/cli npm Package for AI Agents"
 description: "Set up the gws MCP server with the @googleworkspace/cli npm package to build an AI agent that reads Gmail, downloads attachments, and organizes Drive."
-image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1773665982/LabLab_GWS_mmq2ig.png"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/59df9ac6-94c8-4f63-877c-8e6450f30400/public"
 authorUsername: "stevekimoi"
 ---
 
@@ -40,19 +40,19 @@ There are two ways to create a project:
 
 This tutorial uses option 1. Go to [console.cloud.google.com](https://console.cloud.google.com/) and click the project selector button in the top-left of the navigation bar.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773665216/wialr6lu0kvuavhr04yb.png" alt="Google Cloud Console welcome screen with an arrow pointing to the project selector button" caption="Click the project selector in the top navigation bar" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/797b812e-072a-4e76-01b6-3b62c4505d00/public" alt="Google Cloud Console welcome screen with an arrow pointing to the project selector button" caption="Click the project selector in the top navigation bar" />
 
 A **Select a project** modal will open. Click **New project** in the top-right corner of that modal.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773665223/sxokv62cljxk8cq9jfxa.png" alt="Select a project modal with an arrow pointing to the New project button" caption="Click 'New project' to create a new GCP project" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8dd995de-1d0a-44ce-feea-dd450c6cfd00/public" alt="Select a project modal with an arrow pointing to the New project button" caption="Click 'New project' to create a new GCP project" />
 
 On the **New Project** page, enter a project name. The organization field is optional, leave it as **No organisation** if you're working individually.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773665237/uyy0v6hverwpva278qv4.png" alt="New Project form showing the project name field and optional organization field" caption="Fill in a project name; the organization field is optional" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d9ae46a1-28b5-4efd-4d8b-b1f8118f4100/public" alt="New Project form showing the project name field and optional organization field" caption="Fill in a project name; the organization field is optional" />
 
 Click **Create**. Once redirected to the project dashboard, copy your **Project ID**, you'll need it in the OAuth setup steps below.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773665240/ltprmzq8bafjfduvjv15.png" alt="GCP dashboard for the new project with an arrow pointing to the Project ID" caption="Copy your Project ID from the dashboard header" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/180630e1-6101-4705-9d61-403c34a7d400/public" alt="GCP dashboard for the new project with an arrow pointing to the Project ID" caption="Copy your Project ID from the dashboard header" />
 
 ### Setting Up the gcloud CLI
 
@@ -392,7 +392,7 @@ Once Claude Desktop is restarted, you can give it instructions in plain English.
 
 Claude calls `gmail_search` with `query: "has:attachment filename:pdf newer_than:30d"`.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678848/gl01rfpharht0xebxb26.png" alt="Claude Desktop showing gmail_search tool being triggered and returning a summary of 14 emails with PDF attachments from last month" caption="Claude calls gmail_search and returns a grouped summary of matching emails" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f87cfa7b-130f-44e9-fb31-10f211ff7800/public" alt="Claude Desktop showing gmail_search tool being triggered and returning a summary of 14 emails with PDF attachments from last month" caption="Claude calls gmail_search and returns a grouped summary of matching emails" />
 
 **Read a specific email:**
 > "What does that email say?"
@@ -416,9 +416,9 @@ Claude calls `drive_list_files` with `query: "mimeType='application/pdf'"`.
 
 Claude calls `drive_create_folder` with `name: "Invoices 2024"`.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678866/oao1zxgo99a4gomvy7ww.png" alt="Claude Desktop showing drive_create_folder tool being triggered and returning a direct link to the newly created Invoices 2024 folder" caption="Claude creates the folder and immediately returns a clickable Drive link" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fc3771af-cc11-473c-6208-dcbe6f978500/public" alt="Claude Desktop showing drive_create_folder tool being triggered and returning a direct link to the newly created Invoices 2024 folder" caption="Claude creates the folder and immediately returns a clickable Drive link" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678870/loe5rejryu7q02dytjj4.png" alt="Google Drive showing the newly created empty Invoices 2024 folder" caption="The Invoices 2024 folder appears in Google Drive, ready to receive files" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/149dad70-1d95-4340-1ed2-a7dcd93a4600/public" alt="Google Drive showing the newly created empty Invoices 2024 folder" caption="The Invoices 2024 folder appears in Google Drive, ready to receive files" />
 
 **Upload a file:**
 > "Upload the file at /tmp/report.pdf to my Drive into the Invoices 2024 folder"
@@ -438,9 +438,9 @@ You can also use the tools for real-time inbox triage:
 
 Claude chains `gmail_search` and `gmail_get_message` across multiple messages, scanning subjects and full content where needed.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678874/rp5ypvrydp6vhtpy9zzn.png" alt="Claude Desktop calling gmail_search then gmail_get_message in sequence to triage 20 unread emails" caption="Claude chains gmail_search and gmail_get_message to scan all unread emails" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b84fb2b9-6f1d-465c-0651-9024db2cf900/public" alt="Claude Desktop calling gmail_search then gmail_get_message in sequence to triage 20 unread emails" caption="Claude chains gmail_search and gmail_get_message to scan all unread emails" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1773678878/hq2xghoqsegvwclwm1ml.png" alt="Claude's triage output highlighting a Google Security Alert and GitHub pull request review requests as urgent items" caption="Claude surfaces only the truly urgent items — security alerts and PRs needing review — and deprioritizes newsletters" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/57edeb14-3297-4d69-7f17-2851f4c16f00/public" alt="Claude's triage output highlighting a Google Security Alert and GitHub pull request review requests as urgent items" caption="Claude surfaces only the truly urgent items — security alerts and PRs needing review — and deprioritizes newsletters" />
 
 ### Chaining Tools Together
 

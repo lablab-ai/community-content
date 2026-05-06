@@ -1,7 +1,7 @@
 ---
 title: "Designing AI-Driven Interactive Charts with Claude"
 description: "Learn the prompt craft behind Claude's interactive chart generation. Five named patterns with real outputs, from quick data-first charts to embed-ready React components."
-image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1775060418/Lablab_Claude_Interactive_Charts_1_eoxgil.png"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f7ba2a91-6f2e-4db8-90bc-72c8e7f1ae00/public"
 authorUsername: "stevekimoi"
 ---
 
@@ -39,7 +39,7 @@ Here's the difference in practice. Both prompts use identical data:
 **Strong prompt:**
 > Here's Q1 pipeline data by sales rep: Alice: $45K, Bob: $67K, Carol: $34K, David: $89K, Emma: $72K, Frank: $56K, Grace: $91K, Henry: $83K. Create a horizontal bar chart ranked by deal size (highest at top). Color bars by performance tier: green for ≥$80K, yellow for $50K–$79K, red for below $50K. Add hover tooltips with the exact value and their rank. Title it "Q1 Pipeline by Rep: Performance Tiers".
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056954/lablab/claude-interactive-charts/claude-charts-prompt5-weak-vs-strong.png" alt="Weak prompt vs strong prompt: same data, dramatically different output" caption="Left: vague prompt output. Right: structured prompt with data context, chart type, color tiers, and intent." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1e0b8b25-2ff6-431e-0b36-89638d6aec00/public" alt="Weak prompt vs strong prompt: same data, dramatically different output" caption="Left: vague prompt output. Right: structured prompt with data context, chart type, color tiers, and intent." />
 
 The weak version gives you an unlabeled bar chart with no context. The strong version gives you a ranked, color-tiered, interactive pipeline view, the kind of thing you'd actually put in a sales review.
 
@@ -60,7 +60,7 @@ Create an interactive bar chart. Add hover tooltips showing the exact value and
 month-over-month growth percentage. Use a clean, minimal style with a blue color palette.
 ```
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056946/lablab/claude-interactive-charts/claude-charts-prompt1-baseline.png" alt="Data-first bar chart showing monthly SaaS revenue with summary stat cards" caption="Claude added the summary stat cards (total revenue, peak month, full-year growth) without being asked; it inferred what the reader needs." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0e49c2ad-9093-4561-3e94-de12c8dcaf00/public" alt="Data-first bar chart showing monthly SaaS revenue with summary stat cards" caption="Claude added the summary stat cards (total revenue, peak month, full-year growth) without being asked; it inferred what the reader needs." />
 
 Notice what Claude added without being asked: the three summary stat cards at the top (total revenue, peak month, full-year growth). When you give context about what the data *is*, Claude infers what the reader needs to understand it.
 
@@ -77,7 +77,7 @@ Good. Now make three changes:
    and average monthly growth rate
 ```
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056948/lablab/claude-interactive-charts/claude-charts-prompt2-upgrade.png" alt="Upgraded bar chart with coral trend line overlay and animated bar entry" caption="The trend line cuts across bars, making growth trajectory readable at a glance. Bars animate in with a 60ms stagger." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/68049fa4-a11c-4e68-4401-9adbc0584d00/public" alt="Upgraded bar chart with coral trend line overlay and animated bar entry" caption="The trend line cuts across bars, making growth trajectory readable at a glance. Bars animate in with a 60ms stagger." />
 
 The coral trend line now cuts across the bars, making the growth trajectory immediately readable at a glance. Hovering a bar shows both the monthly revenue and the trend value at that point. The animated entry gives the chart a clean entrance without being distracting.
 
@@ -98,7 +98,7 @@ makes this crossover story visually obvious. Add hover tooltips, a legend, and a
 short title that frames the story.
 ```
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056949/lablab/claude-interactive-charts/claude-charts-prompt3-narrative.png" alt="Multi-line chart titled 'The great AI tool crossover' showing adoption curves by developer role 2022-2025" caption="Claude named it, subtitled it, shaded the crossover window, and used a dashed line for senior devs, all from the narrative framing alone." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d26ca57b-bc48-4b58-2e38-4bf73080fc00/public" alt="Multi-line chart titled 'The great AI tool crossover' showing adoption curves by developer role 2022-2025" caption="Claude named it, subtitled it, shaded the crossover window, and used a dashed line for senior devs, all from the narrative framing alone." />
 
 Claude titled it "The great AI tool crossover," added the subtitle "Senior devs resisted, then converted. Data scientists never looked back.", shaded the crossover window around Q1–Q2 2024, and used a dashed line for senior devs to visually distinguish their late-adopter trajectory. None of that was specified; it came from framing the prompt as a story rather than a data exercise.
 
@@ -126,7 +126,7 @@ Create a 3-panel dashboard:
 All panels should be interactive with hover tooltips. Use a dark theme with accent colors.
 ```
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056952/lablab/claude-interactive-charts/claude-charts-prompt4-dashboard.png" alt="3-panel developer productivity dashboard with dark theme showing WAU line chart, feature usage donut, and satisfaction bar chart" caption="Consistent dark theming, coordinated accent colors, and a dashed reference line at 8.0, all three panels independently hoverable." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/559b891a-2df7-4d08-d90c-622abf9c1600/public" alt="3-panel developer productivity dashboard with dark theme showing WAU line chart, feature usage donut, and satisfaction bar chart" caption="Consistent dark theming, coordinated accent colors, and a dashed reference line at 8.0, all three panels independently hoverable." />
 
 The dashboard comes back with consistent dark theming across all three panels, coordinated accent colors, and a dashed amber reference line at 8.0 on the satisfaction chart. Bars above 8.0 are rendered in a brighter purple. The donut has a custom legend. All three are independently hoverable.
 
@@ -157,7 +157,7 @@ Requirements:
 - Export as a self-contained React component
 ```
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1775056957/lablab/claude-interactive-charts/claude-charts-prompt6-embed-ready.png" alt="Embed-ready React retention cohort chart component with full Recharts code visible" caption="A named React component ready to drop into your project: ResponsiveContainer, custom tooltip, dotted reference line at 50%, distinct cohort colors." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8b57a24d-7c29-4618-3fcc-4ebff8f83500/public" alt="Embed-ready React retention cohort chart component with full Recharts code visible" caption="A named React component ready to drop into your project: ResponsiveContainer, custom tooltip, dotted reference line at 50%, distinct cohort colors." />
 
 The output is a named React component (`RetentionCohortChart`) ready to drop into your project. It uses `ResponsiveContainer` to fill any parent width, renders a custom multi-cohort tooltip, and includes the 50% dotted reference line. Install Recharts, import the component, pass your data. Done.
 

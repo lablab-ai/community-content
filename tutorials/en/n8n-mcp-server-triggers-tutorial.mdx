@@ -98,17 +98,17 @@ Let's start by creating the foundation of our MCP server. This workflow will ser
 1. Sign up or sign in to your n8n account
 2. Navigate to `/home/workflows` and click the **"Create Workflow"** button in the top right corner
 
-![Create workflow button in n8n](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601405/Screenshot_2026-01-05_at_11.21.18_s3tfug.png)
+![Create workflow button in n8n](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1ab69924-683e-4f65-78af-dc2de7fcdd00/public)
 
 3. Click on **"Add First Step"** and search for **"MCP Server triggers"**
 
-![Add first step button](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.01_mfsowl.png)
+![Add first step button](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bd10a069-52e8-4526-8db5-26f2eb1e3d00/public)
 
-![MCP Server triggers node](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601522/Screenshot_2026-01-05_at_11.24.24_i1cmca.png)
+![MCP Server triggers node](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b23c664e-e0d7-4bc9-1928-5bd3ea357f00/public)
 
 4. Close the MCP Server modal by clicking the **"x"** button in the top right corner
 
-![MCP Server trigger node added](https://res.cloudinary.com/dygkv9gam/image/upload/v1767601718/Screenshot_2026-01-05_at_11.27.44_reiovp.png)
+![MCP Server trigger node added](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a2fb77e7-cbd1-48f7-c31b-012ff92d0900/public)
 
 #### Step 2: Building the GitHub Issue Tracker Tool
 
@@ -118,7 +118,7 @@ Now we'll create a GitHub issue tracker that fetches comprehensive issue details
 2. Search for **"GitHub"** tools and select it
 3. Configure the parameters as follows:
 
-![GitHub tool configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602203/Screenshot_2026-01-05_at_11.34.21_fuicy4.png)
+![GitHub tool configuration](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/88545601-a10c-4ad4-2249-25744ecd4900/public)
 
 **Configuration Details:**
 
@@ -157,11 +157,11 @@ g. **Repository Name:**
 
 6. Hover over the MCP Server trigger node and click the three dots menu → **"Open"**
 
-![Opening MCP Server triggers](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.50_nhgphl.png)
+![Opening MCP Server triggers](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f0dc76b0-3e54-4708-637b-2e25001e6a00/public)
 
 7. Copy the test URL provided and save it for later use
 
-![Copying the test URL](https://res.cloudinary.com/dygkv9gam/image/upload/v1767602774/Screenshot_2026-01-05_at_11.45.58_zbx1eo.png)
+![Copying the test URL](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3c3ea9c6-faaa-4636-3f9a-56b792251e00/public)
 
 #### Step 3: Testing the Issue Tracker
 
@@ -169,7 +169,7 @@ Now let's connect your MCP server to Cursor and test the issue tracker functiona
 
 1. Open Cursor IDE and navigate to **Settings → Tools & MCP**
 
-![Cursor settings MCP tools](https://res.cloudinary.com/dygkv9gam/image/upload/v1767603053/Screenshot_2026-01-05_at_11.47.48_g2okiq.png)
+![Cursor settings MCP tools](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/56606f93-825f-4aaf-dc98-afbc9b75de00/public)
 
 2. Click on **"New MCP Server"** to open the `mcp.json` file
 3. Replace the URL with the test URL you copied earlier:
@@ -186,7 +186,7 @@ Now let's connect your MCP server to Cursor and test the issue tracker functiona
 
 4. Wait for the tools to load. You'll see a green dot appear, indicating that Cursor is successfully connected to your MCP server
 
-![MCP Server connected to cursor](https://res.cloudinary.com/dygkv9gam/image/upload/v1767604802/Screenshot_2026-01-05_at_12.19.12_zqscd8.png)
+![MCP Server connected to cursor](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1a303649-5342-4294-ffdc-18c5899c6f00/public)
 
 5. Open the chat section in Cursor (press `CMD + L` on Mac or `CTRL + L` on Windows/Linux) and test with a request like:
 
@@ -210,7 +210,7 @@ Let's create a new workflow that will be triggered by our MCP server to handle P
 2. Click **"Add first step"** and select **"When executed by another workflow"**
 3. In the parameter section, select **"Accept all data"**
 
-![When executed by another workflow](https://res.cloudinary.com/dygkv9gam/image/upload/v1767605616/Screenshot_2026-01-05_at_12.32.30_kidbwl.png)
+![When executed by another workflow](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/86b1710e-67da-4513-f09a-5fa9e1e86200/public)
 
 ### Step 5: Creating the Repository Info Extraction Agent
 
@@ -223,7 +223,7 @@ We'll use an AI agent to intelligently extract repository information from natur
 3. Rename it to **"Extract repository info"**
 4. Configure the parameters as shown:
 
-![Extract repository info parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1769153603/Screenshot_2026-01-23_at_10.29.19_v4s9et.png)
+![Extract repository info parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1eb54720-1c33-48d1-0e03-a54b0eec6800/public)
 
 **Parameter Settings:**
 
@@ -249,7 +249,7 @@ You are a data extraction assistant. Your task is to extract structured reposito
 2. Select **"Gemini Chat Model"** or **"Google Gemini Chat Model"**
 3. Configure as follows:
 
-![Gemini Chat Mode Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1768978269/Screenshot_2026-01-21_at_09.47.16_sw44l2.png)
+![Gemini Chat Mode Parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36f2f6b8-6a9b-4ae7-8fca-d4bb09d3be00/public)
 
 a. **Credential to connect with:**
    - Connect your Gemini account (get your API key from [Google AI Studio](https://aistudio.google.com/u/1/api-keys))
@@ -263,7 +263,7 @@ b. **Model:**
 2. Select **"Structured Output Parser"**
 3. Configure the parameters:
 
-![Structured Output Parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767606761/Screenshot_2026-01-05_at_12.51.58_mfqtue.png)
+![Structured Output Parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/15bf9aa2-5ae6-4992-b2c1-3e6334b5d900/public)
 
 a. **Schema Type:**
    - Select **"Generate From JSON Example"**
@@ -289,7 +289,7 @@ Now we'll retrieve the commit messages from the specified branch to analyze what
 2. Search for and select **"HTTP Request"**
 3. Configure the parameters:
 
-![Get commits HTTP request parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767607045/Screenshot_2026-01-05_at_12.57.10_cbuzj6.png)
+![Get commits HTTP request parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f103f4d2-5c3a-4352-f2bd-a1b553db1300/public)
 
 **Configuration:**
 
@@ -326,7 +326,7 @@ g. **Specify Query Parameters:**
 3. Rename it to **"Check for Repository error"**
 4. Configure the condition:
 
-![Check for repository error](https://res.cloudinary.com/dygkv9gam/image/upload/v1767607911/Screenshot_2026-01-05_at_13.10.19_zf59as.png)
+![Check for repository error](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/591d5d06-75b5-4392-854b-c7937b250100/public)
 
 **If the condition is "true" (error occurred):**
 
@@ -334,7 +334,7 @@ g. **Specify Query Parameters:**
 2. Select **"Edit Fields"**
 3. Configure as follows:
 
-![Error message parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608083/Screenshot_2026-01-05_at_13.14.18_u7v7ky.png)
+![Error message parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f148a69f-a207-42be-ec6c-1bc889879100/public)
 
 a. **Mode:**
    - Select **"Manual Mapping"**
@@ -369,7 +369,7 @@ b. **Fields to Set:**
 1. Click the **"+"** button and search for **"Summarize"**
 2. Configure the parameters:
 
-![Summarize commits parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608587/Screenshot_2026-01-05_at_13.21.12_oojefn.png)
+![Summarize commits parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e34de1fe-260d-48af-9ede-fa2524ded400/public)
 
 a. **Aggregation:**
    - Select **"Concatenate"**
@@ -388,7 +388,7 @@ Now we'll use an LLM to analyze the commit messages and generate a professional 
 2. Search for and select **"Basic LLM Chain"**
 3. Configure the parameters:
 
-![Basic LLM Chain parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767608922/Screenshot_2026-01-05_at_13.28.30_nl1x3n.png)
+![Basic LLM Chain parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a3fdfc44-ce18-4ca2-0202-533a2f68b700/public)
 
 **Parameter Settings:**
 
@@ -419,7 +419,7 @@ Description:
 2. Select **"Gemini Chat Model"** or **"Google Gemini Chat Model"**
 3. Configure:
 
-![Gemini model configuration](https://res.cloudinary.com/dygkv9gam/image/upload/v1768978269/Screenshot_2026-01-21_at_09.47.16_sw44l2.png)
+![Gemini model configuration](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/36f2f6b8-6a9b-4ae7-8fca-d4bb09d3be00/public)
 
 a. **Credential to connect with:**
    - Select **"Gemini Account"**
@@ -435,7 +435,7 @@ Finally, we'll send the PR creation request to GitHub using the AI-generated tit
 2. Select **"HTTP Request"**
 3. Configure the parameters:
 
-![GitHub PR creation parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609296/Screenshot_2026-01-05_at_13.34.43_oqd0z2.png)
+![GitHub PR creation parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/43fed082-1ded-46e0-4792-01ec6afad600/public)
 
 **Parameter Configuration:**
 
@@ -472,7 +472,7 @@ h. **Specify Body:**
 
 Once configured, your complete n8n workflow should look like this:
 
-![Final n8n workflow](https://res.cloudinary.com/dygkv9gam/image/upload/v1769153997/Screenshot_2026-01-23_at_10.39.42_wc3nwh.png)
+![Final n8n workflow](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1e5213d1-9a83-46d1-32e3-6a284bad0500/public)
 
 1. Click **"Save"** to preserve your work
 2. Click **"Publish"** to make the workflow available
@@ -485,12 +485,12 @@ Now we need to connect our PR creation workflow to the MCP server so Cursor can 
 1. Go back to your first workflow (the one with the MCP Server trigger)
 2. Click on the **"create_github_pr"** workflow tool in the MCP Server trigger node
 
-![MCP server workflow tools](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609897/Screenshot_2026-01-05_at_13.44.32_ichifd.png)
+![MCP server workflow tools](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a9a45fb3-5e65-4520-3682-2a07e5c4e400/public)
 
 3. Open the **"create_github_pr"** tool configuration
 4. Set the parameters:
 
-![Set PR creation tool parameters](https://res.cloudinary.com/dygkv9gam/image/upload/v1767609963/Screenshot_2026-01-05_at_13.45.20_dtizvg.png)
+![Set PR creation tool parameters](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ff0aa417-0d7f-471d-77be-58ac18054700/public)
 
 **Configuration:**
 
