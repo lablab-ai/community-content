@@ -1,0 +1,61 @@
+---
+title: "Qwen3-Coder"
+author: "stevekimoi"
+description: "Qwen3-Coder is an open-weight mixture-of-experts coding model from Alibaba Cloud with 480B total and 35B active parameters, trained on 7.5 trillion tokens with 70% code content, supporting 256K native context."
+---
+
+# Qwen3-Coder
+
+[Qwen3-Coder](https://qwenlm.github.io/blog/qwen3-coder/) is Alibaba Cloud's dedicated coding model, released on July 22, 2025. The flagship variant, Qwen3-Coder-480B-A35B-Instruct, is a mixture-of-experts model trained on 7.5 trillion tokens across 358 programming languages, with 70% of the training data being code. It supports 256K tokens of native context, extensible to 1M tokens with extrapolation, making it suited to repository-scale tasks and multi-file agentic workflows.
+
+| General | |
+|---------|--|
+| **Release date** | 22 Jul 2025 |
+| **Developer** | Qwen / Alibaba Cloud |
+| **Type** | Open-weight coding LLM (MoE) |
+| **License** | Apache 2.0 |
+| **GitHub** | [QwenLM/Qwen3-Coder](https://github.com/QwenLM/Qwen3-Coder) |
+| **Hugging Face** | [Qwen3-Coder-480B-A35B-Instruct](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct) |
+| **Documentation** | [qwenlm.github.io/blog/qwen3-coder](https://qwenlm.github.io/blog/qwen3-coder/) |
+
+---
+
+## Core Features
+
+- **480B/35B MoE architecture**: 480B total parameters with 35B active per token, using 160 experts with 8 activated per inference step.
+- **256K native context**: natively processes 256,000 tokens, with extrapolation support up to 1,000,000 tokens.
+- **358 programming languages**: trained on a broad code corpus covering mainstream and niche languages.
+- **Agent RL post-training**: long-horizon reinforcement learning trains the model to solve real-world tasks through multi-turn tool interactions.
+- **Apache 2.0**: weights are available for commercial use and fine-tuning.
+
+---
+
+## Benchmarks
+
+| Benchmark | Score |
+|-----------|-------|
+| SWE-Bench Verified | 69.6% |
+
+SWE-Bench Verified scores are state-of-the-art among open models at release, comparable to Claude Sonnet 4.
+
+---
+
+## Tools and Resources
+
+- **[Qwen3-Coder Blog Post](https://qwenlm.github.io/blog/qwen3-coder/)**: release announcement with benchmark details.
+- **[GitHub (QwenLM/Qwen3-Coder)](https://github.com/QwenLM/Qwen3-Coder)**: model code and usage examples.
+- **[Hugging Face](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct)**: model weights.
+- **[Qwen Code](https://github.com/QwenLM/qwen-code)**: open-source terminal agent built on Qwen3-Coder.
+- **[Together AI](https://www.together.ai/models/qwen3-coder-480b-a35b-instruct)**: hosted API access.
+
+---
+
+## Ecosystem and Integrations
+
+- Paired with [Qwen Code](https://qwen.ai/qwencode), an open-source terminal coding agent with GitHub Actions support.
+- Accessible via the Alibaba Cloud DashScope API using an OpenAI-compatible endpoint.
+- Available on Together AI, LM Studio, and Ollama for local and cloud inference.
+
+---
+
+To use Qwen3-Coder via API, get an API key on the [Qwen API Platform](https://qwen.ai/apiplatform). For local agentic coding, see the [Qwen Code terminal agent](https://github.com/QwenLM/qwen-code).
