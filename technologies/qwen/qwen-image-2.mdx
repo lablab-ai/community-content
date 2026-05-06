@@ -1,0 +1,58 @@
+---
+title: "Qwen-Image-2.0"
+author: "stevekimoi"
+description: "Qwen-Image-2.0 is a 7B-parameter image generation and editing model from Alibaba Cloud with native 2K resolution support, released in February 2026, ranked first on AI Arena in both text-to-image and image editing."
+---
+
+# Qwen-Image-2.0
+
+[Qwen-Image-2.0](https://github.com/QwenLM/Qwen-Image) is Alibaba Cloud's second-generation image foundation model, released on February 10, 2026. It combines image generation and editing into a single model, replacing the separate pipelines required by earlier approaches. The architecture pairs an 8B Qwen3-VL encoder with a 7B diffusion decoder, producing a leaner design than its predecessor (which used 20B parameters) while achieving higher benchmark scores. It supports native 2048x2048 resolution output.
+
+| General | |
+|---------|--|
+| **Release date** | 10 Feb 2026 |
+| **Developer** | Qwen / Alibaba Cloud |
+| **Type** | Image generation and editing model |
+| **Architecture** | 8B Qwen3-VL encoder + 7B diffusion decoder |
+| **GitHub** | [QwenLM/Qwen-Image](https://github.com/QwenLM/Qwen-Image) |
+| **Documentation** | [qwenlm.github.io](https://qwenlm.github.io) |
+
+---
+
+## Core Features
+
+- **Unified generation and editing**: a single model handles both text-to-image generation and instruction-based image editing without switching pipelines.
+- **Native 2K resolution**: generates images at up to 2048x2048 pixels natively.
+- **Professional typography**: supports up to 1,000-token prompt instructions for text-heavy visuals, generating accurate text in posters, infographics, slides, and comics.
+- **Photorealism**: produces fine-grained detail at 2K including skin texture, fabric weave, and natural foliage.
+- **Efficient architecture**: 7B active parameters vs. 20B in Qwen-Image 1.0, with faster inference and higher quality.
+
+---
+
+## Benchmarks
+
+| Benchmark | Qwen-Image-2.0 | FLUX.1 (12B) |
+|-----------|---------------|--------------|
+| DPG-Bench | 88.32 | 83.84 |
+| AI Arena (text-to-image) | #1 | |
+| AI Arena (image editing) | #1 | |
+
+---
+
+## Tools and Resources
+
+- **[GitHub (QwenLM/Qwen-Image)](https://github.com/QwenLM/Qwen-Image)**: model code and usage examples.
+- **[Qwen API Platform](https://qwen.ai/apiplatform)**: API access for generation and editing endpoints.
+- **[Qwen Studio](https://qwen.ai)**: web interface to try image generation and editing without setup.
+
+---
+
+## Ecosystem and Integrations
+
+- Accessible via Alibaba Cloud DashScope API for programmatic generation and editing.
+- Available through Qwen Studio for no-code testing.
+- The encoder backbone (Qwen3-VL) is the same model used for vision-language understanding tasks.
+
+---
+
+To get started, visit [Qwen Studio](https://qwen.ai) for a live demo, or use the [Qwen API Platform](https://qwen.ai/apiplatform) for API access with the DashScope SDK.
