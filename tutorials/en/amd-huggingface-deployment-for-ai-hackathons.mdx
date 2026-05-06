@@ -1,7 +1,7 @@
 ---
 title: "Build and Deploy an AI App on AMD MI300X as a HuggingFace Space"
 description: "Learn how to build a Gradio chat interface on top of a vLLM endpoint running on AMD MI300X and deploy it as a HuggingFace Space, turning your backend into a live, shareable demo in under 20 minutes."
-image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1777559490/LabLab_Build_AI_App.png"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a517a282-599a-4991-f93a-224a263bef00/public"
 authorUsername: "stevekimoi"
 ---
 
@@ -177,7 +177,7 @@ python app.py
 
 Open `http://127.0.0.1:7860` in your browser and send a message. If the model responds, everything is wired up correctly.
 
-![Local Gradio chat interface responding from the AMD MI300X vLLM endpoint](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371964/tutorials/amd-hf-space-deployment/local-test.png)
+![Local Gradio chat interface responding from the AMD MI300X vLLM endpoint](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/de3946ca-8591-46c8-1c55-faac0930f700/public)
 
 Testing locally first saves you a round-trip of pushing to the Space, waiting for the build, and debugging in the logs. Catch issues here before they become Space build failures.
 
@@ -246,7 +246,7 @@ Add them as **Secrets** (not Variables). Secrets are private and won't appear in
 
 Open your Space URL (`huggingface.co/spaces/lablab-ai-amd-developer-hackathon/your-space-name`) and send a message. You should see streaming responses from the model running on your AMD MI300X.
 
-![Live HuggingFace Space running on AMD MI300X via vLLM](https://res.cloudinary.com/dygkv9gam/image/upload/v1777371966/tutorials/amd-hf-space-deployment/hf-space-live.png)
+![Live HuggingFace Space running on AMD MI300X via vLLM](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0a883270-3a2a-43c8-9b49-d4d83ca60000/public)
 
 If the Space shows a build error, check the **Logs** tab. The most common issues are:
 

@@ -1,7 +1,7 @@
 ---
 title: "AI Meets Robotics: Control Robots with Gemini for AI Hackathons"
 description: "Learn how to bridge human conversation and machine motion using Gemini AI for AI hackathons. Step-by-step guide perfect for developers participating in online AI hackathons and global AI hackathons."
-image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1773143599/LabLab_AI_Robotics_cntedb.png"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e9e46868-69ce-4456-d090-e5e364042800/public"
 authorUsername: "stevekimoi"
 ---
 
@@ -19,11 +19,11 @@ This technology is particularly valuable for **AI hackathons**, where developers
 
 To get started, you'll need to download and install **Webots R2025a**. Once installed, open the built-in **Franka Emika Panda** sample world. You can locate this via `File > Open Sample World` and search for "Panda."
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/open-sample-world_lmfpm0.png" alt="Sample world menu" caption="Step 1: Navigate to File > Open Sample World from the menu bar" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/428da799-0f6c-4071-ef24-155c40043200/public" alt="Sample world menu" caption="Step 1: Navigate to File > Open Sample World from the menu bar" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-sample-world_xtmbxk.png" alt="Open Sample world" caption="Step 2: Search for 'Panda' in the sample world selection dialog" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1bb31354-57fc-4584-1c0d-c6e114a55e00/public" alt="Open Sample world" caption="Step 2: Search for 'Panda' in the sample world selection dialog" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/opened-panda-sample_e8qlac.png" alt="Opened Panda Sample" caption="Step 3: The Panda robot simulation world is now loaded and ready" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e47046ab-6fa2-48ab-1131-50ac72c95700/public" alt="Opened Panda Sample" caption="Step 3: The Panda robot simulation world is now loaded and ready" />
 
 ### Creating the Controller Setup
 
@@ -118,23 +118,23 @@ Paste the code above and save the file. *Remember to adjust the `webots_path` va
 
 In the Webots **Scene Tree** (left panel), find the **Panda** robot.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/panda_ddssni.png" alt="Panda robot in scene tree" caption="Locate the Panda robot node in the Webots Scene Tree" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f58932a7-d485-473a-7554-d8db48f64b00/public" alt="Panda robot in scene tree" caption="Locate the Panda robot node in the Webots Scene Tree" />
 
 Expand the node and find the **controller** field.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/panda-controller_abf1mn.png" alt="Panda Controller Field" caption="Find the controller field for the Panda robot in the Scene Tree" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d0b0ccfe-86f1-436a-c1ee-11edc6115600/public" alt="Panda Controller Field" caption="Find the controller field for the Panda robot in the Scene Tree" />
 
 Click **Select...** and choose `llm_robot_planner` from the list.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/select-controller_weyb43.png" alt="Select Controller" caption="Open the controller selection dialog for the Panda robot" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/52b8e0a5-51f7-4e55-e249-ba90ed44a700/public" alt="Select Controller" caption="Open the controller selection dialog for the Panda robot" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198367/select-llm-robot-planner_tggglp.png" alt="Select LLM Robot planner" caption="Choose the llm_robot_planner controller from the list of available controllers" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/80ac7b62-4016-48e3-477b-7c7ff9a7fc00/public" alt="Select LLM Robot planner" caption="Choose the llm_robot_planner controller from the list of available controllers" />
 
 *Note:* Because we placed it in the system directory, it will now appear as a native option.
 
 Now click on the play button on the top part of the screen, and you'll see your robot arm moving 90 degrees.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/robot-arm-moving_k2lia2.png" alt="Robot arm moving" caption="Watch the Panda arm rotate 90 degrees after running the controller" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/51973158-7cd1-4f79-880e-331f77618c00/public" alt="Robot arm moving" caption="Watch the Panda arm rotate 90 degrees after running the controller" />
 
 ### Configuring Python
 
@@ -148,9 +148,9 @@ To avoid "Controller failed to start" errors, point Webots to your system's Pyth
 
 *Tip: You can find your Python 3 path by running `which python3` (macOS/Linux) or `where python` (Windows) in your terminal.*
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/perferences_wpqwoc.png" alt="Preferences menu" caption="Open the Webots Preferences window from the application menu" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5ec901a8-f159-478f-0b21-56400b479a00/public" alt="Preferences menu" caption="Open the Webots Preferences window from the application menu" />
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198366/preferences-general_ksmlyc.png" alt="General preferences" caption="Configure the Python command under the General tab in Webots Preferences" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4dcf48fc-015a-4cb9-54c7-c5a4828d7100/public" alt="General preferences" caption="Configure the Python command under the General tab in Webots Preferences" />
 
 ## Integrating Gemini AI
 
@@ -353,19 +353,19 @@ This architecture creates a feedback loop: the AI receives context about the rob
 
 In the Webots Scene Tree, select the Panda robot. Find the field supervisor and change it from FALSE to TRUE. Save the world and reload the simulation.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768199242/panda-supervisor_lje0zo.png" alt="Panda supervisor setting" caption="Enable the supervisor flag for the Panda robot in the Webots Scene Tree" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/241bcc39-67d1-45ce-be49-bb4eeab44600/public" alt="Panda supervisor setting" caption="Enable the supervisor flag for the Panda robot in the Webots Scene Tree" />
 
 ### Selecting the Controller
 
 Select controller choice to `llm_robot_planner`.
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198365/panda-controller-choice_ul0vlc.png" alt="LLM Robot planner selection" caption="Confirm llm_robot_planner as the active controller for the Panda robot" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ac075ab3-a4ba-430c-bc8b-9c00abc7e900/public" alt="LLM Robot planner selection" caption="Confirm llm_robot_planner as the active controller for the Panda robot" />
 
 ### Testing Your AI-Powered Robot
 
 Now enter your instruction of what you want the robot to do:
 
-<Img src="https://res.cloudinary.com/dygkv9gam/image/upload/v1768198364/command-input_htziec.png" alt="Enter command dialog" caption="Type a natural language command for the robot into the popup dialog window" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/04055f20-d132-4e08-4bc5-6a9a109afe00/public" alt="Enter command dialog" caption="Type a natural language command for the robot into the popup dialog window" />
 
 Enter a command like: "Pick up the WOODEN_BOX and lift it up"
 
