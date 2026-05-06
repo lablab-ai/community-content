@@ -1,0 +1,62 @@
+---
+title: "Qwen3-VL"
+author: "stevekimoi"
+description: "Qwen3-VL is an open-weight vision-language model series from Alibaba Cloud that processes images, videos, and text, available in 2B and 8B sizes under Apache 2.0."
+---
+
+# Qwen3-VL
+
+[Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) is Alibaba Cloud's vision-language model series, designed to understand and reason over images, videos, and text in a single architecture. It is available in 2B and 8B parameter sizes, both released under Apache 2.0. The architecture handles diverse visual tasks including document understanding, chart analysis, image-based question answering, and video comprehension.
+
+| General | |
+|---------|--|
+| **Developer** | Qwen / Alibaba Cloud |
+| **Type** | Open-weight vision-language LLM |
+| **License** | Apache 2.0 |
+| **GitHub** | [QwenLM/Qwen3-VL](https://github.com/QwenLM/Qwen3-VL) |
+| **Hugging Face** | [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) |
+| **Technical Report** | [arxiv.org/abs/2511.21631](https://arxiv.org/abs/2511.21631) |
+| **Documentation** | [qwenlm.github.io](https://qwenlm.github.io) |
+
+---
+
+## Core Features
+
+- **Multimodal inputs**: accepts text, images, and videos in a single conversation turn.
+- **Document and chart understanding**: parses structured visual content like tables, slides, PDFs, and infographics.
+- **Video comprehension**: understands multi-frame video sequences and answers temporal questions.
+- **Thinking mode**: includes a reasoning variant (Qwen3-VL-8B-Thinking) for step-by-step visual problem solving.
+- **Apache 2.0**: weights are open for commercial use and fine-tuning.
+
+---
+
+## Model Variants
+
+| Variant | Parameters | Key capability |
+|---------|-----------|----------------|
+| Qwen3-VL-2B-Instruct | 2B | Lightweight multimodal inference |
+| Qwen3-VL-8B-Instruct | 8B | General vision-language tasks |
+| Qwen3-VL-8B-Thinking | 8B | Step-by-step visual reasoning |
+
+---
+
+## Tools and Resources
+
+- **[GitHub (QwenLM/Qwen3-VL)](https://github.com/QwenLM/Qwen3-VL)**: model code, usage examples, and fine-tuning scripts.
+- **[Hugging Face (Qwen)](https://huggingface.co/Qwen)**: download weights for all variants.
+- **[Technical Report](https://arxiv.org/abs/2511.21631)**: arXiv paper with architecture and benchmark details.
+- **[Qwen API Platform](https://qwen.ai/apiplatform)**: access Qwen3-VL via the DashScope API.
+- **[Ollama](https://ollama.com/library/qwen3-vl)**: run Qwen3-VL locally.
+
+---
+
+## Ecosystem and Integrations
+
+- Served through Alibaba Cloud DashScope via an OpenAI-compatible vision endpoint.
+- Available on Ollama for local multimodal inference.
+- Weights downloadable from Hugging Face Hub in standard and GGUF formats.
+- Forms the encoder backbone for Qwen-Image-2.0, the image generation model.
+
+---
+
+Model weights are available on [Hugging Face](https://huggingface.co/Qwen). API access is available through the [Qwen API Platform](https://qwen.ai/apiplatform) and [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/).
