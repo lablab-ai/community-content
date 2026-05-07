@@ -106,7 +106,7 @@ class AnalysisResponse(BaseModel):
     processing_notes: Optional[str] = None
 ```
 
-[View `app/schemas.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/schemas.py#L40-L45)
+[View app/schemas.py on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/schemas.py#L40-L45)
 
 ## Step 4: Build the Extraction Tools
 
@@ -257,7 +257,7 @@ def save_general_extraction(
     return "General extraction saved."
 ```
 
-[View `app/tools.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/tools.py)
+[View app/tools.py on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/tools.py)
 
 Three things to note about this design:
 
@@ -373,7 +373,7 @@ A few things worth understanding here:
 
 **`run_async`** returns an async generator of events. We iterate through them but only care about the final session state. The tool call happens inside that iteration.
 
-[View `app/agent.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/agent.py#L49-L94)
+[View app/agent.py on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/agent.py#L49-L94)
 
 ## Step 6: Build the FastAPI Service
 
@@ -500,7 +500,7 @@ You should see a full JSON response with every invoice field extracted.
 
 FastAPI also provides an interactive docs UI at `http://localhost:8000/docs` where you can upload files and inspect responses without writing any curl commands.
 
-[View `app/main.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/main.py#L27-L103)
+[View app/main.py on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/main.py#L27-L103)
 
 ## Step 7: Containerize with Docker
 
@@ -521,7 +521,7 @@ EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-[View `Dockerfile` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/Dockerfile)
+[View Dockerfile on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/Dockerfile)
 
 Create `docker-compose.yml`:
 
@@ -536,7 +536,7 @@ services:
     restart: unless-stopped
 ```
 
-[View `docker-compose.yml` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/docker-compose.yml)
+[View docker-compose.yml on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/docker-compose.yml)
 
 Build and verify locally:
 
