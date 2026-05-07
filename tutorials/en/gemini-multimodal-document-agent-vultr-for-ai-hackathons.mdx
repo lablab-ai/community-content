@@ -106,6 +106,8 @@ class AnalysisResponse(BaseModel):
     processing_notes: Optional[str] = None
 ```
 
+[View `app/schemas.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/schemas.py#L40-L45)
+
 ## Step 4: Build the Extraction Tools
 
 The ADK agent uses function-calling tools to return structured data. Each tool corresponds to a document type. When the agent reads a document, it decides which tool to call and passes every extracted field as arguments. The tool writes those arguments into the session state, which we read back after the agent finishes.
@@ -255,6 +257,8 @@ def save_general_extraction(
     return "General extraction saved."
 ```
 
+[View `app/tools.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/tools.py)
+
 Three things to note about this design:
 
 1. All list parameters are typed as `list[str]`. The Gemini API requires typed list parameters in tool schemas and will reject untyped `list` annotations.
@@ -368,6 +372,8 @@ A few things worth understanding here:
 **`types.Part.from_bytes`** passes the raw file bytes directly to Gemini. The model reads PDFs, images, and text natively without any preprocessing on your side.
 
 **`run_async`** returns an async generator of events. We iterate through them but only care about the final session state. The tool call happens inside that iteration.
+
+[View `app/agent.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/agent.py#L49-L94)
 
 ## Step 6: Build the FastAPI Service
 
@@ -494,6 +500,8 @@ You should see a full JSON response with every invoice field extracted.
 
 FastAPI also provides an interactive docs UI at `http://localhost:8000/docs` where you can upload files and inspect responses without writing any curl commands.
 
+[View `app/main.py` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/app/main.py#L27-L103)
+
 ## Step 7: Containerize with Docker
 
 Create `Dockerfile`:
@@ -513,6 +521,8 @@ EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
+[View `Dockerfile` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/Dockerfile)
+
 Create `docker-compose.yml`:
 
 ```yaml
@@ -525,6 +535,8 @@ services:
       - .env
     restart: unless-stopped
 ```
+
+[View `docker-compose.yml` on GitHub →](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent/blob/main/docker-compose.yml)
 
 Build and verify locally:
 
