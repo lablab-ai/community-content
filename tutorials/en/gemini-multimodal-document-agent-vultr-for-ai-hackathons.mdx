@@ -1,6 +1,6 @@
 ---
 title: "Gemini Multimodal Document Agent Tutorial: Build and Deploy on Vultr for AI Hackathons"
-description: "AI hackathon guide: build an enterprise document intelligence agent with Google ADK and Gemini 2.5 Flash that extracts structured data from invoices, contracts, and images. Deploy on Vultr in minutes."
+description: "AI hackathon 2026 guide: build a document agent with Google ADK and Gemini 2.5 Flash that extracts invoices, contracts, and images. Deploy on Vultr in minutes."
 image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1778187687/gemini-document-agent-vultr-cover.png"
 authorUsername: "stevekimoi"
 ---
@@ -11,7 +11,7 @@ Enterprise teams spend thousands of hours manually extracting data from invoices
 
 By the end you will have a public API endpoint that accepts a PDF, image, or text file and returns structured JSON with every relevant field pulled out of the document.
 
-This kind of document intelligence agent is particularly valuable for **AI hackathons**, where teams need to ship working prototypes fast. Whether you are building a fintech tool, a legal document processor, or a contract analyzer, this stack gives you a production-ready foundation within a single hackathon sprint. If you are looking for **upcoming AI hackathons** to apply these skills, check out [LabLab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
+This kind of document intelligence agent is particularly valuable for **AI hackathon 2026** teams, where shipping a working prototype in 48 hours is the whole game. Whether you are building a fintech tool, a legal document processor, or a contract analyzer, this stack gives you a production-ready foundation within a single sprint. Browse [upcoming AI hackathons on LabLab.ai](https://lablab.ai/event) to see where you can apply it next.
 
 ## What You'll Build
 
@@ -665,6 +665,20 @@ When a file hits the `/analyze` endpoint, here is the execution path:
 6. After the agent finishes, we read that state and return it as JSON
 
 The key design decision is that the tools do not receive the document. Gemini has already read it from the multimodal message context. The tools only receive the extracted fields as typed arguments, which forces the model to commit to specific values rather than returning freeform text.
+
+## Frequently Asked Questions
+
+**Q: What file types does the `/analyze` endpoint accept?**
+PDF, JPEG, PNG, WebP, plain text (`.txt`), and Markdown (`.md`) files up to 20 MB. For larger files, swap `Part.from_bytes` for the Gemini Files API and pass a file URI instead.
+
+**Q: Why must list parameters in ADK tools be typed as `list[str]` instead of just `list`?**
+The Gemini API generates a JSON schema from your tool's type annotations. An untyped `list` produces a schema without an `items` field, which the API rejects with a 400 `INVALID_ARGUMENT` error. Using `list[str]` (or any concrete generic) generates the required `items: {type: string}` field automatically.
+
+**Q: Can I use this stack in an AI hackathon 2026 project?**
+Yes — this is the point. The Docker Compose setup deploys to any cloud instance in one command, and the ADK tool-calling pattern makes it easy to extend with new document types or swap Gemini for another model. Fork the [GitHub repo](https://github.com/Stephen-Kimoi/gemini-multimodal-document-agent) and build on top of it. Check [upcoming AI hackathons on LabLab.ai](https://lablab.ai/event) to find a competition to enter.
+
+**Q: How do I add support for a new document type, like purchase orders?**
+Create a new extraction function in `app/tools.py` (e.g. `save_purchase_order_extraction`) following the same pattern — typed parameters, `ToolContext` as first argument, write to `tool_context.state`. Then add it to the `tools` list in `app/agent.py` and update the `INSTRUCTION` string to tell the agent when to call it.
 
 ## Next Steps
 
