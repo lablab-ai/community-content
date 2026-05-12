@@ -1,0 +1,71 @@
+---
+title: "GPT-5.5 Is ChatGPT's New Default, Claude Mythos Hunts Zero-Days, Chinese Models Beat GPT-5.4 on Code"
+description: "AI news recap May 2026: GPT-5.5 is now ChatGPT's default, Claude Mythos finds zero-days across every OS, and Chinese open-source models beat GPT-5.4 on code."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/73849545-e4a0-48a7-8c82-b4334fa03500/public"
+authorUsername: "stevekimoi"
+---
+
+# GPT-5.5 Is ChatGPT's New Default, Claude Mythos Hunts Zero-Days, Chinese Models Beat GPT-5.4 on Code
+
+*This Week in AI: May 5 to 12, 2026*
+
+The week split in two directions at once. On one side, the model release cadence kept accelerating: OpenAI shipped a smarter ChatGPT default, and four Chinese labs dropped open-weight coding models that now beat GPT-5.4 on benchmarks at a fraction of the cost. On the other, AI crossed a threshold that most people weren't tracking: for the first time, a frontier model autonomously found and exploited vulnerabilities in every major operating system, with no human in the loop after the first prompt.
+
+## Key Takeaways
+
+- **GPT-5.5 Instant is now the default ChatGPT model.** It halved hallucination rates on high-stakes prompts and made responses 30% shorter. If you are building on the ChatGPT API, your default model changed on May 5.
+- **Anthropic's Claude Mythos found thousands of zero-day vulnerabilities**, including a 17-year-old FreeBSD remote code execution bug, across every major OS and browser. Less than 1% have been patched. This is now a race between defenders using the tool and attackers who want equivalent capability.
+- **Chinese open-source coding models are no longer catching up. They are competing.** Kimi K2.6 outscored GPT-5.4 on SWE-Bench Pro. These models cost 15 to 30 times less per token than Western frontier alternatives. If you are paying for code generation at scale, this week's releases are worth a benchmark run.
+- **The Pentagon signed AI contracts with eight major tech companies**, signaling that US federal AI adoption is moving from pilot to procurement.
+- **Cohere merged with Aleph Alpha** at a combined $20B valuation, creating the first significant transatlantic AI consolidation play of 2026.
+
+---
+
+## The Model Refresh
+
+### GPT-5.5 Instant Replaces ChatGPT's Default
+
+On May 5, [OpenAI shipped GPT-5.5 Instant](https://openai.com/index/gpt-5-5-instant/) as the new default model across all ChatGPT tiers, replacing GPT-5.3 Instant. The headline improvement is accuracy: internal evaluations show [52.5% fewer hallucinated claims](https://techcrunch.com/2026/05/05/openai-releases-gpt-5-5-instant-a-new-default-model-for-chatgpt/) on high-stakes prompts covering medicine, law, and finance. Responses are also about 30% shorter on average, which OpenAI frames as a fix for verbosity but which also cuts token costs for API users. GPT-5.3 Instant stays available in settings for paid users until August.
+
+On May 7, OpenAI followed with [GPT-5.5-Cyber](https://www.cnbc.com/2026/05/07/openai-rolls-out-new-gpt-5point5-cyber-to-vetted-cybersecurity-teams.html), a variant tuned for security research tasks, released in a limited preview to vetted cybersecurity teams, a direct response to Anthropic's Mythos release (see below).
+
+### Four Chinese Open-Source Models, One Coding Benchmark Upset
+
+Inside a 12-day window in late April and early May, four Chinese labs released open-weight coding models: Z.ai's GLM-5.1, MiniMax M2.7, Moonshot's Kimi K2.6, and DeepSeek V4. [Kimi K2.6 scores 58.6% on SWE-Bench Pro](https://akitaonrails.com/en/2026/04/24/llm-benchmarks-parte-3-deepseek-kimi-mimo/), above GPT-5.4's 57.7% and Claude Opus 4.6's 53.4%. GLM-5.1 lands at 58.4%, statistically indistinguishable from Kimi. MiniMax M2.7 hits 56.2% at $0.30 per million input tokens with only 10 billion activated parameters, roughly one-fifth the inference cost of GLM-5.1 for comparable output. For teams running high-volume code generation, including those building at [AI hackathons](https://lablab.ai/ai-hackathons), the cost gap alone justifies a benchmark comparison against your current stack.
+
+---
+
+## AI Learns to Hack
+
+### Anthropic's Project Glasswing and the Mythos Model
+
+[Anthropic launched Project Glasswing](https://www.anthropic.com/glasswing) this week, giving select organizations access to Claude Mythos Preview, its unreleased frontier model, specifically to find and fix critical software vulnerabilities. The partner list includes AWS, Apple, Cisco, Google, JPMorgan Chase, the Linux Foundation, Microsoft, and NVIDIA.
+
+The results are stark. [Claude Mythos fully autonomously identified and exploited a 17-year-old remote code execution vulnerability in FreeBSD](https://thehackernews.com/2026/04/anthropics-claude-mythos-finds.html) (CVE-2026-4747) with no human involvement after the initial prompt. Across all partner systems, Mythos found thousands of zero-day vulnerabilities in every major operating system and browser. Less than 1% have been patched so far.
+
+The tension here is real: the same capability that makes Mythos useful for defenders also makes it dangerous if equivalent models reach bad actors. The White House is currently blocking Anthropic's plan to expand the partner list, citing national security concerns. [Forrester's analysis of Project Glasswing](https://www.forrester.com/blogs/project-glasswing-the-10-consequences-nobodys-writing-about-yet/) calls this the central paradox: the thing that can break critical infrastructure is now the primary tool for fixing it.
+
+---
+
+## Power, Money, and Alliances
+
+### Pentagon Signs AI Contracts with Eight Tech Companies
+
+[The Pentagon struck AI contracts with SpaceX, OpenAI, Google, Microsoft, NVIDIA, AWS, Oracle, and Reflection](https://www.cnn.com/2026/05/01/tech/pentagon-ai-anthropic), formalizing federal AI procurement across cloud, inference, and defense applications. Separately, the Trump administration announced that [CISA will evaluate AI models from Google DeepMind, Microsoft, and xAI](https://www.cnbc.com/2026/05/05/ai-oversight-trump-google-microsoft-xai.html) before public release, the first formal US government pre-release testing program for frontier models.
+
+### Cohere and Aleph Alpha Merge at $20B
+
+[Cohere announced a merger with Germany's Aleph Alpha](https://news.crunchbase.com/venture/global-startup-funding-april-2026-anthropic-jeff-bezos-project-prometheus-biggest-deals/) at a combined $20 billion valuation. The deal pairs Cohere's enterprise deployment infrastructure with Aleph Alpha's European data sovereignty positioning, a direct pitch to the EU market, where compliance requirements increasingly favor AI providers with local data handling.
+
+---
+
+## Quick Hits
+
+- **MCP crosses 97 million installs.** [Anthropic's Model Context Protocol](https://www.anthropic.com/news/google-broadcom-partnership-compute) reached 97 million installs in March 2026, and the Linux Foundation announced it will take the protocol under open governance. Every major AI provider now ships MCP-compatible tooling.
+- **Blitzy raises $200M.** The autonomous software development startup closed a $200M round, part of a broader trend: [Q1 2026 saw $300B in global VC funding](https://news.crunchbase.com/venture/record-breaking-funding-ai-global-q1-2026/), up 150% year over year.
+- **Connecticut AI bill heads to the governor.** Connecticut lawmakers passed [one of the most comprehensive state-level AI bills in the US](https://www.transparencycoalition.ai/news/ai-legislative-update-may8-2026/), covering transparency and accountability requirements across sectors.
+- **Novo Nordisk partners with OpenAI** on full-business AI integration, from drug discovery and clinical trials to manufacturing and supply chain, targeting deployment by end of 2026.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
