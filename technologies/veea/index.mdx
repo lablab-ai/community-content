@@ -1,0 +1,96 @@
+---
+title: "Veea"
+description: "Veea builds AI-native edge infrastructure that unifies compute, networking, security, and AI orchestration for enterprise and industrial deployments at the edge."
+---
+
+# Veea
+
+Veea is an AI-driven edge infrastructure company founded in 2014. The company develops hardware and software systems that bring secure, governed compute and AI workloads to distributed edge environments, targeting enterprise, industrial, and public-sector deployments where centralized cloud alone falls short. Veea holds over 117 patents and has been recognized by Gartner for its edge computing innovations.
+
+| General | |
+|---------|--|
+| **Company** | [Veea](https://www.veea.com) |
+| **Founded** | 2014 |
+| **CEO** | Allen Salmasi |
+| **Headquarters** | New York City, USA |
+| **Website** | [veea.com](https://www.veea.com) |
+| **Developer Center** | [developer.veea.com](https://developer.veea.com) |
+| **GitHub** | [github.com/veeainc](https://github.com/veeainc) |
+| **Type** | AI Edge Infrastructure |
+
+---
+
+## Core Products
+
+### Lobster Trap
+
+Lobster Trap is a deep prompt inspection (DPI) proxy that sits between AI agents and any OpenAI-compatible LLM backend, enforcing firewall-style policy rules on every prompt and response. It is MIT-licensed and classifies threats using compiled regex patterns in sub-millisecond time without additional LLM calls. It ships as a single static Go binary with no cloud dependency, API keys, or rate limits required.
+
+### TerraFabric
+
+TerraFabric is the control plane for governed autonomous systems at the edge. It coordinates distributed deployments as cohesive systems rather than individual devices, handling fleet orchestration, policy enforcement at L2 through L7 network layers, zero-trust security boundaries, controlled rollouts with rollback, and workload lifecycle management.
+
+### VeeaONE Platform
+
+VeeaONE is Veea's unified operating model combining orchestration, application lifecycle management, and fleet-wide visibility across edge sites. It integrates compute, connectivity, storage, and cybersecurity in a single platform.
+
+### VeeaHub Edge Servers
+
+VeeaHub is Veea's on-site compute hardware, converging networking, security, and AI workloads in a single edge device for enterprise and industrial sites.
+
+### SecureConnect
+
+SecureConnect provides zero-trust networking and policy enforcement across distributed operations, enabling secure site-to-site communication without a centralized cloud dependency.
+
+---
+
+## Developer Resources
+
+Lobster Trap is MIT-licensed and available as pre-built static binaries for Linux, Windows, and macOS. It requires no Go toolchain, signups, or external services to run.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Developer Center](https://developer.veea.com) - official platform documentation and SDK reference
+- [Support Center](https://support.veea.com/hc/en-us) - technical support and knowledge base
+- [GitHub (veeainc)](https://github.com/veeainc) - open-source repos including Lobster Trap
+- [Lobster Trap repo](https://github.com/veeainc/lobstertrap) - MIT-licensed deep prompt inspection proxy
+- [Lobster Trap README](https://github.com/veeainc/lobstertrap/blob/main/README.md) - quickstart and full policy reference
+- [TerraFabric](https://www.veea.com/solutions/terrafabric) - edge orchestration platform overview
+- [Blog](https://blog.veea.com) - product updates and engineering articles
+
+---
+
+## Key Features
+
+**Deep Prompt Inspection Without LLM Overhead**
+Lobster Trap extracts structured metadata including intent categories, risk scores, credentials, PII, injection patterns, exfiltration signals, target paths, and risky commands using compiled regex patterns. All classification runs in sub-millisecond time with no secondary model calls.
+
+**Programmable Policy Engine**
+YAML-based firewall rules use first-match-wins logic with actions including ALLOW, DENY, LOG, HUMAN_REVIEW, QUARANTINE, and RATE_LIMIT. Rules apply bidirectionally to both incoming prompts and outgoing responses.
+
+**Declared vs. Detected Intent Inspection**
+Agents can declare intent via `_lobstertrap` headers. Lobster Trap compares declared intent against detected behavior and surfaces mismatches in audit logs, enabling governance workflows a regulator or security team can read.
+
+**Drop-In Deployment**
+Works with any tool using the OpenAI chat completions API, including Ollama, vLLM, llama.cpp, OpenAI, Anthropic, and Gemini via proxy, without application code changes.
+
+**Edge-Native Orchestration**
+TerraFabric manages distributed AI workloads across multiple physical sites with controlled rollouts, rollback capabilities, and compliance-grade audit trails under a single governance model.
+
+---
+
+## Use Cases
+
+**AI Agent Security and Guardrails**
+Development teams building production AI agents use Lobster Trap to detect prompt injection attempts, enforce access control policies, and generate audit trails that meet enterprise security review requirements.
+
+**Enterprise Edge AI Deployment**
+Organizations running AI inference across distributed sites use TerraFabric and VeeaHub to deploy, govern, and update edge workloads with fleet-wide visibility and zero-trust security boundaries.
+
+**Red-Team and Compliance Tooling**
+Security teams use Lobster Trap's built-in adversarial test suite (`./lobstertrap test`), single-prompt debugger (`./lobstertrap inspect`), and structured JSON audit logs to measure risk reduction and demonstrate regulatory compliance.
+
+**Multi-Agent Permission Systems**
+Platform teams use Lobster Trap as a trust layer beneath multi-agent systems, enforcing per-agent permission boundaries and logging every cross-agent interaction for governance review.
