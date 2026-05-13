@@ -1,0 +1,100 @@
+---
+title: "Lobster Trap"
+author: "stevekimoi"
+description: "Lobster Trap is an open-source deep prompt inspection proxy for LLM inference. It enforces P4-style firewall rules on every prompt and response using sub-millisecond regex classification, with no secondary LLM calls required."
+---
+
+# Lobster Trap
+
+[Lobster Trap](https://github.com/veeainc/lobstertrap) is a reverse proxy built by Veea that sits between AI agents and any OpenAI-compatible LLM backend. It performs deep prompt inspection (DPI) on both incoming prompts and outgoing responses, classifying threats and enforcing YAML-based firewall rules in sub-millisecond time using compiled regex patterns. No additional model calls, API keys, cloud connectivity, or runtime dependencies are required.
+
+| General | |
+|---------|--|
+| **Release date** | 18 Feb 2026 |
+| **Developer** | [Veea](https://www.veea.com) |
+| **Type** | Open-source LLM security proxy |
+| **License** | MIT |
+| **GitHub** | [veeainc/lobstertrap](https://github.com/veeainc/lobstertrap) |
+| **Documentation** | [README and policy reference](https://github.com/veeainc/lobstertrap/blob/main/README.md) |
+
+---
+
+## Core Features
+
+- **Regex-based DPI** - all classification runs in sub-millisecond time using compiled regex patterns, with no secondary LLM calls for threat detection.
+- **Bidirectional inspection** - rules apply to both incoming prompts and outgoing responses, catching both injection attempts and exfiltration in responses.
+- **Structured metadata extraction** - detects and surfaces intent categories, risk scores, credentials, PII, system commands, injection attempts, exfiltration patterns, target paths, domains, and risky commands.
+- **Programmable YAML policy** - first-match-wins ingress and egress rules with actions: ALLOW, DENY, LOG, HUMAN_REVIEW, QUARANTINE, and RATE_LIMIT.
+- **Declared vs. detected intent** - agents can declare intent via `_lobstertrap` request headers; Lobster Trap compares declared against detected and reports mismatches in the audit trail.
+- **Real-time dashboard** - built-in web UI at `http://localhost:8080/_lobstertrap/` showing live traffic, decisions, and metadata.
+- **JSON-line audit logs** - structured logs of every decision, readable by security tooling or a regulator.
+- **Drop-in deployment** - transparent proxy for any tool using the OpenAI chat completions API; no application code changes required.
+
+---
+
+## Supported Backends
+
+Lobster Trap works with any OpenAI-compatible inference endpoint:
+
+| Backend | Notes |
+|---------|-------|
+| **Ollama** | Default target in quickstart config |
+| **vLLM** | Compatible via OpenAI-compatible API |
+| **llama.cpp** | Compatible via server mode |
+| **OpenAI** | Proxy to production OpenAI API |
+| **Anthropic** | Via OpenAI-compatible adapter |
+| **Gemini** | Via OpenAI-compatible adapter |
+
+---
+
+## Policy System
+
+Policies are defined in YAML and loaded at startup. Each rule specifies a direction (ingress or egress), a priority, match conditions, and an action.
+
+Available actions:
+
+| Action | Behavior |
+|--------|----------|
+| `ALLOW` | Pass the request through |
+| `DENY` | Block and return an error |
+| `LOG` | Allow but write a log entry |
+| `HUMAN_REVIEW` | Flag for manual review queue |
+| `QUARANTINE` | Isolate for deferred inspection |
+| `RATE_LIMIT` | Throttle matching traffic |
+
+A default policy file is provided at `configs/default_policy.yaml` as a starting point. Rules also support network policies and filesystem restrictions in addition to content-based matching.
+
+---
+
+## Tools and Resources
+
+- **[GitHub repo (MIT)](https://github.com/veeainc/lobstertrap)** - source code, issues, and contribution guide.
+- **[README and quickstart](https://github.com/veeainc/lobstertrap/blob/main/README.md)** - full policy reference and setup instructions.
+- **Default policy** - `configs/default_policy.yaml` in the repo, ready to fork and extend.
+- **Adversarial test suite** - run `./lobstertrap test` to validate your policy against built-in attack patterns.
+- **Single-prompt debugger** - run `./lobstertrap inspect "<your prompt>"` to see full metadata extraction output for any input.
+
+---
+
+## Deployment Options
+
+Three ways to run Lobster Trap:
+
+1. **Standalone** - clone the repo, run `make build`, then start with `./lobstertrap serve`. Requires Go 1.22 or later.
+2. **Pre-built static binary** - download a Linux, Windows, or macOS binary from the repo with no Go toolchain required.
+3. **Native.Builder** - already packaged inside lablab's Native.Builder environment; no setup needed.
+
+No API keys, signups, rate limits, or cloud dependency required for any deployment path.
+
+---
+
+## Ecosystem and Integrations
+
+- Acts as the trust layer beneath multi-agent systems, enforcing per-agent permission boundaries and logging cross-agent interactions.
+- Serves as a foundation for compliance policy packs targeting HIPAA, SOC2, or financial regulations.
+- Integrates with governance dashboards and drift monitoring tooling via its structured JSON audit log output.
+- Supported by Veea engineers in the lablab Discord for policy review, integration help, and architecture questions during hackathon build phases.
+
+---
+
+Get started by cloning the repo and running `./lobstertrap serve`, or download a pre-built binary from [github.com/veeainc/lobstertrap](https://github.com/veeainc/lobstertrap). The full policy reference is in the [README](https://github.com/veeainc/lobstertrap/blob/main/README.md).
