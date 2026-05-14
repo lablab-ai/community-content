@@ -1,0 +1,389 @@
+---
+title: "Build a Multi-Model Financial Research Agent for AI Hackathons: Featherless AI and Kraken CLI"
+description: "AI hackathon tutorial: build a multi-model financial research agent using Featherless AI and Kraken CLI, with live market data analysis, model routing, and paper trading."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/960d9cb8-4bb7-4c42-6ca8-8cd23044bc00/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+Not all financial tasks need the same model. Analyzing 12 hours of OHLC candles and identifying support levels is a different cognitive job from taking that analysis and committing to a BUY, SELL, or HOLD decision with real money on the line. Yet most AI trading tutorials pick a single model and hand it both jobs.
+
+This tutorial takes a different approach: two specialized open-source LLMs, each doing what it does best, wired together through [Featherless AI](https://featherless.ai) and [Kraken CLI](https://github.com/krakenfx/kraken-cli).
+
+This multi-model routing pattern is also a strong foundation for an AI hackathon project, where judges reward systems that demonstrate deliberate reasoning about which model solves which problem. If you are looking for a competition to test it in, [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons) include tracks focused on autonomous agents and financial AI systems.
+
+**Qwen2.5-72B** handles research. It reads live ticker data and hourly OHLC candles from Kraken, then produces a structured market analysis covering trend, volatility, support and resistance levels, and key risks.
+
+**DeepSeek-V3.2** handles the trading decision. It reads the analysis (not the raw data) and outputs a JSON decision: action, confidence score, risk level, and reasoning.
+
+Kraken CLI executes the result as a paper trade, no real money involved.
+
+The whole thing runs behind a web dashboard where you can hit **Run Agent** and watch each step complete in real time.
+
+By the end of this tutorial you will have:
+
+- A working multi-model agent that fetches live BTC/USD data and reasons about it
+- A Featherless API client that can swap between [36,000+ models](https://featherless.ai/models) by changing one environment variable
+- Paper trading execution via Kraken CLI
+- A streaming Flask dashboard showing the analysis and decision as they arrive
+
+---
+
+## Prerequisites
+
+- Python 3.10 or later
+- A [Featherless AI](https://featherless.ai) account with an API key (Premium plan required for DeepSeek-V3.2)
+- A [Kraken](https://www.kraken.com) account with an API key and secret
+- [Kraken CLI](https://github.com/krakenfx/kraken-cli) installed. On macOS or Linux with Cargo: `cargo install kraken-cli`. Pre-built binaries are available on the [releases page](https://github.com/krakenfx/kraken-cli/releases)
+- Basic familiarity with Python and REST APIs
+
+---
+
+## Step 1: Project setup
+
+Clone the finished repo or create the directory structure yourself:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/featherless-kraken-agent.git
+cd featherless-kraken-agent
+pip install -r requirements.txt
+```
+
+The `requirements.txt` contains two dependencies:
+
+```text
+openai>=1.0.0
+python-dotenv>=1.0.0
+```
+
+Featherless exposes an OpenAI-compatible API, so the `openai` SDK is all you need to talk to any model in their catalogue. Copy `.env.example` to `.env` and fill in your credentials:
+
+```env
+FEATHERLESS_API_KEY=your_featherless_api_key
+
+KRAKEN_API_KEY=your_kraken_api_key
+KRAKEN_API_SECRET=your_kraken_api_secret
+KRAKEN_CLI_PATH=/path/to/kraken        # e.g. /Users/you/.cargo/bin/kraken
+
+RESEARCH_MODEL=Qwen/Qwen2.5-72B-Instruct
+TRADING_MODEL=deepseek-ai/DeepSeek-V3.2
+
+TRADING_PAIR=BTC/USD
+TRADE_SIZE_USD=500
+```
+
+Initialize a fresh paper trading account with $10,000 in simulated USD:
+
+```bash
+kraken paper init --balance 10000 --currency USD
+```
+
+---
+
+## Step 2: Fetch live market data with Kraken CLI
+
+The Kraken CLI ships with a built-in paper trading engine and a `ticker` command that returns real-time market data. The `market_data.py` module wraps these CLI commands in Python functions.
+
+The internal `_run` helper ([lines 12-22](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/market_data.py#L12-L22)) calls the CLI as a subprocess, passes credentials via environment variables, and parses the JSON response:
+
+```python
+def _run(args: list[str]) -> dict | list:
+    env = os.environ.copy()
+    env["KRAKEN_API_KEY"] = KRAKEN_API_KEY
+    env["KRAKEN_API_SECRET"] = KRAKEN_API_SECRET
+    result = subprocess.run(
+        [KRAKEN] + args + ["--output", "json"],
+        capture_output=True, text=True, env=env
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"kraken CLI error: {result.stderr.strip()}")
+    return json.loads(result.stdout)
+```
+
+`get_ticker` ([lines 25-40](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/market_data.py#L25-L40)) normalizes the Kraken API's raw response format into a clean dictionary:
+
+```python
+def get_ticker(pair: str) -> dict:
+    data = _run(["ticker", pair])
+    raw = data.get(pair, {})
+    return {
+        "pair": pair,
+        "ask": raw.get("a", [None])[0],
+        "bid": raw.get("b", [None])[0],
+        "last": raw.get("c", [None])[0],
+        "high_24h": (raw.get("h") or [None, None])[1],
+        "low_24h": (raw.get("l") or [None, None])[1],
+        "volume_24h": (raw.get("v") or [None, None])[1],
+        "open": raw.get("o"),
+    }
+```
+
+`get_ohlc` ([lines 43-59](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/market_data.py#L43-L59)) fetches hourly candlestick data and converts the raw arrays (timestamp, open, high, low, close, vwap, volume) into named dictionaries:
+
+```python
+def get_ohlc(pair: str, interval: int = 60) -> list[dict]:
+    data = _run(["ohlc", pair, "--interval", str(interval)])
+    candles = data.get(pair, []) if isinstance(data, dict) else data
+    return [
+        {
+            "timestamp": c[0],
+            "open": c[1],
+            "high": c[2],
+            "low": c[3],
+            "close": c[4],
+            "vwap": c[5],
+            "volume": c[6],
+        }
+        for c in candles
+        if isinstance(c, list) and len(c) >= 7
+    ]
+```
+
+The same module also contains `paper_buy` and `paper_sell` ([lines 75-98](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/market_data.py#L75-L98)), which execute simulated market orders through Kraken's paper trading engine. The `--yes` flag skips the confirmation prompt so the agent can run unattended.
+
+---
+
+## Step 3: The research layer (Qwen2.5-72B)
+
+`agent.py` starts by initializing a single Featherless client ([lines 15-18](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L15-L18)). Because Featherless implements the OpenAI API spec, you just swap the `base_url`:
+
+```python
+client = OpenAI(
+    api_key=FEATHERLESS_API_KEY,
+    base_url="https://api.featherless.ai/v1",
+)
+```
+
+The `call_model` function ([lines 21-31](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L21-L31)) is intentionally model-agnostic. It accepts a model ID as a parameter, which is how the router sends different tasks to different models without duplicating any API code:
+
+```python
+def call_model(model: str, system: str, user: str) -> str:
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        temperature=0.3,
+        max_tokens=1024,
+    )
+    return response.choices[0].message.content.strip()
+```
+
+`analyze_market` ([lines 34-69](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L34-L69)) uses the last 12 hourly candles and the current ticker to build a prompt for Qwen2.5-72B. The system prompt constrains it to a quantitative analyst role, and the user prompt explicitly asks it not to make a trade recommendation. The analysis is the input to the next model, so keeping the two tasks separate prevents the research model from anchoring the trading decision:
+
+```python
+def analyze_market(ticker: dict, ohlc: list[dict]) -> str:
+    recent_candles = ohlc[-12:] if len(ohlc) >= 12 else ohlc
+
+    ohlc_summary = "\n".join(
+        f"  O: {c.get('open')} H: {c.get('high')} L: {c.get('low')} "
+        f"C: {c.get('close')} Vol: {c.get('volume')}"
+        for c in recent_candles
+    )
+
+    prompt = f"""You are a financial market analyst. Analyze the following market data for {TRADING_PAIR} and extract key signals.
+
+Current ticker:
+- Ask: {ticker.get('ask')}
+- Bid: {ticker.get('bid')}
+- Last price: {ticker.get('last')}
+- 24h High: {ticker.get('high_24h')}
+- 24h Low: {ticker.get('low_24h')}
+- 24h Volume: {ticker.get('volume_24h')}
+
+Recent hourly OHLC candles (last 12):
+{ohlc_summary}
+
+Provide a concise structured analysis covering:
+1. Price trend (bullish/bearish/sideways) with evidence from candles
+2. Volatility assessment
+3. Volume analysis
+4. Support and resistance levels
+5. Key risk factors
+
+Keep your analysis factual and data-driven. Do not make a trade recommendation."""
+
+    return call_model(
+        RESEARCH_MODEL,
+        "You are a quantitative financial analyst. Be precise, data-driven, and concise.",
+        prompt,
+    )
+```
+
+---
+
+## Step 4: The trading decision layer (DeepSeek-V3.2)
+
+`make_trade_decision` ([lines 72-116](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L72-L116)) receives the Qwen analysis (not the raw market data) and passes it to DeepSeek-V3.2 along with the current paper account balance. The prompt includes three rules that enforce disciplined behaviour: only BUY with sufficient balance and a clear signal, only SELL when holding the asset, and HOLD when signals are mixed.
+
+DeepSeek is instructed to respond only with JSON:
+
+```python
+prompt = f"""You are an algorithmic trading agent making paper trading decisions. You must respond with valid JSON only.
+
+Market analysis for {TRADING_PAIR}:
+{analysis}
+
+Current paper account status:
+- USD balance: {usd_balance}
+- Holdings: {json.dumps(holdings, indent=2)}
+
+Trade budget: ${TRADE_SIZE_USD} USD per trade.
+
+Respond with this exact JSON structure:
+{{
+  "action": "BUY" | "SELL" | "HOLD",
+  "reasoning": "two to three sentence explanation referencing specific signals from the analysis",
+  "confidence": 0.0 to 1.0,
+  "risk_level": "low" | "medium" | "high"
+}}"""
+```
+
+The function then strips any markdown fences that the model might wrap around its JSON response before parsing ([lines 108-116](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L108-L116)):
+
+```python
+raw = raw.strip()
+if raw.startswith("```"):
+    raw = raw.split("```")[1]
+    if raw.startswith("json"):
+        raw = raw[4:]
+return json.loads(raw.strip())
+```
+
+---
+
+## Step 5: Executing paper trades
+
+`execute_trade` ([lines 119-135](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/agent.py#L119-L135)) converts the trade budget in USD to a BTC volume using the current last price, then routes to `paper_buy` or `paper_sell` accordingly. HOLD simply returns `None` and skips execution:
+
+```python
+def execute_trade(decision: dict, ticker: dict) -> dict | None:
+    action = decision.get("action", "HOLD")
+    last_price = float(ticker.get("last", 0))
+
+    if action == "HOLD" or last_price == 0:
+        return None
+
+    volume = round(TRADE_SIZE_USD / last_price, 6)
+
+    if action == "BUY":
+        return paper_buy(TRADING_PAIR, volume)
+    elif action == "SELL":
+        return paper_sell(TRADING_PAIR, volume)
+```
+
+A successful paper trade returns a confirmation from Kraken's engine:
+
+```json
+{
+  "action": "market_order_filled",
+  "cost": 479.24,
+  "fee": 1.25,
+  "mode": "paper",
+  "order_id": "PAPER-00001",
+  "pair": "BTCUSD",
+  "price": 79873.20,
+  "side": "buy",
+  "volume": 0.006
+}
+```
+
+---
+
+## Step 6: The web dashboard
+
+Running the agent as a CLI script works, but a dashboard lets you see all four steps and the full model outputs without reading terminal logs.
+
+`app.py` runs each step of the agent in a background thread and streams results to the browser using Server-Sent Events (SSE). The `run_agent_stream` function ([lines 18-50](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/app.py#L18-L50)) calls `emit()` after each step completes, which puts a typed JSON message into a queue:
+
+```python
+def run_agent_stream(q: queue.Queue):
+    def emit(type: str, **kwargs):
+        q.put({"type": type, **kwargs})
+
+    emit("step", index=1, label="Fetching live market data from Kraken...")
+    ticker = get_ticker(TRADING_PAIR)
+    ohlc = get_ohlc(TRADING_PAIR, interval=60)
+    paper_status = get_paper_status()
+    emit("market", ticker=ticker, paper=paper_status)
+
+    emit("step", index=2, label="Analyzing market data with Qwen2.5-72B...")
+    analysis = analyze_market(ticker, ohlc)
+    emit("analysis", text=analysis)
+
+    emit("step", index=3, label="Making trade decision with DeepSeek-V3.2...")
+    decision = make_trade_decision(analysis, paper_status)
+    emit("decision", **decision)
+
+    emit("step", index=4, label="Executing trade...")
+    trade_result = execute_trade(decision, ticker)
+    emit("trade", result=trade_result)
+
+    final_status = get_paper_status()
+    emit("complete", paper=final_status)
+```
+
+The `/api/run` route ([lines 68-85](https://github.com/Stephen-Kimoi/featherless-kraken-agent/blob/main/app.py#L68-L85)) drains that queue and yields each message as an SSE frame. The browser's `EventSource` API picks these up without any WebSocket complexity:
+
+```python
+@app.route("/api/run")
+def run_agent():
+    q = queue.Queue()
+    thread = threading.Thread(target=run_agent_stream, args=(q,), daemon=True)
+    thread.start()
+
+    def generate():
+        while True:
+            msg = q.get()
+            if msg is None:
+                break
+            yield f"data: {json.dumps(msg)}\n\n"
+
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
+```
+
+Start the server:
+
+```bash
+python app.py
+```
+
+Open [http://localhost:5000](http://localhost:5000). You will see the live BTC/USD price auto-refreshing every 15 seconds, your paper balance, and unrealized P&L at the top. Hit **Run Agent** to trigger the full pipeline and watch each step light up as it completes.
+
+---
+
+## Frequently Asked Questions
+
+**Q: Can I swap the models for other ones on Featherless?**
+Yes. Change `RESEARCH_MODEL` or `TRADING_MODEL` in your `.env` file to any model ID from the [Featherless catalogue](https://featherless.ai/models). The agent uses an OpenAI-compatible client so no code changes are needed — the new model loads on the next run.
+
+**Q: Does this agent use real money?**
+No. All trades go through Kraken CLI's built-in paper trading engine (`kraken paper`), which simulates market orders without touching your real account. You can reset the simulated balance at any time with `kraken paper reset --balance 10000 --currency USD --yes`.
+
+**Q: What trading pairs does Kraken CLI support for paper trading?**
+Any spot pair available on Kraken, including BTC/USD, ETH/USD, SOL/USD, and others. Change the `TRADING_PAIR` variable in `.env` to switch pairs. The agent's market data and execution code work the same regardless of the pair.
+
+**Q: Is this a good project for an AI hackathon?**
+Yes. The multi-model routing architecture demonstrates deliberate agent design, and the Kraken CLI paper trading engine lets you show live decision-making results to judges without any financial risk. This setup is particularly well-suited to [AI agent hackathons](https://lablab.ai/event) that focus on autonomous systems.
+
+**Q: How do I add a third model for news sentiment?**
+Call `call_model` with a third model ID before `analyze_market`, passing in news headlines from any financial news API. Feed the returned sentiment summary into the `analyze_market` prompt alongside the OHLC data so the research model has both price and sentiment context.
+
+---
+
+## Conclusion
+
+The key idea in this agent is separation of concerns at the model level. Qwen2.5-72B is strong at structured analysis over long context, which is exactly what you want when summarizing 12 hours of candlestick data. DeepSeek-V3.2 handles the decision, where reasoning under constraints (budget limits, position rules, confidence thresholds) matters more than breadth of knowledge.
+
+Featherless makes this routing practical. Both models run through the same OpenAI-compatible client and you can swap either for any of the [36,000+ models](https://featherless.ai/models) in their catalogue by changing a single line in `.env`. No infrastructure to manage, no GPU bills, no cold-start latency.
+
+From here you can extend the agent in several directions:
+
+- **Add more pairs** by changing `TRADING_PAIR` or running multiple agent instances in parallel
+- **Plug in a third model** for sentiment analysis of news headlines before the research step
+- **Tighten the decision rules** by adding position sizing logic or stop-loss conditions to the trading prompt
+- **Move to live trading** by removing the `paper` prefix from the Kraken CLI commands once you are satisfied with the paper results
+
+The full source code is at [github.com/Stephen-Kimoi/featherless-kraken-agent](https://github.com/Stephen-Kimoi/featherless-kraken-agent).
