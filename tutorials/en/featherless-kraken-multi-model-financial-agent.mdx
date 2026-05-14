@@ -28,6 +28,18 @@ By the end of this tutorial you will have:
 - Paper trading execution via Kraken CLI
 - A streaming Flask dashboard showing the analysis and decision as they arrive
 
+Here is a full walkthrough of the agent in action:
+
+<iframe
+  width="100%"
+  height="450"
+  src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+  title="Multi-Model Financial Research Agent Demo"
+  frameBorder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
 ---
 
 ## Prerequisites
@@ -350,7 +362,50 @@ Start the server:
 python app.py
 ```
 
-Open [http://localhost:5000](http://localhost:5000). You will see the live BTC/USD price auto-refreshing every 15 seconds, your paper balance, and unrealized P&L at the top. Hit **Run Agent** to trigger the full pipeline and watch each step light up as it completes.
+Open [http://localhost:5000](http://localhost:5000). This is what you will see on first load:
+
+![Dashboard initial state — live BTC/USD price, $10,000 paper balance, and empty analysis panels ready to run](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2e69f9b5-fd1b-47ed-5cf2-fd397c804b00/public)
+
+The top row shows three live stats that update every 15 seconds: the current BTC/USD last price with bid and ask spread, your paper account balance, and unrealized P&L across any open positions. The **Run Agent** button in the top right triggers the full pipeline.
+
+### The four-step pipeline
+
+Hit **Run Agent** and the four step indicators light up in sequence:
+
+![All four pipeline steps completed — Fetch market data, Analyze with Qwen2.5, Decide with DeepSeek, Execute paper trade](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dc0ca02e-469d-4a15-1667-2a3f2150b800/public)
+
+Each indicator maps directly to a function in the codebase:
+
+- **Step 1 — Fetch market data:** `get_ticker` and `get_ohlc` call the Kraken CLI to pull the current bid, ask, and last price alongside the last 12 hourly OHLC candles. `get_paper_status` reads the current paper account balance and open positions.
+- **Step 2 — Analyze with Qwen2.5:** `analyze_market` packages the ticker and candle data into a structured prompt and sends it to `Qwen/Qwen2.5-72B-Instruct` via the Featherless API. The model returns a full market analysis.
+- **Step 3 — Decide with DeepSeek:** `make_trade_decision` passes the Qwen analysis (not the raw data) to `deepseek-ai/DeepSeek-V3.2`. The model returns a JSON object with action, confidence, risk level, and reasoning.
+- **Step 4 — Execute paper trade:** `execute_trade` converts the USD trade budget to an asset volume and calls `paper_buy` or `paper_sell` via the Kraken CLI. If the decision is HOLD, this step is skipped.
+
+### Reading the market analysis
+
+The left panel shows the full Qwen2.5-72B output rendered as formatted markdown:
+
+![Market Analysis panel showing bullish trend, volatility assessment, and support/resistance levels identified by Qwen2.5-72B](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/74d0913a-f395-4363-f517-84e71424a500/public)
+
+The analysis is always structured around five sections. **Price Trend** identifies whether the market is bullish, bearish, or sideways, backed by specific candle evidence (higher highs and higher lows in this run). **Volatility Assessment** quantifies the 24-hour range and typical hourly candle range. **Volume Analysis** checks whether volume is confirming or contradicting the price move. **Support and Resistance Levels** gives the exact price levels where the model expects the market to react, derived from recent swing highs and lows in the candle data. **Key Risk Factors** flags macro, regulatory, and liquidity risks that could override the technical picture.
+
+This output becomes the sole input to the trading model in the next step — DeepSeek never sees the raw OHLC data, only this summary.
+
+### Reading the trade decision and paper trade result
+
+The right panel shows the DeepSeek-V3.2 decision and, if a trade was placed, the Kraken paper trade confirmation:
+
+![Trade Decision panel showing BUY at 75% confidence, Medium risk, with reasoning — and the Paper Trade Result confirming PAPER-00001 filled at $81,549](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bbf18f21-1880-44bb-afa0-3daf7b960100/public)
+
+The **action badge** shows BUY, SELL, or HOLD in color (green for BUY, red for SELL, amber for HOLD). Below it, **Confidence** is a 0-1 score the model assigns to its own certainty, and **Risk Level** reflects whether the trade setup is low, medium, or high risk given the current signals. The **reasoning box** gives the model's plain-language justification, always referencing specific signals from the Qwen analysis above.
+
+When a trade executes, the **Paper Trade Result** section below shows the Kraken confirmation: order ID, fill price, volume in BTC, total cost in USD, and the exchange fee. In this run, DeepSeek identified a clear bullish breakout approaching resistance at $82,017, placed a BUY for 0.006132 BTC at $81,549, costing $500.06 plus a $1.30 fee.
+
+Here is the completed dashboard after a full successful run:
+
+![Completed run — all steps green, paper balance updated to $10,000.42, BUY decision executed, P&L tracking active](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5280f944-5b4e-4709-8311-00c3d0b7ff00/public)
+
+The paper balance has moved from $10,000.00 to $10,000.42, reflecting the unrealized gain on the open BTC position as price continued to rise after the trade was placed. All four step indicators are green, confirming a clean end-to-end run.
 
 ---
 
