@@ -1,6 +1,6 @@
 ---
-title: "Build a Multi-Model Financial Research Agent with Featherless AI and Kraken CLI"
-description: "Learn how to build a financial research agent that routes tasks to specialized open-source LLMs via Featherless AI and executes paper trades through Kraken CLI, with a live web dashboard."
+title: "Build a Multi-Model Financial Research Agent for AI Hackathons: Featherless AI and Kraken CLI"
+description: "AI hackathon tutorial: build a multi-model financial research agent using Featherless AI and Kraken CLI, with live market data analysis, model routing, and paper trading."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/placeholder-featherless-kraken/public"
 authorUsername: "stevekimoi"
 ---
@@ -10,6 +10,8 @@ authorUsername: "stevekimoi"
 Not all financial tasks need the same model. Analyzing 12 hours of OHLC candles and identifying support levels is a different cognitive job from taking that analysis and committing to a BUY, SELL, or HOLD decision with real money on the line. Yet most AI trading tutorials pick a single model and hand it both jobs.
 
 This tutorial takes a different approach: two specialized open-source LLMs, each doing what it does best, wired together through [Featherless AI](https://featherless.ai) and [Kraken CLI](https://github.com/krakenfx/kraken-cli).
+
+This multi-model routing pattern is also a strong foundation for an AI hackathon project, where judges reward systems that demonstrate deliberate reasoning about which model solves which problem. If you are looking for a competition to test it in, [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons) include tracks focused on autonomous agents and financial AI systems.
 
 **Qwen2.5-72B** handles research. It reads live ticker data and hourly OHLC candles from Kraken, then produces a structured market analysis covering trend, volatility, support and resistance levels, and key risks.
 
@@ -22,7 +24,7 @@ The whole thing runs behind a web dashboard where you can hit **Run Agent** and 
 By the end of this tutorial you will have:
 
 - A working multi-model agent that fetches live BTC/USD data and reasons about it
-- A Featherless API client that can swap between 36,000 models by changing one environment variable
+- A Featherless API client that can swap between [36,000+ models](https://featherless.ai/models) by changing one environment variable
 - Paper trading execution via Kraken CLI
 - A streaming Flask dashboard showing the analysis and decision as they arrive
 
@@ -50,7 +52,7 @@ pip install -r requirements.txt
 
 The `requirements.txt` contains two dependencies:
 
-```
+```text
 openai>=1.0.0
 python-dotenv>=1.0.0
 ```
@@ -181,16 +183,27 @@ def analyze_market(ticker: dict, ohlc: list[dict]) -> str:
         for c in recent_candles
     )
 
-    prompt = f"""You are a financial market analyst. Analyze the following market data for {TRADING_PAIR}...
+    prompt = f"""You are a financial market analyst. Analyze the following market data for {TRADING_PAIR} and extract key signals.
 
-    Provide a concise structured analysis covering:
-    1. Price trend (bullish/bearish/sideways) with evidence from candles
-    2. Volatility assessment
-    3. Volume analysis
-    4. Support and resistance levels
-    5. Key risk factors
+Current ticker:
+- Ask: {ticker.get('ask')}
+- Bid: {ticker.get('bid')}
+- Last price: {ticker.get('last')}
+- 24h High: {ticker.get('high_24h')}
+- 24h Low: {ticker.get('low_24h')}
+- 24h Volume: {ticker.get('volume_24h')}
 
-    Keep your analysis factual and data-driven. Do not make a trade recommendation."""
+Recent hourly OHLC candles (last 12):
+{ohlc_summary}
+
+Provide a concise structured analysis covering:
+1. Price trend (bullish/bearish/sideways) with evidence from candles
+2. Volatility assessment
+3. Volume analysis
+4. Support and resistance levels
+5. Key risk factors
+
+Keep your analysis factual and data-driven. Do not make a trade recommendation."""
 
     return call_model(
         RESEARCH_MODEL,
@@ -341,11 +354,30 @@ Open [http://localhost:5000](http://localhost:5000). You will see the live BTC/U
 
 ---
 
+## Frequently Asked Questions
+
+**Q: Can I swap the models for other ones on Featherless?**
+Yes. Change `RESEARCH_MODEL` or `TRADING_MODEL` in your `.env` file to any model ID from the [Featherless catalogue](https://featherless.ai/models). The agent uses an OpenAI-compatible client so no code changes are needed — the new model loads on the next run.
+
+**Q: Does this agent use real money?**
+No. All trades go through Kraken CLI's built-in paper trading engine (`kraken paper`), which simulates market orders without touching your real account. You can reset the simulated balance at any time with `kraken paper reset --balance 10000 --currency USD --yes`.
+
+**Q: What trading pairs does Kraken CLI support for paper trading?**
+Any spot pair available on Kraken, including BTC/USD, ETH/USD, SOL/USD, and others. Change the `TRADING_PAIR` variable in `.env` to switch pairs. The agent's market data and execution code work the same regardless of the pair.
+
+**Q: Is this a good project for an AI hackathon?**
+Yes. The multi-model routing architecture demonstrates deliberate agent design, and the Kraken CLI paper trading engine lets you show live decision-making results to judges without any financial risk. This setup is particularly well-suited to [AI agent hackathons](https://lablab.ai/event) that focus on autonomous systems.
+
+**Q: How do I add a third model for news sentiment?**
+Call `call_model` with a third model ID before `analyze_market`, passing in news headlines from any financial news API. Feed the returned sentiment summary into the `analyze_market` prompt alongside the OHLC data so the research model has both price and sentiment context.
+
+---
+
 ## Conclusion
 
 The key idea in this agent is separation of concerns at the model level. Qwen2.5-72B is strong at structured analysis over long context, which is exactly what you want when summarizing 12 hours of candlestick data. DeepSeek-V3.2 handles the decision, where reasoning under constraints (budget limits, position rules, confidence thresholds) matters more than breadth of knowledge.
 
-Featherless makes this routing practical. Both models run through the same OpenAI-compatible client and you can swap either for any of the 36,000 models in their catalogue by changing a single line in `.env`. No infrastructure to manage, no GPU bills, no cold-start latency.
+Featherless makes this routing practical. Both models run through the same OpenAI-compatible client and you can swap either for any of the [36,000+ models](https://featherless.ai/models) in their catalogue by changing a single line in `.env`. No infrastructure to manage, no GPU bills, no cold-start latency.
 
 From here you can extend the agent in several directions:
 
