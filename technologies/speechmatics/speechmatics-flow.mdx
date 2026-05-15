@@ -1,0 +1,64 @@
+---
+title: "Speechmatics Flow"
+author: "stevekimoi"
+description: "Speechmatics Flow is a voice agent API that combines speech-to-text, LLM, and TTS into a single real-time pipeline for building conversational AI agents with smart turn detection and interruption handling."
+---
+
+# Speechmatics Flow
+
+[Speechmatics Flow](https://www.speechmatics.com/flow) is a speech-to-speech API for building real-time conversational AI agents. Announced in July 2024, it combines Speechmatics' speech recognition with an LLM and text-to-speech into a single API connection, removing the need to stitch together separate transcription, inference, and synthesis services. Flow handles the real-time challenges of two-way voice conversations, including turn detection, interruption management, and multi-speaker isolation.
+
+| General | |
+|---------|--|
+| **Announced** | July 30, 2024 |
+| **Developer** | Speechmatics |
+| **Type** | Voice agent API (speech-to-speech) |
+| **License** | Commercial API |
+| **Documentation** | [docs.speechmatics.com/voice-agents-flow](https://docs.speechmatics.com/voice-agents-flow) |
+| **GitHub** | [speechmatics/speechmatics-flow](https://github.com/speechmatics/speechmatics-flow) |
+
+---
+
+## Core Features
+
+- **End-to-end speech-to-speech pipeline**: STT, LLM, and TTS via a single API call.
+- **Smart turn detection**: uses a small language model (SLM) to decide when a speaker's turn has ended, reducing false triggers.
+- **Interruption handling**: ignores unintentional interruptions, handles intentional ones gracefully.
+- **Speaker locking**: isolates a target speaker and filters out background voices in multi-speaker environments.
+- **Function calling**: connects agents to external tools, APIs, databases, and validation services.
+- **Internet search**: agents can query live web data (weather, news) during conversations.
+- **55+ language support**: same multilingual coverage as Speechmatics' STT API.
+- **Conversation moderation**: real-time transcript analysis to flag or filter content.
+- **Flexible deployment**: private SaaS cloud or on-premises.
+- **Security**: ISO/IEC 27001:2022 certified, GDPR compliant.
+
+---
+
+## Pricing
+
+| Tier | Included |
+|------|----------|
+| Free | Up to 50 hours/month |
+| Enterprise | Custom pricing, contact Speechmatics |
+
+---
+
+## Tools and Resources
+
+- **[Flow API Reference](https://docs.speechmatics.com/flow-api-ref)**: full WebSocket and configuration reference.
+- **[Flow Python SDK](https://github.com/speechmatics/speechmatics-flow)**: Python client and CLI for building voice agents.
+- **[Flow Configuration Docs](https://docs.speechmatics.com/flow/config)**: LLM configuration, persona settings, and function calling setup.
+- **[Developer Portal](https://portal.speechmatics.com)**: API key management.
+
+---
+
+## Ecosystem and Integrations
+
+- Works with [Vapi](https://vapi.ai) for no-code voice agent deployments.
+- Works with [LiveKit](https://livekit.io) for WebRTC-based real-time infrastructure.
+- Works with [Pipecat](https://www.pipecat.ai) for open-source voice pipeline orchestration.
+- Supports contact center, healthcare, drive-thru, educational assistant, and smart device use cases.
+
+---
+
+Get started with the [free tier (50 hours/month)](https://docs.speechmatics.com/voice-agents-flow) or contact Speechmatics for enterprise access at flow-help@speechmatics.com.
