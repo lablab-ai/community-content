@@ -1,0 +1,87 @@
+---
+title: "Ink"
+author: "stevekimoi"
+description: "Ink is Kraken's EVM-compatible Layer-2 blockchain built on the OP Stack, offering 1-second block times, sub-cent transaction fees, and Superchain interoperability with Base, Soneium, and 29+ other chains."
+---
+
+# Ink
+
+[Ink](https://inkonchain.com) is Kraken's dedicated DeFi blockchain, built on the OP Stack (Optimism's open-source rollup framework) and operating as an optimistic rollup anchored to Ethereum. It bundles transactions off-chain and posts compressed proofs to Ethereum for final settlement, delivering 1-second block times, sub-cent fees, and full EVM equivalence. Ink is a member of the Superchain, sharing cross-chain messaging infrastructure with Base, Worldchain, Soneium, and 29+ other OP Stack chains.
+
+| General | |
+|---------|--|
+| **Developer** | Kraken (Payward Inc.) |
+| **Type** | EVM-compatible L2 (optimistic rollup) |
+| **Stack** | OP Stack (Optimism) |
+| **Chain ID** | 57073 |
+| **Native Currency** | ETH |
+| **License** | MIT (OP Stack) |
+| **Documentation** | [docs.inkonchain.com](https://docs.inkonchain.com) |
+| **GitHub** | [inkonchain/node](https://github.com/inkonchain/node) |
+| **Block Explorer** | [explorer.inkonchain.com](https://explorer.inkonchain.com) |
+
+---
+
+## Core Features
+
+- **EVM equivalence**: any Solidity contract that deploys on Ethereum deploys on Ink without modification.
+- **1-second block times**: with sub-second block production in active development.
+- **Sub-cent transaction fees**: significantly lower cost than Ethereum mainnet.
+- **EIP-7702 support**: compatible with Ethereum's account abstraction improvements.
+- **Superchain interoperability**: cross-chain communication with Base, Soneium, Worldchain, and 29+ chains.
+- **Self-hosted nodes**: run your own Ink node via the open-source node repository.
+
+---
+
+## Network Information
+
+**Mainnet:**
+
+| Parameter | Value |
+|-----------|-------|
+| Chain ID | 57073 |
+| RPC (HTTPS) | `https://rpc-gel.inkonchain.com` |
+| RPC (WSS) | `wss://rpc-gel.inkonchain.com` |
+| Alternate RPC | `https://rpc-qnd.inkonchain.com` |
+| Block Explorer | `https://explorer.inkonchain.com` |
+
+**Testnet (Ink Sepolia):**
+
+| Parameter | Value |
+|-----------|-------|
+| Chain ID | 763373 |
+| RPC (HTTPS) | `https://rpc-gel-sepolia.inkonchain.com` |
+| Alternate RPC | `https://rpc-qnd-sepolia.inkonchain.com` |
+| Block Explorer | `https://explorer-sepolia.inkonchain.com` |
+
+---
+
+## Developer Tooling
+
+- **Smart contract frameworks**: Foundry, Hardhat, and Remix are all documented and supported.
+- **Client libraries**: Ethers.js v6 and Viem (with `inkSepolia` chain config) work out of the box.
+- **Blockscout Explorer API**: REST and GraphQL available at [explorer.inkonchain.com/api-docs](https://explorer.inkonchain.com/api-docs).
+- **Third-party RPC**: QuickNode and dRPC support Ink with higher-throughput paid tiers.
+- **Testnet faucet**: available for testnet ETH to fund development and testing.
+
+---
+
+## Tools and Resources
+
+- **[Ink Documentation](https://docs.inkonchain.com)**: network info, developer guides, and tooling reference.
+- **[Ink Node](https://github.com/inkonchain/node)**: run a self-hosted Ink node.
+- **[Block Explorer](https://explorer.inkonchain.com)**: Blockscout-based explorer with API access.
+- **[Ink Docs GitHub](https://github.com/inkonchain/docs)**: open-source documentation repository.
+- **[Builder Program](https://inkonchain.com)**: grant opportunities for projects building on Ink.
+
+---
+
+## Ecosystem and Integrations
+
+- Member of the Optimism Superchain, sharing cross-chain messaging infrastructure with Base, Soneium, and Worldchain.
+- Standard Web3 tooling (MetaMask, Foundry, Hardhat) works immediately with Ink's public RPC endpoints.
+- Kraken's centralized exchange infrastructure integrates with Ink to let Kraken users bridge assets to DeFi without relinquishing custody.
+
+---
+
+Connect to Ink mainnet at `https://rpc-gel.inkonchain.com` (Chain ID: 57073) and start with the [Ink documentation](https://docs.inkonchain.com) to deploy your first contract.

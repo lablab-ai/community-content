@@ -1,0 +1,87 @@
+---
+title: "Kraken REST API"
+author: "stevekimoi"
+description: "Kraken's REST API provides programmatic access to spot and futures markets, account management, and order execution via HMAC-SHA512 authenticated HTTPS endpoints with a tiered rate limiting system."
+---
+
+# Kraken REST API
+
+The [Kraken REST API](https://docs.kraken.com/api/docs/guides/global-intro/) provides HTTP-based access to Kraken's spot and futures markets, account data, and trading operations. It covers public market data endpoints (no authentication required) and private endpoints for account management and order execution (HMAC-SHA512 authenticated). The API supports Spot, Futures, Custody, and Embed products, each with separate base URLs.
+
+| General | |
+|---------|--|
+| **Developer** | Kraken (Payward Inc.) |
+| **Type** | REST API |
+| **License** | Commercial API (free with Kraken account) |
+| **Documentation** | [docs.kraken.com](https://docs.kraken.com/api/docs/guides/global-intro/) |
+| **GitHub** | [krakenfx/api-go](https://github.com/krakenfx/api-go) |
+
+---
+
+## Core Features
+
+- **Public and private endpoints**: public market data requires no authentication; private endpoints use HMAC-SHA512 signing.
+- **Multiple product APIs**: Spot, Futures, Custody, and Embed each have dedicated endpoints.
+- **Tiered rate limiting**: per-API-key counter with decay rates based on account tier (Intermediate or Pro).
+- **Subaccount support**: master accounts can manage subaccounts programmatically.
+- **Earn and staking**: endpoints for managing yield-generating positions.
+
+---
+
+## Endpoints
+
+**Spot REST base URL:** `https://api.kraken.com/0/`
+
+| Category | Endpoints |
+|----------|-----------|
+| Public | Ticker, OHLC, order book, recent trades, spreads, asset pairs, system status |
+| Private: Account | Balance, trade balance, open/closed orders, trade history, ledger entries |
+| Private: Trading | Add order, amend order, cancel order, cancel all orders, batch orders |
+| Private: Funding | Deposit addresses, deposit methods, withdrawal info, withdraw funds |
+| Private: Earn | Staking and yield positions |
+
+---
+
+## Authentication
+
+Spot REST authentication uses HMAC-SHA512:
+
+1. Generate a nonce (always-increasing unsigned 64-bit integer; millisecond UNIX timestamps recommended)
+2. Compute: `SHA256(nonce + POST body data)`
+3. Compute: `HMAC-SHA512(URI path + SHA256 result, base64-decoded private key)`
+4. Send `API-Key` header (public key) and `API-Sign` header (base64-encoded HMAC result)
+
+The private key is never transmitted directly.
+
+---
+
+## Rate Limits (Spot REST)
+
+| Tier | Max Counter | Decay Rate |
+|------|-------------|------------|
+| Intermediate | 20 | 0.5 per second |
+| Pro | 20 | 1 per second |
+
+Ledger and trade history calls add 4 to the counter; all other private calls add 1. Order placement and cancellation use a separate trading rate limiter. Exceeding limits returns `EAPI:Rate limit exceeded`. Rate limits are shared across REST, WebSocket, and FIX for the same API key.
+
+---
+
+## Tools and Resources
+
+- **[API Reference Center](https://docs.kraken.com/api/docs/guides/global-intro/)**: full endpoint documentation for all products.
+- **[Official Go SDK](https://github.com/krakenfx/api-go)**: MIT-licensed, covers Spot and Derivatives REST and WebSocket.
+- **[Python SDK (community)](https://github.com/btschwertfeger/python-kraken-sdk)**: full-featured community SDK with async support and built-in WebSocket handlers.
+- **[Kraken CLI](https://github.com/krakenfx/kraken-cli)**: command-line access to REST endpoints without writing code.
+- **[REST Quickstart Examples](https://docs.kraken.com/api/docs/guides/spot-examples/)**: code samples for common operations.
+
+---
+
+## Ecosystem and Integrations
+
+- API keys are generated in Kraken account settings with configurable permissions (read-only, trading, funding).
+- Commercial redistribution of Kraken market data requires prior approval from marketdata@kraken.com.
+- Community SDKs available for Python, Go, C++, and Julia (listed in official documentation).
+
+---
+
+Generate API keys in your [Kraken account settings](https://www.kraken.com/u/security/api) and follow the [REST quickstart](https://docs.kraken.com/api/docs/guides/spot-examples/) to place your first programmatic order.
