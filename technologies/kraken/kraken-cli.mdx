@@ -1,0 +1,79 @@
+---
+title: "Kraken CLI"
+author: "stevekimoi"
+description: "Kraken CLI is an open-source, single-binary command-line tool for interacting with Kraken's trading API, supporting spot, futures, xStocks, paper trading, real-time WebSocket streams, and a built-in MCP server for AI agent integration."
+---
+
+# Kraken CLI
+
+[Kraken CLI](https://github.com/krakenfx/kraken-cli) is an open-source command-line execution engine for Kraken's markets, launched on March 11, 2026. Built under the MIT license, it gives developers and AI agents direct access to market data, account management, and order execution across spot, futures, xStocks, and forex through 151 commands. It also ships a built-in Model Context Protocol (MCP) server, making it directly usable in AI coding tools like Claude Code, Cursor, and Gemini CLI.
+
+| General | |
+|---------|--|
+| **Released** | March 11, 2026 (v0.3.2 as of April 2026) |
+| **Developer** | Kraken (Payward Inc.) |
+| **Type** | Open-source CLI / MCP server |
+| **License** | MIT |
+| **GitHub** | [krakenfx/kraken-cli](https://github.com/krakenfx/kraken-cli) |
+| **Documentation** | [kraken.com/kraken-cli](https://www.kraken.com/kraken-cli) |
+
+---
+
+## Core Features
+
+- **151 commands** covering market data, account, trading, funding, futures, and WebSocket streaming.
+- **Paper trading**: sandbox mode using live prices with no real funds required and no Kraken account needed.
+- **Built-in MCP server**: launch with `kraken mcp` to expose commands as tools in any MCP-compatible AI agent.
+- **Real-time WebSocket streaming**: live tickers, order books, trades, and Level 3 data from the command line.
+- **50 pre-built Agent Skills** for common trading workflows, ready to use in any AI agent.
+- **Dead man's switch**: auto-cancels open orders on disconnect to prevent unintended exposure.
+- **Least-privilege API keys**: supports scoped API keys; secrets are never logged.
+- **Binary verification**: release binaries are signed with minisign for supply chain integrity.
+
+---
+
+## Command Groups
+
+| Group | Description |
+|-------|-------------|
+| Market Data | Ticker, order book, OHLC, recent trades, spreads (public, no auth) |
+| Account | Balances, open orders, trade history, ledgers, positions |
+| Trading | Buy/sell, batch orders, amend/cancel (spot, xStocks, forex) |
+| Funding | Deposits, withdrawals, wallet transfers |
+| Futures | Orders, positions, paper trading, all 8 order types |
+| WebSocket | Real-time streaming for tickers, trades, order books, Level 3 |
+| MCP Server | `kraken mcp` starts the MCP server over stdio |
+
+---
+
+## Installation
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf \
+  https://github.com/krakenfx/kraken-cli/releases/latest/download/kraken-cli-installer.sh | sh
+```
+
+Alternatively, install via Rust: `cargo install --git https://github.com/krakenfx/kraken-cli`
+
+Pre-built binaries for macOS and Linux are available on [GitHub Releases](https://github.com/krakenfx/kraken-cli/releases).
+
+---
+
+## Tools and Resources
+
+- **[GitHub Repository](https://github.com/krakenfx/kraken-cli)**: source code, releases, and issue tracker.
+- **[Kraken CLI Product Page](https://www.kraken.com/kraken-cli)**: official overview and getting started guide.
+- **[Kraken API Docs](https://docs.kraken.com)**: underlying REST and WebSocket API documentation.
+
+---
+
+## Ecosystem and Integrations
+
+- MCP server integrates natively with Claude Code, Cursor, GitHub Copilot, Gemini CLI, Goose, and Codex.
+- Paper trading mode works without a Kraken account for development and testing.
+- Live trading requires a Kraken account and API keys with appropriate permissions.
+- Public market data commands require no authentication and no account.
+
+---
+
+Install the CLI and run `kraken --help` to explore all commands, or `kraken mcp` to start the MCP server for AI agent access.
