@@ -1,0 +1,95 @@
+---
+title: "OpenAI Ends Azure Exclusivity, DeepSeek V4 Ships Open-Source, Gemini Deploys to 4M Cars"
+description: "OpenAI brought its models to AWS in late April 2026, ending years of Microsoft exclusivity. DeepSeek V4 launched open-source under MIT, Google Gemini rolled out to 4 million GM vehicles, and Meta posted record earnings driven by AI engagement."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/lablab-static/this-week-in-ai-cover.jpg"
+authorUsername: "stevekimoi"
+---
+
+# OpenAI Ends Azure Exclusivity, DeepSeek V4 Ships Open-Source, Gemini Deploys to 4M Cars
+
+*This Week in AI: April 27–May 1, 2026*
+
+The week of April 27 was the one where AI stopped being a lab experiment and started turning up in car dashboards, quarterly earnings calls, and enterprise cloud contracts. Three companies reshaped the distribution layer for AI in five days, and an open-source model from China quietly reset cost expectations for everyone building agentic systems.
+
+## Key Takeaways
+
+- **OpenAI on AWS:** OpenAI's models are now available on Amazon Bedrock after ending Azure exclusivity, giving enterprises a multi-cloud path to frontier models without separate API contracts.
+- **DeepSeek V4:** A 1.6T-parameter open-weight model launched under MIT license at sub-cent-per-thousand-token pricing, and it resets the reference point for cost-sensitive agentic pipelines.
+- **Google Gemini in cars:** Gemini replaced Google Assistant in 4 million GM vehicles via a single OTA update, the largest single LLM deployment into a physical consumer product to date.
+- **Meta earnings:** Meta posted $56.3B in Q1 revenue (+33% YoY), with Muse Spark driving double-digit gains in AI session engagement and capex guidance raised to $145B for the year.
+- **Grok 4.3 GA:** xAI's Grok 4.3 hit general availability with a 40% price cut, native video input, and document generation, making it one of the most cost-competitive frontier models for production use.
+
+---
+
+## The Distribution Shift
+
+### OpenAI Brings Its Models to AWS
+
+On April 28, [OpenAI and Amazon Web Services announced an expanded partnership](https://openai.com/index/openai-on-aws/) making GPT-5.4, Codex, and Managed Agents available via Amazon Bedrock in limited preview. The deal ends nearly seven years of Microsoft Azure being the only hyperscaler permitted to host OpenAI's proprietary models. For enterprises already inside the AWS ecosystem, this removes the friction of a separate OpenAI contract; frontier models now sit inside the same procurement and compliance layer as everything else in their cloud stack. The move signals OpenAI's shift from a Microsoft-dependent research lab to a full-stack enterprise platform competing for cloud spend across all three major hyperscalers.
+
+---
+
+## Open Source Closes the Gap
+
+### DeepSeek V4 Ships Under MIT
+
+DeepSeek released V4 on April 24, with the bulk of developer adoption and analysis landing the week of April 27. [V4-Pro has 1.6T total parameters with 49B active; V4-Flash has 284B total with 13B active](https://api-docs.deepseek.com/news/news260424). Both support a 1M token context window and are fully open-weight under MIT license, with weights on Hugging Face. V4-Pro is priced at $0.145/$3.48 per million input/output tokens on the API; V4-Flash is cheaper still. On STEM and coding benchmarks, V4 beats all current open models and matches top closed-source ones. If you are building a cost-sensitive agentic pipeline, the math just changed significantly.
+
+---
+
+## AI Meets the Physical World
+
+### Gemini Rolls Out to 4 Million GM Vehicles
+
+On April 30, [Google announced Gemini is replacing Google Assistant in cars with Google built-in](https://techcrunch.com/2026/04/30/googles-gemini-ai-assistant-is-hitting-the-road-in-millions-of-vehicles/), pushing an OTA update to approximately 4 million Cadillac, Chevrolet, Buick, and GMC vehicles sold since 2020. Polestar received the update the same day. The assistant handles natural-language navigation, EV charging guidance, real-time car manual queries, and media. This is the largest single deployment of a frontier LLM into a physical consumer product environment to date, and it validates replacing rule-based voice assistants with LLMs in embedded, real-time contexts. If you are building outside the browser, this week proved the deployment model works.
+
+### Meta Posts Record Earnings, Credits Muse Spark
+
+Meta's [Q1 2026 report](https://www.cnbc.com/2026/04/29/meta-q1-earnings-report-2026.html) showed $56.3B in revenue (+33% YoY) and $26.8B in net income. Zuckerberg attributed double-digit gains in Meta AI sessions per user to Muse Spark, Meta's first proprietary closed-weight foundation model launched April 8. The company raised full-year capex guidance to $125B–$145B, citing higher component pricing and expanded data center build. With Muse Spark rolling out across WhatsApp, Instagram, Facebook, and Meta AI glasses in the coming weeks, a multi-billion-user surface is getting a frontier model upgrade, worth tracking for anyone building social or messaging integrations.
+
+---
+
+## The Model Race
+
+### xAI Completes Grok 4.3 General Availability
+
+xAI [completed the full GA rollout of Grok 4.3](https://venturebeat.com/technology/xai-launches-grok-4-3-at-an-aggressively-low-price-and-a-new-fast-powerful-voice-cloning-suite) on April 30, bringing native video input, slide and PDF generation, and a 1M token context window to the API. The accompanying price cut, roughly 40%, landed at $1.25/$2.50 per million input/output tokens, making it one of the most cost-competitive frontier models available for agentic use at scale. A new Text-to-Speech and Speech-to-Text API also hit GA the same day.
+
+---
+
+## Quick Hits
+
+- **Meta Business AI at 10M conversations/week:** [Meta's business-facing AI tools now handle 10 million conversations per week](https://techcrunch.com/2026/04/30/meta-says-its-business-ai-now-facilitates-10-million-conversations-a-week/) across customer service and lead gen. Monetization is coming, relevant context for anyone building in that vertical.
+- **Cursor in talks for $2B round at $50B+ valuation:** [CNBC reports](https://www.cnbc.com/2026/04/19/cursor-ai-2-billion-funding-round.html) Cursor is in talks with Andreessen Horowitz for a $2B raise at over $50B, signaling that infrastructure-adjacent AI tools now command company-scale multiples.
+- **Google AI Mode crosses 1B monthly queries:** Google's AI Mode hit 1 billion monthly queries and 75 million daily active users, making it [one of the fastest-adopted features in Search history](https://www.marketingprofs.com/opinions/2026/54640/ai-update-may-1-2026-ai-news-and-views-from-the-past-week).
+- **OpenAI achieves FedRAMP authorization:** OpenAI's products gained FedRAMP 20x Moderate authorization in late April, opening US government procurement channels for enterprise customers.
+- **Gemini comes to Google TV:** A new "Create" button on TCL TVs lets users [experiment with image and video generation](https://techcrunch.com/2026/04/29/more-gemini-features-are-coming-to-google-tv/) from Gemini directly on their television.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
+
+---
+
+SOCIAL POST BRIEF — May 4, 2026
+
+Format: Carousel (Instagram/LinkedIn)
+Post on: Same day as article publication (Monday, May 4)
+
+Slide 1 — Cover: "What happened in AI this week 🧠" + April 27–May 1, 2026
+Slide 2 — OpenAI is now on AWS: Frontier models hit Amazon Bedrock, ending Azure exclusivity after 7 years
+Slide 3 — DeepSeek V4 open-sourced under MIT: 1.6T params, frontier-level benchmarks, sub-cent pricing
+Slide 4 — Gemini in 4 million cars: Google's LLM replaces Google Assistant in GM vehicles via OTA
+Slide 5 — Meta Q1: $56.3B revenue, +33% YoY — Muse Spark drives record AI engagement
+Slide 6 — Grok 4.3 hits GA: 40% price cut, video input, document gen from the API
+Last slide — CTA: "Full breakdown at lablab.ai → link in bio"
+
+Stories to cover (pick top 4–5 for carousel):
+1. OpenAI ends Azure exclusivity, expands to AWS
+2. DeepSeek V4 open-sourced under MIT license
+3. Google Gemini deployed to 4 million GM vehicles
+4. Meta posts record Q1 earnings, credits Muse Spark
+5. xAI Grok 4.3 hits general availability with 40% price cut
+
+Tone: Clean, minimal, no buzzwords. Reference: @evolving.ai on Instagram.
+Template: Soto to create reusable carousel template for this series.
