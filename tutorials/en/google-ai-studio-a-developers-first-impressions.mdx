@@ -1,0 +1,139 @@
+---
+title: "Google AI Studio: A Developer's First Impressions"
+description: "Honest benchmarking of Google AI Studio's vibe coding. Built a Thread to Video Synthesizer with zero design prompting to see what you actually get raw. Spoiler: purple gradients. Learn what works, what's generic, and how to prompt for better UI using shadcn, Tailwind, and proper design systems."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8d489cfe-8b3b-428e-9156-f32c383d1600/full"
+authorUsername: "sanchayt743"
+---
+
+# Google AI Studio: A Developer's First Impressions
+
+I spent an afternoon with Google AI Studio, and it's one of those tools where you immediately think, why have I been spinning up boilerplate when I could just describe what I want? Here's what I built, what surprised me, and what you should know.
+
+## First Look at Google AI Studio
+
+![Google AI Studio Homepage](https://iili.io/KD8F3g9.png)
+
+First thing you see: "The fastest way from prompt to production with Gemini." Bold claim. I've been seeing a lot of "I built this in 10 minutes with AI Studio" posts lately, usually with that same purple gradient aesthetic everyone's talking about. So I wanted to benchmark what you actually get raw, without any design prompting, just pure functional requirements. Skip the create-react-app ceremony, skip package.json hell, skip the "let me just wire up this one thing" that turns into three hours.
+
+## Building Something Real - Exploring AI Studio Through Hands-On Experience
+
+### The Gallery - What's Possible Here
+
+![Gallery and Templates](https://iili.io/KD8FKJe.png)
+
+The gallery shows what's actually possible: RAG solutions for document chat, location-aware conversations with Google Maps grounding, video generators. Examples are remixable, you can see their prompts and code structure. I wanted to build a Thread to Video Synthesizer: take Twitter threads, break them into key points, generate short videos with voice-overs.
+
+### Vibe Coding - Describing Instead of Coding
+
+![Build Interface with Prompt](https://iili.io/KD83yx4.png)
+
+I kept my prompt purely functional, no design guidance, to see what AI Studio delivers raw:
+
+"Build an app that:
+1. Takes a Twitter thread URL or text
+2. Breaks it into 5 key points
+3. Generates a 6-second Veo video for each point with voice-over
+4. Adds trendy captions and transitions
+5. Exports all 5 videos ready to upload"
+
+Selected Gemini 2.5 Pro, hit Build, waited while it generated code across multiple files.
+
+### The API Setup Reality Check
+
+![API Key Creation - Initial](https://iili.io/KD8FHs2.png)
+
+![API Key Creation - Completed](https://iili.io/KD8Fug1.png)
+
+Before running, you need an API key. Create a Google Cloud project, name your key, done. Free tier is generous: 15 req/min, 1M tokens per chat, 1500 chats/day. Context caching and Cloud Run deployment require billing. More friction than the "fastest to production" pitch suggests.
+
+### What the AI Actually Built
+
+![Generated App Preview](https://iili.io/KD8F55g.png)
+
+Okay, here's what it built. The generated output is a split-screen interface. On the left, you've got this code assistant panel showing exactly what it built. On the right, a live preview of the actual app running.
+
+The code assistant section breaks down what it did:
+
+1. **Dashboard Layout** - It created a persistent sidebar and main content area. Smart, that's the pattern you'd use for any multi-section app.
+
+2. **Enhanced Components** - UI elements with animations, proper spacing, cohesive color scheme. This isn't bare-bones HTML, it's styled, just generic-styled.
+
+3. **Dynamic Loader** - A progress bar with step-by-step messages. So while videos are generating, users see feedback. Good UX thinking.
+
+4. **Streamlined Experience** - It removed the initial API key selection screen, assuming you've already configured that. Cleaner onboarding.
+
+Below that, a list of generated files: `index.html`, `App.tsx`, `Dashboard.tsx`, `types.ts`, and various component files, all with green checkmarks. There are controls for checkpoints, view diff, and restore, version control built right in.
+
+Now look at the right side, the actual app preview. It's got a purple gradient icon with "Video Synth" branding. The description text explains what it does. Then Section 1: "Paste Your Content" with a large text input area. Section 2: "Customize Branding & Style" with options for brand logo upload (watermark), brand color picker (defaults to that purple `#8B5CF6`), and voice-over style dropdown showing "Kore - Clear & Engaging."
+
+At the bottom, a big purple "Synthesize Videos" button.
+
+Let's be real about what happened here: the AI defaulted to the classic "AI-generated app aesthetic." Purple gradients, that specific shade, the modern-but-generic dashboard layout. If you've seen other AI-built apps, this probably looks familiar. It's not bad, it's functional, it works, but it's also exactly what you'd expect an AI to generate when you don't give it specific design direction.
+
+Here's the thing, this is the baseline. The raw output when you just describe functionality and let the AI make all the design decisions. It chose React and TypeScript (good choices), added Tailwind for styling (also solid), implemented a cohesive color scheme with that purple, proper spacing, some subtle animations. Technically, it's well-built. Visually, it's the AI equivalent of Times New Roman.
+
+The lesson here: if you want your app to NOT look like every other AI-generated prototype, you need to be explicit in your prompts. Mention specific component libraries (shadcn/ui, Chakra UI, Material UI, whatever fits your brand), give it actual color palettes from your brand guidelines, describe the exact layout structure you want, reference design systems you like. The AI won't deviate from its generic purple gradient comfort zone unless you push it to.
+
+Think of it like this: functional prompts get you functional apps with generic styling. Design-specific prompts get you branded, intentional UI. The difference is in what you ask for.
+
+The code structure also matters. It's using TypeScript and React, which is industry standard. The components are modular, there's proper type definitions, state management looks reasonable. If you handed this code to a developer to extend, they wouldn't be confused. That's way more valuable than I initially thought it would be.
+
+### Wiring Things Together
+
+![API Key Selection in App](https://iili.io/KD8FRdF.png)
+
+Once generated, connect an API key via modal. You can test on the free tier without setup, but real usage needs a key. AI Studio handles credential security on Cloud Run (server-side API calls, environment variables). Export and host elsewhere? You implement security yourself.
+
+### Taking It for a Spin
+
+![App Interface with Content Input](https://iili.io/KD8F7ea.png)
+
+See that blue circle highlighting the input area? That's annotation mode. You can draw on the app preview, circle or arrow any UI element, then describe what you want changed. "Make this input box bigger," "move this section to the top." The AI sees what you're pointing at and updates that specific element. Way faster than describing which component you mean in text.
+
+I tested with a sample thread. Pasted it in, selected the Kore voice style, clicked the button. Dynamic loader showed progress: "Extracting key points...", "Generating video 1 of 5...", "Adding voice-over...". Couple minutes later, five 6-second videos with captions and voice-overs appeared.
+
+Quality was usable for social media. Clear audio, readable captions, generic transitions. The orchestration behind the scenes is non-trivial: translating high-level requirements into API calls to Veo and text-to-speech, stitching everything together. It just worked.
+
+### The Iteration Loop - Where It Gets Interesting
+
+![AI Improvements - Veo Upgrade](https://iili.io/KD8FX7n.png)
+
+So here's where things get really interesting. After testing, I realized the video quality could be better. I remembered seeing different Veo models in the docs, so I asked about upgrading to better video generation.
+
+The AI response is fascinating. Gemini 2.5 Pro handled the request in about 45 seconds, and instead of just saying "sure," it actually explained what it was doing. It interpreted my request as wanting higher quality video, so it upgraded from `veo-3.1-fast-generate-preview` to `veo-3.1-generate-preview`. The fast version prioritizes speed, the regular version prioritizes quality and visual detail. Smart interpretation. Then it says: "Here is the single file change required for this update."
+
+It shows one file modified: `services/geminiService.ts` with a green checkmark. That's it. I asked for a feature improvement, the AI understood the implication, found the right file, made the change, and explained its reasoning.
+
+At the bottom there are checkpoint controls again: "View diff" and "Restore checkpoint." If I screwed something up or didn't like the change, I can roll back. There's also thumbs up and thumbs down for feedback.
+
+This iteration workflow is where AI Studio starts to feel less like a code generator and more like pair programming. You're having a conversation about the code. "Make this better," "Switch to a different API," "Add dark mode," whatever. And it responds with context-aware changes.
+
+I tested a few more iterations: "Make the button bigger", "Change the color scheme to blue", "Add a loading animation." Each time, it updated the relevant files and showed me the diff. Most changes were good, occasionally it would misunderstand and I'd need to clarify, but the feedback loop was fast.
+
+The checkpoint system is crucial here. Without it, you'd be scared to request changes because what if it breaks everything? With checkpoints, you can experiment freely. Worst case, you restore to a previous version.
+
+What this means practically: your prototyping workflow is now conversational. Instead of editing code directly, you describe changes. For some things, like "rename this variable across the project," that's way faster than find-and-replace. For others, like "refactor this to use hooks instead of classes," you're trusting the AI to understand context and patterns.
+
+It's not perfect. Sometimes the AI makes assumptions you wouldn't make. Sometimes it changes more than you asked for. But for rapid iteration on a prototype, it's incredibly efficient.
+
+### Going Live - Deployment
+
+![Deploy to Google Cloud](https://iili.io/KD8Fhes.png)
+
+Final step: deploying. Hit "Deploy app on Google Cloud" and you get a modal asking for a billing-enabled Google Cloud project. The promise is "one-click deployment." The reality is one-click after setting up billing. Not a huge barrier, but worth knowing.
+
+AI Studio handles credential security. Your API key stays server-side, requests get proxied through Cloud Run, frontend never sees it. Once you select your project and hit deploy, it builds your app into a container, pushes to Cloud Run, sets up environment variables, and gives you a public URL like `https://your-app-xyz.run.app`.
+
+Cloud Run auto-scales (spins up instances on traffic spikes, scales to zero when idle), handles SSL automatically. What you don't get: CI/CD, monitoring, production infrastructure. This is a deployed prototype, not a production system.
+
+For sharing with friends to get feedback? Totally sufficient. For a real product with paying users? Export the code, set up proper version control, add error tracking, write tests. But for going from idea to shareable URL in an afternoon, this delivers.
+
+## What I Learned - The Real Story About AI Studio
+
+**What works:** Vibe coding delivers. Generated code quality is solid enough to extend without rewriting everything. The iteration loop through natural language is genuinely faster for prototyping than editing code directly. The checkpoint system makes experimentation safe. Cloud Run deployment, while requiring billing setup, gets you from idea to shareable URL fast.
+
+**The honest breakdown:** Speed for prototyping is real, multimodal capabilities (especially Veo) are impressive, code quality is solid. But the default UI is functional yet generic. Expect purple gradients unless you specify otherwise. Want branded, intentional design? Be explicit: mention component libraries (shadcn/ui, Chakra), color schemes, layout preferences, design systems. The free tier is generous, but you're locked into Google's ecosystem.
+
+**Who this is for:** Solo developers prototyping ideas, founders validating MVPs, teams spiking features before committing, hackathon participants. Traditional coding still wins for complex business logic, specific architectural patterns, security/compliance needs, fine-grained control.
+
+AI Studio isn't replacing development, it's adding a prototyping mode. It's the difference between sketching on a napkin and drafting blueprints. For going from idea to working demo in an afternoon, it's hard to beat. Not for production apps, but absolutely for validating concepts before investing weeks of development time.
