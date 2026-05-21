@@ -26,7 +26,6 @@ Read the full draft file.
 - [ ] **Images use Cloudflare Images** — all image URLs are `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no Cloudinary URLs, no hotlinked external images. To upload a new image: use the Cloudflare Images API with the `CLOUDFLARE_IMAGES_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from `.agents/skills/.env`.
 - [ ] **No unverified stats** — any numbers or claims have a linked source in the text
 - [ ] **No marketing language** — scan for: "powerful", "revolutionary", "cutting-edge", "game-changing"
-- [ ] **No em dashes** — scan the full body for `—` and replace with commas, colons, periods, or parentheses. This is a hard rule that applies to every piece.
 
 #### For articles only:
 
@@ -45,8 +44,7 @@ Read the full draft file.
 - [ ] **Prerequisites section present** — tools, API keys, framework versions listed
 - [ ] **`.env` format shown** (if needed) — with placeholder values, never real keys
 - [ ] **Final output shown** — screenshot, terminal output, or demo of the working result
-- [ ] **File saved as** `tutorials/en/[slug].mdx` — a single flat file, never a folder with `article.mdx` inside
-- [ ] **GitHub line references on all code excerpts** — every code block that references a project file must include a link like `Full implementation in [\`agent.py\`, lines 74-97](https://github.com/...#L74-L97):` immediately before the block. Do not use `# from file.py` comments as a substitute.
+- [ ] **File saved in** `tutorials/[slug]/article.md`
 
 ### 4. Report results
 
