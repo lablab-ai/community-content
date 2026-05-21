@@ -56,6 +56,18 @@ Present:
 
 Wait for user confirmation before proceeding to draft.
 
+### 5b. Build a working prototype (tutorials with code only)
+
+Before writing a single word of the tutorial article:
+
+1. Create the project directory under `/Users/la/lablab-ai/[slug]/`
+2. Build the full end-to-end implementation — all code must run without errors
+3. Verify the golden path works (real API calls, real output)
+4. Note any gotchas, non-obvious config steps, or error patterns encountered — these become the most valuable parts of the tutorial
+5. Only proceed to writing once the prototype works end-to-end
+
+This step is mandatory for all tutorials. Do not start drafting until the code is confirmed working.
+
 ### 6. Set Notion task to In Progress
 
 Update the Notion task status to `In Progress`.
@@ -69,6 +81,7 @@ Confirm the following are locked before writing begins:
 - [ ] Sources gathered
 - [ ] Notion task is `In Progress`
 - [ ] File location decided: `articles/[slug].md` or `tutorials/[slug]/article.md`
+- [ ] Working prototype built and verified at `/Users/la/lablab-ai/[slug]/` (tutorials only)
 
 ## Content type reminders
 
