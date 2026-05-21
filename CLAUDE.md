@@ -8,7 +8,7 @@ This is the Lablab community-content repo. It contains all published articles, t
 
 ```
 blog/en/          — Articles (MDX)
-tutorials/        — Tutorial articles (MDX)
+tutorials/en/     — Tutorial articles (MDX) — single flat files: tutorials/en/[slug].mdx (never a folder)
 technologies/     — Technology index pages
 topics/           — Topic index pages
 ```
@@ -17,6 +17,7 @@ topics/           — Topic index pages
 
 - **Frontmatter required on every file:** `title`, `description`, `image`, `authorUsername`
 - **Images must use Cloudflare Images:** all image URLs must be `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no hotlinked external images, no Cloudinary URLs
+- **No em dashes in body text:** replace `—` with commas, colons, periods, or parentheses throughout
 - **Cloudflare Images account hash:** `K11gkZF3xaVyYzFESMdWIQ` (API token in `.agents/skills/.env` as `CLOUDFLARE_IMAGES_TOKEN`)
 - **Author username:** `stevekimoi`
 - **SEO guidelines:** see `SEO_GUIDELINES.md` for keyword strategy and frontmatter formatting rules
