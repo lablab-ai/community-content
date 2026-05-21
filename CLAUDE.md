@@ -33,6 +33,7 @@ Five agent skills live in `.agents/skills/` and cover the full content lifecycle
 | [`publish-check`](.agents/skills/publish-check/SKILL.md) | When a draft is complete — runs the full publishing checklist and updates Notion to Done |
 | [`seo-apply`](.agents/skills/seo-apply/SKILL.md) | After a draft passes publish-check — reads this week's Notion SEO clusters and applies surgical keyword improvements without changing tone |
 | [`weekly-ai-recap`](.agents/skills/weekly-ai-recap/SKILL.md) | Every Monday — researches the week's top AI news, writes the recap article, produces the social post brief |
+| [`prototype-ship`](.agents/skills/prototype-ship/SKILL.md) | After a working prototype is built — adds a web UI frontend, commits each file individually with descriptive messages, creates the GitHub repo, and pushes |
 
 ## Notion
 
