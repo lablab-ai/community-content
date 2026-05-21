@@ -1,0 +1,318 @@
+---
+title: "Build a Startup Research Agent for AI Hackathons with Claude API"
+description: "AI hackathon tutorial: build a startup research agent with Claude API and Bright Data that searches, scrapes, and returns a structured report automatically."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-cover/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+Type a company name. In under two minutes you have a structured research report: founders, funding history, business model, and this week's news, every data point fetched from live web sources at the moment you ask.
+
+This is what this agent produces. It runs the Claude API's tool-use loop, firing parallel Google searches through Bright Data's SERP API and scraping the most useful pages with Web Unlocker, then synthesizing everything into a markdown report. No chat session, no manual steps, no training-data cutoff.
+
+This kind of agent is exactly what judges want to see at **AI hackathons**: something that runs end-to-end. If you're looking for a live competition to build and submit this, check out [upcoming AI hackathons on Lablab.ai](https://lablab.ai/event) where live web data challenges run regularly.
+
+By the end you will have:
+- A working agent that drives itself through a tool-use loop
+- A streaming web UI that makes the agent's activity visible in real time
+- A clear pattern for wiring any data source into Claude's tool system
+
+The full source code is on [GitHub](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent).
+
+## Prerequisites
+
+- Python 3.10 or higher
+- An [Anthropic account](https://console.anthropic.com) with an API key
+- A [Bright Data account](https://brightdata.com) (free trial available)
+- Basic familiarity with Python and REST APIs
+
+## Step 1: Set up your Bright Data zones
+
+Bright Data organises its APIs into **zones**: named configurations you create in the dashboard. You need two, one for search and one for scraping.
+
+**Create the SERP API zone**
+
+Log into your Bright Data dashboard. On the left sidebar click **Web Access**, then **Create API**. Select **SERP API**, give it a name (this tutorial uses `serp_api2`), choose **Full JSON** as the default response format, and click **Add API**.
+
+**Create the Web Unlocker zone**
+
+Repeat the same flow: **Create API**, select **Web Unlocker API**, name it `web_unlocker1`, leave CAPTCHA Solver enabled, and click **Add API**.
+
+Once both zones are created, note your API key from the dashboard home page. It is the same key for both zones.
+
+## Step 2: Set up the project
+
+Clone the repository and create a virtual environment:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/claude-bright-data-research-agent.git
+cd claude-bright-data-research-agent
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the project root with your credentials:
+
+```text
+ANTHROPIC_API_KEY=your_anthropic_api_key
+BRIGHT_DATA_API_KEY=your_bright_data_api_key
+SERP_ZONE=serp_api2
+UNLOCKER_ZONE=web_unlocker1
+```
+
+## Step 3: Understand the two Bright Data tools
+
+The agent has two tools it can call. Both hit the same Bright Data REST endpoint (`https://api.brightdata.com/request`) using your API key as a Bearer token. What changes is the `zone` and `url` in the request body.
+
+**`search_web`: SERP API**
+
+Sends a Google search URL to Bright Data. The response is a structured JSON object with `organic` results containing title, URL, and snippet for each result. No proxy setup, no headless browser. One HTTP call returns clean search data.
+
+Full implementation in [`agent.py`, lines 74-97](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent/blob/main/agent.py#L74-L97):
+
+```python
+def search_web(query: str) -> str:
+    search_url = f"https://www.google.com/search?q={requests.utils.quote(query)}&hl=en&gl=us"
+    payload = {"zone": SERP_ZONE, "url": search_url, "format": "json"}
+    resp = requests.post(BRIGHT_DATA_ENDPOINT, headers=BD_HEADERS, json=payload, timeout=30)
+    body = json.loads(resp.json()["body"])
+    organic = body.get("organic", [])
+    return "\n".join(f"{r['title']}: {r['url']}\n{r.get('description','')}" for r in organic[:5])
+```
+
+**`scrape_url`: Web Unlocker**
+
+Sends any target URL to Bright Data. The Web Unlocker handles proxy rotation, CAPTCHA solving, and JavaScript rendering automatically. You receive the raw HTML back, which the function strips of tags before returning the text to Claude.
+
+Full implementation in [`agent.py`, lines 100-117](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent/blob/main/agent.py#L100-L117):
+
+```python
+def scrape_url(url: str) -> str:
+    payload = {"zone": UNLOCKER_ZONE, "url": url, "format": "raw"}
+    r = requests.post(BRIGHT_DATA_ENDPOINT, headers=BD_HEADERS, json=payload, timeout=45)
+    text = r.text
+    text = re.sub(r"<style[^>]*>.*?</style>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<script[^>]*>.*?</script>", "", text, flags=re.DOTALL)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return re.sub(r"\s+", " ", text).strip()[:4000]
+```
+
+## Step 4: Wire the tools into Claude's tool-use loop
+
+This is the core of the agent. Claude's tool-use works as a loop: you send a message, Claude either returns a final answer or requests one or more tool calls, you execute the tools and send the results back, and the loop continues until Claude signals it is done.
+
+The tool definitions tell Claude what each tool does and what inputs to provide. Full definition in [`agent.py`, lines 24-59](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent/blob/main/agent.py#L24-L59):
+
+```python
+TOOLS = [
+    {
+        "name": "search_web",
+        "description": "Search Google for information about a company. Use this to find funding details, founders, product descriptions, news, and more.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "The search query"}
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "scrape_url",
+        "description": "Fetch the full content of a webpage. Use this to read a company's About page, Crunchbase profile, or any relevant URL found in search results.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string", "description": "The full URL to fetch"}
+            },
+            "required": ["url"],
+        },
+    },
+]
+```
+
+The agent loop. Full implementation in [`agent.py`, lines 135-183](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent/blob/main/agent.py#L135-L183):
+
+```python
+messages = [{"role": "user", "content": f"Research this startup: {company_name}"}]
+
+while True:
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
+        tools=TOOLS,
+        messages=messages,
+    )
+
+    if response.stop_reason == "end_turn":
+        # Claude finished; the report is in response.content
+        return response
+
+    # Claude called tools; execute each one and return the results
+    tool_results = []
+    for block in response.content:
+        if block.type != "tool_use":
+            continue
+        if block.name == "search_web":
+            result = search_web(block.input["query"])
+        elif block.name == "scrape_url":
+            result = scrape_url(block.input["url"])
+        tool_results.append({
+            "type": "tool_result",
+            "tool_use_id": block.id,
+            "content": result,
+        })
+
+    messages.append({"role": "assistant", "content": response.content})
+    messages.append({"role": "user", "content": tool_results})
+    # loop continues
+```
+
+The key detail is `stop_reason`. When it equals `"tool_use"`, Claude is asking you to run tools. When it equals `"end_turn"`, it has finished and the final report is in the response. Everything else is shuttling data back and forth.
+
+## Step 5: Run the agent from the terminal
+
+You can run the agent directly without the web UI:
+
+```bash
+python agent.py "OpenAI"
+```
+
+You will see live output as the agent works, with each tool call logged:
+
+```text
+Researching: OpenAI
+==================================================
+[Tool: search_web] {"query": "OpenAI startup overview founding history"}
+[Result preview] Search results for 'OpenAI startup overview'...
+
+[Tool: search_web] {"query": "OpenAI founders and key team members"}
+[Result preview] Search results for 'OpenAI founders'...
+
+[Tool: scrape_url] {"url": "https://en.wikipedia.org/wiki/OpenAI"}
+[Result preview] OpenAI - Wikipedia...
+```
+
+## Step 6: Run the web UI
+
+The web interface makes the agent's behaviour visible and explainable. Start the Flask server:
+
+```bash
+python app.py
+```
+
+Open `http://localhost:5000`. You will see the landing page with a search input, a three-step "How it works" explanation, and six clickable example cards.
+
+![The landing page showing the search input, How it works section, and example company cards](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-landing-how/public)
+
+Below the How it works section, the examples grid shows six pre-loaded company cards. Click any card to immediately start researching that company.
+
+![The examples grid with six clickable company cards including Mistral AI, Cursor, ElevenLabs, Harvey AI, Udio, and Linear](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-landing-examples/public)
+
+## Step 7: Watch the agent work
+
+Type a company name (or click an example card) and click **Research**. The two-panel workspace opens immediately.
+
+The **Agent Activity** panel on the left streams every action the agent takes in real time. When you research "OpenAI", here is what you will see first: a thinking step where Claude announces its plan, followed by a burst of parallel Google searches.
+
+![The Agent Activity panel showing the initial thinking step followed by five simultaneous Google searches for OpenAI](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-activity-searches/public)
+
+Claude fires multiple searches in the first pass to cover different angles: company overview, founders, funding, business model, and recent news. These are all independent tool calls that happen within a single response from the API.
+
+After the initial searches return results, Claude decides which URLs look most useful and starts scraping them for full page content.
+
+![The activity panel showing Claude's thinking step followed by scraping of Wikipedia, Britannica, openai.com, and tracxn.com](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-activity-scraping/public)
+
+Watch how Claude narrates its own reasoning in the **Thinking** items. It explains why it is moving from search to scraping, what it expects to find, and when it has enough data to write the report.
+
+Claude continues scraping additional sources for recent news and financial data, then signals completion.
+
+![The final activity items showing scraping of observer.com, technologychecker.io, getlatka.com, and foundationinc.co, followed by a final thinking step and the green Complete indicator](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-activity-complete/public)
+
+The green **Complete** item at the bottom confirms the agent has finished. At the same time, the report panel on the right populates.
+
+## Step 8: Read the report
+
+The **Research Report** panel renders the full markdown report from Claude. For OpenAI, the agent produced a report with eight sections.
+
+The first thing that appears is the Company Overview table with factual fields pulled from live sources.
+
+![The report panel showing the Company Overview table for OpenAI with legal name, type, founding date, headquarters, revenue, and valuation](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-report-overview/public)
+
+Notice the data quality: `$730 billion (pre-money, Feb 2026 round)` and `~$13.1 billion` revenue came from pages the agent scraped during the run, not from Claude's training data. Bright Data's Web Unlocker retrieved that content at the time you made the request.
+
+Scrolling down, the Founders section shows a structured table with role and current status for each member of OpenAI's original 11-person founding team.
+
+![The report showing the beginning of the Founders section with a table of co-founders including Sam Altman, Elon Musk, Greg Brockman, and Ilya Sutskever](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-report-founders/public)
+
+The table continues with all 11 founding members:
+
+![The full founders table showing all 11 co-founders with their roles at founding and current status](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-report-founders-full/public)
+
+After the founding team, the report includes a Current Key Leadership table showing who is actually running the company today.
+
+![The leadership section showing the current key leadership table with Sam Altman as CEO and the full board of directors](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-report-leadership/public)
+
+The Funding History section shows all 13 rounds in chronological order, with amounts and lead investors.
+
+![The Funding History section showing OpenAI's funding rounds from the $130M seed in December 2015 through the $10B Series E with Microsoft and the $300M Series E with Sequoia and Andreessen Horowitz](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-report-funding/public)
+
+Here is what the full workspace looks like with both panels active simultaneously, showing 6 searches, 8 scraped pages, and 14 total tool calls for this research run:
+
+![The full two-panel workspace showing the Agent Activity feed on the left and the populated Research Report on the right, with the stats bar showing 6 searches, 8 pages scraped, and 14 tool calls](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-tutorial-workspace-full/public)
+
+## How the streaming works
+
+The web UI receives the agent's progress in real time via **Server-Sent Events (SSE)**. The Flask endpoint wraps the `run_agent_stream()` generator and converts each yielded event into a SSE `data:` line. Full implementation in [`app.py`, lines 13-31](https://github.com/Stephen-Kimoi/claude-bright-data-research-agent/blob/main/app.py#L13-L31):
+
+```python
+@app.route("/research", methods=["POST"])
+def research():
+    company = request.json.get("company", "").strip()
+
+    def generate():
+        for event in run_agent_stream(company):
+            yield f"data: {json.dumps(event)}\n\n"
+        yield "data: {\"type\": \"done\"}\n\n"
+
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
+```
+
+The frontend uses `fetch` with a `ReadableStream` reader rather than `EventSource` because the endpoint uses POST. Each chunk is decoded, split on newlines, and parsed as JSON. The event `type` field controls what gets rendered: search queries go to the activity feed, the final `report` type populates the markdown panel.
+
+## What to try next
+
+**Research a newer, less-documented startup.** Try searching for Udio or Reflection AI. The agent will produce a thinner report with more approximate figures and more fallback searches. This is expected behaviour and useful to understand. The tool results are only as rich as the publicly available data.
+
+**Research a company with an ambiguous name.** Try "Linear" or "Hex". Watch how Claude disambiguates using search snippets before committing to scraping specific pages.
+
+**Add a third tool.** The pattern extends naturally. You could add a `search_linkedin` tool that calls Bright Data's LinkedIn scraper, or a `get_crunchbase` tool that hits a specific Crunchbase URL. Any HTTP call can become a tool.
+
+**Export the report.** The final report string is plain markdown. You can write it to a file, push it to Notion via their API, or parse it with another Claude call to extract structured fields like funding amounts into a database.
+
+## Frequently Asked Questions
+
+**Q: Can I use this agent as the foundation for an AI hackathon project?**
+Yes. The agent is a deployable Python application: clone the repo, swap in your API credentials, and have a working data pipeline within an hour. The [Web Data UNLOCKED hackathon](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon) on Lablab.ai uses exactly this kind of live-web research agent as a reference implementation for Track 1.
+
+**Q: Do I need prior Bright Data experience to follow this tutorial?**
+No. The tutorial walks through creating the two required zones (SERP API and Web Unlocker) from scratch. The only prerequisite is a Bright Data account (a free trial is available).
+
+**Q: What happens if the agent can't find information about a company?**
+The agent degrades gracefully. For less-documented companies, Claude produces a thinner report with more approximate figures and more fallback searches. The "What to try next" section covers how to interpret these cases.
+
+**Q: How many tool calls does a typical research run make?**
+For a well-documented company like OpenAI, expect 14-16 tool calls across 6 searches and 8 scraped pages. For a newer startup with limited public information, the agent typically makes 8-10 calls before writing the report.
+
+**Q: Can I add more data sources beyond Google search and web scraping?**
+Yes. Any HTTP call can become a Claude tool. The "What to try next" section outlines how to add a LinkedIn scraper or a Crunchbase-specific tool by following the same pattern used for `search_web` and `scrape_url`.
+
+## Conclusion
+
+The difference between this agent and a Claude Desktop MCP setup is that this one is a Python process you control. It has no GUI dependency, no chat session to manage, and no manual steps between input and output. You can call `run_agent("Stripe")` from any Python script, schedule it as a cron job, or wrap it in a REST API.
+
+That is what the Claude API's tool use system enables: Claude as an orchestration layer that decides which data to fetch and when, while you control the tools it calls. Bright Data handles the hard parts of live web access: proxy rotation, CAPTCHA solving, and anti-bot bypass, so the agent can read any public page without infrastructure work on your end.
+
+The [Web Data UNLOCKED hackathon](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon) Track 1 asks builders to create agents that research and analyse companies using live web data. This project is a direct starting point for that track. Clone the repo, swap in your credentials, and extend it with the data sources your use case needs.
