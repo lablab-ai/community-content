@@ -8,7 +8,7 @@ This is the Lablab community-content repo. It contains all published articles, t
 
 ```
 blog/en/          — Articles (MDX)
-tutorials/en/     — Tutorial articles (MDX) — single flat files: tutorials/en/[slug].mdx (never a folder)
+tutorials/        — Tutorial articles (MDX)
 technologies/     — Technology index pages
 topics/           — Topic index pages
 ```
@@ -17,7 +17,6 @@ topics/           — Topic index pages
 
 - **Frontmatter required on every file:** `title`, `description`, `image`, `authorUsername`
 - **Images must use Cloudflare Images:** all image URLs must be `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no hotlinked external images, no Cloudinary URLs
-- **No em dashes in body text:** replace `—` with commas, colons, periods, or parentheses throughout
 - **Cloudflare Images account hash:** `K11gkZF3xaVyYzFESMdWIQ` (API token in `.agents/skills/.env` as `CLOUDFLARE_IMAGES_TOKEN`)
 - **Author username:** `stevekimoi`
 - **SEO guidelines:** see `SEO_GUIDELINES.md` for keyword strategy and frontmatter formatting rules
@@ -34,7 +33,6 @@ Five agent skills live in `.agents/skills/` and cover the full content lifecycle
 | [`publish-check`](.agents/skills/publish-check/SKILL.md) | When a draft is complete — runs the full publishing checklist and updates Notion to Done |
 | [`seo-apply`](.agents/skills/seo-apply/SKILL.md) | After a draft passes publish-check — reads this week's Notion SEO clusters and applies surgical keyword improvements without changing tone |
 | [`weekly-ai-recap`](.agents/skills/weekly-ai-recap/SKILL.md) | Every Monday — researches the week's top AI news, writes the recap article, produces the social post brief |
-| [`prototype-ship`](.agents/skills/prototype-ship/SKILL.md) | After a working prototype is built — adds a web UI frontend, commits each file individually with descriptive messages, creates the GitHub repo, and pushes |
 
 ## Notion
 
