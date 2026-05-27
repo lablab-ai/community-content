@@ -1,0 +1,84 @@
+---
+title: "AI Hackathon Success Stories (Part 2): Five Builders Who Won Hackathons by Making AI Agents Safer"
+description: "AI hackathon success stories: five builders who won by making autonomous AI agents safer. OlympusOS, Kraken Alpha Agent, BEE SENTINEL-X, Vertex Sentinel, Vartovii."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3801a09d-3a8f-49ed-15ea-30145e734200/public"
+authorUsername: "stevekimoi"
+---
+
+Five builders walked into two separate hackathons with the same underlying conviction: that the problem with autonomous AI agents is not that they cannot act, but that nothing stops them from acting badly. They built the missing layer. Four of them competed solo. All five won.
+
+## Nevine Fakhereddin: Smart City OS, Built in Five Days
+
+Eighteen months before the AI Agent Olympics at Milan AI Week 2026, Nevine Fakhereddin made a decision most people would not. She walked away from her career and pointed everything toward AI, not to chase a trend but to understand how intelligent systems work at scale.
+
+The Milan hackathon was where she could prove it publicly.
+
+OlympusOS is an agentic operating system for cities under pressure. When a mass event pushes a city toward chaos, specialized AI agents do not react to what is already happening. They war-game the scenario inside a digital twin first, simulate responses across mobility, transit, and public safety, and coordinate action before the situation becomes a crisis. One city, multiple agents, decisions made before the moment of failure.
+
+She built it alone in five days. It won first place from Featherless and second place from SpeechMatics.
+
+For Nevine, the stakes were not purely technical. Hackathons are the bridge between a career pivot and a first role, the place where skills get proven before anyone hands you a title. Her advice to anyone in the same position: stop waiting for permission to build. The system you architect this weekend can grow into something far bigger, and you never know which door it opens.
+
+[OlympusOS](https://lablab.ai/ai-hackathons/milan-ai-week-hackathon/olympusos/olympusos)
+
+## Damien Credoz: The Trading Agent That Has to Tell a Clear Story
+
+Damien Credoz came to the AI Agent Olympics with a thesis about where autonomous trading agents actually fail: not in the analysis, but in the presentation of the analysis. An agent that reaches a correct decision but cannot explain the reasoning clearly is not useful to a trader, a judge, or an auditor.
+
+Kraken Alpha Agent is built for the tokenized stock era. It combines market analysis, signal generation, asset ranking, backtesting, and risk controls into a single workflow, then surfaces every decision through a dashboard designed to make the agent's logic legible. The agent earns trust not by being right, but by being understandable.
+
+The project won first place in the Kraken track at Milan AI Week. His main takeaway from the format: build ambitious, but make the story extremely clear. Judges need to understand the problem, the product, and why it matters in the time it takes to walk a demo.
+
+[Kraken Alpha Agent](https://lablab.ai/ai-hackathons/milan-ai-week-hackathon/kraken-alpha-agent/kraken-alpha-agent)
+
+## Fabricio Camargo: The Risk Firewall That Cannot Be Argued With
+
+Fabricio Camargo's diagnosis of automated trading is precise. Conventional bots follow rigid formulas and miss context. Unguided language models read headlines and panic sell. BEE SENTINEL-X was designed to break that tradeoff.
+
+The architecture has four layers. Perception: continuous monitoring of technical signals alongside financial news sentiment from Yahoo Finance RSS. Cognition: Gemini 2.5 Flash receives structured JSON payloads and returns buy, sell, or hold decisions with a confidence score and a rationale. Risk Gate: a Python middleware that intercepts the AI's output before it reaches the broker. If confidence falls below 80 percent or the transaction is invalid, the gate blocks the trade instantly, unconditionally. Execution: validated trades run asynchronously through an isolated Docker container embedding the Kraken CLI, with every decision logged as an immutable JSONL audit trail.
+
+One unexpected development during the build came from an environment constraint. Working on Windows, where the Kraken CLI binary is not natively optimized, forced Fabricio to write a fallback module he called Bunker Mode. If the system detects a non-production environment, it switches automatically to local mocks and data streams so the dashboard never crashes. An engineering limitation became a proof of industrial resilience.
+
+BEE SENTINEL-X placed third globally in the Kraken and xStocks track at the AI Agent Olympics. His advice for future participants: do not just build a prompt script. Build software architecture. The governance layer matters more than the model when inputs get chaotic.
+
+[BEE SENTINEL-X](https://github.com/FabrizHas/Bee-Sentinel-X)
+
+## Md Asif Iqbal: When the Agent Never Touches Your Funds
+
+Asif Iqbal started from a question that most people building autonomous trading agents were not asking: what stops the agent from doing something catastrophic?
+
+Vertex Sentinel and AgentStack are two interlocking answers. Vertex Sentinel is a fail-closed risk management layer. Every trade the agent wants to execute is signed cryptographically using EIP-712 typed data, checked against pre-set risk parameters through a smart contract deployed on-chain, and only released if it passes. If anything in the pipeline fails, execution halts immediately. The agent never holds your funds. It signs trade intents. The contract decides whether they execute.
+
+AgentStack adds a second dimension: an agent-to-agent payment economy. Using an HTTP-native x402 handshake, agents can hire specialized sub-agents and settle sub-cent USDC transactions with no gas fees via Circle's Arc L1. Every transaction produces a margin receipt that tracks real-time unit economics, maintaining transparent gross margins on transactions as small as $0.01.
+
+Asif submitted with 51 automated tests passing. During the demo, he executed four live BTC/USD trades through the Kraken Paper Trading API and generated verifiable EIP-712 signatures for each in under 40 seconds.
+
+The project won first place at the AI Trading Agents Hackathon 2026. Since the event, he has decoupled the risk logic into a public NPM package, @vertex-agents/sentinel-sdk, so any agent developer can integrate the security layer independently. His long-term goal is for Vertex Sentinel and AgentStack to become the default security and payment infrastructure for agent frameworks.
+
+[Vertex Sentinel](https://lablab.ai/ai-hackathons/ai-trading-agents/vertex-sentinel/vertex-sentinel)
+
+## Vitalii Radionov: Trust Before the Trade
+
+Vitalii Radionov did not build a trading bot. He built what he believes needs to exist before any trading bot should be trusted.
+
+Vartovii Sentinel-8004 won the Best Validation and Trust Model category at the AI Trading Agents with ERC-8004 Hackathon. The core mechanism is deliberate in its simplicity: an agent proposes a trade, Sentinel evaluates the intent, the system returns allow, deny, or downsize, and the result is signed with an auditable trace. What it answers is the question the rest of the field is treating as secondary, namely whether you can inspect what the agent decided and why.
+
+The project is a proof build for a larger platform. Vartovii is a trust intelligence system for crypto projects and companies, turning public signals, technical evidence, reputation data, and risk indicators into decision-ready outputs. One direction Vitalii is now exploring is a pre-audit and security module for Web3: smart contract review, logic risk detection, exploit simulation, tokenomics stress testing, and operational risk signals such as social engineering exposure, going well beyond static code scanning.
+
+His approach to hackathons reflects the same discipline as the product. He uses them to build focused proof projects around the Vartovii vision, test the market, and generate public evidence that the direction is worth pursuing. Sentinel-8004 gave Vartovii external validation. Winning Best Validation and Trust Model confirmed that the trust thesis is understandable and relevant to the AI agent ecosystem. The only external support he currently has is Google for Startups. Everything else has been hackathons, grants, and building in public.
+
+His advice is as spare as the architecture: pick one sharp problem, make the thesis clear, and build a demo that proves that one idea well. A small but coherent project is much stronger than a large unfinished one.
+
+[Vartovii](https://sentryanalytic.com/)
+
+## What These Five Share
+
+The unifying pattern is not the technology stack or the domain. It is a specific engineering conviction: that autonomy without governance is a liability.
+
+Three of them built trading agents where the risk firewall, confidence gate, or cryptographic verification was the headline feature, not an afterthought. One built a city simulation where agents deliberate inside a digital twin before acting in the real world. One built the trust infrastructure that the whole autonomous agent ecosystem will eventually need, whether it knows it yet or not.
+
+None of them waited for the product to be finished before showing it. Hackathons compress the validation cycle in a way that almost nothing else does: a structured week to build, a demo to defend, judges with real expertise, and immediate signal on whether the idea holds under pressure.
+
+These five brought ideas and a conviction about what the field was missing. The hackathons gave them the arena to prove it.
+
+If you are building something, the next lablab event may be the clearest test of whether it works. Browse [upcoming AI hackathons](https://lablab.ai/events) and find your room.
