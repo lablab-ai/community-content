@@ -1,0 +1,58 @@
+---
+title: "TriggerWare"
+author: "stevekimoi"
+description: "TriggerWare is a real-time data platform by CalQLogic that lets developers and AI agents query live APIs, databases, and SaaS tools using SQL, with automated alerts and MCP support for agentic workflows."
+---
+
+# TriggerWare
+
+[TriggerWare](https://triggerware.ai/) is a real-time analytics and automation platform built by CalQLogic. It exposes external data sources (APIs, databases, SaaS tools) as queryable virtual tables, letting developers and AI agents retrieve live data using SQL without staging it in a warehouse. The platform supports both code-first and no-code workflows and ships an MCP (Model Context Protocol) server for direct integration into autonomous agent pipelines.
+
+| General | |
+|---------|--|
+| **Release date** | 2017 |
+| **Developer** | [CalQLogic](https://www.calqlogic.com) |
+| **Type** | Real-Time Data Platform, AI Agent Infrastructure |
+| **License** | Commercial (free trial available) |
+| **Documentation** | [docs.triggerware.com](https://docs.triggerware.com) |
+| **Console** | [console.triggerware.com](https://console.triggerware.com) |
+
+---
+
+## Core Features
+
+- **SQL Over Everything**: a patented API layer that lets developers query any connected data source (APIs, databases, SaaS tools) using standard SQL, regardless of the underlying format.
+- **Dynamic Extract Load Transform (DELT)**: patented approach that reads directly from source systems in real time, eliminating ETL/ELT pipelines and the lag they introduce.
+- **No-Code GenAI Connectors**: create data source connectors from plain-language descriptions; no code required to onboard a new data source.
+- **Natural Language Query Engine**: business users can describe what they want in plain English and receive structured results immediately from live data.
+- **Real-Time Alerts and Triggers**: schedule queries that emit notifications or deltas whenever the answer changes, driving automated responses.
+- **MCP Server and Client**: provides Model Context Protocol tooling so AI agents can pull live data on demand or trigger agent actions when data conditions are met.
+- **Per-User Instances**: each user gets a dedicated server instance, providing isolation and per-user customization.
+
+---
+
+## Connectors and Integrations
+
+TriggerWare ships a catalog of plug-and-play connectors for common data sources including PubMed, SEC EDGAR, and standard relational databases. Custom connectors can be created in hours using natural language prompts. The platform exposes a REST API authenticated via API keys and a CLI installable on macOS, Linux, and Windows.
+
+---
+
+## Tools and Resources
+
+- **[Documentation](https://docs.triggerware.com)**: API reference, connector catalog, and platform guides.
+- **[Console / Free Trial](https://console.triggerware.com)**: start querying live data with a free account.
+- **[CalQLogic](https://www.calqlogic.com)**: company background and enterprise contact.
+- **REST API**: available at `api.triggerware.com`, authenticated via API key header.
+- **CLI**: installable via bash (macOS/Linux) or PowerShell (Windows); authenticate with `triggerware login`.
+
+---
+
+## Ecosystem and Integrations
+
+- MCP-compatible, making TriggerWare a plug-in live data layer for any agent framework that supports the Model Context Protocol.
+- REST API supports embedding live data queries into existing business applications without separate pipeline infrastructure.
+- Supports time-stamped event data and IoT sensor streams for high-frequency monitoring use cases.
+
+---
+
+TriggerWare is available with a free trial at [console.triggerware.com](https://console.triggerware.com). Full API and connector documentation is at [docs.triggerware.com](https://docs.triggerware.com).
