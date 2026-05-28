@@ -1,0 +1,63 @@
+---
+title: "Cognee"
+author: "stevekimoi"
+description: "Cognee is an open-source Python SDK that builds knowledge graphs from your data and gives AI agents persistent, queryable memory combining graph traversal and vector similarity search."
+---
+
+# Cognee
+
+[Cognee](https://www.cognee.ai/) is an open-source AI memory engine that turns documents, datasets, and structured data into a continuously updated knowledge graph. Agents can then query that graph using a combination of vector similarity and graph traversal, returning relationship-aware context that standard RAG cannot produce. The SDK is built in Python, runs one million-plus pipelines per month in production, and ships with a local web UI and REST API.
+
+| General | |
+|---------|--|
+| **Release date** | 2024 |
+| **Developer** | [Cognee (Topoteretes UG)](https://www.cognee.ai/) |
+| **Type** | Open-weight AI Memory Engine, Knowledge Graph SDK |
+| **License** | Open Source |
+| **GitHub** | [topoteretes/cognee](https://github.com/topoteretes/cognee) |
+| **Documentation** | [docs.cognee.ai](https://docs.cognee.ai/getting-started/introduction) |
+
+---
+
+## Core Features
+
+- **Four-operation memory API**: `remember`, `recall`, `forget`, and `improve` map directly to data ingestion, retrieval, deletion, and continuous refinement of the knowledge graph.
+- **Three-operation SDK workflow**: `.add()` ingests raw data, `.cognify()` builds the knowledge graph with embeddings, and `.search()` retrieves structured context.
+- **GRAPH_COMPLETION retrieval**: the default mode uses vector search as a hint to locate relevant graph triplets, then traverses the graph to build context before generating an answer, outperforming cosine-similarity chunk retrieval.
+- **14 retrieval modes**: configurable strategies for different retrieval needs, from semantic similarity to full graph traversal.
+- **Unified three-layer storage**: graph store (Kuzu default, also Neo4j, FalkorDB, Amazon Neptune, Memgraph), vector store (LanceDB default, also Qdrant, pgvector, Redis, Pinecone, ChromaDB), and relational store (SQLite default, also PostgreSQL).
+- **Multi-tenancy**: memory graphs scoped per user, per group, or as shared public graphs.
+- **Automatic ontology management**: ontologies update continuously as new data is ingested, keeping the graph current without manual schema work.
+- **Local web UI**: ships with a graph explorer and interactive notebooks since v0.3.3.
+
+---
+
+## Model Variants and Storage Backends
+
+| Layer | Default | Alternatives |
+|-------|---------|-------------|
+| **Graph store** | Kuzu | Neo4j, FalkorDB, Amazon Neptune, Memgraph |
+| **Vector store** | LanceDB | Qdrant, pgvector, Redis, Pinecone, ChromaDB |
+| **Relational store** | SQLite | PostgreSQL |
+
+---
+
+## Tools and Resources
+
+- **[Documentation](https://docs.cognee.ai/getting-started/introduction)**: getting started guide, API reference, and examples.
+- **[GitHub](https://github.com/topoteretes/cognee)**: source code, issues, and community contributions.
+- **[PyPI](https://pypi.org/project/cognee/)**: install via `pip install cognee`.
+- **[LangChain integration](https://github.com/topoteretes/langchain-cognee)**: drop-in package for LangChain projects.
+
+---
+
+## Ecosystem and Integrations
+
+- LangChain: official integration package at `github.com/topoteretes/langchain-cognee`.
+- LlamaIndex: transforms standard RAG into GraphRAG by replacing chunk retrieval with graph-based context building.
+- Qdrant: supported as an alternative vector store backend.
+- Langfuse: integration available for observability and tracing of cognee pipelines.
+
+---
+
+Get started in six lines of Python by installing `cognee` from PyPI and calling `.add()`, `.cognify()`, and `.search()`. Full documentation is at [docs.cognee.ai](https://docs.cognee.ai/getting-started/introduction) and the source is at [github.com/topoteretes/cognee](https://github.com/topoteretes/cognee).
