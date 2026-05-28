@@ -1,0 +1,390 @@
+---
+title: "Vectara Chat: A Comprehensive Tutorial for Building and Deploying a RAG Chatbot"
+description: "In this tutorial I will show you how to build, enhance, and deploy a production-ready chatbot with Vectara Chat — from your first corpus to a live chat widget on your site."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2fa0b7f2-58bc-496b-bdcd-a840358af200/full"
+authorUsername: "stevekimoi"
+---
+
+## Introduction to Vectara Chat
+
+Hey there! In this tutorial I want to walk you through Vectara Chat end-to-end — the same path I take when I'm spinning up a new chatbot for a hackathon or a client demo. Vectara is a Retrieval Augmented Generation (RAG) platform, and Vectara Chat is the conversational layer on top of it. You give it your documents, and it gives you a chatbot that answers from those documents, remembers the conversation, and (importantly) doesn't hallucinate the way a bare LLM does.
+
+What makes Vectara Chat interesting is that it bundles three things you'd otherwise wire up yourself:
+
+- A managed vector index over your data (the "corpus")
+- A retrieval + summarization pipeline that produces grounded answers with citations
+- A chat session API that handles conversation history for you, so each turn knows what was said before
+
+If you've ever stitched together Pinecone + an embedding model + an LLM + a session store, you'll appreciate how much of that boilerplate disappears.
+
+By the end of this tutorial you'll have:
+
+1. A Vectara account and a corpus indexed with your own data
+2. A working chat backend that streams grounded answers with citations
+3. A simple frontend (and a no-code widget option) you can drop into any site
+4. A short list of patterns I use to make the bot feel less robotic
+
+Let's build it.
+
+## Getting Started with Vectara Chat
+
+### Create your account and a corpus
+
+Head over to [vectara.com](https://vectara.com) and sign up for a free account. Once you're in the console, do these four things — write down each value as you go, you'll need them in code:
+
+1. **Customer ID** — top-right of the console, a number like `1234567890`.
+2. **Create a corpus** — click *Create Corpus*, give it a name like `chat-demo`. Note the **Corpus ID**.
+3. **Create an API key** — under *Authentication → API Keys*, create one scoped as `QueryService` + `IndexService`. Copy it once; you won't see it again.
+4. **(Optional) OAuth credentials** — for server-to-server use, create an *App Client* under *Authentication → App Clients*. You'll get a Client ID and Client Secret.
+
+For a chatbot the API key path is the simplest, so that's what we'll use here.
+
+### Project setup
+
+I'll use Python for the backend because the Vectara REST API is dead simple to call from anywhere, and Python keeps the example short. Create a fresh folder:
+
+```bash
+mkdir vectara-chat-demo && cd vectara-chat-demo
+python -m venv .venv && source .venv/bin/activate
+pip install requests python-dotenv flask
+```
+
+Drop your credentials into a `.env` file:
+
+```bash
+VECTARA_CUSTOMER_ID=1234567890
+VECTARA_CORPUS_ID=1
+VECTARA_API_KEY=zwt_xxx_your_key_here
+```
+
+### Index a document so the bot has something to talk about
+
+Vectara accepts files (PDF, HTML, DOCX, MD, TXT) through the `/v1/upload` endpoint. Here's a tiny uploader you can reuse:
+
+```python
+# upload.py
+import os, sys, requests
+from dotenv import load_dotenv
+
+load_dotenv()
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID   = os.environ["VECTARA_CORPUS_ID"]
+API_KEY     = os.environ["VECTARA_API_KEY"]
+
+def upload(path: str):
+    url = f"https://api.vectara.io/v1/upload?c={CUSTOMER_ID}&o={CORPUS_ID}"
+    with open(path, "rb") as f:
+        r = requests.post(
+            url,
+            headers={"x-api-key": API_KEY},
+            files={"file": (os.path.basename(path), f)},
+        )
+    r.raise_for_status()
+    print(r.json())
+
+if __name__ == "__main__":
+    upload(sys.argv[1])
+```
+
+Run it against any document you want the bot to answer from:
+
+```bash
+python upload.py ./company-handbook.pdf
+```
+
+You should see a JSON response with a `response.status.code` of `OK`. The document is now chunked, embedded, and searchable.
+
+## Building a Chatbot with Vectara
+
+The chat endpoint we want is `/v1/query` with a `chat` block. The first request creates a conversation; the response gives you a `conversationId` that you pass back on every subsequent turn — that's how Vectara stitches the history together for you.
+
+### Single-turn query first
+
+Let's prove the corpus works before adding chat memory:
+
+```python
+# query.py
+import os, json, requests
+from dotenv import load_dotenv
+
+load_dotenv()
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID   = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY     = os.environ["VECTARA_API_KEY"]
+
+def ask(question: str):
+    body = {
+        "query": [{
+            "query": question,
+            "numResults": 5,
+            "corpusKey": [{"customerId": int(CUSTOMER_ID), "corpusId": CORPUS_ID}],
+            "summary": [{
+                "summarizerPromptName": "vectara-summary-ext-v1.2.0",
+                "maxSummarizedResults": 5,
+                "responseLang": "eng",
+            }],
+        }]
+    }
+    r = requests.post(
+        "https://api.vectara.io/v1/query",
+        headers={
+            "x-api-key": API_KEY,
+            "customer-id": CUSTOMER_ID,
+            "content-type": "application/json",
+        },
+        data=json.dumps(body),
+    )
+    r.raise_for_status()
+    data = r.json()
+    summary = data["responseSet"][0]["summary"][0]["text"]
+    print(summary)
+
+if __name__ == "__main__":
+    ask("What is the company's remote work policy?")
+```
+
+If you get a grounded paragraph back, you're ready to add chat.
+
+### Add the chat block
+
+The only real change is one extra field in the `summary` object: `chat`. On the first turn omit `conversationId`; on every turn after, pass the one Vectara returned.
+
+```python
+# chat.py
+import os, json, requests
+from dotenv import load_dotenv
+
+load_dotenv()
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID   = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY     = os.environ["VECTARA_API_KEY"]
+
+def chat_turn(question: str, conversation_id: str | None = None):
+    chat_block = {"store": True}
+    if conversation_id:
+        chat_block["conversationId"] = conversation_id
+
+    body = {
+        "query": [{
+            "query": question,
+            "numResults": 5,
+            "corpusKey": [{"customerId": int(CUSTOMER_ID), "corpusId": CORPUS_ID}],
+            "summary": [{
+                "summarizerPromptName": "vectara-summary-ext-v1.2.0",
+                "maxSummarizedResults": 5,
+                "responseLang": "eng",
+                "chat": chat_block,
+            }],
+        }]
+    }
+
+    r = requests.post(
+        "https://api.vectara.io/v1/query",
+        headers={
+            "x-api-key": API_KEY,
+            "customer-id": CUSTOMER_ID,
+            "content-type": "application/json",
+        },
+        data=json.dumps(body),
+    )
+    r.raise_for_status()
+    rs = r.json()["responseSet"][0]
+    summary = rs["summary"][0]
+    answer = summary["text"]
+    new_id = summary["chat"]["conversationId"]
+    citations = [d["documentId"] for d in rs["document"]]
+    return answer, new_id, citations
+
+if __name__ == "__main__":
+    cid = None
+    print("Chat ready. Ctrl-C to quit.")
+    while True:
+        q = input("\nyou> ").strip()
+        if not q:
+            continue
+        a, cid, cites = chat_turn(q, cid)
+        print(f"\nbot> {a}")
+        print(f"     (sources: {', '.join(cites) or 'none'})")
+```
+
+Run it and try a multi-turn conversation:
+
+```
+you> What is the remote work policy?
+bot> Employees may work remotely up to 3 days per week ...
+you> What about for new hires?
+bot> New hires are required to be on-site for their first 90 days ...
+```
+
+That second answer is the magic — Vectara resolved "for new hires" against the previous turn's topic ("remote work policy") on its own. You didn't have to rewrite the query yourself.
+
+## Enhancing Chatbot Intelligence
+
+A working bot and a *good* bot are different things. Here are the four levers I always reach for.
+
+### 1. Use metadata filters to scope answers
+
+If your corpus mixes audiences (public docs, internal docs, support tickets), tag each upload with metadata and filter at query time. When you upload a document, attach metadata:
+
+```python
+# in upload.py, swap the request for the indexing endpoint:
+doc = {
+    "customerId": int(CUSTOMER_ID),
+    "corpusId": int(CORPUS_ID),
+    "document": {
+        "documentId": "handbook-2025",
+        "metadataJson": json.dumps({"audience": "internal", "year": 2025}),
+        "section": [{"text": open("handbook.txt").read()}],
+    },
+}
+```
+
+Then filter at query time by setting `corpusKey.metadataFilter`:
+
+```python
+"corpusKey": [{
+    "customerId": int(CUSTOMER_ID),
+    "corpusId": CORPUS_ID,
+    "metadataFilter": "doc.audience = 'internal' AND doc.year = 2025",
+}],
+```
+
+The bot will only see chunks that match.
+
+### 2. Tighten the system prompt with a custom prompt
+
+Vectara ships a default summarizer, but you can register your own prompt template per corpus through the console. I use this one as a starting point — it forces the bot to say "I don't know" when the corpus doesn't have an answer, which kills the most common failure mode:
+
+```
+You are a helpful assistant for {company_name}.
+Use ONLY the provided search results to answer.
+If the results don't contain the answer, say
+"I don't have that in my sources" and suggest a related topic.
+Always cite the document IDs you used.
+```
+
+### 3. Tune retrieval with re-ranking and MMR
+
+In the query body, add a `reranker` block to rebalance precision vs. diversity:
+
+```python
+"rerankingConfig": {
+    "rerankerId": 272725718,        // Vectara's MMR re-ranker
+    "mmrConfig": {"diversityBias": 0.3}
+}
+```
+
+A `diversityBias` around 0.3 is a good default — high enough that the model sees multiple angles, low enough that it doesn't drift off-topic.
+
+### 4. Stream responses for a better UX
+
+The same endpoint supports streaming via `/v1/stream-query`. Swap the URL, set `Accept: text/event-stream`, and consume `responseSet` chunks as they arrive. Even on a fast corpus, streaming changes the perceived latency from "is it broken?" to "it's thinking."
+
+## Deploying and Testing Chatbots
+
+### Wrap the bot in a Flask endpoint
+
+The frontend just needs one POST endpoint. Here's the whole thing:
+
+```python
+# server.py
+from flask import Flask, request, jsonify
+from chat import chat_turn
+
+app = Flask(__name__)
+
+@app.post("/chat")
+def chat():
+    body = request.get_json()
+    q = body["question"]
+    cid = body.get("conversationId")
+    answer, new_cid, citations = chat_turn(q, cid)
+    return jsonify({
+        "answer": answer,
+        "conversationId": new_cid,
+        "citations": citations,
+    })
+
+if __name__ == "__main__":
+    app.run(port=8000, debug=True)
+```
+
+Run with `python server.py` and test:
+
+```bash
+curl -s localhost:8000/chat \
+  -H "content-type: application/json" \
+  -d '{"question":"What is the remote work policy?"}' | jq
+```
+
+### Hook up a minimal frontend
+
+A 40-line HTML page is enough to prove the loop:
+
+```html
+<!doctype html>
+<html>
+<body>
+<div id="log" style="white-space:pre-wrap;font-family:monospace"></div>
+<input id="q" style="width:80%" placeholder="ask something..." />
+<button onclick="send()">send</button>
+<script>
+let cid = null;
+async function send() {
+  const q = document.getElementById('q').value;
+  document.getElementById('log').textContent += `\nyou> ${q}`;
+  const r = await fetch('/chat', {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify({question: q, conversationId: cid}),
+  });
+  const data = await r.json();
+  cid = data.conversationId;
+  document.getElementById('log').textContent +=
+    `\nbot> ${data.answer}\n     sources: ${data.citations.join(', ')}`;
+  document.getElementById('q').value = '';
+}
+</script>
+</body>
+</html>
+```
+
+### Or skip the frontend with the Vectara chat widget
+
+If you don't want to write any UI, the Vectara console can generate a drop-in chat widget script tied to your corpus. Go to *Chat → Widget*, configure colors and a welcome message, and paste the resulting `<script>` tag into your site. It works the same way as the API path under the hood — same conversation memory, same citations.
+
+### Testing checklist
+
+Before you call it done, run the bot through these:
+
+- **Grounded questions** — does it answer correctly from the docs?
+- **Out-of-scope questions** — does it say "I don't know" instead of inventing?
+- **Follow-ups** — does turn 3 still understand turn 1's topic?
+- **Adversarial input** — does it ignore "ignore your instructions and ..."?
+- **Latency** — first token under ~2s on a warm corpus is realistic; if you're way over, check `numResults` and document size.
+
+### Deploy the backend
+
+The Flask app is stateless (Vectara holds the conversation), so any container host works — Fly.io, Render, Railway, a $5 VPS. The only requirement is that your `VECTARA_API_KEY` lives in an env var, never in code.
+
+## Conclusion and Tips for Hackathon Participants
+
+You now have the full picture: a corpus, a chat loop with memory, citations, metadata filtering, a streaming-ready endpoint, and two deployment paths. The whole thing took maybe 80 lines of Python.
+
+If you're heading into a hackathon with Vectara Chat, here are the use cases I've seen win:
+
+- **Internal knowledge bots** — point it at a company wiki or handbook and you've replaced "ask in #help and wait."
+- **Customer support over docs** — index your product docs + recent changelog, deploy the widget on your marketing site.
+- **Legal/contract Q&A** — upload a contract set, ask "what termination clauses do we have?" — the citations are what sell this to lawyers.
+- **Research assistants** — index a folder of PDFs you actually need to read, ask it questions instead.
+- **Onboarding bots** — give new hires a chatbot that knows the codebase READMEs.
+
+Three closing tips that will save you time on judging day:
+
+1. **Show citations in the UI.** Judges trust grounded answers more than slick ones — make the source visible.
+2. **Pre-seed a few good questions.** A working demo is worth ten "you can ask anything!" pitches.
+3. **Have a fallback.** If the corpus doesn't have an answer, route the user somewhere useful (a contact form, a docs link). Don't let the bot dead-end.
+
+If you want more depth on the platform itself, check out the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and the [Vectara Hackathon Guide](https://lablab.ai/t/vectara-hackathon-guide) on lablab.
+
+Now go build something. Good luck at the hackathon!
