@@ -23,12 +23,13 @@ topics/           — Topic index pages
 
 ## Skills
 
-Five agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
+Six agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
 
 | Skill | When to use |
 |-------|-------------|
 | [`content-ideate`](.agents/skills/content-ideate/SKILL.md) | When you have a source (tweet, article, raw idea) and want to turn it into a content concept — outputs working title + brief, hands off to content-start |
 | [`content-start`](.agents/skills/content-start/SKILL.md) | Before writing any new article or tutorial — runs uniqueness check, gathers sources, confirms angle, sets Notion task to In Progress |
+| [`tutorial-build`](.agents/skills/tutorial-build/SKILL.md) | For tutorials with code — scaffolds and builds the working project end-to-end before any writing starts; hands off once the code runs cleanly |
 | [`create-tech-page`](.agents/skills/create-tech-page/SKILL.md) | When adding a new technology, model, or product to the tech index — researches, drafts, and places the MDX in `technologies/` |
 | [`publish-check`](.agents/skills/publish-check/SKILL.md) | When a draft is complete — runs the full publishing checklist and updates Notion to Done |
 | [`seo-apply`](.agents/skills/seo-apply/SKILL.md) | After a draft passes publish-check — reads this week's Notion SEO clusters and applies surgical keyword improvements without changing tone |
