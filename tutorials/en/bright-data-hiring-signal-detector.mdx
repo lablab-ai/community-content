@@ -1,7 +1,7 @@
 ---
 title: "Build a Company Growth Signal Detector with Bright Data and Gemini"
 description: "Learn how to use Bright Data's Web Scraper API and Gemini to turn LinkedIn job postings into structured company intelligence briefs that detect growth, pivots, and contraction before press releases do."
-image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/hiring-signal-ui-results-top/public"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-hiring-signal-cover/public"
 authorUsername: "stevekimoi"
 ---
 
@@ -334,7 +334,10 @@ addForm.addEventListener("submit", async (e) => {
 
   if (!res.ok) {
     const err = await res.json();
-    // show inline error
+    const msg = document.createElement("p");
+    msg.className = "add-error";
+    msg.textContent = err.detail;
+    addForm.after(msg);
     return;
   }
 
