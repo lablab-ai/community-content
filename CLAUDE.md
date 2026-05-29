@@ -27,6 +27,7 @@ Six agent skills live in `.agents/skills/` and cover the full content lifecycle.
 
 | Skill | When to use |
 |-------|-------------|
+| [`hackathon-tutorial`](.agents/skills/hackathon-tutorial/SKILL.md) | When you have a hackathon page (URL or pasted content) and need a tutorial concept — parses partners/tracks/timeline, finds the strongest angle, does a uniqueness check, outputs a ready-to-write brief. Run this first, before content-start |
 | [`content-ideate`](.agents/skills/content-ideate/SKILL.md) | When you have a source (tweet, article, raw idea) and want to turn it into a content concept — outputs working title + brief, hands off to content-start |
 | [`content-start`](.agents/skills/content-start/SKILL.md) | Before writing any new article or tutorial — runs uniqueness check, gathers sources, confirms angle, sets Notion task to In Progress |
 | [`tutorial-build`](.agents/skills/tutorial-build/SKILL.md) | For tutorials with code — scaffolds and builds the working project end-to-end before any writing starts; hands off once the code runs cleanly |
