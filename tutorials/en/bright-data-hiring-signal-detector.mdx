@@ -1,6 +1,6 @@
 ---
-title: "Build a Company Growth Signal Detector with Bright Data and Gemini"
-description: "Learn how to use Bright Data's Web Scraper API and Gemini to turn LinkedIn job postings into structured company intelligence briefs that detect growth, pivots, and contraction before press releases do."
+title: "Bright Data Tutorial: Build a Growth Signal Detector for AI Hackathons"
+description: "AI hackathon tutorial: build a company growth signal detector with Bright Data and Gemini, reading LinkedIn job postings as alternative financial intelligence."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bright-data-hiring-signal-cover/public"
 authorUsername: "stevekimoi"
 ---
@@ -8,6 +8,8 @@ authorUsername: "stevekimoi"
 ## Introduction
 
 Earnings calls, analyst reports, and Bloomberg terminals all cover the same companies with the same data. But hiring activity is public, real-time, and almost nobody reads it as financial intelligence.
+
+This kind of alternative data pipeline is a strong foundation for [AI hackathon](https://lablab.ai/event) projects, especially for tracks involving market intelligence, sales tooling, or investment research. Bright Data's Web Scraper API handles live data access without proxy management, so you can build and demo a working intelligence tool within a hackathon's timeframe.
 
 When a fintech company suddenly posts 12 sales engineer roles in Chicago, that is not noise. It is a signal: a product is ready to sell, a market is being entered, or a funding round just closed. When an AI company's engineering job mix shifts from backend to ML infrastructure, that pivot happened weeks before any announcement.
 
@@ -405,10 +407,27 @@ For Vercel, a `seniority_shift` signal: the job mix skews toward senior and staf
 
 These are the signals that show up in hiring data before they show up anywhere else.
 
+## Frequently Asked Questions
+
+**Q: Can I submit this project to an AI hackathon?**
+Yes. The project is a self-contained Python application: clone the repo, add your API keys, and you have a working demo within an hour. It is a strong fit for hackathon tracks focused on market intelligence, sales tooling, or alternative data, such as the [Web Data UNLOCKED hackathon](https://lablab.ai/event) on Lablab.ai.
+
+**Q: How much do the APIs cost to run this pipeline?**
+Bright Data's Web Scraper API is priced per record with a free trial included. At 25 jobs per company, a single analysis run for three companies costs a few cents. Gemini 2.5 Flash has a free tier that comfortably covers development and light production use.
+
+**Q: What companies can I track, and are there any restrictions?**
+You can track any company that has active LinkedIn job postings. The Bright Data dataset only returns publicly listed jobs, so there are no authentication or scraping policy concerns. Companies with fewer than five active postings at the time of the scrape will return a low-confidence brief.
+
+**Q: How do I interpret a low-confidence brief?**
+Low confidence means the dataset returned fewer job postings than needed for reliable pattern detection, typically fewer than five records. This happens with smaller companies or those with low current hiring activity. You can increase `JOBS_PER_COMPANY` in `backend/scraper.py` or widen the location field to get more results.
+
+**Q: Can I detect growth signals beyond hiring data?**
+Yes. The same pipeline architecture works with any structured data source Bright Data supports. You could replace or augment the LinkedIn jobs dataset with company news feeds, funding announcements from Crunchbase, or product review data from G2 and Glassdoor, then update the Gemini system prompt to interpret the new signal types.
+
 ## Conclusion
 
 Every tool in this pipeline is doing exactly what it was designed for. Bright Data's Web Scraper API handles the live data collection: proxy rotation, anti-bot bypass, and structured output are handled for you, so the scraper is a single API call. Gemini Flash handles the interpretation: a structured prompt with a strict JSON schema and low temperature turns raw job titles into typed, evidenced intelligence signals.
 
-The watchlist approach scales naturally. Add a cron job to run the analysis weekly and store the briefs, and you have a lightweight alternative data feed for any set of companies you care about, whether that is competitive research, pre-meeting prep for sales calls, or tracking companies you are considering joining.
+The watchlist approach scales naturally. Add a cron job to run the analysis weekly and store the briefs, and you have a lightweight alternative data feed for any set of companies you care about, whether that is [competitive research](https://lablab.ai/ai-hackathons), pre-meeting prep for sales calls, or tracking companies you are considering joining.
 
 To extend the project, you can swap the Gemini model from `gemini-2.5-flash` to `gemini-2.5-pro` in `backend/analyzer.py` for deeper reasoning on ambiguous signals. You can also increase `JOBS_PER_COMPANY` in `backend/scraper.py` to pull more postings per company for higher-confidence analysis on large employers.
