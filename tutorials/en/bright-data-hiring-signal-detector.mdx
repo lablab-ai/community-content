@@ -1,0 +1,411 @@
+---
+title: "Build a Company Growth Signal Detector with Bright Data and Gemini"
+description: "Learn how to use Bright Data's Web Scraper API and Gemini to turn LinkedIn job postings into structured company intelligence briefs that detect growth, pivots, and contraction before press releases do."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/hiring-signal-ui-results-top/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+Earnings calls, analyst reports, and Bloomberg terminals all cover the same companies with the same data. But hiring activity is public, real-time, and almost nobody reads it as financial intelligence.
+
+When a fintech company suddenly posts 12 sales engineer roles in Chicago, that is not noise. It is a signal: a product is ready to sell, a market is being entered, or a funding round just closed. When an AI company's engineering job mix shifts from backend to ML infrastructure, that pivot happened weeks before any announcement.
+
+This tutorial builds a web app that reads those signals. You give it a watchlist of companies. It scrapes live LinkedIn job postings for each one using Bright Data's Web Scraper API (no proxies to manage, no blocking to handle), then passes the structured results to Gemini Flash, which returns an intelligence brief per company: hiring velocity, department expansion patterns, seniority mix, tech stack pivots, and a plain-English verdict.
+
+By the end you will have:
+
+- A Python backend with three endpoints: load watchlist, add a company, run analysis
+- A Gemini-powered analyzer that returns structured JSON with signal types and cited evidence
+- A minimal dark-theme web UI where you can add companies and read their briefs side by side
+
+The full source code is on [GitHub](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector).
+
+## Prerequisites
+
+- Python 3.10 or higher
+- A [Bright Data account](https://brightdata.com) (free trial available). You need the account-level API key from **Settings** in the dashboard.
+- A [Google AI Studio account](https://aistudio.google.com) with a Gemini API key
+- Basic familiarity with Python and REST APIs
+
+## Step 1: Set up the project
+
+Create the project directory and install dependencies:
+
+```bash
+mkdir bright-data-hiring-signal-detector
+cd bright-data-hiring-signal-detector
+mkdir backend frontend
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Create `requirements.txt`:
+
+```text
+fastapi>=0.115.0
+uvicorn>=0.30.0
+httpx>=0.27.0
+python-dotenv>=1.0.0
+google-genai>=1.0.0
+pydantic>=2.0.0
+```
+
+Install everything:
+
+```bash
+pip install -r requirements.txt
+```
+
+Copy `.env.example` to `.env` and fill in your two keys:
+
+```text
+BRIGHT_DATA_API_KEY=your_bright_data_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+To find your Bright Data API key: log into the dashboard, click **Settings** in the left sidebar, and copy the key from the **API keys** table.
+
+Create `watchlist.json` with a few starter companies:
+
+```json
+[
+  { "company": "Stripe", "location": "United States" },
+  { "company": "Notion", "location": "United States" },
+  { "company": "Vercel", "location": "United States" }
+]
+```
+
+## Step 2: Build the scraper
+
+Bright Data's Web Scraper API dataset for LinkedIn jobs supports a `discover_new` mode: you send a company name and location, and it returns structured job posting records. No URL construction, no proxy management, no HTML parsing.
+
+The flow is asynchronous: you trigger a scrape, receive a `snapshot_id`, then poll until the data is ready.
+
+Create `backend/scraper.py`:
+
+Full implementation in [`backend/scraper.py`, lines 19-58](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/backend/scraper.py#L19-L58):
+
+```python
+import os
+import time
+import httpx
+from typing import Any
+
+BRIGHT_DATA_API_KEY = os.getenv("BRIGHT_DATA_API_KEY")
+LINKEDIN_JOBS_DATASET_ID = "gd_lpfll7v5hcqtkxl6l"
+BASE_URL = "https://api.brightdata.com/datasets/v3"
+JOBS_PER_COMPANY = 25
+
+
+def _headers() -> dict:
+    return {
+        "Authorization": f"Bearer {BRIGHT_DATA_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+
+def trigger_jobs_discover(company: str, location: str = "United States") -> str:
+    url = (
+        f"{BASE_URL}/trigger"
+        f"?dataset_id={LINKEDIN_JOBS_DATASET_ID}"
+        f"&type=discover_new"
+        f"&discover_by=keyword"
+        f"&limit_per_input={JOBS_PER_COMPANY}"
+        f"&include_errors=true"
+        f"&format=json"
+    )
+    payload = [{"company": company, "location": location}]
+    with httpx.Client(timeout=30) as client:
+        resp = client.post(url, json=payload, headers=_headers())
+        resp.raise_for_status()
+        return resp.json()["snapshot_id"]
+
+
+def poll_snapshot(snapshot_id: str, max_wait: int = 180) -> list[dict[str, Any]]:
+    status_url = f"{BASE_URL}/snapshot/{snapshot_id}?format=json"
+    deadline = time.time() + max_wait
+    with httpx.Client(timeout=30) as client:
+        while time.time() < deadline:
+            resp = client.get(status_url, headers=_headers())
+            if resp.status_code == 200:
+                return resp.json()
+            if resp.status_code == 202:
+                time.sleep(8)
+                continue
+            resp.raise_for_status()
+    raise TimeoutError(f"Snapshot {snapshot_id} not ready after {max_wait}s")
+
+
+def fetch_jobs_for_company(company: str, location: str = "United States") -> list[dict[str, Any]]:
+    snapshot_id = trigger_jobs_discover(company, location)
+    jobs = poll_snapshot(snapshot_id)
+    return [j for j in jobs if j.get("job_title")]
+```
+
+Two things to note. First, the `type=discover_new` and `discover_by=keyword` parameters tell Bright Data to search for new job listings matching your input rather than re-fetching a specific URL. Second, `poll_snapshot` distinguishes between `202` (still collecting) and `200` (ready): the 8-second sleep between polls keeps you well inside the API's rate limits.
+
+## Step 3: Build the Gemini analyzer
+
+The analyzer passes job posting data to Gemini Flash and asks it to return a structured intelligence brief. The key design decision is the system prompt: it defines a strict JSON schema, gives Gemini a fixed set of signal types to use, and requires it to cite specific job titles as evidence for each signal.
+
+Create `backend/analyzer.py`:
+
+Full implementation in [`backend/analyzer.py`, lines 9-68](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/backend/analyzer.py#L9-L68):
+
+```python
+import os
+import json
+from google import genai
+from google.genai import types
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+MODEL = "gemini-2.5-flash"
+
+SYSTEM_PROMPT = """You are an expert analyst who reads company job posting data as alternative financial intelligence.
+Given a list of recent job postings for a company, produce a structured growth signal brief.
+
+Respond ONLY with valid JSON in this exact schema:
+{
+  "company": "string",
+  "signal_summary": "2-3 sentence plain-English verdict on trajectory (growing, pivoting, contracting, stable)",
+  "signals": [
+    {
+      "type": "string (one of: hiring_velocity, department_expansion, seniority_shift, tech_stack_pivot, geographic_expansion, contraction)",
+      "description": "string",
+      "evidence": "string (cite specific job titles or patterns from the data)"
+    }
+  ],
+  "department_breakdown": {
+    "Engineering": 0, "Sales": 0, "Marketing": 0,
+    "Operations": 0, "Product": 0, "Other": 0
+  },
+  "top_roles": ["string", "string", "string"],
+  "confidence": "high | medium | low",
+  "confidence_reason": "string"
+}"""
+
+
+def analyze_jobs(company: str, jobs: list[dict]) -> dict:
+    client = genai.Client(api_key=GEMINI_API_KEY)
+
+    jobs_text = json.dumps(
+        [
+            {
+                "title": j.get("job_title", ""),
+                "function": j.get("job_function", ""),
+                "seniority": j.get("job_seniority_level", ""),
+                "location": j.get("job_location", ""),
+                "posted": j.get("job_posted_date", ""),
+            }
+            for j in jobs
+        ],
+        indent=2,
+    )
+
+    prompt = f"Company: {company}\nTotal job postings: {len(jobs)}\n\nJob data:\n{jobs_text}"
+
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            temperature=0.2,
+            response_mime_type="application/json",
+        ),
+    )
+
+    return json.loads(response.text)
+```
+
+Setting `response_mime_type="application/json"` puts Gemini into JSON mode: it is constrained to return valid JSON that matches the schema you described, so you never need to parse markdown code fences out of the response. The low temperature (0.2) keeps the analysis grounded in the actual job data rather than drifting into speculation.
+
+## Step 4: Build the FastAPI backend
+
+The backend exposes three endpoints. `GET /watchlist` returns the current list. `POST /watchlist` adds a company and persists the change to `watchlist.json`. `POST /analyze` triggers the full scrape-and-analyze pipeline for a single company and returns its brief.
+
+Create `backend/main.py`:
+
+Full implementation in [`backend/main.py`, lines 27-75](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/backend/main.py#L27-L75):
+
+```python
+import json
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+load_dotenv(Path(__file__).parent.parent / ".env")
+
+from scraper import fetch_jobs_for_company
+from analyzer import analyze_jobs
+
+app = FastAPI(title="Hiring Signal Detector")
+
+FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
+WATCHLIST_PATH = Path(__file__).parent.parent / "watchlist.json"
+
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+
+@app.get("/", response_class=FileResponse)
+def index():
+    return FRONTEND_DIR / "index.html"
+
+
+@app.get("/watchlist")
+def get_watchlist():
+    with open(WATCHLIST_PATH) as f:
+        return json.load(f)
+
+
+class WatchlistEntry(BaseModel):
+    company: str
+    location: str = "United States"
+
+
+@app.post("/watchlist")
+def add_to_watchlist(entry: WatchlistEntry):
+    with open(WATCHLIST_PATH) as f:
+        watchlist = json.load(f)
+    if any(e["company"].lower() == entry.company.lower() for e in watchlist):
+        raise HTTPException(status_code=409, detail=f"{entry.company} is already in the watchlist")
+    watchlist.append({"company": entry.company, "location": entry.location})
+    with open(WATCHLIST_PATH, "w") as f:
+        json.dump(watchlist, f, indent=2)
+    return watchlist
+
+
+class AnalyzeRequest(BaseModel):
+    company: str
+    location: str = "United States"
+
+
+@app.post("/analyze")
+def analyze(req: AnalyzeRequest):
+    try:
+        jobs = fetch_jobs_for_company(req.company, req.location)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Bright Data error: {e}")
+
+    if not jobs:
+        raise HTTPException(status_code=404, detail=f"No job postings found for {req.company}")
+
+    try:
+        brief = analyze_jobs(req.company, jobs)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Gemini error: {e}")
+
+    return {"company": req.company, "job_count": len(jobs), "brief": brief}
+```
+
+The `sys.path.insert` at the top ensures `scraper` and `analyzer` resolve correctly regardless of where uvicorn is launched from. Without it, running `uvicorn backend.main:app` from the project root raises a `ModuleNotFoundError`.
+
+## Step 5: Build the frontend
+
+The frontend is three files served directly by FastAPI. No build step, no framework.
+
+Create `frontend/index.html` with the full layout including the add-company form. Full file at [`frontend/index.html`](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/frontend/index.html).
+
+Create `frontend/style.css` for the dark theme, card layout, department bar charts, and signal badges. Full file at [`frontend/style.css`](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/frontend/style.css).
+
+The JavaScript in `frontend/app.js` handles three things: loading the watchlist on page load, wiring the add-company form to `POST /watchlist`, and running the analysis. All companies are analyzed in parallel via `Promise.all`.
+
+Full implementation in [`frontend/app.js`, lines 44-60](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/frontend/app.js#L44-L60):
+
+```javascript
+addForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const company = inputCompany.value.trim();
+  const location = inputLocation.value.trim() || "United States";
+
+  const res = await fetch("/watchlist", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ company, location }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    // show inline error
+    return;
+  }
+
+  watchlist = await res.json();
+  renderWatchlist();
+  inputCompany.value = "";
+});
+```
+
+And the parallel analysis run in [`frontend/app.js`, lines 118-130](https://github.com/Stephen-Kimoi/bright-data-hiring-signal-detector/blob/main/frontend/app.js#L118-L130):
+
+```javascript
+analyzeAllBtn.addEventListener("click", async () => {
+  if (inputCompany.value.trim()) {
+    await addForm.requestSubmit();
+    await new Promise((r) => setTimeout(r, 50));
+  }
+
+  analyzeAllBtn.disabled = true;
+  resultsSection.style.display = "block";
+
+  for (const entry of watchlist) {
+    resultsEl.appendChild(createLoadingCard(entry.company));
+  }
+
+  await Promise.all(watchlist.map(analyzeCompany));
+  analyzeAllBtn.disabled = false;
+});
+```
+
+The `requestSubmit()` call before the analysis loop auto-submits the add form if the user typed a company name but forgot to press **+ Add**. It is a small UX detail that eliminates a common source of confusion during demos.
+
+## Step 6: Run the app
+
+Start the server from the project root:
+
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+Open `http://localhost:8000`. You will see the watchlist loaded from `watchlist.json`, the add-company form, and the **Analyze All Companies** button.
+
+![The initial UI showing the description, watchlist chips for Stripe, Notion, and Vercel, the add-company form, and the Analyze All button](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/hiring-signal-ui-initial/public)
+
+To add a company, type its name in the **Company name** field and click **+ Add** (or just type the name and click **Analyze All Companies** directly). Click **Analyze All Companies** to start the pipeline. Each company gets a loading card immediately while its scrape runs in parallel.
+
+![The loading state showing four cards in progress: Analyzing Stripe, Analyzing Notion, Analyzing Vercel, and Analyzing cursor](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/hiring-signal-ui-loading/public)
+
+Bright Data typically returns results in 30-60 seconds per company. Once each snapshot is ready, the card populates with the full intelligence brief.
+
+![Three intelligence brief cards side by side for Stripe, Notion, and Vercel, each showing a signal summary, individual signal items with evidence, and department breakdown bars](https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/hiring-signal-ui-results-cards/public)
+
+Each card shows:
+
+- A **confidence badge** (High / Medium / Low) based on data volume and consistency
+- A plain-English **signal summary** in 2-3 sentences
+- Individual **signal items**, each with a type label, description, and cited evidence pulled directly from the job titles Bright Data returned
+- A **department breakdown** with bar charts showing the hiring distribution across Engineering, Sales, Product, and other functions
+
+## What the signals mean in practice
+
+For Notion, the analysis returned a `tech_stack_pivot` signal: roles like "Software Engineer, AI Workflows", "AI Applications Engineer", and "AI Conversation Designer" point to a strategic shift toward AI-native product capabilities, weeks before it would appear in a product announcement.
+
+For Vercel, a `seniority_shift` signal: the job mix skews toward senior and staff-level engineering roles, which typically indicates a company moving from rapid growth mode toward scaling and reliability.
+
+These are the signals that show up in hiring data before they show up anywhere else.
+
+## Conclusion
+
+Every tool in this pipeline is doing exactly what it was designed for. Bright Data's Web Scraper API handles the live data collection: proxy rotation, anti-bot bypass, and structured output are handled for you, so the scraper is a single API call. Gemini Flash handles the interpretation: a structured prompt with a strict JSON schema and low temperature turns raw job titles into typed, evidenced intelligence signals.
+
+The watchlist approach scales naturally. Add a cron job to run the analysis weekly and store the briefs, and you have a lightweight alternative data feed for any set of companies you care about, whether that is competitive research, pre-meeting prep for sales calls, or tracking companies you are considering joining.
+
+To extend the project, you can swap the Gemini model from `gemini-2.5-flash` to `gemini-2.5-pro` in `backend/analyzer.py` for deeper reasoning on ambiguous signals. You can also increase `JOBS_PER_COMPANY` in `backend/scraper.py` to pull more postings per company for higher-confidence analysis on large employers.
