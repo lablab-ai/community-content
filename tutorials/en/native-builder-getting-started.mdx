@@ -1,0 +1,221 @@
+---
+title: "Native.Builder Tutorial: Build and Deploy Your First AI App"
+description: "AI hackathons move fast. Learn how to use Native.Builder to go from blank prompt to live deployed web app in under 30 minutes. No coding required."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1baa4e65-d22a-410e-f2b2-1a5d273fdd00/public"
+authorUsername: "stevekimoi"
+---
+
+# Native.Builder Tutorial: Build and Deploy Your First AI App
+
+Most no-code tools let you drag components onto a canvas. Native.Builder works differently: you describe what you want, and a team of specialized AI agents plans, codes, and ships a real production React app for you. No canvas. No drag and drop. Just a prompt and a live URL at the end.
+
+This tutorial walks you through the entire workflow from scratch. You will brief the Product Architect agent, get a full PRD generated automatically, hand it off to the Builder agent, and publish a working app to a public URL. The whole thing takes under 30 minutes and uses fewer than 10 credits.
+
+If you are preparing for an [AI hackathon](https://lablab.ai/event), this workflow is worth knowing. Native.Builder lets hackathon teams skip the scaffolding and go straight to building product.
+
+## What you will build
+
+Task Flow: a dark-themed Kanban board with three status columns (To Do, In Progress, Done), click-to-move task cards, and an Add Task modal. It is fully functional, deployed, and shareable by the end of this tutorial.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1baa4e65-d22a-410e-f2b2-1a5d273fdd00/public" alt="Task Flow app live in the browser" caption="The finished Task Flow app running at its public nativelyai.app URL" />
+
+## Prerequisites
+
+- A Native.Builder account (sign up at [beta.nativelyai.com](https://beta.nativelyai.com))
+- 50 free credits (all new accounts receive 50 credits with no payment required)
+- No coding experience needed
+
+## The Dashboard
+
+After signing in you land on the Home page. The large prompt box in the center is where every project begins. Below it, a "From the Community" section shows apps other builders have shipped.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/79648faa-b01f-47a4-56fb-9163b086ed00/public" alt="Native.Builder home dashboard" caption="The Home dashboard: your starting point for every new project" />
+
+The sidebar on the left is the main navigation. Here is what each section does:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8cdc2f26-311f-415b-1361-07113bb39000/public" alt="Native.Builder sidebar with all navigation items" caption="The sidebar shows your credit balance, workspace, and all navigation sections" />
+
+**Credits** (top of the sidebar): Your current balance. All new free accounts start with 50 one-time credits. Credits are consumed by chat turns with AI agents, not by browsing, previewing, or publishing. For a full breakdown of plans and what each credit buys, see the [Plans and Credits docs](https://docs-builder.nativelyai.com/introduction/plans-and-credits).
+
+**My Projects**: A grid of all your projects. Each card shows the project name, thumbnail, and creation date. Click any card to reopen that project.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d442c4a8-8406-4f6e-0f92-f1e8e7186400/public" alt="My Projects grid" caption="My Projects shows every app you have built" />
+
+**My Templates**: A growing library of reusable components you can drop into any project. The team is actively expanding this section.
+
+**Switch Workspace**: Native.Builder organizes everything into workspaces. A workspace holds your projects, members, and a shared credit pool. You can create additional workspaces or switch between them here.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dc4b1261-d575-416c-5ce6-322217230800/public" alt="Workspace switcher" caption="Switch between workspaces or create a new one from this dropdown" />
+
+**Store**: Browse community-built apps and components. The Store has two tabs: Apps (full projects you can fork) and Components (reusable UI pieces). Everything marked Free costs no credits to install.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5a730f41-8067-49dc-737e-c0b3e9677500/public" alt="Native.Builder Store" caption="The Store: community apps and components ready to install into your projects" />
+
+**Integrations**: Connect external services to your projects. Currently available integrations are Supabase (database), AI/ML API, OpenRouter (bring your own LLM key), and GitHub (sync your project with a repository).
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9dc61e70-4638-4eb3-716e-d432e75b3600/public" alt="Integrations panel" caption="Connect Supabase, OpenRouter, AI/ML API, or GitHub directly from the Integrations panel" />
+
+**Plans and Credits**: Manage your subscription and view your billing history. The free plan includes 50 one-time credits, 1 project, and 2 workspace members.
+
+**Members**: Invite teammates by email and assign roles (Owner, Admin, Member, Viewer, Guest). All members in a workspace share the same credit pool.
+
+## Step 1: Brief the Product Architect
+
+Go to **Home** and look at the prompt box. Notice the agent label in the top left corner: **Product Architect**. This is the default agent for new projects, and it is the right one to start with.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f8e065b5-8651-4645-c1a7-33db1ab46100/public" alt="Agent selector showing all five agents" caption="The agent dropdown: Product Architect, Builder, Task Planner, Feedback, and Deck Creator" />
+
+The Product Architect's job is to scope your project before any code is written. It reads your brief, asks clarifying questions, and produces a PRD (Product Requirements Document) that the Builder agent will use as its spec. This two-step flow saves credits by avoiding expensive rewrites later.
+
+Type the following into the prompt box and send it:
+
+```text
+I want to build a simple task manager web app. It should have:
+- A left sidebar with the app name and navigation
+- A main area with tasks grouped into three columns: To Do, In Progress, and Done
+- A button to add a new task with a title
+- Ability to click a task to move it to the next column
+- Clean minimal dark UI with card-style tasks
+
+Scope this for me before we start building.
+```text
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4fd8647e-2c73-4c02-34a1-e5f325144600/public" alt="Prompt typed into the Product Architect box" caption="A specific brief gives the Product Architect enough to scope without asking unnecessary questions" />
+
+After sending, the project workspace opens. The Product Architect will ask you four clarifying questions before writing the PRD. These questions define the scope and prevent the Builder from making assumptions.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f233171c-98f2-4ce6-a8d8-907e12ed0000/public" alt="Product Architect clarifying questions modal" caption="The Product Architect asks clarifying questions to lock the scope before writing any code" />
+
+Here are the recommended answers for this project:
+
+| Question | Answer | Why |
+|---|---|---|
+| Where do new tasks start? | Always starts in To Do | Simple and predictable |
+| How should tasks move? | Click only | Drag-and-drop needs more code and more credits |
+| Should tasks persist after closing the browser? | No, in-memory only for now | Keeps it pure frontend, no database needed |
+| What should we name this project? | Task Flow | Clean product name |
+
+After you answer all four questions and click Done, the Product Architect sets the project name and writes the PRD.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/8c1ca26c-1c17-4018-25be-bfb242c83100/public" alt="Product Architect PRD completion summary in chat" caption="The Product Architect confirms scope and saves the PRD to prd/overview.md" />
+
+## Step 2: Read the PRD in the Docs Tab
+
+Click the **Docs tab** (page icon in the top navigation) to see what the Product Architect wrote. It created a file at `prd/overview.md` with a full PRD: description, goals, user stories, user flows, design notes, acceptance criteria, out-of-scope items, and implementation notes.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/caf187d3-bb81-4950-0008-2bb9f09e5c00/public" alt="PRD shown in the Docs tab WYSIWYG editor" caption="The Docs tab shows the PRD in WYSIWYG view. Toggle to Raw MD to see the markdown source." />
+
+Read through it. If anything is wrong, you can correct it now by telling the Product Architect in chat before any code is written. This is much cheaper than fixing code after the fact.
+
+The Docs tab supports both WYSIWYG and Raw MD views. You can edit docs directly here or let agents update them as the project evolves.
+
+## Step 3: Switch to the Builder Agent and Build
+
+Go back to the chat panel. Click the agent selector (it says **Product Architect**) and choose **Builder**.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/758718d6-c599-4b50-94dc-7987c0ac2400/public" alt="Agent selector dropdown with Builder highlighted" caption="Switch from Product Architect to Builder when you are ready to write code" />
+
+Type this prompt and send it:
+
+```text
+Build the Task Flow app based on the PRD in prd/overview.md
+```text
+
+The Builder will read the PRD first, then suggest switching to the Builder Agent. Click **Switch Agent** to confirm.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/34f128d4-96a6-4141-944f-e3e115845c00/public" alt="Switch to Builder Agent suggested action card" caption="Native.Builder confirms agent handoffs before executing them" />
+
+The Builder reads `prd/overview.md`, then starts generating files. You will see file names appear in the Code tab as it works. A "Building..." indicator shows at the bottom of the chat panel.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/965aea6b-bcc7-45c8-2689-27d877d86b00/public" alt="Builder actively generating files" caption="The Builder reads the PRD and generates all files. Watch the Code tab as files appear." />
+
+When it finishes, the Builder posts a summary of everything it built: components, interactions, keyboard shortcuts, and design decisions.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0680a094-5a4c-4dc9-3375-53eb88513200/public" alt="Builder completion summary showing all implemented features" caption="The Builder summarizes every feature it implemented, so you know exactly what to test" />
+
+The generated code lives in three files: `App.tsx` (all app logic and UI), `main.tsx` (React entry point), and `index.css` (global styles). You can click any file in the Code tab to read or edit it directly.
+
+## Step 4: Test in the Live Preview
+
+Click the **Preview tab** (eye icon). The app renders immediately in the right panel.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/567d884e-32c9-4451-1961-1f28e05cc300/public" alt="Task Flow app in the live preview panel" caption="The live preview updates every time the Builder modifies a file" />
+
+Test the core interactions:
+
+1. Click **Add Task**, type a title, press Enter. The task appears in the To Do column.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae25d323-a800-41ac-e997-73d67384b400/public" alt="Task added to To Do column" caption="New tasks appear in To Do. Each card shows a 'Click to move forward' hint." />
+
+2. Click the task card. It moves to In Progress.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/352dd7e5-e413-4b0a-2260-001284bdae00/public" alt="Task moved to In Progress column" caption="One click moves the task to the next column" />
+
+3. Click again. It moves to Done. Cards in Done have no move action.
+
+If something looks wrong, describe the issue in chat. For small fixes, use a single focused prompt like:
+
+```text
+The Add Task button should be centered in the sidebar, not left-aligned
+```text
+
+Keep refinements narrow. One fix at a time costs fewer credits than bundling multiple changes into one prompt.
+
+The **Tasks tab** (grid icon) shows the Task Planner's development board. This is where the Task Planner agent tracks implementation tasks if you use it to break down larger features.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c7f4ad0c-9b4f-417f-676a-310d3785ce00/public" alt="Tasks tab showing the development task board" caption="The Tasks tab is the Task Planner's board for tracking development work" />
+
+## Step 5: Publish to a Live URL
+
+Click the **Publish** button in the top right corner. A panel appears showing your app URL.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/6f4f29da-aac3-433c-5259-309d011ad000/public" alt="Publish panel showing app URL" caption="The Publish panel shows your app URL and the Manage domains link" />
+
+Click **Publish**. Native.Builder builds the production bundle and deploys it. You will see a "Building in progress" indicator, then a green "Published less than 5 seconds ago" confirmation.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/adb2e1e8-8a43-4e67-880c-7faaedbfe000/public" alt="Published confirmation with Unpublish option" caption="Publishing completes in seconds. The Unpublish option lets you take the app offline at any time." />
+
+Your app is now live at `yourproject.nativelyai.app`. Anyone with the link can use it. Publishing does not consume credits.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f167d395-6439-481d-0a06-06ccbfd1e500/public" alt="Live Task Flow app in the browser with a task added" caption="Task Flow running live. The blue glow border appears on hover." />
+
+## Version History
+
+Every time the Builder makes changes, Native.Builder saves a version snapshot. Click the **history icon** (clock, top left) to see all versions. Each one is named after the prompt that created it, so you can trace exactly when each change happened.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/d0cb23e0-88d2-4316-bda9-a6390da05b00/public" alt="Version history panel showing three snapshots" caption="Three versions: initial prompt, Builder run, and latest publish. Click Preview to restore any version." />
+
+Click **Preview** on any version to see how the app looked at that point. On paid plans, you can restore any version as the active codebase.
+
+## Frequently Asked Questions
+
+**Q: How many credits does building an app actually use?**
+Very few with the standard models. The entire Task Flow app in this tutorial (Product Architect scoping plus Builder generating all the code) used fewer than 10 credits from the 50-credit free allowance. Simple apps built with the Kimi or other standard models are extremely credit-efficient.
+
+**Q: What types of apps can Native.Builder produce?**
+Native.Builder generates Vite-based React web applications. This covers landing pages, dashboards, internal tools, SaaS products, and most standard web apps. It does not currently support native mobile apps, Python-based apps (Streamlit, Flask), or standalone backend services.
+
+**Q: Do I need to know React or TypeScript to use Native.Builder?**
+No. You describe what you want in plain language and the agents write the code. That said, being able to read the generated TypeScript helps you spot issues and write better refinement prompts. The Code tab is always open so you can inspect everything the Builder produces.
+
+**Q: Can I connect a real database so tasks persist between sessions?**
+Yes. Go to Integrations and connect Supabase, then tell the Builder agent: "Add Supabase persistence so tasks survive page reloads." It will generate the schema, client setup, and updated components. You will need a Supabase project and its URL and anon key.
+
+## What to do next
+
+The Task Flow app is a starting point. Here are a few directions to take it further:
+
+**Iterate with the Builder agent**: Ask it to add features one at a time. Good next prompts:
+- `Add a way to delete tasks from the Done column`
+- `Add a priority badge (High, Medium, Low) to each task card`
+- `Make the sidebar collapsible`
+
+**Connect a database**: Go to Integrations, connect Supabase, then tell the Builder: `Add Supabase persistence so tasks survive page reloads`. The Builder will generate the schema and client code.
+
+**Connect a custom domain**: On Builder plan and above, go to Settings, then Domains to connect your own URL instead of the default `*.nativelyai.app` subdomain. Full instructions are in the [Custom Domains docs](https://docs-builder.nativelyai.com/features/custom-domain).
+
+**Explore the full docs**: [docs-builder.nativelyai.com](https://docs-builder.nativelyai.com) covers prompting best practices, workspaces, publishing, and plans in detail.
+
+**Build something bigger**: The next tutorial in this series shows how to build an AI-powered customer onboarding agent using Native.Builder's conversational UI capabilities.
+
+If you want to put these skills to work immediately, check out the [upcoming AI hackathons on Lablab](https://lablab.ai/event). Native.Builder is particularly useful for hackathon prototyping: you can go from idea to demo-ready app in a single session.
