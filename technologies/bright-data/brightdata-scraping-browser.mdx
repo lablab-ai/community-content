@@ -1,0 +1,49 @@
+---
+title: "Bright Data Scraping Browser"
+author: "stevekimoi"
+description: "Bright Data Scraping Browser is a fully managed cloud browser that runs Playwright, Puppeteer, and Selenium scripts with built-in proxy rotation, CAPTCHA solving, and fingerprint management for reliable web scraping."
+---
+
+# Bright Data Scraping Browser
+
+The [Bright Data Scraping Browser](https://brightdata.com/products/scraping-browser) is a cloud-hosted, managed browser environment that developers control using Playwright, Puppeteer, or Selenium. Unlike a self-hosted headless browser, all proxy routing, CAPTCHA solving, browser fingerprinting, and retry logic are handled automatically by Bright Data's infrastructure, so scripts focus on data extraction rather than unblocking.
+
+| General | |
+|---------|--|
+| **Developer** | [Bright Data](https://brightdata.com/) |
+| **Type** | Managed Cloud Browser API |
+| **Protocols** | Playwright, Puppeteer, Selenium |
+| **Documentation** | [docs.brightdata.com/browser](https://docs.brightdata.com/scraping-automation/scraping-browser/introduction) |
+| **Python Boilerplate** | [brightdata/bright-data-browser-api-python-playwright-project](https://github.com/brightdata/bright-data-browser-api-python-playwright-project) |
+
+---
+
+## Core Features
+
+- **Playwright, Puppeteer, and Selenium compatible**: connect your existing scripts to the managed browser via a CDP (Chrome DevTools Protocol) endpoint, no SDK change required.
+- **Built-in proxy rotation**: each session is automatically routed through Bright Data's residential or datacenter proxy network.
+- **CAPTCHA auto-solving**: CAPTCHAs are solved in the background without script-level intervention.
+- **Browser fingerprint management**: browser signatures are rotated and normalised to avoid detection.
+- **JavaScript rendering**: full JS execution before data extraction, suitable for SPAs and dynamically loaded content.
+- **Auto-scaling infrastructure**: browser instances scale with your request volume; no pool management required.
+
+---
+
+## Tools and Resources
+
+- **[Python Playwright Boilerplate](https://github.com/brightdata/bright-data-browser-api-python-playwright-project)**: ready-to-run Python example project connecting Playwright to the Scraping Browser.
+- **[API Documentation](https://docs.brightdata.com/scraping-automation/scraping-browser/introduction)**: endpoint reference and session configuration options.
+- **[Control Panel](https://brightdata.com/cp/start)**: create browser zones and retrieve CDP connection strings.
+
+---
+
+## Ecosystem and Integrations
+
+- Works alongside Bright Data proxy zones for granular proxy type selection per browser session.
+- Output can feed directly into structured data pipelines, databases, or AI training corpora.
+- Combined with the [Web Unlocker](https://brightdata.com/products/web-unlocker) for layered unblocking on particularly difficult targets.
+- The [MCP Server](https://github.com/brightdata/brightdata-mcp) exposes browser automation capabilities to AI agents without requiring direct Playwright scripting.
+
+---
+
+Connect your Playwright or Puppeteer scripts to the managed browser at [brightdata.com/products/scraping-browser](https://brightdata.com/products/scraping-browser) or follow the [quickstart documentation](https://docs.brightdata.com/scraping-automation/scraping-browser/introduction).
