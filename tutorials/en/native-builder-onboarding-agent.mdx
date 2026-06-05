@@ -1,0 +1,196 @@
+---
+title: "Native.Builder Tutorial: Build an AI-Powered Onboarding Agent"
+description: "AI hackathons need fast onboarding flows. Build a personalized multi-step onboarding wizard with Native.Builder, complete with role-based recommendations."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ee5840cc-661b-4df0-c670-65c5e4bbe600/public"
+authorUsername: "stevekimoi"
+---
+
+# Native.Builder Tutorial: Build an AI-Powered Onboarding Agent
+
+Every SaaS product has the same problem: new users land on the dashboard and have no idea where to start. A good onboarding wizard solves this by collecting a few key details upfront (name, role, goals) and using that data to show exactly the right next steps for each person.
+
+This tutorial builds Welcome Flow: a 4-step onboarding wizard with a progress bar, role-based recommendation engine, and personalized summary screen. It is built entirely through Native.Builder's AI agents, from a plain-language brief to a live deployed URL.
+
+If you are working on an [AI hackathon](https://lablab.ai/event) project that needs to impress judges with a polished first-run experience, this is the pattern to know. The same wizard structure works for any product category. Just swap out the roles and recommendations.
+
+This is the second tutorial in this series. If you have not used Native.Builder before, read [Build Your First AI App with Native.Builder](/tutorials/en/native-builder-getting-started) first for a full dashboard walkthrough.
+
+## What you will build
+
+Welcome Flow: a dark-themed onboarding wizard with four steps.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ee5840cc-661b-4df0-c670-65c5e4bbe600/public" alt="Welcome Flow live in the browser" caption="The finished Welcome Flow onboarding wizard running at its public nativelyai.app URL" />
+
+**Step 1: Welcome**: Full-screen card with headline, subtext, and a Get Started button.
+**Step 2: About You**: First name input and four role cards (Developer, Designer, Product Manager, Founder).
+**Step 3: Your Goals**: Multi-select goal cards (Ship faster, Reduce costs, Improve collaboration, Automate workflows).
+**Step 4: All Set**: Personalized summary with the user's name, role badge, selected goal tags, and three role-specific recommended next steps.
+
+## Prerequisites
+
+- A Native.Builder account with credits ([beta.nativelyai.com](https://beta.nativelyai.com))
+- Familiarity with the platform basics (see Tutorial 1 if you are new)
+- No coding experience needed
+
+## Step 1: Brief the Product Architect
+
+Go to **Home**, confirm **Product Architect** is selected, and send this prompt:
+
+```text
+I want to build a multi-step customer onboarding wizard called "Welcome Flow".
+It should guide new users through a personalized setup experience with 4 steps:
+
+- Step 1 (Welcome): Full-screen landing with headline, subtext, and a Get Started button
+- Step 2 (About You): Collect the user's first name and their role from 4 options:
+  Developer, Designer, Product Manager, Founder
+- Step 3 (Your Goals): Let them pick multiple goals from 4 options:
+  Ship faster, Reduce costs, Improve collaboration, Automate workflows
+- Step 4 (All Set): Personalized summary showing their name, role badge, selected
+  goals as tags, and 3 recommended next steps based on their role
+
+Dark UI with purple-to-blue gradient accents, smooth transitions between steps,
+all state in React useState with no backend needed.
+
+Scope this for me before we build.
+```
+
+The Product Architect will ask clarifying questions. Here are the answers that produce the cleanest build:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dc41310e-5cdc-4e1b-7804-5cf5c42fa000/public" alt="Product Architect clarifying question about icon library" caption="The Product Architect asks about icons, transitions, layout, and content before writing any code" />
+
+| Question | Answer | Why |
+|---|---|---|
+| Icon library? | Lucide (clean, minimal) | Standard in Vite + React, well supported, no missing-dependency errors |
+| Recommended next steps content? | I'll write them out now | Generic placeholders weaken Step 4. Write real content once |
+| Transition effect? | Simple fade only | Slide and scale animations introduce layout bugs; fade is reliable |
+| Layout? | Max-width with blur backdrop | Centered card with dark blurred background matches modern SaaS onboarding patterns |
+
+When asked to write the recommended next steps, type them directly in chat:
+
+```text
+Developer: Connect your API key, Read the quickstart docs, Join the Discord community
+Designer: Browse the component library, Fork a starter template, Share your first project
+Product Manager: Set up your first workspace, Invite your team, Create your product roadmap
+Founder: Schedule a demo call, Explore pricing plans, Read customer success stories
+```
+
+## Step 2: Review the PRD
+
+Once you have answered all questions, the Product Architect sets the project name and writes a comprehensive PRD to `prd/welcome-flow.md`. Click the **Docs tab** to read it.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/317e4f0d-c146-49d2-611d-aa40b4452800/public" alt="Welcome Flow PRD in the Docs tab" caption="The PRD includes the full component tree, TypeScript interfaces, Tailwind classes, and accessibility notes" />
+
+This PRD is unusually detailed for a no-code tool. It includes:
+
+- A typed `OnboardingState` interface (`step`, `firstName`, `role`, `goals`)
+- The full component breakdown: `WelcomeFlow.tsx`, `StepWelcome.tsx`, `StepAboutYou.tsx`, `StepGoals.tsx`, `StepAllSet.tsx`, `RoleCard.tsx`, `GoalCard.tsx`, `ProgressBar.tsx`
+- The complete `ROLE_RECOMMENDATIONS` constant with every recommendation pre-mapped
+- Tailwind CSS class names for selected vs unselected card states
+- Accessibility notes (`aria-current="step"`, focus states, WCAG contrast)
+
+Read it before building. If any role label or recommendation text needs changing, edit it here now. It is far cheaper to fix prose in a Markdown doc than to rewrite generated TypeScript.
+
+## Step 3: Switch to Builder and Build
+
+Click the agent selector, choose **Builder**, then send:
+
+```text
+Build the Welcome Flow app based on the PRD in prd/welcome-flow.md
+```
+
+Confirm the "Switch to Builder Agent" suggested action. The Builder reads the PRD, then generates the entire component tree. Watch the Code tab. Watch the Code tab as 9 files appear as it works.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/261756c3-c491-44b2-6eac-a443a595fb00/public" alt="Builder completion message showing project structure" caption="The Builder generates 9 component files from the PRD spec: WelcomeFlow, 4 step components, 3 shared components, plus types, constants, and icons files" />
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fa0b767c-d127-4bac-6936-e12a1bcee000/public" alt="Code tab showing the full component file tree" caption="The Code tab shows the full component tree. Click any file to inspect or edit the generated TypeScript." />
+
+When the build finishes, click **Preview** to see Step 1.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f985b6a3-6f2e-4e10-c51f-3fffd9f4e800/public" alt="Step 1 Welcome screen in the live preview" caption="Step 1 renders correctly: dark background, gradient icon, gradient headline, and Get Started button" />
+
+## Step 4: Fix Issues with Focused Prompts
+
+Click **Get Started**. If Step 2 shows a blank gradient rectangle instead of the form, this is a CSS scoping bug: the gradient background was applied to the card container instead of just accents.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c3e09f9b-7c57-456d-408a-d380debe0e00/public" alt="CSS bug showing gradient covering entire card content" caption="The gradient covers all card content , a common CSS scoping issue on first build with complex Tailwind setups" />
+
+Send this focused fix prompt:
+
+```text
+Steps 2, 3, and 4 show a blank purple-to-blue gradient filling the entire card ,
+no text, form fields, or role cards are visible, only the Continue button at the
+bottom. The gradient should only appear as accents: button backgrounds, progress
+bar fill, and selection borders. The card background itself should stay dark
+(bg-slate-900 or bg-slate-950). Please fix the gradient so it is not applied to
+the card container background, and make all step content visible.
+```
+
+The Builder will identify the problematic CSS class and patch it. One targeted prompt, one fix turn.
+
+This is the key skill for working with Native.Builder on complex UIs: **describe what you see, not what you think is wrong**. "Steps 2-4 show a blank gradient" is more useful than "fix the CSS" because the Builder can match your description to the visual output.
+
+## Step 5: Test All Four Steps
+
+After the fix, click through the full flow:
+
+**Step 2: About You**: Enter your name, select a role. The selected role card gets a purple border and checkmark.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e3165617-016f-4abb-230d-d0acbf200800/public" alt="Step 2 About You with name input and role cards" caption="Step 2: name input with validation, four role cards with Lucide icons, Continue button disabled until both fields are filled" />
+
+**Step 3: Your Goals**: Select multiple goals. A counter below the cards shows how many are selected.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/fd30e081-ef28-4e11-6335-243d1e480600/public" alt="Step 3 Your Goals with multi-select cards" caption="Step 3: multi-select goals with visual selection state and a live counter showing selections" />
+
+**Step 4: All Set**: The personalized summary shows your name in the heading, your role as a badge, your selected goals as tags, and exactly the three recommendations for your role.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/b486c4d7-03a0-47ce-71f9-82866037fc00/public" alt="Step 4 All Set with personalized Developer recommendations" caption="Step 4: personalized for Developer , role badge, selected goal tags, and the three Developer-specific next steps" />
+
+Test with a different role to confirm the recommendations change. Select **Founder** on Step 2 and Step 4 should show the Founder recommendations instead.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/85ea94d4-abd3-4544-3e43-149882012600/public" alt="Step 4 All Set with Founder role recommendations" caption="The same Step 4 with Founder selected: different badge color, different goal tags, different recommendations" />
+
+## Step 6: Publish
+
+Click the **Publish** button and then **Publish** again in the panel.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c2810ec6-c612-4fb3-c117-0e08d6874e00/public" alt="Publish panel for Welcome Flow" caption="The Publish panel shows the app URL before deployment. Publishing does not consume credits." />
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f96795c9-59fa-4926-3d80-274747efa400/public" alt="Publishing in progress indicator" caption="Building in progress , the production bundle compiles and deploys in seconds" />
+
+Your onboarding wizard is now live at `yourproject.nativelyai.app` and shareable with anyone.
+
+## Customizing Welcome Flow for Your Product
+
+The wizard structure is generic by design. Here is how to adapt it for a real product:
+
+**Change the roles**: In the PRD, the roles are Developer, Designer, Product Manager, and Founder. Replace these with whatever segments make sense for your product , for a DevTool: Junior, Senior, Lead, Architect. For a marketing tool: Freelancer, Agency, In-house, Enterprise.
+
+**Update the recommendations**: The `ROLE_RECOMMENDATIONS` constant in `constants.ts` holds all four role-to-steps mappings. Tell the Builder: `Update the ROLE_RECOMMENDATIONS in constants.ts with these new values: [paste your content]`. This is a single-file edit that costs very few credits.
+
+**Add a fifth step**: Tell the Builder: `Add a Step 5 between Goals and All Set that asks users to choose their team size: Solo, 2-10 people, 11-50 people, 51+ people. Store the selection as teamSize in state and show it as a tag on the summary screen.` The component structure makes this straightforward to extend.
+
+**Connect to a backend**: When you are ready to save onboarding responses, go to Integrations, connect Supabase, then tell the Builder: `On Step 4 load, save the user's firstName, role, and goals to a Supabase table called onboarding_responses`. The Builder will generate the schema, client setup, and the insert call.
+
+## Frequently Asked Questions
+
+**Q: How many credits does a multi-component build like this use?**
+The Welcome Flow build (Product Architect scoping plus Builder generating 9 component files) used fewer than 15 credits of the 50-credit free allowance. Two fix prompts (CSS gradient + alert removal) added 4 more. Total: under 20 credits for a fully functional, polished onboarding wizard.
+
+**Q: Why did the Builder apply the gradient to the card background instead of just accents?**
+Complex Tailwind setups with many gradient classes can produce scoping conflicts on first build, especially when a parent container and child elements share gradient utilities. This is a known pattern with AI-generated CSS. The fix is always the same: describe what you see visually, let the Builder identify the offending class, and apply a targeted patch.
+
+**Q: Can I use this wizard pattern for something other than onboarding?**
+Yes. The same 4-step structure works for: product surveys, lead qualification forms, feature preference selectors, and role-based pricing guides. The personalization logic (collect role, map to recommendations) is reusable across all of these. Swap the content in `constants.ts` and update the step labels.
+
+**Q: Does the role-based recommendation logic require a backend?**
+No. The entire mapping is a static JavaScript object (`ROLE_RECOMMENDATIONS`) that lives client-side. There is no API call and no database , the personalization happens entirely in React state. This makes the app fast, free to run, and easy to deploy.
+
+## What to do next
+
+**Add localStorage persistence**: Tell the Builder: `Save onboarding state to localStorage so the wizard remembers where a user left off if they close the browser mid-flow.` This adds two lines of code and makes the experience much more polished.
+
+**Use the Deck Creator agent**: Switch to the Deck Creator agent and ask it to generate a stakeholder presentation for Welcome Flow. It reads the PRD and produces a shareable slide deck , useful for presenting your hackathon project.
+
+**Build the next feature**: Now that users complete onboarding, they need somewhere to go. Use Native.Builder to build the dashboard they land on after clicking "Get started". Reference the onboarding state from `localStorage` to personalize the dashboard for their role.
+
+Ready to put these skills into practice? Check out the [upcoming AI hackathons on Lablab](https://lablab.ai/event) , a polished onboarding flow is one of the fastest ways to differentiate your hackathon submission from a bare-bones demo.
