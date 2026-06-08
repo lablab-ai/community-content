@@ -1,6 +1,6 @@
 ---
 title: "Native.Builder Tutorial: Build and Deploy Your First AI App"
-description: "AI hackathons move fast. Learn how to use Native.Builder to go from blank prompt to live deployed web app in under 30 minutes. No coding required."
+description: "AI hackathons move fast. Learn how to use Native.Builder to go from a blank prompt to a live deployed web app in under 30 minutes. No coding required."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/435f5816-e010-4cbf-1cc6-763e551e6900/public"
 authorUsername: "stevekimoi"
 ---
@@ -80,7 +80,7 @@ I want to build a simple task manager web app. It should have:
 - Clean minimal dark UI with card-style tasks
 
 Scope this for me before we start building.
-```text
+```
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/4fd8647e-2c73-4c02-34a1-e5f325144600/public" alt="Prompt typed into the Product Architect box" caption="A specific brief gives the Product Architect enough to scope without asking unnecessary questions" />
 
@@ -90,12 +90,17 @@ After sending, the project workspace opens. The Product Architect will ask you f
 
 Here are the recommended answers for this project:
 
-| Question | Answer | Why |
-|---|---|---|
-| Where do new tasks start? | Always starts in To Do | Simple and predictable |
-| How should tasks move? | Click only | Drag-and-drop needs more code and more credits |
-| Should tasks persist after closing the browser? | No, in-memory only for now | Keeps it pure frontend, no database needed |
-| What should we name this project? | Task Flow | Clean product name |
+<table>
+  <thead>
+    <tr><th>Question</th><th>Answer</th><th>Why</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Where do new tasks start?</td><td>Always starts in To Do</td><td>Simple and predictable</td></tr>
+    <tr><td>How should tasks move?</td><td>Click only</td><td>Drag-and-drop needs more code and more credits</td></tr>
+    <tr><td>Should tasks persist after closing the browser?</td><td>No, in-memory only for now</td><td>Keeps it pure frontend, no database needed</td></tr>
+    <tr><td>What should we name this project?</td><td>Task Flow</td><td>Clean product name</td></tr>
+  </tbody>
+</table>
 
 After you answer all four questions and click Done, the Product Architect sets the project name and writes the PRD.
 
@@ -121,7 +126,7 @@ Type this prompt and send it:
 
 ```text
 Build the Task Flow app based on the PRD in prd/overview.md
-```text
+```
 
 The Builder will read the PRD first, then suggest switching to the Builder Agent. Click **Switch Agent** to confirm.
 
@@ -159,7 +164,7 @@ If something looks wrong, describe the issue in chat. For small fixes, use a sin
 
 ```text
 The Add Task button should be centered in the sidebar, not left-aligned
-```text
+```
 
 Keep refinements narrow. One fix at a time costs fewer credits than bundling multiple changes into one prompt.
 
