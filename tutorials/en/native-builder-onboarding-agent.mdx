@@ -23,12 +23,17 @@ Welcome Flow: a dark-themed onboarding wizard with four steps.
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ee5840cc-661b-4df0-c670-65c5e4bbe600/public" alt="Welcome Flow live in the browser" caption="The finished Welcome Flow onboarding wizard running at its public nativelyai.app URL" />
 
-| Step | Description |
-| --- | --- |
-| **Step 1: Welcome** | Full-screen card with headline, subtext, and a Get Started button |
-| **Step 2: About You** | First name input and four role cards (Developer, Designer, Product Manager, Founder) |
-| **Step 3: Your Goals** | Multi-select goal cards (Ship faster, Reduce costs, Improve collaboration, Automate workflows) |
-| **Step 4: All Set** | Personalized summary with the user's name, role badge, selected goal tags, and three role-specific recommended next steps |
+<table>
+  <thead>
+    <tr><th>Step</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Step 1: Welcome</strong></td><td>Full-screen card with headline, subtext, and a Get Started button</td></tr>
+    <tr><td><strong>Step 2: About You</strong></td><td>First name input and four role cards (Developer, Designer, Product Manager, Founder)</td></tr>
+    <tr><td><strong>Step 3: Your Goals</strong></td><td>Multi-select goal cards (Ship faster, Reduce costs, Improve collaboration, Automate workflows)</td></tr>
+    <tr><td><strong>Step 4: All Set</strong></td><td>Personalized summary with the user's name, role badge, selected goal tags, and three role-specific recommended next steps</td></tr>
+  </tbody>
+</table>
 
 ## Prerequisites
 
@@ -62,12 +67,17 @@ The Product Architect will ask clarifying questions. Here are the answers that p
 
 <Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/dc41310e-5cdc-4e1b-7804-5cf5c42fa000/public" alt="Product Architect clarifying question about icon library" caption="The Product Architect asks about icons, transitions, layout, and content before writing any code" />
 
-| Question | Answer | Why |
-| --- | --- | --- |
-| Icon library? | Lucide (clean, minimal) | Standard in Vite + React, well supported, no missing-dependency errors |
-| Recommended next steps content? | I'll write them out now | Generic placeholders weaken Step 4. Write real content once |
-| Transition effect? | Simple fade only | Slide and scale animations introduce layout bugs; fade is reliable |
-| Layout? | Max-width with blur backdrop | Centered card with dark blurred background matches modern SaaS onboarding patterns |
+<table>
+  <thead>
+    <tr><th>Question</th><th>Answer</th><th>Why</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Icon library?</td><td>Lucide (clean, minimal)</td><td>Standard in Vite + React, well supported, no missing-dependency errors</td></tr>
+    <tr><td>Recommended next steps content?</td><td>I'll write them out now</td><td>Generic placeholders weaken Step 4. Write real content once</td></tr>
+    <tr><td>Transition effect?</td><td>Simple fade only</td><td>Slide and scale animations introduce layout bugs; fade is reliable</td></tr>
+    <tr><td>Layout?</td><td>Max-width with blur backdrop</td><td>Centered card with dark blurred background matches modern SaaS onboarding patterns</td></tr>
+  </tbody>
+</table>
 
 When asked to write the recommended next steps, type them directly in chat:
 
