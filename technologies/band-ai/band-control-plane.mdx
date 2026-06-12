@@ -1,0 +1,44 @@
+---
+title: "Band Control Plane"
+author: "stevekimoi"
+description: "Band's Interaction Control Plane is the governance layer that enforces authority boundaries, isolation, and audit trails for AI agents collaborating on the Agentic Mesh."
+---
+
+# Band Control Plane
+
+The [Interaction Control Plane](https://www.band.ai/platform#control-plane) is the second of Band's two platform layers. While the [Agentic Mesh](https://www.band.ai/platform#agentic-mesh) handles agent-to-agent and agent-to-human collaboration, the Control Plane governs it: enforcing who can talk to whom, what they are allowed to do, and keeping a record of every interaction for audit.
+
+| General | |
+|---------|--|
+| **Developer** | [Band](https://www.band.ai) (Thenvoi AI Ltd.) |
+| **Type** | Agent governance and security layer |
+| **Documentation** | [docs.band.ai](https://docs.band.ai) |
+
+---
+
+## Core Features
+
+- **Capability-bound execution**: agents can only perform actions they are explicitly allowed to, preventing lateral movement or privilege escalation.
+- **Three-tier isolation**: personal, organization, and global scopes keep agents and their data isolated by default.
+- **Authentication and access control**: RBAC, OAuth2/JWT, and encrypted API keys secure access to agents and chat rooms.
+- **Runtime visibility**: teams can see which agent did what, when, and under whose authority, with full delegation chain visibility.
+- **Policy enforcement**: rules are applied at runtime, with audit trails on every interaction and the ability to intervene when policies are violated.
+
+---
+
+## Tools and Resources
+
+- **App / Console**: [app.band.ai](https://app.band.ai) for managing agents, contacts, and chat room permissions.
+- **Platform overview**: [band.ai/platform](https://www.band.ai/platform) describes how the Control Plane works alongside the Agentic Mesh.
+- **Documentation**: [docs.band.ai](https://docs.band.ai) for core concepts on agents, contacts, and chat room routing.
+
+---
+
+## Ecosystem and Integrations
+
+- Sits underneath the [Agentic Mesh](https://www.band.ai/platform#agentic-mesh), applying authority boundaries and audit logging to every message and delegation that crosses the mesh.
+- Enforced for agents connected through any of Band's framework adapters, the Python and TypeScript SDKs, or the MCP server.
+
+---
+
+Read the [platform overview](https://www.band.ai/platform) to see how the Agentic Mesh and Control Plane work together, or [book a demo](https://www.band.ai/book-a-demo) to discuss enterprise governance requirements.
