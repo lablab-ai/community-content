@@ -1,0 +1,323 @@
+---
+title: "Build a 3-Agent Software Delivery Pipeline with Band SDK and AI/ML API"
+description: "Step-by-step tutorial: wire a Planner, Engineer, and Reviewer AI agent into a coordinated software delivery pipeline using Band SDK's PydanticAI adapter and AI/ML API for model calls."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/band-sdk-aimlapi-pipeline-cover/public"
+authorUsername: "stevekimoi"
+---
+
+# Build a 3-Agent Software Delivery Pipeline with Band SDK and AI/ML API
+
+Most multi-agent demos assign tasks to agents in a fixed loop. This tutorial builds something closer to how real software teams work: a **Planner** agent scopes the feature, an **Engineer** agent writes and tests the code, and a **Reviewer** agent checks it — and all three coordinate in a shared Band room using @mentions, the same way a human team would use Slack.
+
+By the end you will have three independent Python processes running on your machine, connected to the Band platform. Drop a feature request in the room and watch the pipeline run end-to-end: a plan lands in `workspace/plan.md`, working FastAPI code appears in `workspace/app/`, tests run automatically, and a review appears in `workspace/review.md`.
+
+The full source code is on [GitHub](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline).
+
+## What you will build
+
+A 3-agent software delivery pipeline with this structure:
+
+```text
+Band platform (app.band.ai) — shared chat room
+       |              |               |
+  +---------+   +----------+   +----------+
+  | Planner |   | Engineer |   | Reviewer |
+  +---------+   +----------+   +----------+
+       \              |              /
+        \             |             /
+         v            v            v
+        workspace/ (shared local directory)
+          plan.md, app/, review.md
+```
+
+Each agent is a `band.Agent` backed by a `PydanticAIAdapter`. Model calls go through **AI/ML API** via its OpenAI-compatible endpoint — no framework-specific model wiring needed. Agents coordinate by @mentioning each other in the Band room; all plan, code, and review content lives as files in `workspace/`.
+
+## Prerequisites
+
+- Python 3.11 or higher
+- A [Band](https://app.band.ai) account with **three remote agents** created (one each for Planner, Engineer, and Reviewer) — each agent gives you an Agent ID and API key
+- An [AI/ML API](https://aimlapi.com/app/keys) account and API key
+- Basic familiarity with Python and async code
+
+## Step 1: Clone the repo and install dependencies
+
+```bash
+git clone https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline
+cd band-sdk-aimlapi-pipeline/prototype
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+The `requirements.txt` installs the Band SDK with its PydanticAI adapter, plus `pytest`, `fastapi`, `uvicorn`, and `httpx` — the last three are needed because the Engineer agent writes and runs FastAPI tests:
+
+```text
+band-sdk[pydantic-ai]
+python-dotenv
+fastapi
+uvicorn
+httpx
+pytest
+```
+
+## Step 2: Configure your AI/ML API key
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and paste your AI/ML API key:
+
+```bash
+OPENAI_API_KEY=your_aimlapi_key_here
+OPENAI_BASE_URL=https://api.aimlapi.com/v1
+DEFAULT_MODEL=openai-chat:deepseek/deepseek-chat-v3.1
+```
+
+Two things worth noting here.
+
+**Why `OPENAI_API_KEY` and `OPENAI_BASE_URL`?** AI/ML API speaks the OpenAI Chat Completions protocol. PydanticAI's `openai:` model family reads these two standard environment variables and routes every call through AI/ML API automatically — no extra adapter code needed.
+
+**Why the versioned model ID?** The unversioned `deepseek-chat` ID on AI/ML API returns plain text instead of making tool calls. The versioned `deepseek/deepseek-chat-v3.1` ID calls tools correctly, which is essential here — agents write files and send messages via tools, not plain text replies. Use this ID (or `openai-chat:gpt-4o-mini` if you prefer OpenAI).
+
+To use different models per agent, add per-role overrides:
+
+```bash
+PLANNER_MODEL=openai-chat:deepseek/deepseek-chat-v3.1
+ENGINEER_MODEL=openai-chat:deepseek/deepseek-chat-v3.1
+REVIEWER_MODEL=openai-chat:gpt-4o-mini
+```
+
+## Step 3: Register your agents on Band
+
+Go to [app.band.ai](https://app.band.ai) and create three **remote agents** — name them Planner, Engineer, and Reviewer. Each one gives you an Agent ID and an API key.
+
+```bash
+cp agent_config.yaml.example agent_config.yaml
+```
+
+Paste each agent's credentials into `agent_config.yaml`:
+
+```yaml
+planner:
+  agent_id: ""
+  api_key: ""
+
+engineer:
+  agent_id: ""
+  api_key: ""
+
+reviewer:
+  agent_id: ""
+  api_key: ""
+```
+
+`agent_config.yaml` is gitignored — it holds secrets and should never be committed.
+
+## Step 4: Understand the architecture
+
+Before starting the agents, it helps to see how the three pieces fit together. Every agent shares the same bootstrap logic in `agents/runner.py`:
+
+```python
+adapter = PydanticAIAdapter(
+    model=model,
+    custom_section=custom_section,          # the agent's system prompt
+    additional_tools=[read_file, write_file, list_files, run_tests],
+)
+
+agent = Agent.from_config(
+    agent_key,
+    adapter=adapter,
+    config_path=PROJECT_ROOT / "agent_config.yaml",
+)
+
+await agent.run()
+```
+
+`Agent.from_config` connects to Band using the credentials in `agent_config.yaml`. `PydanticAIAdapter` wraps a PydanticAI model and exposes four file-system tools to every agent:
+
+| Tool | What it does |
+|------|-------------|
+| `read_file(path)` | Read a file from `workspace/` |
+| `write_file(path, content)` | Write a file to `workspace/` |
+| `list_files(path)` | List files under a path in `workspace/` |
+| `run_tests(path)` | Run `pytest` on a directory in `workspace/` and return output |
+
+All paths are sandboxed to `workspace/` — a path traversal check in `tools.py` prevents agents from reading or writing outside it.
+
+The agents coordinate in Band chat using `band_send_message` (a Band-provided tool). The system prompt for each role tells it exactly when to send a message and who to @mention:
+
+- **Planner**: receives the feature request, writes `plan.md`, then @mentions the Engineer
+- **Engineer**: reads `plan.md`, writes `app/main.py` + `app/test_main.py`, runs tests, then @mentions the Reviewer
+- **Reviewer**: reads the code and tests, writes `review.md`, then either approves or @mentions the Planner with revision requests
+
+The key design rule: **chat is for coordination, files are for content.** Agents never paste plans or code into chat — they write to `workspace/` and point others to the file path. This keeps the room readable and decouples communication from content.
+
+## Step 5: Start the three agents
+
+Open three terminals. In each one, activate the virtual environment and start one agent:
+
+**Terminal 1 — Planner:**
+```bash
+source .venv/bin/activate
+python -m agents.planner
+```
+
+**Terminal 2 — Engineer:**
+```bash
+source .venv/bin/activate
+python -m agents.engineer
+```
+
+**Terminal 3 — Reviewer:**
+```bash
+source .venv/bin/activate
+python -m agents.reviewer
+```
+
+Each process connects to Band and waits in its agent's rooms. You should see a log line like:
+
+```text
+2026-06-12 11:30:01 band.agent Starting planner agent (model=openai-chat:deepseek/deepseek-chat-v3.1)...
+```
+
+All three processes must be running before you send the first message.
+
+## Step 6: Create a Band room and send a feature request
+
+In [app.band.ai](https://app.band.ai):
+
+1. Create a new room
+2. Add your three agents (Planner, Engineer, Reviewer) as participants
+3. Send a message that @mentions Planner with a feature description:
+
+```text
+@Planner We need a new FastAPI endpoint: POST /tasks to create a task
+(title: str, done: bool = false) and GET /tasks to list all tasks, stored
+in memory. Please write a plan.
+```
+
+## Step 7: Watch the pipeline run
+
+After you send the message, watch the room and your terminals. The pipeline runs in three handoff steps.
+
+**Planner's turn**: The Planner reads your message, calls `write_file` to create `workspace/plan.md` with endpoints, acceptance criteria, and edge cases, then calls `band_send_message` to notify the Engineer:
+
+```text
+@Engineer The plan is ready at plan.md. Please implement the POST /tasks 
+and GET /tasks endpoints with in-memory storage and write tests.
+```
+
+**Engineer's turn**: The Engineer calls `read_file("plan.md")`, implements `workspace/app/main.py` and `workspace/app/test_main.py`, then calls `run_tests("app")` to verify everything passes:
+
+```text
+$ pytest app
+
+test_main.py::test_create_task PASSED
+test_main.py::test_list_tasks PASSED
+test_main.py::test_list_empty PASSED
+```
+
+Once tests pass, the Engineer @mentions the Reviewer.
+
+**Reviewer's turn**: The Reviewer reads the code and tests, calls `write_file("review.md")` with its findings, then either posts an approval or @mentions the Planner with revision requests.
+
+A successful review looks like this in the room:
+
+```text
+@Planner @human_participant 
+
+Implementation complete. review.md has been written.
+
+Summary:
+- POST /tasks creates a task with auto-incremented id, title, and done=false default ✓
+- GET /tasks returns the full list ✓  
+- Tests cover creation, listing, and empty-list edge case ✓
+- Status: APPROVED — no changes needed
+```
+
+## Step 8: Run the generated app
+
+Once the Reviewer approves, run the FastAPI app the Engineer wrote:
+
+```bash
+uvicorn workspace.app.main:app --reload
+```
+
+Open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to see the auto-generated Swagger UI. Test the endpoints:
+
+```bash
+# Create a task
+curl -X POST http://127.0.0.1:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Write the tutorial"}'
+
+# List tasks
+curl http://127.0.0.1:8000/tasks
+```
+
+## Swapping models
+
+Swapping models is a one-line change in `.env`. No code changes needed — all three agents route through AI/ML API's OpenAI-compatible endpoint.
+
+To switch all agents to GPT-4o Mini:
+```bash
+DEFAULT_MODEL=openai-chat:gpt-4o-mini
+```
+
+To give the Reviewer stronger reasoning:
+```bash
+PLANNER_MODEL=openai-chat:deepseek/deepseek-chat-v3.1
+ENGINEER_MODEL=openai-chat:deepseek/deepseek-chat-v3.1
+REVIEWER_MODEL=openai-chat:gpt-4o
+```
+
+AI/ML API supports hundreds of models through the same endpoint. See the [AI/ML API model list](https://docs.aimlapi.com) for all available IDs.
+
+## Project layout
+
+```text
+prototype/
+├── agents/
+│   ├── runner.py       — shared bootstrap: model wiring, tools, Band connection
+│   ├── tools.py        — read_file / write_file / list_files / run_tests
+│   ├── planner.py      — entrypoint: python -m agents.planner
+│   ├── engineer.py     — entrypoint: python -m agents.engineer
+│   └── reviewer.py     — entrypoint: python -m agents.reviewer
+├── prompts/
+│   ├── planner.md      — Planner system prompt
+│   ├── engineer.md     — Engineer system prompt
+│   └── reviewer.md     — Reviewer system prompt
+├── workspace/          — shared scratch space (gitignored, created at runtime)
+├── agent_config.yaml   — Band agent_id/api_key per role (gitignored)
+└── .env                — AI/ML API key + model overrides (gitignored)
+```
+
+## Frequently Asked Questions
+
+**Q: Can I add a fourth agent to the pipeline?**
+Yes. Create a new agent on Band, add it to `agent_config.yaml`, write a system prompt in `prompts/`, and create a thin entrypoint (copy `planner.py` and change `agent_key`, `prompt_file`, and `model_env_var`). The runner bootstrap handles everything else. A natural extension is a **QA** agent that runs load tests after the Reviewer approves.
+
+**Q: What happens if an agent calls `run_tests` and the tests fail?**
+The Engineer agent's system prompt tells it to fix the code and re-run tests before notifying the Reviewer. In practice the Engineer makes one or two revision passes before the tests go green. If tests keep failing, check your model ID — the unversioned `deepseek-chat` on AI/ML API does not make tool calls and will stall the pipeline.
+
+**Q: Why do agents use `band_send_message` instead of plain text replies?**
+Band agents receive messages via WebSocket but their replies are only delivered to the room if sent through `band_send_message`. A plain text response from the underlying model goes nowhere — only tool calls are wired into the Band platform. The system prompt for each agent makes this explicit.
+
+**Q: Do all three agents need to be running at the same time?**
+Yes. Band delivers @mention messages to whichever agents are connected at the time. If the Engineer is not running when the Planner sends its handoff, the message queues until the Engineer reconnects — but for a live demo, start all three before sending the first request.
+
+**Q: Can I use this pattern outside of software delivery?**
+The Planner–Executor–Reviewer pattern transfers to any task with a clear plan → build → verify structure: content pipelines (Writer → Editor → Publisher), data pipelines (Extractor → Transformer → Validator), or research pipelines (Researcher → Analyst → Fact-checker). Swap the system prompts in `prompts/` and the workspace tools as needed.
+
+## What to do next
+
+**Add more agents**: Extend the pipeline with a dedicated **QA** agent that runs integration tests and a **Deploy** agent that ships the built app to a hosting provider.
+
+**Swap the workspace**: The current workspace is a local directory shared between processes on the same machine. For distributed agents, replace `tools.py` with tools that read and write to a shared S3 bucket or a Git repository — the agent code and Band coordination logic stay identical.
+
+**Make it async**: The current design is sequential — each agent waits for an @mention before starting. For larger features, the Planner could decompose the work and @mention multiple Engineers simultaneously, with the Reviewer collecting their outputs.
+
+**Explore more AI/ML API models**: The pipeline defaults to DeepSeek V3.1 but any tool-calling model on [AI/ML API](https://aimlapi.com) works as a drop-in. Try `openai-chat:claude-opus-4-8` for the Reviewer for stronger code analysis, or use `openai-chat:gpt-4o-mini` across the board to minimize costs.
+
+Ready to put this to work? Check out the [upcoming AI hackathons on Lablab](https://lablab.ai/event) — a working multi-agent pipeline is one of the strongest demonstrations you can bring to any agent-focused track.
