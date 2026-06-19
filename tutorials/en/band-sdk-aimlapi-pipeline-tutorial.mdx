@@ -144,12 +144,17 @@ await agent.run()
 
 `Agent.from_config` connects to Band using the credentials in `agent_config.yaml`. `PydanticAIAdapter` wraps a PydanticAI model and exposes four file-system tools to every agent:
 
-| Tool | What it does |
-|------|-------------|
-| `read_file(path)` | Read a file from `workspace/` |
-| `write_file(path, content)` | Write a file to `workspace/` |
-| `list_files(path)` | List files under a path in `workspace/` |
-| `run_tests(path)` | Run `pytest` on a directory in `workspace/` and return output |
+<table>
+  <thead>
+    <tr><th>Tool</th><th>What it does</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>read_file(path)</code></td><td>Read a file from <code>workspace/</code></td></tr>
+    <tr><td><code>write_file(path, content)</code></td><td>Write a file to <code>workspace/</code></td></tr>
+    <tr><td><code>list_files(path)</code></td><td>List files under a path in <code>workspace/</code></td></tr>
+    <tr><td><code>run_tests(path)</code></td><td>Run <code>pytest</code> on a directory in <code>workspace/</code> and return output</td></tr>
+  </tbody>
+</table>
 
 All paths are sandboxed to `workspace/` — a path traversal check in `tools.py` prevents agents from reading or writing outside it. Full implementation in [`agents/tools.py`](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/agents/tools.py).
 

@@ -40,6 +40,7 @@ Read the full draft file.
 
 - [ ] **1,200–2,500 words** — count and flag if outside range
 - [ ] **All code blocks are runnable** — no partial snippets; every block includes all imports
+- [ ] **No GFM pipe tables** — the lablab.ai MDX renderer does not support markdown pipe-syntax tables (`| col |`). Every table must use raw HTML: `<table><thead><tr><th>…</th></tr></thead><tbody><tr><td>…</td></tr></tbody></table>`. Use `<code>` tags (not backticks) for inline code inside table cells.
 - [ ] **Language declared** on every fenced code block (` ```python `, ` ```typescript `, etc.)
 - [ ] **Prerequisites section present** — tools, API keys, framework versions listed
 - [ ] **`.env` format shown** (if needed) — with placeholder values, never real keys
