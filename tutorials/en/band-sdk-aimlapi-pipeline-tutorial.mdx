@@ -43,13 +43,15 @@ Each agent is a `band.Agent` backed by a `PydanticAIAdapter`. Model calls go thr
 
 ```bash
 git clone https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline
-cd band-sdk-aimlapi-pipeline/prototype
+cd band-3-agent-delivery-pipeline
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 The `requirements.txt` installs the Band SDK with its PydanticAI adapter, plus `pytest`, `fastapi`, `uvicorn`, and `httpx` — the last three are needed because the Engineer agent writes and runs FastAPI tests:
+
+Full file at [`requirements.txt`](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/requirements.txt):
 
 ```text
 band-sdk[pydantic-ai]
@@ -67,6 +69,8 @@ cp .env.example .env
 ```
 
 Open `.env` and paste your AI/ML API key:
+
+Full file at [`.env.example`](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/.env.example):
 
 ```bash
 OPENAI_API_KEY=your_aimlapi_key_here
@@ -98,6 +102,8 @@ cp agent_config.yaml.example agent_config.yaml
 
 Paste each agent's credentials into `agent_config.yaml`:
 
+Full file at [`agent_config.yaml.example`](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/agent_config.yaml.example):
+
 ```yaml
 planner:
   agent_id: ""
@@ -117,6 +123,8 @@ reviewer:
 ## Step 4: Understand the architecture
 
 Before starting the agents, it helps to see how the three pieces fit together. Every agent shares the same bootstrap logic in `agents/runner.py`:
+
+Full implementation in [`agents/runner.py`, lines 38–60](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/agents/runner.py#L38-L60):
 
 ```python
 adapter = PydanticAIAdapter(
@@ -143,7 +151,7 @@ await agent.run()
 | `list_files(path)` | List files under a path in `workspace/` |
 | `run_tests(path)` | Run `pytest` on a directory in `workspace/` and return output |
 
-All paths are sandboxed to `workspace/` — a path traversal check in `tools.py` prevents agents from reading or writing outside it.
+All paths are sandboxed to `workspace/` — a path traversal check in `tools.py` prevents agents from reading or writing outside it. Full implementation in [`agents/tools.py`](https://github.com/Stephen-Kimoi/band-3-agent-delivery-pipeline/blob/main/agents/tools.py).
 
 The agents coordinate in Band chat using `band_send_message` (a Band-provided tool). The system prompt for each role tells it exactly when to send a message and who to @mention:
 
