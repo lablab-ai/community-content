@@ -1,0 +1,87 @@
+---
+title: "GitHub Copilot"
+author: "github"
+description: "GitHub Copilot is an AI coding assistant that provides inline completions, conversational chat, autonomous agent mode, and cloud-based coding agents across all major IDEs and GitHub.com, with support for multiple LLM providers including OpenAI, Anthropic, and Google."
+---
+
+# GitHub Copilot
+
+[**GitHub Copilot**](https://github.com/features/copilot) is an AI-powered development assistant built by GitHub in partnership with OpenAI and Microsoft. Originally launched in technical preview in June 2021 and reaching general availability in June 2022, Copilot has expanded from single-line code completions into a full agentic platform that can autonomously edit multiple files, run terminal commands, and open pull requests with minimal human direction. It is now embedded across GitHub.com, major IDEs, the CLI, GitHub Mobile, and Windows Terminal.
+
+| General | |
+|---------|--|
+| **GA date** | 21 Jun 2022 |
+| **Developer** | GitHub (Microsoft) |
+| **Type** | AI Coding Assistant |
+| **License** | Commercial SaaS |
+| **Documentation** | [docs.github.com/en/copilot](https://docs.github.com/en/copilot) |
+
+---
+
+## Core Features
+
+- **Inline code completions** — context-aware autocomplete in supported editors; includes next-edit predictions in VS Code, Xcode, and Eclipse.
+- **Copilot Chat** — conversational interface for code explanation, refactoring, debugging, and Q&A; available in IDEs, GitHub.com, GitHub Mobile, and Windows Terminal.
+- **Agent Mode (IDEs)** — autonomous in-IDE operation that edits multiple files, runs terminal commands, self-corrects errors, and iterates until a task is complete.
+- **Cloud Coding Agent** — an async agent assigned via a GitHub issue that researches the repo, writes an implementation plan, and opens a pull request.
+- **Copilot Code Review** — AI-generated pull request review suggestions surfaced inline on the PR diff.
+- **PR Summaries** — auto-generated descriptions of pull request changes for reviewers.
+- **Copilot CLI** — natural-language terminal assistance (GA April 2026).
+- **MCP Server Integration** — any Model Context Protocol server works as a Copilot extension, replacing the deprecated Copilot Extensions API.
+- **Multi-model selection** — choose from OpenAI models, Anthropic Claude (including Opus), Google Gemini, and others on Pro+ and above plans.
+- **Copilot Spaces** — centralizes repository context (code, docs, specs) to improve response quality.
+
+---
+
+## Supported Editors and Surfaces
+
+| Surface | Notes |
+|---------|-------|
+| Visual Studio Code | Full feature support including Agent Mode |
+| JetBrains IDEs | IntelliJ, PyCharm, WebStorm, GoLand, and others |
+| Visual Studio | Windows-native IDE support |
+| Xcode | Includes next-edit predictions |
+| Eclipse | Agent Mode GA July 2025 |
+| Neovim | Plugin-based integration |
+| Zed | Native integration |
+| GitHub.com | Chat, code review, PR summaries, cloud agent |
+| GitHub Mobile | Chat on iOS and Android |
+| GitHub CLI / terminal | Copilot CLI for natural-language shell commands |
+| Windows Terminal Canary | Chat integration |
+
+---
+
+## Pricing Tiers
+
+| Plan | Price | Key Inclusions |
+|------|-------|----------------|
+| **Free** | $0/month | 2,000 completions/month, auto model selection, Copilot CLI |
+| **Pro** | $10/user/month | Unlimited completions, multiple model access, cloud agent, $10 AI credits/month |
+| **Pro+** | $39/user/month | Premium models (Claude Opus, etc.), higher AI credit allowance |
+| **Max** | $100/user/month | Highest individual AI credit allowance, priority access to new models |
+| **Business** | $19/seat/month | Team management, policy controls, monthly AI credit pool |
+| **Enterprise** | $39/seat/month | All Business features, larger credit pool, priority model access, GitHub Enterprise Cloud required |
+
+Free plans also apply to verified students, educators, and qualifying open-source maintainers (Pro-level features).
+
+---
+
+## Tools and Resources
+
+- **Documentation** — [docs.github.com/en/copilot](https://docs.github.com/en/copilot)
+- **Plans and pricing** — [github.com/features/copilot/plans](https://github.com/features/copilot/plans)
+- **REST API for Copilot management** — [docs.github.com/en/rest/copilot](https://docs.github.com/en/rest/copilot) — manage seats, billing, and usage at org/enterprise level.
+- **MCP server catalog** — any MCP-compatible server can extend Copilot's context and tools.
+
+---
+
+## Ecosystem and Integrations
+
+- Integrated natively into GitHub.com, enabling AI assistance directly in pull requests, issues, and discussions without leaving the browser.
+- Works with GitHub Actions for AI-assisted CI pipeline troubleshooting and workflow generation.
+- Enterprise deployments support Bring Your Own Keys (BYOK), allowing organizations to route Copilot through their own LLM provider API keys.
+- Available as a standalone subscription or bundled with GitHub Enterprise Cloud.
+
+---
+
+Get started at [github.com/features/copilot](https://github.com/features/copilot) or explore the full reference at [docs.github.com/en/copilot](https://docs.github.com/en/copilot).

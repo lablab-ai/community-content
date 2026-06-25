@@ -1,0 +1,67 @@
+---
+title: "Snapdragon"
+author: "qualcomm"
+description: "Snapdragon is Qualcomm's flagship system-on-chip platform integrating CPU, GPU, Hexagon NPU, modem, and connectivity for mobile phones, Windows laptops, AR/VR headsets, and automotive systems, with NPU performance reaching 100 TOPS on the Snapdragon 8 Elite."
+---
+
+# Snapdragon
+
+[**Snapdragon**](https://www.qualcomm.com/snapdragon) is Qualcomm's brand for its system-on-chip (SoC) family, combining processing, graphics, neural processing, modem, and radio connectivity on a single piece of silicon. From the Snapdragon 8 Elite powering flagship Android smartphones to the Snapdragon X Elite running Windows Copilot+ PCs, the platform targets the full spectrum of connected devices. Snapdragon is the primary hardware platform for on-device AI in consumer electronics, with the Hexagon NPU achieving up to 100 TOPS on the latest generation.
+
+| General | |
+|---------|--|
+| **Developer** | Qualcomm |
+| **Type** | System-on-Chip Platform |
+| **License** | Proprietary (silicon); developer tools include open-source components |
+| **GitHub** | [qualcomm/ai-hub-models](https://github.com/qualcomm/ai-hub-models) |
+| **Documentation** | [Qualcomm AI Hub Docs](https://workbench.aihub.qualcomm.com/docs/hub/index.html) |
+| **AI Hub** | [aihub.qualcomm.com](https://aihub.qualcomm.com) |
+
+---
+
+## Core Features
+
+- **Hexagon NPU** — dedicated neural processing unit optimized for AI inference; achieves 40 TOPS (8 Gen 3) to 100 TOPS (8 Elite); ranked #1 on MLPerf Inference v4.0 mobile benchmark.
+- **Heterogeneous AI Engine** — workloads dynamically distributed across Hexagon NPU, Adreno GPU, and Oryon/Kryo CPU for optimal power efficiency.
+- **Qualcomm AI Hub** — cloud platform with 175+ pre-optimized models and remote profiling on 50+ real Snapdragon devices; install with `pip install qai_hub_models`.
+- **Multi-precision support** — FP32, FP16, INT16, and INT8 inference; enables quantized LLM deployment on mobile hardware.
+- **On-device LLM execution** — validated with Llama, Mistral, Qwen3, IBM Granite, and Stable Diffusion variants via AI Hub.
+- **Sensing Hub** — ultra-low-power always-on processor for continuous sensor monitoring without waking the main cores.
+
+---
+
+## Snapdragon Platform Variants
+
+| Variant | Segment | NPU Performance | Notable Devices |
+|---------|---------|----------------|-----------------|
+| **Snapdragon 8 Elite** | Flagship mobile (2024-2025) | 100 TOPS | Samsung Galaxy S25 series |
+| **Snapdragon 8 Gen 3** | Flagship mobile (2023-2024) | ~40 TOPS | Samsung Galaxy S24 series |
+| **Snapdragon X Elite** | Windows laptops / Copilot+ PC | 45 TOPS | Microsoft Surface Laptop |
+| **Snapdragon X2 Elite** | Windows laptops (2025) | 80 TOPS | Next-gen Copilot+ PCs |
+| **Snapdragon AR2** | AR glasses | Ultra-low power | Various XR wearables |
+
+---
+
+## Tools and Resources
+
+- **Qualcomm AI Hub** — [aihub.qualcomm.com](https://aihub.qualcomm.com) — browse pre-optimized models, run cloud profiling sessions, and download deployment artifacts.
+- **AI Hub Models (GitHub)** — [github.com/qualcomm/ai-hub-models](https://github.com/qualcomm/ai-hub-models) — open-source Python library (BSD-3-Clause) with 200+ model recipes.
+- **AI Engine Direct SDK (QNN)** — low-level SDK for building applications directly targeting the Hexagon NPU.
+- **AI Model Efficiency Toolkit (AIMET)** — quantization, pruning, and compression tools for edge-friendly model preparation.
+- **Snapdragon Neural Processing Engine (SNPE)** — runtime that converts ONNX and TensorFlow models to Snapdragon-native format.
+- **Qualcomm Device Cloud** — remote access to physical Snapdragon hardware for testing without owning devices.
+- **ONNX Runtime Execution Provider** — plugin for running ONNX models with Hexagon NPU acceleration.
+- **Developer Discord** — [discord.com/invite/qualcommdevelopernetwork](https://discord.com/invite/qualcommdevelopernetwork).
+
+---
+
+## Ecosystem and Integrations
+
+- Verified integrations with Amazon SageMaker, Hugging Face, Roboflow, Dataloop, EyePop.ai, and NOTA AI for model preparation and deployment.
+- ExecuTorch (Meta/PyTorch) includes a stable Qualcomm AI Engine backend for deploying PyTorch models directly to the Hexagon NPU.
+- Llama 3.2 1B and 3B models from Meta were co-optimized for Snapdragon via QAT+LoRA quantization, achieving over 350 tokens/s prefill on Galaxy S24+.
+- Copilot+ PCs built on Snapdragon X Elite are Windows-native AI development targets, with NPU exposure via DirectML and QNN.
+
+---
+
+Start building with the [Qualcomm AI Hub quickstart](https://aihub.qualcomm.com) or clone the [ai-hub-models repository](https://github.com/qualcomm/ai-hub-models) and run `pip install qai_hub_models` to access the full model library.
