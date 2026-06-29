@@ -1,0 +1,60 @@
+---
+title: "Gemini 2.5 Deep Think tops benchmarks, OpenAI previews GPT-5.6 and unveils Jalapeño chip, Anthropic accuses Alibaba of distillation attack"
+description: "Google's Gemini 2.5 Deep Think tops AI benchmarks in June 2026 while OpenAI previews GPT-5.6. Anthropic accuses Alibaba of a large-scale distillation attack."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/this-week-in-ai-2026-06-29/public"
+authorUsername: "stevekimoi"
+---
+
+# Gemini 2.5 Deep Think tops benchmarks, OpenAI previews GPT-5.6 and unveils Jalapeño chip, Anthropic accuses Alibaba of distillation attack
+
+*This Week in AI — June 22–29, 2026*
+
+The frontier labs had a busy week — Google reset the science and reasoning leaderboard, OpenAI previewed three new models and revealed its first custom silicon, and Anthropic went public with accusations that Alibaba ran a months-long operation to scrape its most capable model. Underneath the launches, a harder question is forming: as the top models grow more capable, who controls them and on whose terms?
+
+## Key Takeaways
+
+- **Google:** Gemini 2.5 Pro with Deep Think posted 89.8% on MMLU-Pro and 82.4% on GPQA Diamond — the highest scores of any publicly available model. Developers working on scientific reasoning or graduate-level Q&A tasks should be testing it this week.
+- **OpenAI:** The GPT-5.6 series (Sol, Terra, Luna) entered limited preview on June 26. The U.S. government requested a restricted rollout; Sol is currently limited to trusted partners. General availability is expected within weeks, and multi-agent "ultra mode" is the headline capability to watch.
+- **OpenAI + Broadcom:** The Jalapeño inference chip was unveiled June 24 — OpenAI's first custom silicon, built in nine months. It promises substantially better performance per watt than current GPUs and targets initial deployment by end of 2026. If it ships on schedule, it changes OpenAI's cost structure significantly.
+- **Anthropic:** Accused Alibaba of conducting 28.8 million fraudulent Claude interactions through 25,000 fake accounts over six weeks. The allegation is now in front of U.S. senators proposing legislation to sanction entities that run distillation attacks. This is no longer just an arms race — it's a policy fight.
+
+---
+
+## The Leaderboard Shuffle
+
+### Google Gemini 2.5 Pro with Deep Think
+
+Google launched Gemini 2.5 Pro with Deep Think on June 22, and it immediately [topped the major science and reasoning benchmarks](https://blog.google/products/gemini/gemini-2-5-deep-think/): 89.8% on MMLU-Pro, 82.4% on GPQA Diamond, and state-of-the-art on Humanity's Last Exam and LiveCodeBench V6. The model uses parallel thinking — generating and evaluating multiple reasoning paths simultaneously before settling on an answer — and sits behind Google AI Ultra's subscription tier, with API access for developers arriving shortly. With a 2-million-token context window, it can ingest an entire codebase or months of conversation history in a single call. For builders doing complex reasoning or long-context retrieval work, this is now the benchmark to beat.
+
+### OpenAI GPT-5.6: Sol, Terra, and Luna
+
+Two days later, on June 26, OpenAI [previewed the GPT-5.6 family](https://openai.com/index/previewing-gpt-5-6-sol/): Sol (flagship), Terra (balanced, 2x cheaper than GPT-5.5 at comparable performance), and Luna (fast, lowest cost). Sol introduces a new "ultra mode" that uses subagents to decompose and parallelize complex tasks — a meaningful step toward practical long-horizon autonomy. The rollout is deliberately limited: at the U.S. government's request, access to Sol is currently restricted to a small group of trusted partners. OpenAI is retiring GPT-4.5 and GPT-5.2 from ChatGPT simultaneously, consolidating its lineup. General availability is expected in the coming weeks.
+
+---
+
+## OpenAI's Hardware Bet
+
+### Jalapeño: First Custom Inference Chip
+
+OpenAI and Broadcom [unveiled Jalapeño on June 24](https://techcrunch.com/2026/06/24/openai-unveils-its-first-custom-chip-built-by-broadcom/) — a reticle-sized ASIC designed specifically for LLM inference, built from blank slate in nine months (described as potentially the fastest development cycle ever for advanced semiconductor design). Early testing shows substantially better performance per watt than current state-of-the-art GPUs, with early engineering samples already running workloads at production-target frequency. OpenAI used its own models to accelerate parts of the chip's design process. Initial deployment is targeted for end of 2026, supporting gigawatt-scale data centers with Microsoft and others. If Jalapeño ships on time, it gives OpenAI leverage over its own cost structure that it currently lacks — and signals that the frontier labs are all moving toward custom silicon, not just renting it.
+
+---
+
+## The Distillation Wars
+
+### Anthropic Accuses Alibaba of Largest-Ever Scraping Campaign
+
+Anthropic went public this week with an accusation it had documented in a June 10 letter to the White House: Alibaba's Qwen AI lab allegedly ran a [six-week campaign to extract Claude's capabilities](https://www.cnbc.com/2026/06/24/anthropic-alibaba-distillation-campaign.html) through 25,000 fraudulent accounts and 28.8 million interactions between April 22 and June 5. The targets were Claude's most advanced skills — software engineering and agentic reasoning. Anthropic classifies this as a distillation attack: using a frontier model's outputs to train a weaker one, at scale, in violation of terms of service. The scope eclipses a February incident involving DeepSeek, MiniMax, and Moonshot AI that generated 16 million exchanges. Senators Hagerty and Kim are now moving to add an amendment to defense legislation that would authorize sanctions against entities running such campaigns. Whether or not that amendment passes, the story marks a shift: the contest over frontier AI capabilities is increasingly playing out in lawyers' offices and legislative chambers, not just training runs.
+
+---
+
+## Quick Hits
+
+- **ChatGPT market share:** For the first time, ChatGPT's share of the AI assistant market [dropped below 50%](https://note.com/mashiro_pearl/n/nbe5b53fa65ae?hl=en) — a direct consequence of GPT-5.6's delayed availability and competitive pressure from Gemini and Claude.
+- **Alphabet joins the Dow:** Google's parent company [replaced Verizon in the DJIA on June 29](https://www.cnbc.com/2026/06/23/alphabet-verizon-dow-djia.html), bringing the Magnificent Seven's Dow representation to five and giving the 130-year-old index its first AI-native member.
+- **Talent moves:** Alphabet [lost two researchers in 48 hours](https://fortune.com/2026/06/23/google-deepmind-ai-researcher-departures-raise-doubts-about-ability-to-win-the-ai-race-shazeer-jumper-eye-on-ai/) — Noam Shazeer (Gemini co-lead, "Attention Is All You Need" co-author) to OpenAI and Nobel laureate John Jumper (AlphaFold) to Anthropic — sending Alphabet shares down roughly 7% on June 22 and wiping an estimated $250 billion in market value.
+- **Supabase raises $500M:** The open-source backend-as-a-service platform closed [$500 million in funding at a $10.5 billion valuation](https://fundup.ai/recently-funded-startups), reflecting sustained investor appetite for infrastructure that supports AI application development.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
