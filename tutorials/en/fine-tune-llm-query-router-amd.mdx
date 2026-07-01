@@ -1,0 +1,294 @@
+---
+title: "Fine-Tune a Query Router for the AMD Developer Hackathon's Token-Efficient Track"
+description: "Learn how to fine-tune a local classifier that routes queries to Fireworks-hosted models for AI hackathons, cutting tokens without an LLM call on every request."
+image: "PENDING_COVER_IMAGE"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+AMD Developer Hackathon: ACT II names its first track "Hybrid Token-Efficient Routing Agent." The name is a hint: the winning approach isn't picking one model and calling it on every query, it's routing each query to the cheapest model that can still answer it correctly. Most routing guides solve this with a prompt: ask an LLM "is this easy or hard?" before answering. That works, but it means paying for an extra model call on every single request just to make a decision.
+
+This tutorial builds the other half of "hybrid": a small classifier, fine-tuned on your own labeled data, that makes the same routing decision locally for zero tokens. It's a natural fit for **AI hackathons**, where router accuracy and token efficiency are scored directly, and it's worth understanding if you're building AI agents for any of the [online AI hackathons](https://lablab.ai/ai-hackathons) on lablab.ai, not just this one.
+
+**What you'll build:** a labeled dataset created by actually calling two Fireworks-hosted models and grading their answers, a fine-tuned DistilBERT router trained on that data, a prompt-based baseline router to compare it against, and a Docker container that matches the hackathon's exact submission contract.
+
+**A constraint that shapes everything here:** Track 1's rules state that all answer-generating inference must go through Fireworks via `FIREWORKS_BASE_URL`, using a model from `ALLOWED_MODELS`. Local model inference scores zero tokens. That means the fine-tuned piece can only be the routing decision, never the answer itself, since the classifier runs locally and the actual answer still has to come from a Fireworks-hosted model.
+
+The full working project, including the labeled dataset, is on GitHub at [Stephen-Kimoi/fine-tune-llm-query-router-amd](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd). Every code block below links to its exact source lines in that repo.
+
+## Prerequisites
+
+- Python 3.11+
+- A [Fireworks AI](https://fireworks.ai) API key (the AMD AI Developer Program includes $50 in Fireworks credits)
+- `pip install torch transformers requests python-dotenv`
+- Docker, if you want to test the container locally
+- Roughly 20 minutes of API calls to build and label the dataset
+
+## Step 1: Pick your model tiers
+
+Not every model in Fireworks' catalog is available for instant serverless calls, some need a dedicated on-demand deployment first. Check what's actually callable before building around it:
+
+```python
+import requests
+
+resp = requests.get(
+    "https://api.fireworks.ai/inference/v1/models",
+    headers={"Authorization": "Bearer YOUR_FIREWORKS_API_KEY"},
+)
+for model in resp.json()["data"]:
+    print(model["id"])
+```
+
+At the time of writing, Gemma models weren't in that serverless list, they need an on-demand deployment. This tutorial uses two models that were: `gpt-oss-120b` as the cheap tier and `deepseek-v4-pro` as the escalation tier. Both are Mixture-of-Experts models, so "cheap" here means fewer active parameters per token, not a small model in absolute terms. If Gemma is in your `ALLOWED_MODELS` list on hackathon day, swap it in, that's the entire point of keeping the model IDs in environment variables instead of hardcoding them:
+
+```bash
+# .env
+FIREWORKS_API_KEY=your_key_here
+FIREWORKS_BASE_URL=https://api.fireworks.ai/inference/v1
+MODEL_CHEAP=accounts/fireworks/models/gpt-oss-120b
+MODEL_EXPENSIVE=accounts/fireworks/models/deepseek-v4-pro
+```
+
+## Step 2: Build a labeled dataset by actually testing your models
+
+You can't know which queries need the expensive model until you measure it. Generate queries across the categories your hackathon track actually scores (this one lists eight: factual knowledge, math reasoning, sentiment, summarization, NER, code debugging, logic, and code generation), each with a known correct answer:
+
+```python
+def _q(category, prompt, ground_truth):
+    return {"category": category, "difficulty_pool": "hard",
+            "prompt": prompt, "ground_truth": ground_truth}
+
+# math with a verifiable numeric answer
+_q("math_reasoning",
+   "A tank starts with 480 liters. It drains at 8 liters per minute for 15 "
+   "minutes, then is refilled at 12 liters per minute for 20 minutes, then "
+   "drains again at 5 liters per minute for 10 minutes. How many liters "
+   "are in the tank now?",
+   "550")
+```
+
+Full source: [`data/generate_adversarial.py#L18-L28`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/data/generate_adversarial.py#L18-L28)
+
+For logic puzzles, don't hand-write constraints and hope they're solvable, brute-force verify uniqueness before writing the prompt:
+
+```python
+import itertools
+
+names = ["Ivy", "Jude", "Kai", "Lena", "Moss"]
+
+def check(pos, drink):
+    if pos["Ivy"] != 1 or pos["Moss"] != 5:
+        return False
+    tea_person = [n for n, d in drink.items() if d == "tea"][0]
+    if pos[tea_person] != pos["Ivy"] + 1:
+        return False
+    if drink["Kai"] != "water" or pos["Kai"] != pos["Lena"] - 1:
+        return False
+    return True
+
+solutions = []
+for pos_perm in itertools.permutations(range(1, 6)):
+    pos = dict(zip(names, pos_perm))
+    for drink_perm in itertools.permutations(["tea", "coffee", "juice", "soda", "water"]):
+        drink = dict(zip(names, drink_perm))
+        if check(pos, drink):
+            solutions.append(pos)
+
+unique_positions = {tuple(sorted(s.items())) for s in solutions}
+assert len(unique_positions) == 1, "puzzle isn't uniquely solvable"
+```
+
+This verification step ran ad hoc against every puzzle before it was written down; the pre-verified ground truths themselves live in [`data/generate_adversarial.py`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/data/generate_adversarial.py).
+
+Then label each query empirically: call the cheap model, call the expensive model, and grade both against the ground truth with an independent judge model (not one of the two you're comparing, to avoid a model favoring its own answers):
+
+```python
+def grade(query, cheap_answer, expensive_answer):
+    if query["category"] == "code_generation":
+        spec = json.loads(query["ground_truth"])
+        return (run_tests(cheap_answer, spec["function_name"], spec["tests"]),
+                run_tests(expensive_answer, spec["function_name"], spec["tests"]))
+    judge_prompt = JUDGE_PROMPT.format(prompt=query["prompt"],
+                                        ground_truth=query["ground_truth"],
+                                        cheap_answer=cheap_answer,
+                                        expensive_answer=expensive_answer)
+    verdict = parse_judge_json(chat(MODEL_JUDGE, judge_prompt)["text"])
+    return verdict["a_correct"], verdict["b_correct"]
+```
+
+Full source: [`data/label_dataset.py#L58-L76`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/data/label_dataset.py#L58-L76)
+
+For code generation specifically, don't ask an LLM judge to eyeball correctness, execute the generated function against real test cases in a subprocess:
+
+```python
+import re
+import subprocess
+import sys
+import tempfile
+
+CODE_BLOCK_RE = re.compile(r"```(?:python)?\s*\n(.*?)```", re.DOTALL)
+
+def extract_code(answer_text):
+    match = CODE_BLOCK_RE.search(answer_text)
+    return match.group(1) if match else answer_text
+
+def run_tests(answer_text, function_name, tests, timeout=10):
+    code = extract_code(answer_text)
+    harness = (code + "\n\nimport sys\n"
+               f"_tests = {tests!r}\n_fn = {function_name}\n"
+               "_all_ok = True\n"
+               "for _t in _tests:\n"
+               "    try:\n"
+               "        if _fn(*_t['args']) != _t['expected']:\n"
+               "            _all_ok = False\n"
+               "    except Exception:\n"
+               "        _all_ok = False\n"
+               "print('PASS' if _all_ok else 'FAIL')\n")
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+        f.write(harness)
+        path = f.name
+    result = subprocess.run([sys.executable, path], capture_output=True, text=True, timeout=timeout)
+    return result.stdout.strip().endswith("PASS")
+```
+
+Full source: [`code_exec.py`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/code_exec.py)
+
+Label the query `"hard"` if the cheap model's answer fails grading, `"easy"` otherwise. The result is a dataset where every label reflects something that actually happened, not a guess about difficulty.
+
+## What the data actually showed
+
+Here's the part most routing tutorials skip: after generating 83 queries, including a batch specifically designed to be adversarial (multi-step compound math, dense brute-force-verified logic puzzles, subtle Python bugs like closure late-binding and generator exhaustion, real algorithms like Levenshtein distance graded by execution, not vibes), `gpt-oss-120b` passed 80 of them. Only 3 genuinely needed escalation to `deepseek-v4-pro`.
+
+That's not a failed experiment, it's the actual finding: for this pair of models, there's barely an accuracy gap to route around. If you're picking model tiers for your own hackathon submission, this is the check you should run before assuming a bigger model will save your accuracy. Sometimes it won't need to.
+
+## Step 3: Fine-tune the router anyway, and read the result honestly
+
+With 80 easy and 3 hard examples, a classifier trained on this data will mostly learn to predict "easy," and it should, that's what the evidence supports. Class weighting keeps the 3 hard examples from being completely ignored during training, but don't expect them to move the decision boundary much:
+
+```python
+n_easy_train = len(train_records) - n_hard_train
+weight_hard = n_easy_train / max(n_hard_train, 1)
+class_weights = torch.tensor([1.0, weight_hard]).to(device)
+loss_fn = torch.nn.CrossEntropyLoss(weight=class_weights)
+```
+
+Full source: [`router/train_router.py#L136-L141`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/router/train_router.py#L136-L141)
+
+Fine-tuning DistilBERT (66M parameters) on 66 training examples took under a minute on an Apple M5 via PyTorch's MPS backend, no GPU cloud needed for a model this small. On AMD Developer Cloud, the same script runs unchanged, just point PyTorch at a ROCm-backed MI300X instance instead of MPS.
+
+The held-out test result: 94.1% accuracy, identical to always routing to the cheap model, because that's what the router learned to do. Precision and recall on the "hard" class were both 0, since two training examples isn't enough to learn a generalizable pattern. Reporting only overall accuracy here would be misleading, on a dataset this skewed, a model that never predicts "hard" still looks accurate.
+
+## Step 4: Compare against a prompt-based baseline
+
+The baseline most tutorials describe asks an LLM to classify the query before answering it:
+
+```python
+CLASSIFY_PROMPT = """Classify the following query as either "easy" or "hard"
+for an AI model to answer well. Respond with exactly one word: easy or hard.
+
+Query: {prompt}"""
+
+def classify(prompt):
+    result = chat(MODEL_CHEAP, CLASSIFY_PROMPT.format(prompt=prompt), max_tokens=150)
+    label = "hard" if "hard" in result["text"].lower() else "easy"
+    return {"label": label, "tokens": result["total_tokens"]}
+```
+
+Full source: [`baseline_router.py`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/baseline_router.py)
+
+That `max_tokens=150` matters more than it looks. Reasoning models spend tokens thinking before they answer; at `max_tokens=10` the model above never got past its own reasoning to output a word, and the classifier silently defaulted to "easy" every time. Test the raw response, not just the parsed label, or you'll ship a router that isn't actually routing.
+
+## Step 5: Wire it into the hackathon's container contract
+
+The submission format is fixed: read `/input/tasks.json`, write `/output/results.json`, exit 0, boot in under 60 seconds:
+
+```python
+import json
+import os
+from pathlib import Path
+
+from fireworks_client import chat
+
+MODEL_CHEAP = os.environ["MODEL_CHEAP"]
+MODEL_EXPENSIVE = os.environ["MODEL_EXPENSIVE"]
+ROUTER_MODE = os.environ.get("ROUTER_MODE", "finetuned")
+
+def route(prompt):
+    if ROUTER_MODE == "baseline":
+        from baseline_router import classify
+        result = classify(prompt)
+        model = MODEL_EXPENSIVE if result["label"] == "hard" else MODEL_CHEAP
+        return model, result["tokens"]
+    from router.infer_router import predict
+    label = predict(prompt)  # local forward pass, zero tokens
+    model = MODEL_EXPENSIVE if label == "hard" else MODEL_CHEAP
+    return model, 0
+
+def main():
+    tasks = json.loads(Path("/input/tasks.json").read_text())
+    results = []
+    for task in tasks:
+        model, routing_tokens = route(task["prompt"])
+        answer = chat(model, task["prompt"], max_tokens=700)
+        results.append({"task_id": task["task_id"], "answer": answer["text"]})
+    Path("/output/results.json").write_text(json.dumps(results, indent=2))
+
+if __name__ == "__main__":
+    main()
+```
+
+Full source: [`agent.py`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/agent.py) (`route()` at [L31-L47](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/agent.py#L31-L47), `main()` at [L49-L62](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/agent.py#L49-L62))
+
+The Dockerfile only needs CPU, DistilBERT inference doesn't need a GPU, only training does:
+
+```dockerfile
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY fireworks_client.py baseline_router.py agent.py ./
+COPY router/ ./router/
+ENV ROUTER_MODE=finetuned
+CMD ["python3", "agent.py"]
+```
+
+Full source: [`Dockerfile`](https://github.com/Stephen-Kimoi/fine-tune-llm-query-router-amd/blob/c67ad6df50963a06ab27aba4b9d85aa4a16b4220/Dockerfile)
+
+Tested locally with `docker build` and `docker run` against a sample `tasks.json`, the container booted and returned valid results in 12 seconds, well inside the 60-second limit.
+
+## Step 6: Evaluate all four approaches on the same held-out set
+
+Since the labeling step already recorded real token counts and correctness for both models on every query, evaluation doesn't need new answer-generating calls, only the baseline's classification call is new:
+
+<table>
+<thead>
+<tr><th>Approach</th><th>Total tokens</th><th>Accuracy</th></tr>
+</thead>
+<tbody>
+<tr><td>Always cheap</td><td>5,579</td><td>94.1%</td></tr>
+<tr><td>Always expensive</td><td>6,306</td><td>88.2%</td></tr>
+<tr><td>Prompt-based baseline</td><td>10,212</td><td>94.1%</td></tr>
+<tr><td>Fine-tuned router</td><td>5,579</td><td>94.1%</td></tr>
+</tbody>
+</table>
+
+Two things worth noticing. First, always calling the expensive model wasn't more accurate here, it was less accurate and used more tokens, a reminder that "bigger model" isn't automatically the safer default. Second, the fine-tuned router matched the baseline's accuracy while using 45% fewer total tokens, purely by removing the per-request classification call. That gap is the entire value of fine-tuning a router instead of prompting for one: the decision itself is nearly free.
+
+## Frequently Asked Questions
+
+**Does a fine-tuned router only make sense if there's a big accuracy gap between tiers?**
+No, it makes sense whenever a prompt-based classifier would otherwise cost tokens on every request. Even when the routing decision is nearly always the same, as it was here, a local classifier makes that decision for free, while a prompt-based one keeps paying for it.
+
+**Can I use this approach in other AI hackathons, not just AMD's?**
+Yes. Any hackathon that scores token efficiency, and many do, rewards routing to the cheapest model that can still pass the accuracy bar. The methodology here (empirically label your own data, fine-tune small, evaluate against a real baseline) transfers directly.
+
+**What if my dataset comes back this skewed too?**
+Treat it as a finding, not a failure. Report the real accuracy gap (or lack of one) between your tiers before assuming escalation is worth building. If it turns out your cheap model handles almost everything, that's useful information for picking `ALLOWED_MODELS` on submission day.
+
+**Do I need an AMD GPU to fine-tune a router this small?**
+No. DistilBERT at this scale trains in under a minute on a laptop GPU (MPS on Apple Silicon, or CPU). AMD Developer Cloud's MI300X instances matter more for larger fine-tunes or for demonstrating AMD compute usage, which Track 3 specifically requires.
+
+## Conclusion
+
+The router built here is small on purpose: a 66M-parameter classifier that makes a free local decision about which Fireworks-hosted model should answer a query. The real work was in the labeling step, actually calling both models and grading the results, rather than guessing at difficulty. That's the part worth carrying into your own submission for the [AMD Developer Hackathon](https://lablab.ai/ai-hackathons) or any other token-scored track: measure the accuracy gap before you build around it, and let the data decide whether escalation is worth the tokens.
