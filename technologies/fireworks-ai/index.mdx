@@ -1,0 +1,69 @@
+---
+title: "Fireworks AI"
+description: "Fireworks AI is a fast inference and fine-tuning platform for open models like Llama, Gemma, DeepSeek, and Mistral, built by former Meta PyTorch engineers."
+---
+
+# Fireworks AI
+
+Fireworks AI was founded in 2022 by a team of former Meta PyTorch engineers, including CEO Lin Qiao, who previously led PyTorch at Meta. The company builds inference and fine-tuning infrastructure for open-weight models, letting developers call, fine-tune, and deploy models like Llama, Gemma, DeepSeek, Mistral, and Qwen through a single API without managing GPU infrastructure themselves.
+
+| General          |                                                          |
+| ----------------- | -------------------------------------------------------- |
+| **Company**       | [Fireworks AI](https://fireworks.ai)                     |
+| **Founded**       | 2022 by Lin Qiao and a team of former Meta PyTorch engineers |
+| **Headquarters**  | Redwood City, California, USA                            |
+| **Website**       | [fireworks.ai](https://fireworks.ai)                     |
+| **Documentation** | [docs.fireworks.ai](https://docs.fireworks.ai)            |
+| **GitHub**        | [github.com/fw-ai](https://github.com/fw-ai)              |
+| **Type**          | AI Inference and Fine-Tuning Platform                    |
+
+---
+
+## Core Products
+
+### Inference API
+Fireworks hosts open-weight models, including Llama, Gemma, DeepSeek, Mistral, and Qwen, behind a single OpenAI-compatible API. Requests are served through FireAttention, Fireworks' own inference engine built for high-throughput serving of open models.
+
+### Fine-Tuning Platform (FireOptimizer)
+FireOptimizer lets developers fine-tune models directly on Fireworks, including LoRA adapters and full-parameter supervised fine-tuning, without provisioning their own training hardware. It also supports reinforcement fine-tuning for post-training optimization.
+
+### Function Calling and Structured Output
+Fireworks supports JSON mode, grammar-constrained generation, and multi-turn function calling, so models can be wired directly into agent and tool-calling pipelines without extra parsing logic.
+
+---
+
+## Developer Resources
+
+Fireworks documents its API, SDKs, and fine-tuning workflows for teams building production inference pipelines on open models.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Documentation](https://docs.fireworks.ai) — API reference, SDKs, and fine-tuning guides
+- [GitHub](https://github.com/fw-ai) — cookbook, benchmarks, and example integrations
+- [Discord](https://discord.gg/mMqQxvFD9A) — community support and product updates
+- [Fireworks AI Console](https://fireworks.ai) — sign up and start building
+
+---
+
+## Key Features
+
+**FireAttention inference engine**
+Fireworks' custom inference engine is built specifically to serve open-weight models at high throughput, avoiding the overhead of general-purpose serving stacks.
+
+**Self-serve fine-tuning**
+Both LoRA and full-parameter fine-tuning are available directly through the platform, so teams can specialize an open model without standing up their own training cluster.
+
+**AMD infrastructure partnership**
+Fireworks has a multi-year partnership with AMD to optimize its inference stack for AMD Instinct GPUs, with AMD providing GPU access through preferred cloud providers. This partnership underpins hackathons like the [AMD Developer Hackathon](/ai-hackathons) series on lablab.ai, where all model inference is routed through the Fireworks API.
+
+---
+
+## Use Cases
+
+**Token-efficient agent routing**
+Because Fireworks exposes multiple open models of different sizes behind one API, it's a natural fit for routing agents that send easy queries to a small, cheap model and escalate harder queries to a larger one, all while keeping token usage measurable through a single provider.
+
+**Fine-tuning open models for a narrow task**
+Teams that need a smaller, cheaper model tuned for a specific classification, extraction, or generation task can fine-tune directly on Fireworks instead of exporting weights to separate training infrastructure.
