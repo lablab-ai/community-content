@@ -70,10 +70,49 @@ python3 scripts/post_to_notion.py \
 
 Share the returned Notion URL with the user.
 
+### 7. Create a design request for Damian
+
+Immediately after posting to Notion, create a cover image request in the design database so Damian can start work in parallel.
+
+**Design database ID:** `3485a26f46938097b6a9f4165323e8ce`
+**Assigned by (Stephen Kimoi):** `2bed872b-594c-81d6-a2d4-0002487dc95b`
+**Default due date:** 7 days from today
+
+```bash
+NOTION_TOKEN=$(grep NOTION_TOKEN /Users/steve/Lablab-AI/community-content/.agents/skills/.env | cut -d= -f2 | tr -d '"' | tr -d "'" | tr -d ' ')
+
+curl -s -X POST "https://api.notion.com/v1/pages" \
+  -H "Authorization: Bearer ${NOTION_TOKEN}" \
+  -H "Notion-Version: 2022-06-28" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "parent": {"database_id": "3485a26f46938097b6a9f4165323e8ce"},
+    "properties": {
+      "Task name": {"title": [{"text": {"content": "<confirmed title>"}}]},
+      "Status": {"status": {"name": "Ready for review"}},
+      "Assigned by": {"people": [{"id": "2bed872b-594c-81d6-a2d4-0002487dc95b"}]},
+      "Due date": {"date": {"start": "<YYYY-MM-DD>"}}
+    },
+    "children": [
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Type: <Article or Tutorial>"}}]}},
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Hook: <hook sentence>"}}]}},
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Angle: <2-3 sentence angle summary>"}}]}},
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Target reader: <Beginner / Intermediate / Advanced>"}}]}},
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Suggested file path: <path>"}}]}},
+      {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":"Design notes: Cover image for lablab.ai article. Follow existing article cover style — clean, Lablab-branded, topic-relevant visual. Image will be uploaded to Cloudflare Images and added to the article frontmatter before publishing."}}]}}
+    ]
+  }'
+```
+
+Parse the `url` field from the response and share it with the user alongside the Notion content task URL.
+
+If the API returns an error, report it clearly — do not silently skip this step.
+
 ## Gotchas
 
-- If the script exits with a 404, the database isn't shared with the integration yet. Ask the user to open the database in Notion → "..." → "Add connections" → "Claude Automation".
+- If the post_to_notion script exits with a 404, the database isn't shared with the integration yet. Ask the user to open the database in Notion → "..." → "Add connections" → "Claude Automation".
 - `--type` must be exactly `Article` or `Tutorial`; `--reader` must be `Beginner`, `Intermediate`, or `Advanced`.
+- Valid status for the design database is `"Ready for review"` — do not use `"Not started"` or `"In Progress"`, they don't exist in that DB.
 
 ## Hand off
 
