@@ -1,0 +1,203 @@
+
+
+```mdx
+---
+title: "Getting Started with Llama-3"
+description: "A comprehensive guide to setting up and using Meta Llama-3 for text generation and other NLP tasks."
+image: "https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4e32b89a-9146-4004-81b4-18c20a913df0_1920x1080.jpeg"
+authorUsername: "Youknowsthevibes"
+---
+
+## Introduction to Llama-3
+
+In this tutorial, I will demonstrate how to set up and use Meta Llama-3 for text generation. Meta Llama-3 is a powerful large language model that offers significant advancements in natural language processing.
+
+## Setting Up the Environment
+
+### Prerequisites
+
+Before we begin, ensure you have the following installed:
+- Python 3.8+
+- PyTorch
+- CUDA (for GPU acceleration)
+- wget
+- md5sum
+
+### Downloading the Model
+
+Visit the [Meta Llama website](https://llama.meta.com/llama-downloads/) to register and download the model weights. After registration, you will receive an email with a URL to download the models. Create a `download.sh` script with the following content and run it with the provided URL:
+
+```sh
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: ./download.sh <url>"
+    exit 1
+fi
+
+URL=$1
+
+wget "$URL" -O model_weights.zip
+
+# Verify the download using md5sum (optional, if you have the expected md5sum)
+# expected_md5sum="your_expected_md5sum_here"
+# downloaded_md5sum=$(md5sum model_weights.zip | awk '{ print $1 }')
+
+# if [ "$expected_md5sum" = "$downloaded_md5sum" ]; then
+#     echo "Download verified successfully."
+# else
+#     echo "Download verification failed."
+#     exit 1
+# fi
+
+unzip model_weights.zip -d Meta-Llama-3-8B-Instruct
+
+echo "Download and extraction completed."
+```
+
+<Img src="https://i.redd.it/avts9zbaq9vc1.png" alt="Download Script" caption="Running the download script for Llama-3 models"/>
+
+### Installation
+
+Set up a conda environment:
+
+```sh
+conda create -n llama3 python=3.8
+conda activate llama3
+```
+
+Next, install the necessary dependencies. Clone and download the repository in a conda environment with PyTorch and CUDA:
+
+```sh
+git clone https://github.com/meta-llama/llama3
+cd llama3
+pip install -e .
+pip install torch transformers huggingface-hub
+```
+
+Make the download script executable and run it:
+
+```sh
+chmod +x download.sh
+./download.sh "https://download6.llamameta.net/..."
+```
+
+When prompted, enter the list of models to download without spaces (e.g., `8B,8B-instruct,70B,70B-instruct`), or press Enter for all.
+
+### Running the Command
+
+Navigate to the directory where `example_chat_completion.py` is located and execute the command to run the model:
+
+```sh
+torchrun --nproc_per_node 1 example_chat_completion.py \
+    --ckpt_dir Meta-Llama-3-8B-Instruct/ \
+    --tokenizer_path Meta-Llama-3-8B-Instruct/tokenizer.model \
+    --max_seq_len 512 --max_batch_size 6
+```
+
+
+## Basic Usage of Llama-3
+
+### Loading the Model
+
+Here's how to load the Llama-3 model using the `transformers` library:
+
+```python
+import transformers
+import torch
+
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device="cuda",
+)
+```
+
+### Running Inference
+
+Now, you can generate text using the loaded model:
+
+```python
+text = "Once upon a time"
+result = pipeline(text)
+print(result)
+```
+
+## Practical Applications
+
+### Chatbot Example
+
+In this section, I will show you how to create a simple chatbot using Llama-3:
+
+```python
+import transformers
+import torch
+
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device="cuda",
+)
+
+def chat_with_bot(prompt):
+    response = pipeline(prompt)
+    return response[0]['generated_text']
+
+# Example interaction
+prompt = "<BOS><SYSTEM>\n\n<User>\n\nHello! How are you?\n\n<Assistant>\n\n"
+response = chat_with_bot(prompt)
+print(response)
+```
+
+
+### Content Generation
+
+Another application is using Llama-3 for content generation:
+
+```python
+import transformers
+import torch
+
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+pipeline = transformers.pipeline(
+    "text-generation",
+    model=model_id,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device="cuda",
+)
+
+def generate_content(prompt):
+    response = pipeline(prompt)
+    return response[0]['generated_text']
+
+# Example prompt
+prompt = "Write a short story about a dragon and a knight."
+story = generate_content(prompt)
+print(story)
+```
+
+
+## Handling Errors and Debugging
+
+### Common Issues
+
+- **403 Forbidden**: If you encounter this error, the download link has expired or is invalid. Re-request the link from the Meta Llama website.
+- **CUDA Errors**: Ensure that CUDA is correctly installed and configured.
+
+### Debugging Tips
+
+- Verify that all dependencies are installed correctly.
+- Check for any typos or incorrect paths in your code.
+
+## Conclusion and Further Resources
+
+In this tutorial, we covered how to set up and use Meta Llama-3 for text generation. We also explored practical applications and discussed common errors and debugging tips. For more information and examples, visit the [llama-recipes repository](https://github.com/meta-llama/llama-recipes).
+
+
+
+```
+
