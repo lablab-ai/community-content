@@ -1,6 +1,6 @@
 ---
 title: "Build a Multilingual Call Intelligence Agent with Speechmatics"
-description: "Stream one audio call through Speechmatics real-time translation into five languages at once, then layer a live Gemini-powered summary and sentiment read on top."
+description: "Build a multilingual AI hackathon project with Speechmatics: real-time translation into five languages, plus a live Gemini summary and sentiment layer."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/speechmatics-multilingual-call-intelligence-agent-cover/public"
 authorUsername: "stevekimoi"
 ---
@@ -8,6 +8,8 @@ authorUsername: "stevekimoi"
 ## Introduction
 
 Speechmatics ships two features that, on their own, are well documented: real-time translation, which turns one audio stream into transcripts in [30+ languages simultaneously](https://docs.speechmatics.com/speech-to-text/features/translation), and Speech Intelligence, which adds summarization and sentiment on top of a transcript. What nobody has written up is what happens when you combine them into a single working build — a live call where an English conversation is transcribed, translated into five languages at once, and simultaneously summarized with a rolling sentiment read, all in one dashboard.
+
+Speechmatics is also a recurring partner technology at **AI hackathons** on lablab.ai, which makes this exact combination — real-time multilingual translation plus live call intelligence — a strong project idea for anyone entering an online AI hackathon that touches voice, agents, or multilingual support tooling. If you're looking for a hackathon to apply it in, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
 
 That combination surfaces a detail the marketing pages gloss over: Speechmatics' native summarization is a **batch-only** feature. There's no `summarization_config` you can drop into a real-time session. The "live summary" you see in Speechmatics' own demos is a pattern they built themselves — take the real-time transcript, and periodically hand a rolling window of it to an LLM. This tutorial builds exactly that pattern, using Gemini as the LLM layer, and wires the whole thing into a Gradio dashboard so you can watch transcription, translation, and call intelligence happen side by side.
 
@@ -512,6 +514,20 @@ python3 ui.py
 ```
 
 Open the local URL Gradio prints, click **Start demo call**, and watch the transcript fill in on the left, the sentiment badge shift color as the conversation moves from a frustrated customer to a resolved incident, the summary panel update every so often with the current state of the call, and five translation columns filling in below — Spanish, French, German, Japanese, and Mandarin, all from the same single audio stream.
+
+## Frequently Asked Questions
+
+**Q: Why can't Speechmatics generate the live summary and sentiment natively in real time?**
+Speechmatics' own summarization and sentiment features only run in batch mode, over a completed transcript. There's no `summarization_config` for a live session — the rolling summary in this tutorial is a pattern built on top of the real-time transcript using an external LLM (Gemini here), not a native Speechmatics real-time API.
+
+**Q: Can Speechmatics really translate one audio stream into all five languages at the same time?**
+Yes — `TranslationConfig(target_languages=[...])` accepts up to five target languages in a single real-time session, and the server streams back a separate `AddTranslation` message per language as the same audio is transcribed.
+
+**Q: What are some AI hackathon project ideas using Speechmatics?**
+Beyond call intelligence, Speechmatics' real-time and translation APIs fit well into voice agents, multilingual meeting assistants, live-captioned support widgets, and accessibility tools — all common project categories in online AI hackathons.
+
+**Q: How can I use this multilingual call intelligence agent in an AI hackathon?**
+The companion repo is a working starting point: fork it, swap the sample call for a live microphone or a real recording pipeline, and extend the analysis layer (per-speaker sentiment, persisted call history, alerting) to fit whatever track or use case your hackathon is judging.
 
 ## Conclusion
 
