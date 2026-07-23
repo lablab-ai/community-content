@@ -146,6 +146,12 @@ The project is ready to document when all end-to-end checks pass. Proceed with w
 
 Only after that does Prerequisites → step-by-step code walkthrough begin. It's fine for a hero screenshot to reappear later at the exact step that produces it — caption the repeat so it reads as intentional ("the same green state, reached by actually building X") rather than a duplicate slip-up.
 
+**Explain the why, not just the what.** Never introduce a code block as a bare instruction ("`app.py` — a minimal Task Tracker API:" followed immediately by the file). Every non-trivial block gets 1–3 sentences first that answer: what does this piece need to do, and why does it look the way it does — which design decisions in it are arbitrary versus load-bearing for a step that comes later. Concretely:
+- If a field, structure, or convention in this code gets referenced or enforced by something later (a steering doc, a hook, a scoped tool), say so explicitly — "this is written by hand once here; Step N makes Kiro repeat it automatically."
+- If a design choice looks like it could've been done another, more obvious way, say why it wasn't (e.g. why validation happens in the tool itself and not a client-side setting, why a script defensively scans a whole payload instead of trusting one field name).
+- Keep this tight — one to three sentences per block, not a paragraph per line of code. The goal is "I understand why this exists," not a line-by-line narration.
+- This applies to config files (JSON agent configs, steering docs) exactly as much as to source code — a JSON block dropped with no framing is the same mistake as an unexplained Python function.
+
 Tutorial checklist at handoff:
 - [ ] Project runs end-to-end with real APIs
 - [ ] `sample_input.json` exists and produces real output
