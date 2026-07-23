@@ -79,6 +79,6 @@ Confirm the following are locked before writing begins:
 
 **Tutorials** (`tutorials/[slug]/article.md`):
 - 1,200–2,500 words
-- Structure: Introduction → Prerequisites → Steps → Conclusion
+- Structure: Introduction → See it running first (clone/run the finished companion repo + payoff screenshots) → Prerequisites → Steps (code walkthrough) → Conclusion. Demo before code, always — see `tutorial-build` Step 11 for how to build this section.
 - All code blocks complete and runnable — no `...` placeholders
 - Each step doable in under 10 minutes for an intermediate developer

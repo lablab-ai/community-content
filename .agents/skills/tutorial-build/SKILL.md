@@ -139,6 +139,13 @@ These notes become the Prerequisites and troubleshooting sections of the tutoria
 
 The project is ready to document when all end-to-end checks pass. Proceed with writing the tutorial at the path confirmed in `content-start`. Write by narrating what the working code does — do not invent or speculate. Where a code block matches a pushed file, include its GitHub permalink from Step 9.
 
+**Lead with the demo, not the code.** Right after the intro (before Prerequisites, before any code walkthrough), add a "See it running first" section:
+1. `git clone` the companion repo from Step 9, install, and run it — the exact commands a reader needs to get the finished thing running with zero code written yet.
+2. 1–3 of the strongest screenshots/output from the working demo (the payoff moments — a regression caught, a scoped agent refusing something, a live dashboard updating), framed as "here's what you'll have by the end."
+3. A one-line bridge into the build: something like "the rest of this tutorial builds this from scratch and explains why."
+
+Only after that does Prerequisites → step-by-step code walkthrough begin. It's fine for a hero screenshot to reappear later at the exact step that produces it — caption the repeat so it reads as intentional ("the same green state, reached by actually building X") rather than a duplicate slip-up.
+
 Tutorial checklist at handoff:
 - [ ] Project runs end-to-end with real APIs
 - [ ] `sample_input.json` exists and produces real output

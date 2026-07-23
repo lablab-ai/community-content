@@ -1,6 +1,6 @@
 ---
-title: "AWS Kiro Tutorial: Hooks, Steering, and Custom Agents for AI Hackathons"
-description: "Learn AI hackathon-ready AWS Kiro workflows: auto-run tests with hooks, enforce conventions with steering, and build a scoped custom agent with its own MCP server."
+title: "AWS Kiro for AI Hackathons: Hooks, Steering, and Custom Agents"
+description: "Learn how to use AWS Kiro for AI hackathons — build production-ready AI agents with hooks, steering, and custom agents. Perfect for online AI hackathons."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0070b35f-37f7-474f-b315-6561962fa900/public"
 authorUsername: "stevekimoi"
 ---
@@ -16,6 +16,39 @@ Hooks, steering, and custom agents are what separate Kiro from "AI autocomplete 
 This tutorial builds all three, on top of a real FastAPI project, and proves each one actually works by breaking things on purpose and watching the system react.
 
 The full working project — every file below, exactly as built — is in [this companion repo](https://github.com/Stephen-Kimoi/kiro-task-tracker).
+
+## See it running first
+
+Before touching any code, clone the finished project and get it running — the rest of this tutorial builds this same thing from scratch and explains why every piece is there.
+
+```bash
+git clone https://github.com/Stephen-Kimoi/kiro-task-tracker.git
+cd kiro-task-tracker
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Start the API and the dashboard in two terminals:
+
+```bash
+# terminal 1
+uvicorn app:app --port 8000 --reload
+
+# terminal 2
+python3 ui.py
+```
+
+Open `http://127.0.0.1:7860`. That's the live dashboard this tutorial is built around — it polls the task API, a test-runner hook's log, and a changelog file every two seconds, so anything Kiro does shows up here without a page refresh.
+
+Here's what it looks like once Kiro has actually been driven through the workflow below: a spec change just triggered the test hook, and it passed.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f870c971-c5eb-4cd9-1d69-e750bdfdf100/public" alt="Live dashboard showing a pending task, a green PASS status from the spec hook, and a changelog panel" caption="Tasks, hook status, and changelog — all reading real state, not mocked data" />
+
+And here's the same panel a moment later, after a regression was introduced on purpose — the hook catches it the instant a spec file changes, before anyone runs the test suite by hand:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0821e99b-b9bc-4e2c-ea34-5573a9982500/public" alt="Dashboard showing a red FAIL status with 1 failed, 7 passed" caption="Same dashboard, moments after a deliberately broken status code" />
+
+That safety net, plus a custom agent scoped so tightly it can't even create a stray file when asked to, are the two things most Kiro content never gets to. The rest of this tutorial builds both, step by step.
 
 ## Prerequisites
 
@@ -429,7 +462,7 @@ Now switch to the browser tab. Every time Kiro writes a file, the `postToolUse` 
 
 Once this finishes, `app.py` and `test_app.py` are complete — the new route lands at [app.py lines 52–56](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/app.py#L52-L56), with its tests at [test_app.py lines 52–66](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/test_app.py#L52-L66).
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f870c971-c5eb-4cd9-1d69-e750bdfdf100/public" alt="Live dashboard showing a pending task, a green PASS status from the spec hook, and a changelog panel" caption="The dashboard after the DELETE endpoint is built — tasks, hook status, and changelog all update from real state, not mocked data" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f870c971-c5eb-4cd9-1d69-e750bdfdf100/public" alt="Live dashboard showing a pending task, a green PASS status from the spec hook, and a changelog panel" caption="This is the same green state previewed at the top — reached by actually building the DELETE endpoint, not by faking it" />
 
 ## Step 6: Prove the safety net actually catches something
 
@@ -443,7 +476,7 @@ Save it, then in the same Kiro session send any prompt that touches a spec file:
 
 > Append a line "### reviewed" to .kiro/specs/delete-task/requirements.md
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0821e99b-b9bc-4e2c-ea34-5573a9982500/public" alt="Dashboard showing a red FAIL status with 1 failed, 7 passed" caption="The hook caught the regression the moment a spec file changed — before anyone ran the suite manually" />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0821e99b-b9bc-4e2c-ea34-5573a9982500/public" alt="Dashboard showing a red FAIL status with 1 failed, 7 passed" caption="The red state from the top of this tutorial, reproduced — the hook caught the regression the moment a spec file changed, before anyone ran the suite manually" />
 
 The CLI itself also surfaces this live: `postToolUse` hooks that exit non-zero show up as `✗ postToolUse ... failed with exit code: 1` right in the transcript. Fix the status code back to `204`, touch the spec file again, and watch it go green.
 
