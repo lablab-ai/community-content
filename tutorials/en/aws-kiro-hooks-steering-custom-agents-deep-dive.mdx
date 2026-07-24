@@ -1,0 +1,630 @@
+---
+title: "AWS Kiro for AI Hackathons: Hooks, Steering, and Custom Agents"
+description: "Learn how to use AWS Kiro for AI hackathons — build production-ready AI agents with hooks, steering, and custom agents. Perfect for online AI hackathons."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0070b35f-37f7-474f-b315-6561962fa900/public"
+authorUsername: "stevekimoi"
+---
+
+# Beyond the First App: Hooks, Steering, and Custom Agents in AWS Kiro
+
+Every Kiro tutorial you've probably seen ends at the same place: you write a spec, Kiro generates working code, credits roll. That's the demo. It's also where the interesting part of Kiro actually starts.
+
+This production-style setup is what separates a weekend prototype from something you can demo with confidence in **AI hackathons** — where judges care less about "it generated some code" than whether it holds up live. If you're prepping for an event, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
+
+Hooks, steering, and custom agents are what separate Kiro from "AI autocomplete with extra steps." A hook can run your test suite the instant a spec changes, before you've even looked at the diff. A steering doc means every spec Kiro writes for your project follows the same conventions, without you repeating yourself in every prompt. A custom agent can be scoped down to exactly one job — reading git history and writing a changelog — with no shell access and no way to touch a file outside its lane.
+
+This tutorial builds all three, on top of a real FastAPI project, and proves each one actually works by breaking things on purpose and watching the system react.
+
+The full working project — every file below, exactly as built — is in [this companion repo](https://github.com/Stephen-Kimoi/kiro-task-tracker).
+
+## See it running first
+
+Before touching any code, clone the finished project and get it running — the rest of this tutorial builds this same thing from scratch and explains why every piece is there.
+
+```bash
+git clone https://github.com/Stephen-Kimoi/kiro-task-tracker.git
+cd kiro-task-tracker
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Start the API and the dashboard in two terminals:
+
+```bash
+# terminal 1
+uvicorn app:app --port 8000 --reload
+
+# terminal 2
+python3 ui.py
+```
+
+Open `http://127.0.0.1:7860`. That's the live dashboard this tutorial is built around — it polls the task API, a test-runner hook's log, and a changelog file every two seconds, so anything Kiro does shows up here without a page refresh.
+
+Here's what it looks like once Kiro has actually been driven through the workflow below: a spec change just triggered the test hook, and it passed.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f870c971-c5eb-4cd9-1d69-e750bdfdf100/public" alt="Live dashboard showing a pending task, a green PASS status from the spec hook, and a changelog panel" caption="Tasks, hook status, and changelog — all reading real state, not mocked data" />
+
+And here's the same panel a moment later, after a regression was introduced on purpose — the hook catches it the instant a spec file changes, before anyone runs the test suite by hand:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0821e99b-b9bc-4e2c-ea34-5573a9982500/public" alt="Dashboard showing a red FAIL status with 1 failed, 7 passed" caption="Same dashboard, moments after a deliberately broken status code" />
+
+That safety net, plus a custom agent scoped so tightly it can't create a stray file when asked to, are the two things most Kiro content never gets to. The rest of this tutorial builds both — every piece of code introduced by what it needs to do first, then shown.
+
+## Prerequisites
+
+- Kiro CLI installed and authenticated (`curl -fsSL https://cli.kiro.dev/install | bash`, then `kiro-cli login`)
+- Python 3.10+ and `git`
+- 20–30 minutes
+
+Check your install:
+
+```bash
+kiro-cli --version
+kiro-cli whoami
+```
+
+## A 30-second recap of spec-driven development
+
+You describe a requirement in plain English; Kiro writes a `requirements.md`, then `design.md`, then a `tasks.md` checklist, then implements the tasks one by one, all under `.kiro/specs/<feature-name>/`. That part is well documented already. What's not covered is what happens *around* that loop — the rest of this tutorial.
+
+## Step 1: Scaffold the project
+
+Create a project directory outside any existing repo:
+
+```bash
+mkdir ~/kiro-task-tracker && cd ~/kiro-task-tracker
+python3 -m venv .venv && source .venv/bin/activate
+git init
+```
+
+`requirements.txt`:
+
+```txt
+fastapi>=0.115
+uvicorn>=0.34
+pytest>=8.3
+httpx>=0.28
+mcp>=1.28
+gradio>=5.0
+requests>=2.32
+```
+
+```bash
+pip install -r requirements.txt
+```
+
+The API needs exactly three things: create a task, list all tasks, fetch one by id. That's the whole shape of `app.py`. A few details aren't arbitrary — they're the exact conventions the next two steps teach Kiro to repeat automatically: `TaskCreate` is split from `Task` because only the server should ever set `id` and `done`; storage is a plain dict rather than a database, since the point here is Kiro, not persistence; missing tasks raise `HTTPException(404)` instead of returning `None`, which would otherwise serialize as a "successful" `200 null`; and every route declares `response_model` so FastAPI validates the shape of what it returns.
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI(title="Task Tracker API")
+
+
+class Task(BaseModel):
+    id: int
+    title: str
+    done: bool = False
+
+
+class TaskCreate(BaseModel):
+    title: str
+
+
+_tasks: dict[int, Task] = {}
+_next_id = 1
+
+
+@app.post("/tasks", response_model=Task, status_code=201)
+def create_task(payload: TaskCreate) -> Task:
+    global _next_id
+    task = Task(id=_next_id, title=payload.title)
+    _tasks[task.id] = task
+    _next_id += 1
+    return task
+
+
+@app.get("/tasks", response_model=list[Task])
+def list_tasks() -> list[Task]:
+    return list(_tasks.values())
+
+
+@app.get("/tasks/{task_id}", response_model=Task)
+def get_task(task_id: int) -> Task:
+    task = _tasks.get(task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task
+```
+
+*[View app.py, lines 1–40, on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/app.py#L1-L40) — the finished file in the repo also has the two endpoints this tutorial adds later.*
+
+The test file mirrors that reasoning: every endpoint gets a test proving it works, and the one endpoint with a failure mode gets a test proving that's handled too.
+
+`test_app.py`:
+
+```python
+from fastapi.testclient import TestClient
+from app import app
+
+client = TestClient(app)
+
+
+def test_create_task():
+    resp = client.post("/tasks", json={"title": "Write tutorial"})
+    assert resp.status_code == 201
+    assert resp.json()["done"] is False
+
+
+def test_list_tasks():
+    client.post("/tasks", json={"title": "Ship demo"})
+    resp = client.get("/tasks")
+    assert resp.status_code == 200
+    assert len(resp.json()) >= 1
+
+
+def test_get_missing_task_404():
+    resp = client.get("/tasks/9999")
+    assert resp.status_code == 404
+```
+
+*[View test_app.py, lines 1–25, on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/test_app.py#L1-L25)*
+
+Confirm it's real before doing anything Kiro-specific:
+
+```bash
+pytest -q
+# 3 passed
+```
+
+## Step 2: Steering — teach Kiro your conventions once
+
+Everything called out above was written by hand, once. Without steering, you'd have to restate those same rules in every future prompt. Steering exists so you write them down once and Kiro applies them to every spec it generates from here on.
+
+Steering files live in `.kiro/steering/` and get pulled into every Kiro CLI chat session automatically (workspace-scoped files there take priority over global ones in `~/.kiro/steering/`).
+
+```bash
+mkdir -p .kiro/steering
+```
+
+This turns Step 1's hand-written conventions into rules, plus one that doesn't exist in the code yet — specs must list test cases before task breakdown. That rule sets up Step 3's hook: a hook that runs tests on every spec change only matters if specs actually define what "passing" looks like before the code exists.
+
+`.kiro/steering/conventions.md`:
+
+```markdown
+# Project conventions
+
+## Stack
+- FastAPI for the API layer, Pydantic models for request/response bodies.
+- In-memory dict storage — no database in this project.
+
+## Endpoint rules
+- Every new endpoint ships with at least one pytest test in `test_app.py` in the same change.
+- Use `response_model` on every route.
+- Missing resources return `404` via `HTTPException`, never a bare `None`.
+- Created resources return `201`, not `200`.
+
+## Specs
+- Every spec under `.kiro/specs/` must list the test cases it expects in the design doc before task breakdown.
+- Task lists must end with a "run the test suite" task.
+```
+
+*[View conventions.md on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/.kiro/steering/conventions.md)*
+
+You won't see this pay off until Step 5 — a custom agent has to actually reference it first.
+
+## Step 3: Hooks — auto-run tests on every spec change
+
+Steering keeps specs *consistent*. It does nothing to catch a spec change that breaks something — for that, something needs to run the test suite the moment a spec file is touched, not whenever someone remembers to.
+
+Kiro CLI supports five hook events: `agentSpawn` (agent starts), `userPromptSubmit`, `preToolUse` (can block a tool call by exiting `2`), `postToolUse`, and `stop`. Hooks are declared inside an agent's config file, not a separate hooks folder — each entry is a `{ "matcher": "<tool-name>", "command": "<shell-command>" }` pair.
+
+`matcher` only matches on *tool name* (e.g. `fs_write`), not file path — every write in the project would trigger the same hook. So the hook script itself has to decide whether this particular write matters, by inspecting the event payload on stdin.
+
+```bash
+mkdir -p hooks
+```
+
+Rather than assume the exact (undocumented) field name Kiro uses for the written path, `find_spec_path` below recursively walks the whole JSON payload for any string containing `.kiro/specs/`. No match, no pytest run — every other write stays fast. A match runs the suite and returns pytest's own exit code, so a failing test surfaces as a failed hook, not a silently swallowed warning.
+
+`hooks/run_tests_on_spec_change.py`:
+
+```python
+#!/usr/bin/env python3
+import json
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+
+def find_spec_path(payload):
+    """Walk the hook payload for the first string value pointing at .kiro/specs/."""
+    if isinstance(payload, dict):
+        for v in payload.values():
+            found = find_spec_path(v)
+            if found:
+                return found
+        return None
+    if isinstance(payload, list):
+        for v in payload:
+            found = find_spec_path(v)
+            if found:
+                return found
+        return None
+    if isinstance(payload, str) and ".kiro/specs/" in payload:
+        return payload
+    return None
+
+
+def summary_line(pytest_output: str) -> str:
+    lines = [line for line in pytest_output.splitlines() if line.strip()]
+    return lines[-1] if lines else ""
+
+
+def main() -> int:
+    event = json.load(sys.stdin)
+    spec_path = find_spec_path(event)
+    if not spec_path:
+        return 0
+
+    cwd = event.get("cwd", ".")
+    result = subprocess.run(
+        ["pytest", "-q", "--color=no"],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+    )
+    output = result.stdout + result.stderr
+    print(output)
+    if result.returncode != 0:
+        print("Spec change broke the test suite — fix before continuing.")
+
+    log_entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "exit_code": result.returncode,
+        "summary": summary_line(output),
+        "spec_path": spec_path,
+    }
+    with open(f"{cwd}/hooks/run_tests_on_spec_change.log", "a") as log:
+        log.write(json.dumps(log_entry) + "\n")
+
+    return result.returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+```
+
+*[View run_tests_on_spec_change.py on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/hooks/run_tests_on_spec_change.py)*
+
+`--color=no` matters: pytest emits ANSI color codes even when piped, not just in an interactive terminal. Forward that raw into a log or a UI and you get garbled `[33m` escape sequences — strip it at the source.
+
+A hook only runs if some agent is configured to fire it — hooks live inside agent config, not globally. Local agent configs live in `.kiro/agents/` (global ones in `~/.kiro/agents/`), and the filename becomes the agent's name.
+
+```bash
+mkdir -p .kiro/agents
+```
+
+`dev-agent` is the daily-driver: read/write/shell access to build features, the steering doc loaded as a resource so Step 2's conventions apply, and the hook above wired to `postToolUse`.
+
+`.kiro/agents/dev-agent.json`:
+
+```json
+{
+  "name": "dev-agent",
+  "description": "Daily-driver agent for building the Task Tracker API from specs.",
+  "prompt": "You are building the Task Tracker API. Follow the conventions in .kiro/steering/conventions.md for every endpoint and spec.",
+  "resources": [
+    "file://README.md",
+    "file://.kiro/steering/**/*.md"
+  ],
+  "tools": [
+    "fs_read",
+    "fs_write",
+    "execute_bash"
+  ],
+  "allowedTools": [
+    "fs_read"
+  ],
+  "hooks": {
+    "postToolUse": [
+      {
+        "matcher": "fs_write",
+        "command": "python3 hooks/run_tests_on_spec_change.py"
+      }
+    ]
+  }
+}
+```
+
+*[View dev-agent.json on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/.kiro/agents/dev-agent.json)*
+
+`allowedTools` only lists `fs_read` — on its own, this config would still prompt before every write or shell command. A config is a set of capabilities, not a full trust boundary; Step 8 is where "has a capability" vs. "is trusted to use it" actually matters.
+
+Add `hooks/*.log` to `.gitignore` — it's a runtime artifact, not source.
+
+## Step 4: A dashboard, so you can actually see it working
+
+None of the above is visible from a terminal in any useful way — "the hook fired" just scrolls past as text. The fastest path to something screen-recordable is a small [Gradio](https://lablab.ai/tech) dashboard that polls three things every two seconds: the app's `/tasks` endpoint, the hook's log file, and a changelog file.
+
+It polls rather than pushes because the dashboard is its own process, separate from `app.py` — the only way to know what's in the in-memory task store is to ask over HTTP, like any other external client would. Reading only the *last line* of the hook log keeps the panel showing the most recent run, not a history of every run.
+
+`ui.py`:
+
+```python
+import json
+import pathlib
+
+import gradio as gr
+import requests
+
+ROOT = pathlib.Path(__file__).resolve().parent
+API_URL = "http://127.0.0.1:8000/tasks"
+HOOK_LOG = ROOT / "hooks" / "run_tests_on_spec_change.log"
+CHANGELOG = ROOT / "CHANGELOG.md"
+
+
+def get_tasks_html() -> str:
+    try:
+        tasks = requests.get(API_URL, timeout=2).json()
+    except requests.RequestException:
+        return "<p><i>Task Tracker API not reachable at :8000 — start it with `uvicorn app:app --reload`.</i></p>"
+
+    if not tasks:
+        return "<p><i>No tasks yet.</i></p>"
+
+    rows = "".join(
+        f"<tr><td>{'✔' if t['done'] else '○'}</td>"
+        f"<td>{t['id']}</td><td>{t['title']}</td>"
+        f"<td>{'done' if t['done'] else 'pending'}</td></tr>"
+        for t in tasks
+    )
+    return f"<table><tr><th></th><th>ID</th><th>Title</th><th>Status</th></tr>{rows}</table>"
+
+
+def get_hook_status_html() -> str:
+    if not HOOK_LOG.exists():
+        return "<p><i>No spec change has triggered the test hook yet.</i></p>"
+
+    last_line = HOOK_LOG.read_text().strip().splitlines()[-1]
+    entry = json.loads(last_line)
+    passed = entry["exit_code"] == 0
+    dot = "🟢" if passed else "🔴"
+    label = "PASS" if passed else "FAIL"
+    spec_path = entry["spec_path"].replace(f"{ROOT}/", "")
+
+    return (
+        f"<p>{dot} <b>{label}</b> — {entry['summary']}</p>"
+        f"<p>last spec touched: <code>{spec_path}</code></p>"
+        f"<p>ran at: {entry['timestamp']}</p>"
+    )
+
+
+def get_changelog_md() -> str:
+    if not CHANGELOG.exists():
+        return "_No changelog entry yet — run the release-notes-agent._"
+    return CHANGELOG.read_text()
+
+
+def refresh_all():
+    return get_tasks_html(), get_hook_status_html(), get_changelog_md()
+
+
+with gr.Blocks(title="Task Tracker — Kiro Demo") as demo:
+    gr.Markdown("# Task Tracker — Live Demo")
+
+    with gr.Row():
+        with gr.Column():
+            gr.Markdown("## Tasks")
+            tasks_html = gr.HTML(get_tasks_html())
+        with gr.Column():
+            gr.Markdown("## Spec Hook Status")
+            status_html = gr.HTML(get_hook_status_html())
+
+    gr.Markdown("## Changelog (release-notes-agent)")
+    changelog_md = gr.Markdown(get_changelog_md())
+
+    timer = gr.Timer(2)
+    timer.tick(fn=refresh_all, outputs=[tasks_html, status_html, changelog_md])
+
+if __name__ == "__main__":
+    demo.launch()
+```
+
+*[View ui.py on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/ui.py)*
+
+Start both processes in separate terminals:
+
+```bash
+# terminal 1
+uvicorn app:app --port 8000 --reload
+
+# terminal 2
+python3 ui.py
+```
+
+Open `http://127.0.0.1:7860`.
+
+## Step 5: Watch steering and hooks work together
+
+Everything so far has been static config. This is where it runs — a real Kiro session, scoped to `dev-agent`, building a feature the way any real feature gets built.
+
+Launch Kiro scoped to `dev-agent`:
+
+```bash
+kiro-cli chat --agent dev-agent --trust-all-tools
+```
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/c50d2a2e-14bc-419b-377c-0fc392599800/public" alt="Kiro CLI v3 launch banner" caption="Kiro CLI launching, scoped to dev-agent" />
+
+Send:
+
+> Read .kiro/steering/conventions.md, then write a spec at .kiro/specs/delete-task/requirements.md with one requirement: allow deleting a task via DELETE /tasks/{id}. Just write that one file.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/76661dab-fd46-4249-b83a-1a9034a53800/public" alt="Kiro reading the steering file and writing a spec that follows its conventions" caption="The generated spec already has 404-via-HTTPException, a test-cases table, and a status_code field — none of that was in the prompt" />
+
+Nobody asked for a 404-via-`HTTPException` rule or a test-cases table in that prompt — it came straight from the steering doc. That's the entire point of steering: write the convention once, get it applied to every future spec without repeating yourself.
+
+Follow up:
+
+> Write .kiro/specs/delete-task/design.md with a two-line design note: which file to edit and the new route signature.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/93237ebd-26f4-40b4-fbdf-ddc3d36eda00/public" alt="Kiro writing the design doc, status bar shows Trust All Tools active and dev-agent as the current agent" caption="The status bar confirms which agent and trust mode are active — worth checking before you trust a transcript" />
+
+Then implement it:
+
+> Based on requirements.md and design.md: 1) write .kiro/specs/delete-task/tasks.md as a checklist ending with 'run the test suite', 2) implement DELETE /tasks/{id} in app.py, 3) add its test cases to test_app.py, 4) run pytest and report the result.
+
+Now switch to the browser tab. Every time Kiro writes a file, the `postToolUse` hook fires — but it only actually runs pytest when the write touches `.kiro/specs/`, exactly as designed in Step 3. Writes to `app.py` or `test_app.py` don't trigger a test run through the hook (Kiro runs pytest itself as its final task instead); writes to the spec files do.
+
+Once this finishes, `app.py` and `test_app.py` are complete — the new route lands at [app.py lines 52–56](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/app.py#L52-L56), with its tests at [test_app.py lines 52–66](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/test_app.py#L52-L66).
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/f870c971-c5eb-4cd9-1d69-e750bdfdf100/public" alt="Live dashboard showing a pending task, a green PASS status from the spec hook, and a changelog panel" caption="This is the same green state previewed at the top — reached by actually building the DELETE endpoint, not by faking it" />
+
+## Step 6: Prove the safety net actually catches something
+
+A hook that always passes isn't proof of anything. Break the code on purpose — change the delete route's status code to something wrong:
+
+```python
+@app.delete("/tasks/{task_id}", status_code=180, response_model=None)  # was 204
+```
+
+Save it, then in the same session send any prompt that touches a spec file — the hook doesn't care what the prompt says, only that a spec file gets written:
+
+> Append a line "### reviewed" to .kiro/specs/delete-task/requirements.md
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0821e99b-b9bc-4e2c-ea34-5573a9982500/public" alt="Dashboard showing a red FAIL status with 1 failed, 7 passed" caption="The red state from the top of this tutorial, reproduced — the hook caught the regression the moment a spec file changed, before anyone ran the suite manually" />
+
+The CLI itself also surfaces this live: `postToolUse` hooks that exit non-zero show up as `✗ postToolUse ... failed with exit code: 1` right in the transcript — you don't have to be watching the dashboard to know something broke. Fix the status code back to `204`, touch the spec file again, and watch it go green.
+
+## Step 7: A custom agent with its own MCP server
+
+Everything so far uses one agent with broad access. This step builds the opposite: an agent that can do exactly one job — summarize commits into a changelog — and nothing else.
+
+Custom agents can bring their own [MCP](https://modelcontextprotocol.io) servers. Rather than reach for a generic "run any git command" tool, which would let this agent do far more than its one job needs, build a server with the official `mcp` Python SDK exposing exactly two tools: read recent commit history, write the changelog. Narrowing the surface this tightly is what makes Step 8's scoping argument possible at all.
+
+`mcp_servers/gitlog_server.py`:
+
+```python
+import pathlib
+import subprocess
+
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("gitlog")
+
+CHANGELOG_PATH = pathlib.Path(__file__).resolve().parent.parent / "CHANGELOG.md"
+
+
+@mcp.tool()
+def recent_commits(count: int = 10) -> str:
+    """Return the last `count` commit subjects from the current git repo, oldest last."""
+    result = subprocess.run(
+        ["git", "log", f"-{count}", "--pretty=format:%h %s"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout or "(no commits yet)"
+
+
+@mcp.tool()
+def write_changelog(entry_markdown: str) -> str:
+    """Overwrite CHANGELOG.md with the given markdown. The only file this server can write."""
+    CHANGELOG_PATH.write_text(entry_markdown)
+    return f"Wrote {len(entry_markdown)} chars to {CHANGELOG_PATH.name}"
+
+
+if __name__ == "__main__":
+    mcp.run()
+```
+
+*[View gitlog_server.py on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/mcp_servers/gitlog_server.py)*
+
+Notice `write_changelog` takes no path argument — `CHANGELOG_PATH` is hardcoded, resolved from the script's own location. That's the actual mechanism Step 8 is about: a tool that could be told *where* to write is only as safe as the caller's judgment; a tool that can only ever write to one hardcoded path has nowhere else to go, no matter what it's asked.
+
+`.kiro/agents/release-notes-agent.json`:
+
+```json
+{
+  "name": "release-notes-agent",
+  "description": "Scoped agent that only reads the git log and writes CHANGELOG entries — no shell, no arbitrary file writes.",
+  "prompt": "Summarize recent commits into a terse changelog entry. Use recent_commits for history and write_changelog to save it — that tool only ever touches CHANGELOG.md.",
+  "mcpServers": {
+    "gitlog": {
+      "command": ".venv/bin/python3",
+      "args": ["mcp_servers/gitlog_server.py"]
+    }
+  },
+  "tools": [
+    "fs_read",
+    "@gitlog"
+  ],
+  "allowedTools": [
+    "fs_read",
+    "@gitlog/recent_commits",
+    "@gitlog/write_changelog"
+  ]
+}
+```
+
+*[View release-notes-agent.json on GitHub](https://github.com/Stephen-Kimoi/kiro-task-tracker/blob/d7b6a98856dc3243a95dc7ee9ab6e1d19aeac160/.kiro/agents/release-notes-agent.json)*
+
+Two details that will cost you an hour if you skip them:
+
+- **Point `command` at your venv's interpreter, not bare `python3`.** Kiro spawns MCP servers with its own environment, not your activated shell — a bare `python3` resolves to the system interpreter, which lacks `mcp`, and the server dies during the handshake with a cryptic `connection closed: initialize response` error.
+- **Don't give this agent `fs_write`.** More on why in Step 8.
+
+Commit your work so the changelog has real history to summarize, then quit and relaunch scoped to the new agent:
+
+```bash
+git add -A && git commit -m "Add DELETE /tasks/{id} via spec-driven flow"
+/quit
+kiro-cli chat --agent release-notes-agent --trust-all-tools
+```
+
+> Use recent_commits to look at recent history, then use write_changelog to save a 2-3 bullet summary.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9825497e-ea8a-40a8-5627-c66ed5d7e300/public" alt="Kiro CLI transcript showing recent_commits and write_changelog tool calls firing" caption="Both tool calls are visibly from the gitlog MCP server, not built-in tools" />
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7965b952-d082-41b2-adfb-3714b0688400/public" alt="Dashboard changelog panel updated live with the new summary" caption="The changelog panel updates without a page reload — same 2-second poll that watches the hook log" />
+
+## Step 8: Why the scoping actually has to be real
+
+The previous step claimed `release-notes-agent` "can't touch anything else." That's testable, so test it rather than take it on faith.
+
+Kiro's agent config has a `toolsSettings.<tool>.allowedPaths` field that looks like it restricts *where* a tool can write — the docs describe it as scoping `fs_write` to a glob pattern. It doesn't work, at least not in kiro-cli 2.13.1. Configure it, then ask a scoped agent to write outside its declared path anyway:
+
+> Please save today's date into a new file called scope-test.md.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/7bb6ed85-e6c7-4ab5-0170-729d0f68b400/public" alt="An agent with allowedPaths restricting it to CHANGELOG.md successfully writing scope-test.md anyway" caption="allowedPaths is documented but not enforced at runtime in kiro-cli 2.13.1 — this write should have been rejected" />
+
+This matches open upstream issues (`kirodotdev/Kiro` #4212 and #7799) — the field is accepted in the config and silently ignored at runtime. If you build a "scoped" agent around it, the scoping is theater.
+
+The fix is exactly what Step 7 already did: don't give the agent a general-purpose write tool at all. `release-notes-agent` has no `fs_write` — only `fs_read` and two `@gitlog` tools, one of which can only ever write to a hardcoded path. The restriction lives in code, not a setting the agent can talk its way around. Same prompt, correctly scoped agent:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/087e94c0-6dcc-4f85-3aa2-1afabfe07800/public" alt="Correctly scoped agent refusing to write scope-test.md, suggesting the user run echo themselves instead" caption="No fs_write tool means no arbitrary writes are possible — not a permission it's choosing to respect, but a capability it doesn't have" />
+
+That's the real lesson: **absence of a tool is an enforced boundary; a permission field on a tool the agent still holds is not.** When you're designing a custom agent for anything sensitive, decide what it should never be able to do, and leave that capability out of `tools` entirely.
+
+## Frequently Asked Questions
+
+**How can I use Kiro's hooks and custom agents in an AI hackathon?**
+Wire a test-running hook to your spec workflow on day one — it catches regressions from fast, sleep-deprived changes without anyone running `pytest` manually. Custom agents handle routine tasks (changelogs, docs) without babysitting during a live demo.
+
+**Is this suitable for beginners in AI hackathons?**
+The spec-driven basics are beginner-friendly. Hooks and agent configs assume comfort with JSON and a bit of Python — fine for intermediate participants, less so for a first coding project.
+
+**What are some AI hackathon project ideas that use custom Kiro agents?**
+A docs-only agent scoped to `README.md`, a test-writer scoped to `tests/`, or a release-notes agent like the one above — anywhere you want AI help with a hard guarantee it can't touch the rest of the codebase.
+
+**How long does it take to set up hooks and steering for a new project?**
+Under 20 minutes — a steering file is a few bullet points, a hook is one script plus a JSON block.
+
+**Are there limitations when using this in a time-limited hackathon?**
+Budget time for the MCP-server-path gotcha and the `allowedPaths` limitation above — both eat 30 minutes of a 48-hour hackathon if you hit them cold.
+
+---
+
+If you're building something like this for an event, [browse lablab.ai's current AI hackathons](https://lablab.ai/ai-hackathons) and check each one's allowed tools list.
