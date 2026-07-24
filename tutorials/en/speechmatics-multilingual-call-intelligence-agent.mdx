@@ -1,0 +1,536 @@
+---
+title: "Build a Multilingual Call Intelligence Agent with Speechmatics"
+description: "Build a multilingual AI hackathon project with Speechmatics: real-time translation into five languages, plus a live Gemini summary and sentiment layer."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/speechmatics-multilingual-call-intelligence-agent-cover/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+Speechmatics ships two features that, on their own, are well documented: real-time translation, which turns one audio stream into transcripts in [30+ languages simultaneously](https://docs.speechmatics.com/speech-to-text/features/translation), and Speech Intelligence, which adds summarization and sentiment on top of a transcript. What nobody has written up is what happens when you combine them into a single working build — a live call where an English conversation is transcribed, translated into five languages at once, and simultaneously summarized with a rolling sentiment read, all in one dashboard.
+
+Speechmatics is also a recurring partner technology at **AI hackathons** on lablab.ai, which makes this exact combination — real-time multilingual translation plus live call intelligence — a strong project idea for anyone entering an online AI hackathon that touches voice, agents, or multilingual support tooling. If you're looking for a hackathon to apply it in, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
+
+That combination surfaces a detail the marketing pages gloss over: Speechmatics' native summarization is a **batch-only** feature. There's no `summarization_config` you can drop into a real-time session. The "live summary" you see in Speechmatics' own demos is a pattern they built themselves — take the real-time transcript, and periodically hand a rolling window of it to an LLM. This tutorial builds exactly that pattern, using Gemini as the LLM layer, and wires the whole thing into a Gradio dashboard so you can watch transcription, translation, and call intelligence happen side by side.
+
+**What you'll build:**
+- A real-time transcription + translation client using the `speechmatics-rt` SDK, streaming one audio file into English text plus Spanish, French, German, Japanese, and Mandarin translations at the same time
+- A Gemini-powered analysis layer that reads the rolling transcript and returns a bullet summary and a sentiment label
+- A Gradio UI that shows all of it live — transcript, five translation panels, a color-coded sentiment badge, and a summary that updates as the call progresses
+
+This is the shape of a real support-call or sales-call intelligence tool: something a global team could point at a live call to get transcription, translation, and a running read on how the conversation is going, without waiting for the call to end.
+
+The full working project is on GitHub at [Stephen-Kimoi/call-intelligence-agent](https://github.com/Stephen-Kimoi/call-intelligence-agent). Every code block below links to its exact source on GitHub.
+
+## See it running first
+
+Clone the finished project and run it before writing any code:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/call-intelligence-agent.git
+cd call-intelligence-agent
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Open `.env` and add your Speechmatics and Gemini API keys — see Prerequisites below for where to get them — then run the dashboard:
+
+```bash
+python3 ui.py
+```
+
+Open the local URL Gradio prints and click **Start demo call**. Within a few seconds, you'll see the English transcript filling in, the sentiment badge shifting color, and a rolling summary tracking the call as it progresses:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/speechmatics-multilingual-call-intelligence-agent-demo-summary/public" alt="Live transcript, sentiment badge, and rolling summary in the Gradio dashboard" caption="Sentiment flips to positive and the summary tracks the call as new context arrives." />
+
+At the same time, the same audio stream is producing five simultaneous translations underneath:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/speechmatics-multilingual-call-intelligence-agent-demo-translations/public" alt="Five simultaneous language translation panels in the Gradio dashboard" caption="Spanish, French, German, Japanese, and Mandarin, all translated live from the same single audio stream." />
+
+That's the whole payoff: one audio stream, five live translations, and a call summary that keeps itself current. The rest of this tutorial builds it from scratch and explains why each piece works the way it does.
+
+## Prerequisites
+
+- Python 3.10+
+- A [Speechmatics API key](https://portal.speechmatics.com) — the free tier gives 480 minutes/month with no card required
+- A [Gemini API key](https://aistudio.google.com/apikey)
+- macOS, if you want to regenerate the sample call audio yourself with the included script (the `say` and `afconvert` command-line tools are macOS-only) — the repo already ships a ready-to-use `sample_call.wav`, so this is optional. On other platforms, supply your own 16kHz mono WAV recording if you want to swap in a different call.
+
+Your `.env` should look like this:
+
+```bash
+# .env
+SPEECHMATICS_API_KEY=your_speechmatics_key_here
+GEMINI_API_KEY=your_gemini_key_here
+```
+
+## Step 1: Generate a sample call recording
+
+The companion repo already ships a ready-to-use `sample_call.wav` — the same file you just streamed in the previous section — so nothing in this step is required to follow along. It's worth seeing how that fixture was built, though: a short two-voice support call synthesized with macOS's built-in `say` and `afconvert`, so the whole project is reproducible from a plain text script rather than a downloaded audio file:
+
+```python
+# generate_sample_audio.py
+"""Builds sample_call.wav from sample_call_script.txt using macOS `say` + `afconvert`.
+
+Only needed to (re)generate the fixture; the tutorial itself just streams the
+resulting WAV file through Speechmatics. Not portable off macOS — if you're on
+another OS, record or supply your own 16kHz mono WAV call instead.
+"""
+
+import subprocess
+import wave
+from pathlib import Path
+
+SCRIPT_PATH = Path("sample_call_script.txt")
+OUTPUT_PATH = Path("sample_call.wav")
+SAMPLE_RATE = 16000
+
+AGENT_VOICE = "Fred"
+CUSTOMER_VOICE = "Samantha"
+
+
+def synthesize_line(text: str, voice: str, index: int) -> Path:
+    aiff_path = Path(f"_line_{index:02d}.aiff")
+    wav_path = Path(f"_line_{index:02d}.wav")
+    subprocess.run(["say", "-v", voice, "-o", str(aiff_path), text], check=True)
+    subprocess.run(
+        [
+            "afconvert",
+            str(aiff_path),
+            str(wav_path),
+            "-d", "LEI16",
+            "-c", "1",
+            "-r", str(SAMPLE_RATE),
+            "-f", "WAVE",
+        ],
+        check=True,
+    )
+    aiff_path.unlink()
+    return wav_path
+
+
+def main() -> None:
+    lines = [l.strip() for l in SCRIPT_PATH.read_text().splitlines() if l.strip()]
+
+    line_wavs = []
+    for i, line in enumerate(lines):
+        voice = AGENT_VOICE if i % 2 == 0 else CUSTOMER_VOICE
+        line_wavs.append(synthesize_line(line, voice, i))
+
+    with wave.open(str(OUTPUT_PATH), "wb") as out:
+        out.setnchannels(1)
+        out.setsampwidth(2)
+        out.setframerate(SAMPLE_RATE)
+        for wav_path in line_wavs:
+            with wave.open(str(wav_path), "rb") as part:
+                out.writeframes(part.readframes(part.getnframes()))
+            wav_path.unlink()
+
+    print(f"Wrote {OUTPUT_PATH} ({len(lines)} lines, {SAMPLE_RATE} Hz mono PCM16)")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+*[View generate_sample_audio.py on GitHub](https://github.com/Stephen-Kimoi/call-intelligence-agent/blob/cf64496e50d402525978f9b2c2c2deba6d1cd7c4/generate_sample_audio.py)*
+
+It reads alternating lines from a plain-text script (agent and customer taking turns) and stitches per-line audio into one continuous WAV file:
+
+```text
+# sample_call_script.txt (excerpt)
+Hi, thanks for calling Horizon Cloud support, my name is Jordan, how can I help you today.
+Hi Jordan, I'm calling because our production database has been throwing connection timeouts since this morning and it's affecting our checkout flow.
+I'm sorry to hear that, that sounds urgent. Can you tell me roughly when the timeouts started and how many customers are affected?
+```
+
+Run it once:
+
+```bash
+python3 generate_sample_audio.py
+```
+
+This produces `sample_call.wav` — about two minutes of audio, 16kHz mono PCM16, ready to stream.
+
+## Step 2: Stream the call through Speechmatics real-time
+
+The `speechmatics-rt` SDK's `AsyncClient` connects over WebSocket, and its `transcribe()` method handles the whole session lifecycle — connect, configure, stream, and close — for you. Three details matter here that aren't obvious from a first read of the docs:
+
+1. **The SDK only accepts raw PCM, not a WAV file.** If you hand it a `.wav` file directly, the 44-byte RIFF header gets sent as if it were audio. Strip it first by reading through Python's `wave` module and passing the raw frames.
+2. **`translation_config` is a separate parameter, not a field on `TranscriptionConfig`.** Nesting it inside `TranscriptionConfig` is a natural first guess, and it's wrong — both `start_session()` and `transcribe()` take `translation_config` as its own keyword argument.
+3. **Mandarin's code is `cmn`, not `zh`.** Speechmatics uses ISO 639-3 for Mandarin specifically. Passing `zh` doesn't raise cleanly — the server sends back a `protocol_error` message rejecting the unsupported language, but that error is raised inside an SDK event-handler callback and gets swallowed, so instead of a clear error you just get a `TimeoutError` five seconds later while the SDK waits for a `RecognitionStarted` message that never arrives. If you ever see that timeout with no other explanation, check your language codes first.
+
+```python
+# transcriber.py
+"""Streams a WAV file to Speechmatics real-time and yields transcript + translation events."""
+
+import io
+import os
+import wave
+
+from speechmatics.rt import (
+    AsyncClient,
+    AudioFormat,
+    AudioEncoding,
+    TranscriptionConfig,
+    TranslationConfig,
+    ServerMessageType,
+)
+
+
+async def stream_call(wav_path: str, target_languages: list[str], on_event) -> None:
+    """Streams wav_path to Speechmatics and calls on_event(kind, language, text) per message.
+
+    kind is "transcript" (English, language="en") or "translation" (language=target code).
+    """
+    api_key = os.environ["SPEECHMATICS_API_KEY"]
+
+    with wave.open(wav_path, "rb") as wf:
+        sample_rate = wf.getframerate()
+        raw_pcm = wf.readframes(wf.getnframes())
+
+    client = AsyncClient(api_key=api_key)
+
+    @client.on(ServerMessageType.ADD_TRANSCRIPT)
+    def _on_final_transcript(message):
+        text = message.get("metadata", {}).get("transcript", "").strip()
+        if text:
+            on_event("transcript", "en", text)
+
+    @client.on(ServerMessageType.ADD_TRANSLATION)
+    def _on_translation(message):
+        language = message.get("language", "")
+        results = message.get("results", [])
+        text = " ".join(r.get("content", "") for r in results).strip()
+        if text:
+            on_event("translation", language, text)
+
+    audio_format = AudioFormat(encoding=AudioEncoding.PCM_S16LE, sample_rate=sample_rate)
+    transcription_config = TranscriptionConfig(language="en", enable_partials=False)
+    translation_config = TranslationConfig(target_languages=target_languages, enable_partials=False)
+
+    async with client:
+        await client.transcribe(
+            io.BytesIO(raw_pcm),
+            transcription_config=transcription_config,
+            audio_format=audio_format,
+            translation_config=translation_config,
+        )
+```
+
+*[View transcriber.py on GitHub](https://github.com/Stephen-Kimoi/call-intelligence-agent/blob/cf64496e50d402525978f9b2c2c2deba6d1cd7c4/transcriber.py)*
+
+`stream_call` takes a plain callback, `on_event(kind, language, text)`, so it can be reused unchanged from a CLI script and from a Gradio UI later.
+
+## Step 3: Build the live summary + sentiment layer
+
+Since Speechmatics' own summarization only runs in batch mode, this layer is a small, deliberate piece of custom code: take everything transcribed so far, ask Gemini for a short bullet summary and a sentiment label, and get back structured JSON.
+
+```python
+# analyzer.py
+"""Rolling summary + sentiment over the English transcript window, via Gemini."""
+
+import json
+import os
+
+from google import genai
+
+MODEL = "gemini-flash-latest"
+
+PROMPT_TEMPLATE = """You are monitoring a live customer support call transcript.
+Given the transcript so far, return a JSON object with exactly these keys:
+- "summary": a list of 2-4 short bullet strings capturing the state of the call so far
+- "sentiment": one of "positive", "neutral", "negative" describing the customer's current mood
+
+Transcript so far:
+---
+{transcript}
+---
+
+Respond with JSON only, no markdown fences.
+"""
+
+
+def analyze_transcript(transcript: str) -> dict:
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    prompt = PROMPT_TEMPLATE.format(transcript=transcript)
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=prompt,
+        config={"response_mime_type": "application/json"},
+    )
+    return json.loads(response.text)
+```
+
+*[View analyzer.py on GitHub](https://github.com/Stephen-Kimoi/call-intelligence-agent/blob/cf64496e50d402525978f9b2c2c2deba6d1cd7c4/analyzer.py)*
+
+Two gotchas worth knowing before you run this:
+
+- **Pin to `gemini-flash-latest`, not a specific version string.** At the time of writing, calling `gemini-2.5-flash` directly on a fresh API key returns a 404 with the message "This model is no longer available to new users" — the model still exists, it's just been rotated out of new-account access. The `-latest` alias resolves to whatever the current flash model is and sidesteps that.
+- **Free-tier Gemini quota is tight, and it's per-model.** On a fresh key, most explicit model names return `limit: 0` (not available on the free tier at all), and even the accessible `gemini-flash-latest` alias can cap out at a small number of requests before you hit a `429 RESOURCE_EXHAUSTED`. Speechmatics real-time also finalizes transcript segments in short bursts — often single words rather than full sentences — so if you call the analyzer on every new segment, you'll exhaust that quota in seconds. The fix is to throttle by accumulated word count, not by segment count, which is what the next step does.
+
+## Step 4: Wire it together headless first
+
+Before adding any UI, confirm the whole pipeline works from the terminal. This is also where the word-count throttle and graceful error handling live, so a rate limit hit skips one summary update instead of crashing the whole call:
+
+```python
+# main.py
+"""One audio stream in, five languages and a live summary out.
+
+Streams sample_call.wav through Speechmatics real-time transcription +
+translation, and every few transcript segments asks Gemini for a rolling
+summary and sentiment read on the call so far.
+"""
+
+import asyncio
+
+from dotenv import load_dotenv
+
+from analyzer import analyze_transcript
+from transcriber import stream_call
+
+load_dotenv()
+
+TARGET_LANGUAGES = ["es", "fr", "de", "ja", "cmn"]  # cmn = Mandarin (Speechmatics uses ISO 639-3 here, not "zh")
+
+# Speechmatics real-time finalizes short segments (often single words), not full
+# sentences, so we throttle by accumulated word count rather than segment count —
+# otherwise this calls Gemini every 2-3 words and burns through free-tier quota fast.
+SUMMARIZE_EVERY_N_WORDS = 35
+
+english_segments: list[str] = []
+words_since_last_summary = 0
+
+
+def handle_event(kind: str, language: str, text: str) -> None:
+    global words_since_last_summary
+
+    if kind == "transcript":
+        print(f"[en] {text}")
+        english_segments.append(text)
+        words_since_last_summary += len(text.split())
+
+        if words_since_last_summary >= SUMMARIZE_EVERY_N_WORDS:
+            words_since_last_summary = 0
+            transcript_so_far = " ".join(english_segments)
+            try:
+                result = analyze_transcript(transcript_so_far)
+            except Exception as e:
+                print(f"\n(skipping summary update — Gemini call failed: {e})\n")
+                return
+            print("\n--- live call intelligence update ---")
+            print(f"sentiment: {result['sentiment']}")
+            for bullet in result["summary"]:
+                print(f"  - {bullet}")
+            print("--------------------------------------\n")
+
+    elif kind == "translation":
+        print(f"[{language}] {text}")
+
+
+async def main() -> None:
+    await stream_call("sample_call.wav", TARGET_LANGUAGES, handle_event)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+*[View main.py on GitHub](https://github.com/Stephen-Kimoi/call-intelligence-agent/blob/cf64496e50d402525978f9b2c2c2deba6d1cd7c4/main.py)*
+
+Run it:
+
+```bash
+python3 main.py
+```
+
+A real run against the sample call produces output like this (trimmed):
+
+```text
+[en] Hi.
+[es] Hola.
+[fr] Bonjour.
+[de] Guten Tag.
+[ja] こんにち
+[cmn] 您好,你
+[en] Thanks
+[en] for
+[en] calling
+...
+--- live call intelligence update ---
+sentiment: positive
+  - Production database timeouts in the Frankfurt region have been affecting ~30% of customer checkouts since 9 a.m.
+  - Support agent Jordan escalated the issue to the infrastructure team and created a priority incident ticket.
+  - Customer expressed gratitude for the prompt response and confirmed the deployment region.
+--------------------------------------
+```
+
+Five languages streaming in alongside the English transcript, and a rolling summary that updates as new context arrives — all from one audio file and two API calls.
+
+## Step 5: Build the live demo dashboard
+
+A console log proves the pipeline works, but it's not something you can point a camera at. The last piece wraps the same `stream_call` and `analyze_transcript` functions — unchanged — in a Gradio dashboard that shows every moving part at once: the English transcript, a color-coded sentiment badge, the rolling summary, and all five translation panels, updating live as the call streams in.
+
+The one wrinkle is that `stream_call` is an async generator-of-callbacks, while Gradio's live-updating outputs come from a synchronous generator function. The bridge is a background thread feeding a thread-safe `queue.Queue`, with the Gradio-facing generator draining that queue and yielding updated panel contents on every event:
+
+```python
+# ui.py
+"""Gradio demo UI: watch the call stream in, translate live, and get a rolling
+summary + sentiment read — all in one view. This is what you screen-record.
+"""
+
+import asyncio
+import queue
+import threading
+
+import gradio as gr
+from dotenv import load_dotenv
+
+from analyzer import analyze_transcript
+from transcriber import stream_call
+
+load_dotenv()
+
+TARGET_LANGUAGES = ["es", "fr", "de", "ja", "cmn"]  # cmn = Mandarin (Speechmatics uses ISO 639-3 here, not "zh")
+LANGUAGE_NAMES = {
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "ja": "Japanese",
+    "cmn": "Mandarin Chinese",
+}
+SUMMARIZE_EVERY_N_WORDS = 35
+
+SENTIMENT_COLORS = {"positive": "#1a7f37", "neutral": "#6e7781", "negative": "#cf222e"}
+
+
+def sentiment_badge(sentiment: str) -> str:
+    color = SENTIMENT_COLORS.get(sentiment, "#6e7781")
+    label = sentiment.upper() if sentiment else "WAITING FOR CALL..."
+    return (
+        f'<div style="padding:12px 16px;border-radius:8px;background:{color};'
+        f'color:white;font-weight:700;text-align:center;font-size:1.05em;">{label}</div>'
+    )
+
+
+def run_demo():
+    """Generator: streams the call and yields updated panel contents as events arrive."""
+    event_queue: queue.Queue = queue.Queue()
+    english_segments: list[str] = []
+    words_since_summary = 0
+    translation_lines = {lang: [] for lang in TARGET_LANGUAGES}
+    transcript_md = ""
+    summary_md = "_summary appears after the first few transcript segments..._"
+    sentiment_html = sentiment_badge("")
+
+    def on_event(kind, language, text):
+        event_queue.put((kind, language, text))
+
+    def worker():
+        try:
+            asyncio.run(stream_call("sample_call.wav", TARGET_LANGUAGES, on_event))
+        finally:
+            event_queue.put(None)  # sentinel: stream finished
+
+    threading.Thread(target=worker, daemon=True).start()
+
+    while True:
+        item = event_queue.get()
+        if item is None:
+            break
+        kind, language, text = item
+
+        if kind == "transcript":
+            transcript_md += f"- {text}\n"
+            english_segments.append(text)
+            words_since_summary += len(text.split())
+
+            if words_since_summary >= SUMMARIZE_EVERY_N_WORDS:
+                words_since_summary = 0
+                try:
+                    result = analyze_transcript(" ".join(english_segments))
+                except Exception as e:
+                    summary_md = f"_summary update skipped (Gemini call failed: {e})_"
+                else:
+                    sentiment_html = sentiment_badge(result["sentiment"])
+                    summary_md = "\n".join(f"- {b}" for b in result["summary"])
+
+        elif kind == "translation":
+            translation_lines[language].append(text)
+
+        yield (
+            transcript_md,
+            sentiment_html,
+            summary_md,
+            *("\n".join(f"- {l}" for l in translation_lines[lang]) for lang in TARGET_LANGUAGES),
+        )
+
+
+with gr.Blocks(title="Multilingual Call Intelligence Agent") as demo:
+    gr.Markdown(
+        "# One Audio Stream, Five Languages, Live Summary\n"
+        "Streams a sample support call through Speechmatics real-time transcription "
+        "and translation, with a rolling Gemini summary + sentiment layered on top."
+    )
+
+    start_btn = gr.Button("Start demo call", variant="primary")
+
+    with gr.Row():
+        with gr.Column(scale=2):
+            gr.Markdown("### Live transcript (English)")
+            transcript_box = gr.Markdown()
+        with gr.Column(scale=1):
+            gr.Markdown("### Sentiment")
+            sentiment_box = gr.HTML(sentiment_badge(""))
+            gr.Markdown("### Live summary")
+            summary_box = gr.Markdown()
+
+    gr.Markdown("### Live translations")
+    translation_boxes = []
+    with gr.Row():
+        for lang in TARGET_LANGUAGES:
+            with gr.Column():
+                gr.Markdown(f"**{LANGUAGE_NAMES[lang]}**")
+                translation_boxes.append(gr.Markdown())
+
+    start_btn.click(
+        run_demo,
+        inputs=None,
+        outputs=[transcript_box, sentiment_box, summary_box, *translation_boxes],
+    )
+
+if __name__ == "__main__":
+    demo.queue().launch()
+```
+
+*[View ui.py on GitHub](https://github.com/Stephen-Kimoi/call-intelligence-agent/blob/cf64496e50d402525978f9b2c2c2deba6d1cd7c4/ui.py)*
+
+Run it:
+
+```bash
+python3 ui.py
+```
+
+Open the local URL Gradio prints, click **Start demo call**, and watch the transcript fill in on the left, the sentiment badge shift color as the conversation moves from a frustrated customer to a resolved incident, the summary panel update every so often with the current state of the call, and five translation columns filling in below — Spanish, French, German, Japanese, and Mandarin, all from the same single audio stream.
+
+## Frequently Asked Questions
+
+**Q: Why can't Speechmatics generate the live summary and sentiment natively in real time?**
+Speechmatics' own summarization and sentiment features only run in batch mode, over a completed transcript. There's no `summarization_config` for a live session — the rolling summary in this tutorial is a pattern built on top of the real-time transcript using an external LLM (Gemini here), not a native Speechmatics real-time API.
+
+**Q: Can Speechmatics really translate one audio stream into all five languages at the same time?**
+Yes — `TranslationConfig(target_languages=[...])` accepts up to five target languages in a single real-time session, and the server streams back a separate `AddTranslation` message per language as the same audio is transcribed.
+
+**Q: What are some AI hackathon project ideas using Speechmatics?**
+Beyond call intelligence, Speechmatics' real-time and translation APIs fit well into voice agents, multilingual meeting assistants, live-captioned support widgets, and accessibility tools — all common project categories in online AI hackathons.
+
+**Q: How can I use this multilingual call intelligence agent in an AI hackathon?**
+The companion repo is a working starting point: fork it, swap the sample call for a live microphone or a real recording pipeline, and extend the analysis layer (per-speaker sentiment, persisted call history, alerting) to fit whatever track or use case your hackathon is judging.
+
+## Conclusion
+
+The interesting part of this build isn't the Speechmatics API call or the Gemini call individually — both are a few lines each. It's what you learn by actually wiring them together: that "live summary and sentiment" isn't a checkbox Speechmatics exposes for real-time sessions, it's a pattern you build on top of a transcript stream, and that doing it well means respecting the rhythm of both APIs — Speechmatics finalizing in short bursts, Gemini's free tier only tolerating so many calls per minute.
+
+From here, the natural extensions are the ones that make this genuinely useful: swap the sample WAV for a live microphone or a real call-recording pipeline, persist each call's summary and sentiment history to a database for post-call analytics, or add a per-speaker sentiment breakdown using Speechmatics' diarization output. The pieces here — a translation client, an LLM analysis layer, and a live dashboard — are the reusable core of any multilingual meeting or call intelligence tool, not just this demo.
