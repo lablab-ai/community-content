@@ -474,7 +474,7 @@ Follow up:
 
 Then implement it:
 
-> Based on requirements.md and design.md: 1) write .kiro/specs/delete-task/tasks.md as a checklist ending with 'run the test suite', 2) implement DELETE /tasks/{id} in app.py, 3) add its test cases to test_app.py, 4) run pytest and report the result.
+> Based on requirements.md and design.md: 1) write .kiro/specs/delete-task/tasks.md as a checklist ending with 'run the test suite', 2) implement `DELETE /tasks/{id}` in app.py, 3) add its test cases to test_app.py, 4) run pytest and report the result.
 
 Now switch to the browser tab. Every time Kiro writes a file, the `postToolUse` hook fires — but it only actually runs pytest when the write touches `.kiro/specs/`, exactly as designed in Step 3. Writes to `app.py` or `test_app.py` don't trigger a test run through the hook (Kiro runs pytest itself as its final task instead); writes to the spec files do.
 
