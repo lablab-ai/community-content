@@ -143,7 +143,7 @@ the most important claim. End with the implication — one sentence, no hedging.
 
 ### 6. Produce the social post brief
 
-After the article is drafted, create a separate brief for Gosia and Soto at the bottom of the article file under a `---` separator, or as a note to the user:
+After the article is drafted, present this brief as a message to the user — **never write it into the article file itself**. The article file must contain only the published piece; a social brief left in the MDX ships straight to the live site (this happened on 2026-07-25, see the `this-week-in-ai-social-brief-leak` memory).
 
 ```
 SOCIAL POST BRIEF — [publication date]

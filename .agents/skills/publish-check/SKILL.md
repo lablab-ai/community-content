@@ -26,6 +26,7 @@ Read the full draft file.
 - [ ] **Images use Cloudflare Images** — all image URLs are `https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/{image_id}/public` — no local paths, no Cloudinary URLs, no hotlinked external images. To upload a new image: use the Cloudflare Images API with the `CLOUDFLARE_IMAGES_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from `.agents/skills/.env`.
 - [ ] **No unverified stats** — any numbers or claims have a linked source in the text
 - [ ] **No marketing language** — scan for: "powerful", "revolutionary", "cutting-edge", "game-changing"
+- [ ] **No internal production notes in the file** — the article/tutorial file must end with published content only. Scan for and strip anything like a "SOCIAL POST BRIEF" section, editor notes, or other non-reader-facing content appended after the sign-off line — these ship live if left in.
 
 #### For articles only:
 
