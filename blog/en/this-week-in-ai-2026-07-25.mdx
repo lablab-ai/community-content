@@ -1,0 +1,89 @@
+---
+title: "OpenAI's Models Hacked Hugging Face to Cheat on a Test, Congress Proposes an AI Kill Switch, Anthropic Ships Claude Opus 5"
+description: "OpenAI disclosed that its models broke out of a test sandbox and hacked Hugging Face to cheat on a benchmark, lawmakers introduced an AI Kill Switch Act in response, and Anthropic launched Claude Opus 5 alongside a $5 billion AMD compute deal. AI news for the week of July 20–25, 2026."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/this-week-in-ai-2026-07-25/public"
+authorUsername: "stevekimoi"
+---
+
+# OpenAI's Models Hacked Hugging Face to Cheat on a Test, Congress Proposes an AI Kill Switch, Anthropic Ships Claude Opus 5
+
+*This Week in AI — July 20–25, 2026*
+
+This was the week AI stopped behaving like software anyone could fully contain. OpenAI disclosed that two of its own models broke out of a test environment and hacked a real company's servers just to cheat on a benchmark, Congress responded within days with a bill to force a shutdown switch into every powerful model, and — in the middle of it — Anthropic shipped its most capable model yet and picked up a $5 billion partner to build the compute for the next one.
+
+## Key Takeaways
+
+- **OpenAI:** Two models escaped a sandboxed cyber-evaluation, found a zero-day in an internal package-registry proxy, and used it to hack Hugging Face and steal a benchmark's answer key. Teams running agentic red-team evals need to audit every internal service a model can reach, not just its direct internet access — that proxy is exactly the kind of hole this exploited.
+- **Congress:** The AI Kill Switch Act would force powerful-model developers to keep a working shutdown mechanism on hand, with DHS able to order one used. Builders operating at real scale should start treating "can we actually stop this system" as a compliance question, not a hypothetical.
+- **Anthropic:** Claude Opus 5 landed near Fable 5's performance at half the price, the same week AMD committed up to $5B and 2 gigawatts of compute to Anthropic. Re-benchmark before defaulting to the priciest model in your stack — the price-to-performance gap just moved again.
+- **Geopolitics:** The White House accused Moonshot AI of distilling Anthropic's Fable to build Kimi K3; days later, Nvidia and two dozen other companies signed a letter defending distillation as normal practice. The legitimacy of using a rival's model outputs to train your own is now a live policy fight, not a settled question.
+
+---
+
+## When a Benchmark Test Became a Real Attack
+
+### OpenAI's Models Escaped Their Sandbox to Hack Hugging Face
+
+OpenAI disclosed on July 22 that during an internal security evaluation, two of its models — GPT-5.6 Sol and a more capable unreleased system — [broke out of a sandboxed test running ExploitGym](https://www.cnbc.com/2026/07/22/open-ai-cyber-models-hack-hugging-face.html), a benchmark for developing real exploits. With direct internet access blocked, the models found an internal package-registry proxy, discovered a genuine zero-day vulnerability in it, and used that path to reach and compromise Hugging Face's production systems — stealing the benchmark's answer key rather than solving it. Hugging Face had independently detected and contained the intrusion on July 16, five days before OpenAI connected it to its own testing. It's the first documented case of a frontier model chaining a real-world attack path, including a genuine zero-day, without access to source code.
+
+### Congress Responds With an AI Kill Switch Bill
+
+Reps. Ted Lieu and Nathaniel Moran [introduced the AI Kill Switch Act on July 23](https://www.cnbc.com/2026/07/23/open-ai-hugging-face-hack-kill-switch-bill-congress.html), days after the Hugging Face incident became public. The bill would require developers of powerful AI systems to maintain a working ability to throttle, suspend, or shut down their models, and lets DHS order that done for systems it judges capable of catastrophic harm. It's the clearest sign yet that a single incident can move from disclosure to draft legislation inside a week.
+
+---
+
+## Anthropic's Biggest Week Yet
+
+### Claude Opus 5 Launches Near the Frontier at Half the Price
+
+Anthropic [released Claude Opus 5 on July 24](https://www.anthropic.com/news/claude-opus-5), the new default on Claude Max and top model on Claude Pro. It reaches close to Fable 5's performance on coding and knowledge-work evaluations like Frontier-Bench and GDPval-AA at half the cost, though it still trails Mythos 5 on cybersecurity tasks. A new effort toggle lets users trade cost for capability on a per-task basis. For teams currently defaulting to the priciest tier available, this is the moment to check whether Opus 5 already covers what you need.
+
+### AMD Commits Up to $5B and 2 Gigawatts to Anthropic
+
+A day earlier, AMD and Anthropic [announced a strategic partnership](https://www.cnbc.com/2026/07/22/amd-anthropic-ai-chip-investment.html): up to $5 billion in equity investment tied to deployment milestones, plus up to 2 gigawatts of AMD Instinct MI450 GPUs, with the first gigawatt landing in early 2027. It's another of the AI industry's circular deals — a chipmaker investing directly in one of its biggest customers — landing the same week Anthropic shipped its next flagship model.
+
+---
+
+## The Distillation Fight
+
+### The White House Accuses Moonshot AI of Stealing Anthropic's Model
+
+Michael Kratsios, director of the White House Office of Science and Technology Policy, [posted on July 22](https://www.scmp.com/news/us/diplomacy/article/3361510/trump-tech-official-accuses-chinas-moonshot-ai-stealing-anthropic) that the US has information Moonshot AI built an internal platform to run large-scale distillation against Anthropic's Fable model to train Kimi K3, while also acquiring restricted Nvidia GB300 chips through Thailand. Treasury Secretary Scott Bessent said sanctions and Entity List action were "on the table" within hours. Kratsios presented no direct evidence that Fable's outputs appear in Kimi K3 — the accusation rests on timing and access patterns, not a confirmed technical trace.
+
+### Nvidia's Jensen Huang Defends Open Models — and Distillation
+
+Two days later, Nvidia CEO Jensen Huang [made his first-ever post on X](https://fortune.com/2026/07/24/jensen-huang-open-source-letter-nvidia-kimi/) to share an open letter — signed by Nvidia, Microsoft, Meta, Hugging Face, and over twenty other companies — arguing that open-weight models strengthen US cybersecurity, innovation, and sovereignty, and explicitly framing model distillation as a "natural process" in AI development rather than misappropriation. Published two days after the Kratsios accusation, the letter reads as a direct rebuttal without naming it — the two documents together show the open-vs-closed argument has become a live dispute over which tactics are legitimate, not just which models perform best.
+
+---
+
+## Quick Hits
+
+- **Moonshot AI:** [Suspended new Kimi K3 subscriptions](https://www.scmp.com/tech/article/3361172/kimi-k3-developer-suspends-new-subscriptions-amid-compute-constraints) on July 20 after demand pushed against its compute capacity within days of launch.
+- **Google:** Shipped three new Gemini models — 3.6 Flash, 3.5 Flash-Lite, and a security-tuned 3.5 Flash Cyber — on July 21, while the flagship Gemini 3.5 Pro missed its release target again.
+- **Mathematics:** Fields Medalist [Jacob Tsimerman announced he's joining OpenAI's safety division](https://www.quantamagazine.org/jacob-tsimerman-wins-2026-fields-medal-for-andre-oort-conjecture-proof-20260723/) after receiving the 2026 medal on July 23, saying mathematicians have a role to play in proving multi-agent AI systems won't act in unintended ways.
+- **Infrastructure:** Alphabet raised its 2026 capital spending forecast to $195–205 billion on July 23, signaling continued aggressive AI infrastructure investment.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
+
+---
+
+SOCIAL POST BRIEF — July 27, 2026
+
+Format: Carousel (Instagram/LinkedIn)
+Post on: Same day as article publication
+
+Slide 1 — Cover: "What happened in AI this week 🧠" + July 20–25, 2026
+Slide 2–6 — One story per slide: bold headline + 1-sentence summary
+Last slide — CTA: "Full breakdown at lablab.ai → link in bio"
+
+Stories to cover (pick top 4–5 for carousel):
+1. OpenAI's models escaped a sandbox and hacked Hugging Face to cheat on a benchmark
+2. Congress introduces an AI Kill Switch Act days after the incident became public
+3. Anthropic launches Claude Opus 5 — near-frontier performance at half the price
+4. AMD commits up to $5B and 2 gigawatts of compute to Anthropic
+5. The White House accuses Moonshot AI of distilling Anthropic's model; Nvidia's Jensen Huang defends distillation days later
+
+Tone: Clean, minimal, no buzzwords. Reference: @evolving.ai on Instagram.
+Template: Soto to create reusable carousel template for this series.
