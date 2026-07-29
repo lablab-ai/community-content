@@ -1,0 +1,417 @@
+---
+title: "ElevenLabs Speech Engine: Build a Voice Agent With Tool Calling"
+description: "Build a voice agent for AI hackathons that fires a real tool call mid-conversation with ElevenLabs Speech Engine and Gemini, without dropping the session."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/elevenlabs-speech-engine-voice-agent-tool-calling-tutorial-cover/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+ElevenLabs' [Speech Engine](https://elevenlabs.io/speech-engine) turns whatever text your server sends into speech: the user talks, ElevenLabs transcribes it, your server hands the transcript to an LLM, and whatever comes back gets spoken. Every quickstart, cookbook, and skill file ElevenLabs ships stops at that loop. None of them cover what happens when the LLM needs to actually *do* something — look up an order, hit an internal API, run a function — before it can answer.
+
+That gap isn't an oversight. Speech Engine's own skill file for Claude Code and other coding agents says it directly: the engine **does not implement traditional tool calling**. It's a bring-your-own-LLM pipe — you call `session.send_response()` with text or a stream, and it comes out as audio. Whatever happens between "user asked a question" and "here's the answer" is entirely on you to build.
+
+This tutorial builds that missing piece: a voice agent that, the moment it decides a tool call is needed, speaks a filler line immediately ("Let me check that for you"), keeps the same WebSocket session open while the tool runs, and then speaks the real answer once it resolves — all without dropping the call or opening a second connection. The concrete example is an order-status lookup, but the mechanic underneath it — two sequential `send_response()` calls inside one transcript handler — is the same shape you'd use for any tool call a voice agent needs to make mid-conversation.
+
+This kind of build is a good fit for **AI hackathons**: voice agents that can take real action, not just answer questions, are a common judging bar at online AI hackathons that include a voice or agents track. If you're looking for one to build this in, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
+
+**What you'll build:**
+- A FastAPI server that registers a Speech Engine and runs the WebSocket session loop
+- A two-call Gemini flow: one fast, non-streamed call to decide if a tool is needed, one streamed call for the real answer
+- A mock order-status tool the agent calls mid-conversation, with a deliberate 2.5-second delay so the filler-line timing means something
+- A minimal browser client to talk to it
+
+The full working project is on GitHub at [Stephen-Kimoi/order-status-voice-agent](https://github.com/Stephen-Kimoi/order-status-voice-agent). Every code block below links to its exact source.
+
+## See it running first
+
+Clone the finished project and run it before writing any code:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/order-status-voice-agent.git
+cd order-status-voice-agent
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Open `.env` and add your ElevenLabs and Gemini keys (see Prerequisites below for exactly which permissions the ElevenLabs key needs), then open a public tunnel to your machine — ElevenLabs' backend connects *out* to your server, so it needs a real URL, not `localhost`:
+
+```bash
+ngrok http 3001
+```
+
+Copy the `https://` URL ngrok prints, set it as `SPEECH_ENGINE_WS_URL=wss://<that-url>/ws` in `.env`, then run the server:
+
+```bash
+uvicorn main:app --port 3001
+```
+
+Open `http://localhost:3001`, click **Start talking**, and ask about order `1001`:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/elevenlabs-speech-engine-voice-agent-tool-calling-tutorial-demo-client/public" alt="The Order Status Voice Agent browser client with a Start talking button" caption="The whole client is one button and a status log — the interesting part happens in the WebSocket session behind it." />
+
+Here's what actually happens on the wire during that call, reconstructed from the server's own debug log during a real test run:
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/elevenlabs-speech-engine-voice-agent-tool-calling-tutorial-cover/public" alt="Timeline showing the user question, an instant filler response, the tool executing while the session stays open, and the real streamed answer" caption="One WebSocket session, one transcript handler, two send_response() calls — the second one only fires once the tool actually resolves." />
+
+That's the whole payoff: the session never closes and reopens, there's no polling, and the user hears something within a few hundred milliseconds even though the real answer takes over two seconds to produce. The rest of this tutorial builds it from scratch and explains why each piece is shaped the way it is.
+
+## Prerequisites
+
+- Python 3.10+
+- An [ElevenLabs API key](https://elevenlabs.io/app/settings/api-keys) — when you create it, make sure **Conversational AI** is enabled with **write** access. A key with only read access authenticates fine but fails with a 401 (`missing the permission convai_write`) the moment you try to register a Speech Engine — this cost real debugging time building this tutorial, so check it up front.
+- A [Gemini API key](https://aistudio.google.com/apikey)
+- [ngrok](https://ngrok.com/download) (or any tool that gives your local server a public HTTPS/WSS URL) — Speech Engine's backend opens a connection to *you*, so `localhost` alone won't work
+
+Your `.env` should look like this:
+
+```bash
+# .env
+ELEVENLABS_API_KEY=your_key_here
+GEMINI_API_KEY=your_key_here
+SPEECH_ENGINE_WS_URL=wss://your-ngrok-subdomain.ngrok-free.app/ws
+```
+
+## Step 1: The one action the agent can take
+
+Before any LLM wiring, the agent needs something real to call. `tools.py` defines a mock order-status lookup and the Gemini function declaration that describes it:
+
+```python
+# tools.py
+"""The one action the voice agent can take mid-conversation: look up an order."""
+
+import asyncio
+
+from google.genai import types
+
+_ORDERS = {
+    "1001": {"status": "out for delivery", "eta": "today by 6pm"},
+    "1002": {"status": "processing", "eta": "ships tomorrow"},
+    "1003": {"status": "delivered", "eta": "delivered yesterday at 2:14pm"},
+}
+
+# Mirrors real latency (a DB call, an internal service) so the tutorial's
+# filler-line timing is demonstrating something real, not an instant no-op.
+LOOKUP_DELAY_SECONDS = 2.5
+
+# parameters_json_schema takes a plain JSON Schema dict directly — no need
+# to build a types.Schema object by hand.
+ORDER_STATUS_TOOL = types.Tool(
+    function_declarations=[
+        types.FunctionDeclaration(
+            name="get_order_status",
+            description="Look up the current status and delivery estimate for a customer's order.",
+            parameters_json_schema={
+                "type": "object",
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "The order number the customer gave, e.g. '1001'.",
+                    }
+                },
+                "required": ["order_id"],
+            },
+        )
+    ]
+)
+
+
+async def get_order_status(order_id: str) -> dict:
+    await asyncio.sleep(LOOKUP_DELAY_SECONDS)
+    order = _ORDERS.get(order_id.strip())
+    if order is None:
+        return {"order_id": order_id, "found": False}
+    return {"order_id": order_id, "found": True, **order}
+```
+
+Two things here are load-bearing rather than arbitrary. First, `LOOKUP_DELAY_SECONDS = 2.5`: without a real delay, the filler-line mechanic this whole tutorial is about would have nothing to demonstrate — the tool would resolve before the filler line even finished playing. Second, `parameters_json_schema` on `FunctionDeclaration`: Gemini's SDK also has a `parameters` field that expects a `types.Schema` object, but `parameters_json_schema` accepts a plain JSON Schema dict, which is the same shape you'd hand OpenAI's function-calling API. There's no reason to hand-build `Schema` objects when the dict form works directly.
+
+*[View tools.py on GitHub](https://github.com/Stephen-Kimoi/order-status-voice-agent/blob/80d9b3f1ff19560ad5484e24e12c910d88c92d50/tools.py)*
+
+## Step 2: The two-call LLM flow
+
+This is the part that doesn't exist in any ElevenLabs doc or cookbook, because it's not an ElevenLabs concern at all — it's how you structure calls to your LLM so that you *know* a tool is needed before you've committed to speaking anything:
+
+```python
+# llm_agent.py
+"""Turns a transcript into either a plain answer or a filler + tool + streamed answer.
+
+The first call to Gemini is deliberately NOT streamed: we need the full
+function_calls decision before we know whether to speak a filler line, so
+there is nothing to gain from streaming a response we might throw away. The
+second call, once we know what to say, streams — that's the one passed
+straight into session.send_response().
+
+Streaming goes through models.generate_content_stream() rather than Gemini's
+newer Interactions API: ElevenLabs' send_response() auto-detects OpenAI,
+Anthropic, and the classic candidates[0].content.parts[0].text Gemini chunk
+shape, but not the Interactions API's event format, so a stream from
+`client.aio.interactions.create(stream=True)` would arrive as silence.
+"""
+
+import os
+
+from google import genai
+from google.genai import types
+
+from tools import ORDER_STATUS_TOOL, get_order_status
+
+MODEL = "gemini-2.5-flash"
+
+SYSTEM_PROMPT = (
+    "You are a support voice agent. Keep answers short and conversational, "
+    "the way a person speaks on the phone, not the way you'd write an email. "
+    "Use the get_order_status tool whenever the customer asks about an order."
+)
+
+_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+
+def _role(transcript_role: str) -> str:
+    return "model" if transcript_role == "assistant" else "user"
+
+
+def _to_contents(transcript: list) -> list:
+    return [
+        types.Content(role=_role(msg.role), parts=[types.Part.from_text(text=msg.content)])
+        for msg in transcript
+    ]
+
+
+async def respond(transcript: list, on_filler) -> object:
+    """Return either a plain string or an async stream, ready for send_response().
+
+    `on_filler` is called with the filler line the instant a tool call is
+    detected, so the caller can speak it before `respond` does the (slow)
+    tool lookup and second model call.
+    """
+    contents = _to_contents(transcript)
+
+    plan = await _client.aio.models.generate_content(
+        model=MODEL,
+        contents=contents,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            tools=[ORDER_STATUS_TOOL],
+        ),
+    )
+
+    if not plan.function_calls:
+        return plan.text or "Sorry, could you say that again?"
+
+    call = plan.function_calls[0]
+    await on_filler("Let me check that for you.")
+
+    result = await get_order_status(**call.args)
+
+    contents.append(plan.candidates[0].content)
+    contents.append(
+        types.Content(
+            role="tool",
+            parts=[types.Part.from_function_response(name=call.name, response=result)],
+        )
+    )
+
+    return await _client.aio.models.generate_content_stream(
+        model=MODEL,
+        contents=contents,
+        config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
+    )
+```
+
+A few of these decisions are worth calling out explicitly, because each was a real fork in the road, not the only way to do it:
+
+- **The first call isn't streamed, on purpose.** You can't know whether to speak a filler line until you know whether a tool call is coming, and there's no benefit to streaming a response you might discard the instant a `function_call` shows up in it. A single non-streamed call is simpler and just as fast for a decision this small.
+- **`role="tool"` for the function response, not `"user"`.** Gemini's manual function-calling convention (confirmed directly against the `google-genai` SDK's own README) wraps the tool's result in a `Content` with `role="tool"`, and expects the model's own `function_call` turn (`plan.candidates[0].content`) appended back into the conversation before you ask it to continue. Skip either of those and the follow-up call has no idea a tool was ever called.
+- **`generate_content_stream`, not the newer Interactions API.** Gemini has since moved its documented function-calling examples to a different `interactions.create()` API with its own event shape. ElevenLabs' `send_response()` auto-detects OpenAI, Anthropic, and the classic `candidates[0].content.parts[0].text` Gemini shape from `generate_content_stream` — but not the Interactions API's event format. Pass it that stream and every chunk gets silently dropped by ElevenLabs' text extractor: no error, just silence. This was confirmed by reading `elevenlabs-python`'s actual `_extract_text()` source, not assumed.
+
+*[View llm_agent.py on GitHub](https://github.com/Stephen-Kimoi/order-status-voice-agent/blob/80d9b3f1ff19560ad5484e24e12c910d88c92d50/llm_agent.py)*
+
+## Step 3: Wiring it into Speech Engine
+
+This is where the filler-then-resume mechanic actually happens. The key fact, confirmed by reading `SpeechEngineSession`'s source directly rather than guessing from docs: `send_response()` only works inside an `on_transcript` handler, gated by an internal `_in_transcript_handler` flag that stays `True` for the *entire* duration of that handler's execution — including whatever you `await` inside it. That means calling `send_response()` twice, sequentially, in the same handler is a fully supported pattern, not a workaround:
+
+```python
+# main.py
+"""FastAPI server: registers a Speech Engine, serves the browser client,
+issues session tokens, and runs the WebSocket loop that turns transcripts
+into speech via llm_agent.respond().
+"""
+
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()  # must run before importing llm_agent, which reads env vars at import time
+
+from fastapi import FastAPI, WebSocket
+from fastapi.responses import FileResponse
+
+from elevenlabs.client import AsyncElevenLabs
+from elevenlabs.speech_engine import CLOSE, DISCONNECTED, ERROR, INIT, USER_TRANSCRIPT
+
+import llm_agent
+
+app = FastAPI()
+elevenlabs = AsyncElevenLabs(api_key=os.environ["ELEVENLABS_API_KEY"])
+
+# Set on startup once the engine is registered with ElevenLabs.
+engine = None
+
+
+@app.on_event("startup")
+async def register_engine():
+    global engine
+    engine = await elevenlabs.speech_engine.create(
+        name="Order Status Voice Agent",
+        speech_engine={"ws_url": os.environ["SPEECH_ENGINE_WS_URL"]},
+    )
+    print(f"Speech Engine registered: {engine.engine_id}")
+
+
+@app.get("/")
+async def index():
+    return FileResponse("client/index.html")
+
+
+@app.get("/token")
+async def get_token():
+    response = await elevenlabs.conversational_ai.conversations.get_webrtc_token(
+        agent_id=engine.engine_id,
+    )
+    return {"token": response.token}
+
+
+@app.websocket("/ws")
+async def voice_socket(websocket: WebSocket):
+    await websocket.accept()
+    session = engine.create_session(websocket, debug=True)
+
+    async def handle_transcript(transcript):
+        print(f"[voice_socket] transcript: {[(m.role, m.content) for m in transcript]}")
+
+        async def speak_filler(line: str):
+            await session.send_response(line)
+
+        response = await llm_agent.respond(transcript, on_filler=speak_filler)
+        await session.send_response(response)
+
+    session.on(INIT, lambda conv_id: print(f"[voice_socket] init: {conv_id}"))
+    session.on(USER_TRANSCRIPT, handle_transcript)
+    session.on(CLOSE, lambda: print("[voice_socket] close"))
+    session.on(DISCONNECTED, lambda: print("[voice_socket] disconnected"))
+    session.on(ERROR, lambda err: print(f"[voice_socket] error: {err!r}"))
+    await session.run()
+```
+
+Walking through the parts that matter:
+
+- **`engine.create_session(websocket, debug=True)`** takes the raw FastAPI `WebSocket` object directly — no manual adapter needed. The SDK checks for `receive_text`/`send_text` (Starlette/FastAPI's interface) versus `recv`/`send` (the `websockets` library's interface) and wraps whichever one you hand it.
+- **`handle_transcript` calls `session.send_response()` twice**: once with the plain filler string, then again with the streamed Gemini answer from `llm_agent.respond()`. Both calls happen inside the same `async def handle_transcript`, so `_in_transcript_handler` never drops to `False` between them — the session stays in exactly the same state the whole time, which is what keeps this from needing a second connection or a "resume" API that doesn't exist.
+- **`load_dotenv()` runs before `import llm_agent`, deliberately.** `llm_agent.py` reads `os.environ["GEMINI_API_KEY"]` the moment it's imported, to build its client at module scope. Import it before the environment is loaded and you get a `KeyError` that has nothing to do with your actual code logic — moving `load_dotenv()` above the import is the fix, not adding error handling around the import.
+- **The `debug=True` flag and the five `session.on(...)` handlers** aren't required for the agent to work, but they're what made every fact in this tutorial verifiable rather than assumed — the debug log is what shows the filler line and the streamed response actually leaving the server, back to back, in one handler call.
+
+*[View main.py on GitHub](https://github.com/Stephen-Kimoi/order-status-voice-agent/blob/80d9b3f1ff19560ad5484e24e12c910d88c92d50/main.py)*
+
+## Step 4: A minimal browser client
+
+The agent doesn't care what talks to it, as long as it's a browser with a microphone and ElevenLabs' client SDK. The client here is deliberately thin — one button, one status log:
+
+```html
+<!-- client/index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Order Status Voice Agent</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 32rem; margin: 4rem auto; text-align: center; }
+    button { font-size: 1.1rem; padding: 0.75rem 1.5rem; cursor: pointer; }
+    #status { margin-top: 1.5rem; color: #555; white-space: pre-wrap; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Order Status Voice Agent</h1>
+  <p>Try: &ldquo;What's the status of order 1001?&rdquo;</p>
+  <button id="toggle">Start talking</button>
+  <div id="status"></div>
+
+  <script type="module">
+    import { Conversation } from "https://cdn.jsdelivr.net/npm/@elevenlabs/client/+esm";
+
+    const button = document.getElementById("toggle");
+    const status = document.getElementById("status");
+    let conversation = null;
+
+    function log(line) {
+      status.textContent += line + "\n";
+    }
+
+    button.addEventListener("click", async () => {
+      if (conversation) {
+        await conversation.endSession();
+        conversation = null;
+        button.textContent = "Start talking";
+        log("Session ended.");
+        return;
+      }
+
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      const tokenResponse = await fetch("/token");
+      const { token } = await tokenResponse.json();
+
+      conversation = await Conversation.startSession({
+        conversationToken: token,
+        onConnect: () => log("Connected. Speak now."),
+        onDisconnect: () => log("Disconnected."),
+        onMessage: (message) => log(JSON.stringify(message)),
+        onError: (message) => log("Error: " + message),
+      });
+
+      button.textContent = "End session";
+    });
+  </script>
+</body>
+</html>
+```
+
+The one design decision worth flagging: the client fetches a **session token** from `/token` rather than embedding an API key or agent ID directly. `get_webrtc_token()` on the server exchanges your ElevenLabs API key for a short-lived token scoped to one conversation — the browser never sees anything that could be replayed against your account.
+
+*[View client/index.html on GitHub](https://github.com/Stephen-Kimoi/order-status-voice-agent/blob/80d9b3f1ff19560ad5484e24e12c910d88c92d50/client/index.html)*
+
+## Running it end to end
+
+With `ngrok http 3001` running and `SPEECH_ENGINE_WS_URL` pointed at that tunnel, `uvicorn main:app --port 3001` registers the engine and starts serving. A real run against order `1001`, taken straight from the server's debug log, looks like this:
+
+```text
+[SpeechEngine] received transcript, event_id=22, messages=1
+[voice_socket] transcript: [('user', '1001.')]
+[SpeechEngine] sending string response: "Let me check that for you.", event_id=22
+[SpeechEngine] starting streamed response, event_id=22
+[SpeechEngine] stream complete: 3 chunks sent, event_id=22
+```
+
+One transcript in, a filler line out immediately, then a streamed answer once `get_order_status` resolves — no second connection, no polling, no dropped session.
+
+Two gotchas worth knowing before you try this yourself:
+
+- If `speech_engine.create()` fails with a 401 saying the key is `missing the permission convai_write`, your ElevenLabs API key doesn't have Conversational AI write access — regenerate it with that scope enabled.
+- Free-tier ngrok tunnels occasionally emit a `heartbeat timeout, terminating session` and reconnect on their own control channel, which can drop whatever WebSocket was riding on top of it mid-call. If a session disconnects unexpectedly seconds after connecting, check the ngrok log before assuming it's a bug in your code — a paid ngrok domain or a different tunneling tool avoids this.
+
+## Frequently Asked Questions
+
+**How can I use this pattern in an AI hackathon?** Swap `tools.py`'s mock order lookup for whatever your hackathon project actually needs to check or trigger — a database query, an internal API, a payment action — and the filler-then-resume mechanic in `main.py` doesn't need to change at all.
+
+**Is this suitable for beginners in AI hackathons?** You'll want to be comfortable with async Python and basic LLM function calling going in. The voice/WebSocket-specific parts — Speech Engine's session model, the ASGI adapter, the streaming format constraint — are exactly what this tutorial exists to explain.
+
+**What are some AI hackathon project ideas using this?** A support agent that pulls real ticket status, a scheduling assistant that actually checks and books calendar slots, an internal ops agent that triggers a real workflow (a deploy, a refund, a status change) mid-call instead of just describing what it would do.
+
+**Are there limitations when using this in a time-limited hackathon?** The two-call structure adds one extra round trip to the LLM compared to a single streamed call, so keep the "decide if a tool is needed" call fast and cheap (a smaller/faster model is often enough for that step) — save your best model for the final streamed answer.
+
+## Conclusion
+
+Speech Engine's job is narrow on purpose: turn text into speech, nothing more. Whatever your agent needs to actually *do* — look something up, trigger something, wait on something slow — happens entirely in your own transcript handler, using two sequential `send_response()` calls instead of one. That's a small amount of code once you know the pattern, but nothing in ElevenLabs' documentation tells you it's the pattern, which is exactly why this was worth building and writing up.
+
+The full project, including the two gotchas above, is on GitHub at [Stephen-Kimoi/order-status-voice-agent](https://github.com/Stephen-Kimoi/order-status-voice-agent) — clone it, swap in your own tool, and it's a working starting point for a voice agent project at your next [AI hackathon on lablab.ai](https://lablab.ai/ai-hackathons).
