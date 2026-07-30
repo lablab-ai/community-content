@@ -1,0 +1,648 @@
+---
+title: "How I Made Claude Search ANY Book INSTANTLY With Anthropic's New Protocol"
+description: "A comprehensive guide to building a Model Context Protocol server that integrates with Open Library's API, enabling AI assistants to search and retrieve real-time book information."
+image: ""
+authorUsername: "sanchayt743"
+
+---
+
+# How I Made Claude Search ANY Book INSTANTLY With Anthropic's New Protocol
+
+## Introduction
+
+In this tutorial, I'll show you how to build an MCP server that connects with Open Library's API. By the end, you'll have a functional server that AI assistants can use to search and retrieve book information. The implementation is straightforward but covers all essential aspects of MCP server development.
+
+## What is MCP?
+
+**Model Context Protocol (MCP)** is a framework that standardizes how AI systems interact with external services. Rather than building separate integrations for different tools or APIs, MCP provides a consistent interface that works across various data sources.
+
+Think of it this way: when an AI assistant needs to access external data or functionality, MCP servers act as reliable bridges to those resources. They handle the communication, data formatting, and error management, ensuring consistent and reliable operations.
+
+[_For an in-depth exploration of MCP and its capabilities, check out my detailed blog here [link]_]
+
+## The Book Library Server
+
+### Understanding the Basics
+
+I built this book library server to show you what MCP can do. Before MCP, AI assistants like Claude could only work with information they learned during training. They couldn't get new information or connect to other services. This was a big problem.
+
+MCP fixes this problem. With our book library server, Claude can now talk directly to Open Library and get fresh information about any book. When someone asks about a book, Claude doesn't just use old information - it can look up current details right away.
+
+This matters because it shows how MCP lets AI assistants work with real-world data. Our book server demonstrates basic API integration, but the MCP ecosystem has grown to support many powerful real-world use cases. Some highlights from the community include [Brave Search](https://github.com/modelcontextprotocol/reference-servers/tree/main/src/brave-search) for web search integration, [Fetch](https://github.com/modelcontextprotocol/reference-servers/tree/main/src/fetch) for processing web content, and [Memory](https://github.com/modelcontextprotocol/reference-servers/tree/main/src/memory) for persistent knowledge storage. For developers, essential tools like [GitHub](https://github.com/modelcontextprotocol/reference-servers/tree/main/src/github) and [PostgreSQL](https://github.com/modelcontextprotocol/reference-servers/tree/main/src/postgres) integration are available. There are also powerful specialized tools like [ChatSum](https://github.com/chatmcp/mcp-server-chatsum) for chat analysis and [Rememberizer AI](https://github.com/skydeckai/mcp-server-rememberizer) for enhanced knowledge retrieval.
+
+To help manage and discover these tools, the community has built resources like [mcp-get](https://mcp-get.com) for installing servers and [MCPHub](https://github.com/Jeamee/MCPHub-Desktop) for a GUI interface. You can explore more implementations in the [MCP community servers list](https://github.com/modelcontextprotocol/reference-servers#-third-party-servers).
+
+Our server will handle two main operations:
+
+- Searching for books using titles or author names
+- Retrieving detailed information about specific books
+
+Before we dive into the implementation, let's look at what we need to get started:
+
+```
+Required Tools:
+- Python 3.11 or higher
+- UV package manager
+- MCP library
+- httpx for API requests
+```
+
+The server structure follows standard Python packaging:
+
+```
+booklibrary/
+├── src/
+│   └── booklibrary/
+│       ├── __init__.py    # Entry point
+│       └── server.py      # Core implementation
+├── pyproject.toml         # Project configuration
+└── README.md             # Documentation
+```
+
+Each file serves a specific purpose:
+
+- `server.py` contains our core MCP server implementation
+- `__init__.py` provides the entry point for our package
+- `pyproject.toml` manages our project configuration and dependencies
+
+In the next section, we'll set up our development environment and create this project structure. I'll explain each step and why certain choices matter for MCP server development.
+
+## Environment Setup and Project Structure
+
+### Setting Up UV Package Manager
+
+First, we need to install UV. It's a fast, reliable package manager that handles our Python dependencies. Open your terminal and run:
+
+For macOS:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+For Windows:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+After installation, restart your terminal to ensure UV is properly initialized.
+
+### Creating the Project
+
+Now we'll create our project structure. UV makes this straightforward:
+
+```bash
+# Create the project directory
+uv init booklibrary
+cd booklibrary
+
+# Create and activate virtual environment
+uv venv
+```
+
+For macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+For Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+### Project Structure Creation
+
+Let's create our project structure:
+
+For macOS/Linux:
+
+```bash
+mkdir -p src/booklibrary
+touch src/booklibrary/__init__.py
+touch src/booklibrary/server.py
+```
+
+For Windows:
+
+```powershell
+md src\booklibrary
+ni src\booklibrary\__init__.py
+ni src\booklibrary\server.py
+```
+
+## Installing Dependencies
+
+Our server needs two main dependencies:
+
+```bash
+uv add mcp httpx
+```
+
+This installs:
+
+- mcp: The Model Context Protocol library
+- httpx: Modern Python HTTP client with async support
+
+### Project Configuration
+
+Open `pyproject.toml` in your editor. We'll configure our project:
+
+```toml
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "booklibrary"
+version = "0.1.0"
+description = "MCP server for Open Library API"
+requires-python = ">=3.11"
+dependencies = ["mcp", "httpx"]
+
+[project.scripts]
+booklibrary = "booklibrary:main"
+```
+
+### Entry Point Setup
+
+In `src/booklibrary/__init__.py`, we'll create our entry point:
+
+```python
+from . import server
+import asyncio
+
+def main():
+    asyncio.run(server.main())
+
+__all__ = ['main', 'server']
+```
+
+This structure sets up our project for both development and deployment. The `__init__.py` file serves as our package's entry point, while `server.py` will contain our core implementation.
+
+Our development environment is ready, and our project structure is in place. In the next section, we'll implement the core server functionality, starting with basic initialization and adding our first tool.
+
+## Core Server Implementation
+
+### Server Initialization
+
+First, let's set up our server with proper logging:
+
+```python
+import logging
+import os
+import sys
+from typing import Any, Dict
+import asyncio
+import httpx
+from mcp.server import Server
+import mcp.types as types
+
+# Set up logging for better debugging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Initialize our server
+server = Server("booklibrary")
+```
+
+The initialization code does several important things. We're setting up comprehensive logging first - this is crucial for a production server. The logging format includes timestamps and line numbers, which help tremendously when debugging issues in production. The level is set to DEBUG during development, giving us detailed insight into what's happening inside our server.
+
+The Server initialization is simple but powerful. The name "booklibrary" becomes our server's identifier in the MCP ecosystem. This name must match what we'll later use in our Claude Desktop configuration.
+
+### API Constants and Utilities
+
+Next, we define our API endpoints and retry settings:
+
+```python
+OPEN_LIBRARY_SEARCH = "https://openlibrary.org/search.json"
+OPEN_LIBRARY_BOOKS = "https://openlibrary.org/works"
+
+# Constants for retry logic
+MAX_RETRIES = 3
+RETRY_DELAY = 1  # seconds
+```
+
+These constants make our code more maintainable. Instead of hardcoding URLs throughout the code, we keep them in one place. The retry constants help us implement a robust retry mechanism - essential when working with external APIs that might occasionally fail or experience timeouts.
+
+Let's implement our retry logic:
+
+```python
+async def retry_with_backoff(func, *args, **kwargs):
+    """Retry function with exponential backoff"""
+    for attempt in range(MAX_RETRIES):
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            if attempt == MAX_RETRIES - 1:  # Last attempt
+                raise
+            wait_time = RETRY_DELAY * (2**attempt)  # Exponential backoff
+            logger.warning(
+                f"Attempt {attempt + 1} failed: {str(e)}. Retrying in {wait_time}s..."
+            )
+            await asyncio.sleep(wait_time)
+```
+
+This retry mechanism is a crucial part of our error handling strategy. When dealing with external APIs, temporary failures are common. Our retry_with_backoff function implements exponential backoff - each retry waits longer than the previous one. This prevents us from overwhelming the API when it's having issues while still providing resilience against temporary failures.
+
+Here's how it works: if a request fails, we wait 1 second before the first retry, then 2 seconds, then 4 seconds. This exponential increase gives the external service time to recover while still maintaining responsiveness for our users.
+
+Now, let's create our main request handler:
+
+```python
+async def make_library_request(client: httpx.AsyncClient, url: str) -> Dict[str, Any] | None:
+    """Make request to Open Library API with retry logic"""
+    logger.debug(f"Making request to: {url}")
+
+    try:
+        response = await client.get(url, timeout=30.0)
+        response.raise_for_status()
+        return response.json()
+    except httpx.TimeoutException:
+        logger.error(f"Timeout error for URL: {url}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error for URL {url}: {str(e)}")
+        return None
+```
+
+This function encapsulates our HTTP request logic. We're using httpx, an async HTTP client, which fits perfectly with our async server implementation. The 30-second timeout prevents requests from hanging indefinitely. We handle timeouts separately from other exceptions because they're common enough to warrant specific handling.
+
+### Tool Registration
+
+Now comes a key part of our MCP server - registering the tools it provides:
+
+```python
+@server.list_tools()
+async def handle_list_tools() -> list[types.Tool]:
+    """Define available tools"""
+    logger.info("Listing available tools")
+    return [
+        types.Tool(
+            name="search-books",
+            description="Search for books by title or author",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (title or author)",
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
+        types.Tool(
+            name="get-book-details",
+            description="Get detailed information about a specific book",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "book_id": {
+                        "type": "string",
+                        "description": "Open Library Book ID",
+                    },
+                },
+                "required": ["book_id"],
+            },
+        ),
+    ]
+```
+
+The tool registration is where MCP really shines. We're declaring two tools, each with a specific purpose. The input schemas are particularly important - they tell AI assistants exactly what information they need to provide. These schemas act as contracts between our server and its clients.
+
+For example, the search-books tool requires a "query" parameter. The schema makes it clear that this needs to be a string, and the description helps AI assistants understand what kind of string to provide. The required field ensures we always get this parameter.
+
+The get-book-details tool follows the same pattern but expects a book_id instead. This clear separation of concerns makes our server's API intuitive and reliable.
+
+These tools form the interface that AI assistants will use to interact with our server. The clarity of these definitions directly impacts how effectively AI systems can use our service.
+
+In the next section, we'll implement the handlers for these tools, bringing our server's functionality to life. We'll see how to process requests, handle errors gracefully, and format responses in a way that's most useful for AI assistants.
+
+## Implementing Tool Handlers
+
+### Search Handler Implementation
+
+First, let's implement the book search functionality:
+
+```python
+async def handle_search_request(query: str) -> types.TextContent:
+    """Handle book search requests with error handling"""
+    logger.info(f"Processing search query: {query}")
+    search_url = f"{OPEN_LIBRARY_SEARCH}?q={query}"
+
+    async with httpx.AsyncClient() as client:
+        search_data = await make_library_request(client, search_url)
+
+        if not search_data:
+            return types.TextContent(
+                type="text",
+                text="Failed to fetch search results. Please try again."
+            )
+
+        books = search_data.get("docs", [])
+        if not books:
+            return types.TextContent(
+                type="text",
+                text=f"No books found for query: {query}"
+            )
+
+        try:
+            formatted_books = []
+            total_books = len(books)
+
+            for book in books[:5]:  # Limit to first 5 results
+                formatted_book = format_book_results(book)
+                if formatted_book:
+                    formatted_books.append(formatted_book)
+
+            if not formatted_books:
+                return types.TextContent(
+                    type="text",
+                    text="Error formatting search results"
+                )
+
+            result_text = (
+                f"Found {total_books} books, showing first {len(formatted_books)}:\n\n"
+            )
+            result_text += "\n".join(formatted_books)
+
+            return types.TextContent(type="text", text=result_text)
+
+        except Exception as e:
+            logger.error(f"Error processing search results: {str(e)}")
+            return types.TextContent(
+                type="text",
+                text="Error processing search results. Please try again."
+            )
+```
+
+This search handler is doing several important things. We're using httpx's async client in a context manager, which ensures proper cleanup of resources. The search results are limited to 5 books to keep responses concise and useful. Each step includes error handling to ensure our server remains stable even when things go wrong.
+
+### Book Details Handler Implementation
+
+Now let's implement the book details retrieval:
+
+```python
+async def handle_book_details_request(book_id: str) -> types.TextContent:
+    """Handle book details requests with error handling"""
+    logger.info(f"Fetching details for book ID: {book_id}")
+    details_url = f"{OPEN_LIBRARY_BOOKS}/{book_id}.json"
+
+    async with httpx.AsyncClient() as client:
+        book_data = await make_library_request(client, details_url)
+
+        if not book_data:
+            return types.TextContent(
+                type="text",
+                text=f"Failed to fetch details for book ID: {book_id}"
+            )
+
+        try:
+            details = []
+            # Basic information
+            details.append(f"Title: {book_data.get('title', 'Unknown')}")
+
+            # Description handling
+            description = book_data.get("description", "")
+            if isinstance(description, dict):
+                description = description.get("value", "")
+            details.append(f"Description: {description or 'No description available'}")
+
+            # Subjects with length limit
+            subjects = book_data.get("subjects", [])
+            if subjects:
+                details.append(f"Subjects: {', '.join(subjects[:5])}")
+
+            # Authors handling
+            if "authors" in book_data:
+                author_names = []
+                for author in book_data.get("authors", []):
+                    if isinstance(author, dict):
+                        author_obj = author.get("author", {})
+                        if isinstance(author_obj, dict):
+                            author_names.append(author_obj.get("name", "Unknown Author"))
+                if author_names:
+                    details.append(f"Authors: {', '.join(author_names)}")
+
+            return types.TextContent(type="text", text="\n".join(details))
+
+        except Exception as e:
+            logger.error(f"Error formatting book details: {str(e)}")
+            return types.TextContent(
+                type="text",
+                text="Error formatting book details. Please try again."
+            )
+```
+
+The book details handler deals with more complex data structures. Open Library's API can return author information in different formats, so we have careful type checking and fallback handling. We also limit the number of subjects shown to keep the response focused.
+
+### Main Tool Handler
+
+Finally, let's implement the main tool handler that routes requests to the appropriate function:
+
+```python
+@server.call_tool()
+async def handle_call_tool(
+    name: str,
+    arguments: dict | None
+) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
+    """Handle tool execution requests with error handling"""
+    logger.info(f"Tool call received - Name: {name}, Arguments: {arguments}")
+
+    if not arguments:
+        raise ValueError("Missing arguments")
+
+    try:
+        if name == "search-books":
+            query = arguments.get("query")
+            if not query:
+                return [
+                    types.TextContent(type="text", text="Please provide a search query")
+                ]
+            result = await handle_search_request(query)
+            return [result]
+
+        elif name == "get-book-details":
+            book_id = arguments.get("book_id")
+            if not book_id:
+                return [types.TextContent(type="text", text="Please provide a book ID")]
+            result = await handle_book_details_request(book_id)
+            return [result]
+
+        else:
+            raise ValueError(f"Unknown tool: {name}")
+
+    except Exception as e:
+        logger.error(f"Error handling tool call: {str(e)}")
+        return [
+            types.TextContent(
+                type="text",
+                text="An error occurred while processing your request. Please try again."
+            )
+        ]
+```
+
+This main handler is crucial - it's the entry point for all tool calls. The @server.call_tool() decorator registers this function with our MCP server. The function validates incoming requests and routes them to the appropriate handler. Note how we return a list of content types - this allows for future expansion where we might want to return multiple content pieces or different types of content.
+
+All three handlers work together to create a robust server:
+
+1. The main handler validates and routes requests
+2. The search handler finds books matching a query
+3. The book details handler provides in-depth information about specific books
+
+Each handler includes proper error handling and logging, ensuring we can track and debug issues in production. The responses are formatted consistently, making it easy for AI assistants to process the information.
+
+## Server Initialization and Main Loop
+
+### Main Server Loop
+
+First, let's implement the main server loop that keeps our server running:
+
+```python
+async def main():
+    """Initialize and run the server with reconnection logic"""
+    while True:
+        try:
+            logger.info("Starting book library server...")
+            async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+                logger.info("Server streams initialized")
+                await server.run(
+                    read_stream,
+                    write_stream,
+                    InitializationOptions(
+                        server_name="booklibrary",
+                        server_version="0.1.0",
+                        capabilities=server.get_capabilities(
+                            notification_options=NotificationOptions(),
+                            experimental_capabilities={},
+                        ),
+                    ),
+                )
+        except Exception as e:
+            logger.error(f"Server error: {str(e)}")
+            logger.info("Attempting to restart server in 5 seconds...")
+            await asyncio.sleep(5)
+        else:
+            break  # Exit if server closes normally
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+This main loop is more sophisticated than it might first appear. Let's break down what's happening:
+
+1. The infinite while loop ensures our server keeps running even if it encounters errors
+2. We use stdio_server() for communication with Claude Desktop
+3. The InitializationOptions tell Claude Desktop about our server's capabilities
+4. Error handling includes automatic restart with a 5-second delay
+
+### Entry Point Integration
+
+Remember our **init**.py file? Now we need to connect it to our main function:
+
+```python
+# src/booklibrary/__init__.py
+
+from . import server
+import asyncio
+
+def main():
+    """Package entry point"""
+    asyncio.run(server.main())
+
+__all__ = ['main', 'server']
+```
+
+This setup allows our server to be run either as a module or directly from the command line.
+
+## Using Your Book Library Server
+
+### Setting Up Claude Desktop
+
+Once you've configured your server in Claude Desktop, you'll see the hammer icon in the top-right corner of the interface. This icon indicates that your MCP tools are available. Clicking it reveals your server's capabilities: search-books and get-book-details.
+
+### Practical Examples
+
+Let me show you how Claude naturally handles book-related queries and automatically uses the appropriate functions.
+
+When I begin with a simple query:
+
+```
+tell me about harry potter book
+```
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e2c52c00-e905-4dc7-2782-e927c7296100/full" />
+
+Claude automatically translates this into the appropriate search function and shows us the results from multiple Harry Potter editions and translations.
+
+Claude then intelligently suggests refining the search, saying:
+"Let me search specifically for the first Harry Potter book to get more details."
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/67988a90-feaa-4416-f220-9c1aeb968e00/full" />
+
+Without needing additional prompting, Claude executes a more focused search, presenting results specifically for "Harry Potter and the Philosopher's Stone" across various editions.
+
+Claude then takes the initiative to get more detailed information:
+"Let me get more detailed information about the first book."
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/bad78444-433f-42df-ed13-7bf0fb3a9700/full" />
+
+It automatically retrieves comprehensive details about the book, including its publication information and synopsis.
+
+This demonstrates how Claude maintains a natural conversation flow while handling the technical aspects - like function calls and data retrieval - entirely behind the scenes. From a single initial query, it guides the interaction through progressively more detailed information.
+
+### Navigation and Usage
+
+The Claude Desktop interface makes using these tools intuitive:
+
+1. Look for the hammer icon in the top-right corner
+2. Click it to see available tools
+3. Type your request in natural language
+4. Claude will use the appropriate tool based on your request
+
+### Troubleshooting Guide
+
+For effective debugging, monitor both configuration and logs simultaneously:
+
+For **MacOS/Linux**:
+
+```bash
+# View configuration
+nano ~/Library/Application\ Support/Claude/config.json
+
+# Monitor logs
+tail -n 20 -f ~/Library/Logs/Claude/mcp*.log
+```
+
+For **Windows**:
+
+```powershell
+# View configuration
+notepad %APPDATA%\Claude\config.json
+
+# Monitor logs
+Get-Content -Path "$env:APPDATA\Claude\Logs\mcp*.log" -Wait -Tail 20
+```
+
+Common issues include:
+
+- _Configuration path errors_: Verify all paths in config.json
+- _Connection refused_: Check virtual environment activation
+- _Module not found_: Reinstall dependencies
+- _Permission denied_: Verify file access rights
+- _Invalid configuration_: Review config.json format
+
+After making any changes to your configuration, always restart Claude Desktop to ensure the new settings take effect. Keep the log terminal open while testing these changes , it's the most reliable way to understand what's happening with your server in real-time. The logs will show you server startup and shutdown events, connection status, and detailed error traces that can help pinpoint exact issues.
+
+## Conclusion
+
+Building an MCP server isn't just about connecting APIs - it's about expanding what AI can do in real-time. Through this book library implementation, we've unlocked a new capability for AI assistants: instant access to a world of literary knowledge. The principles we've covered - robust error handling, responsive async operations, and clear tool definitions , form the foundation for building any production-ready MCP server.
+
+But what makes this truly powerful is how it fits into the larger MCP ecosystem. Every new server we build, whether it's for books, databases, or web services, adds another tool to the AI assistant's toolkit.
+
+The future of this technology is boundless. Today we're searching books, tomorrow we might be analyzing entire libraries, connecting multiple knowledge sources, or building complex AI workflows. The MCP framework makes all of this possible, and you now have the knowledge to be part of this revolution.
