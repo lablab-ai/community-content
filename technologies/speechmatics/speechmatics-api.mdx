@@ -1,16 +1,16 @@
 ---
 title: "Speechmatics API"
 author: "stevekimoi"
-description: "Speechmatics' speech-to-text API offers batch and real-time transcription across 55+ languages, powered by the Ursa 2 model, with speaker diarization, custom dictionaries, and Voice Intelligence add-ons."
+description: "Speechmatics' speech-to-text API provides batch and real-time transcription across 55+ languages, with three interchangeable models (Enhanced, Enhanced Medical, Standard, Melia 1), speaker diarization, and Voice Intelligence add-ons."
 ---
 
 # Speechmatics API
 
-The [Speechmatics API](https://www.speechmatics.com/product/transcription) is the company's core speech-to-text service, providing batch file transcription and real-time streaming transcription via WebSocket. Powered by the Ursa 2 model (released October 2024), it supports 55+ languages and dialects, speaker diarization, automatic translation into 30+ target languages, and a suite of Voice Intelligence add-ons. Transcription requires no model fine-tuning; custom dictionaries of up to 1,000 words take effect immediately.
+The [Speechmatics API](https://www.speechmatics.com/product/transcription) provides batch and real-time transcription across 55+ languages, with speaker diarization, custom dictionaries, automatic translation, and Voice Intelligence add-ons (summarization, sentiment analysis, entity recognition). Multiple models sit behind the same API, so moving between them is a choice made at request time rather than a new integration.
 
 | General | |
 |---------|--|
-| **Release date** | Generally available; Ursa 2 model released Oct 2024 |
+| **Release date** | Generally available |
 | **Developer** | Speechmatics |
 | **Type** | Cloud speech-to-text API (batch and real-time) |
 | **License** | Commercial API |
@@ -22,24 +22,49 @@ The [Speechmatics API](https://www.speechmatics.com/product/transcription) is th
 ## Core Features
 
 - **55+ languages and dialects**: broad multilingual support including accent and dialect variants.
-- **Two accuracy tiers**: Enhanced (optimized for accuracy) and Standard (optimized for speed and cost).
 - **Speaker diarization**: multi-speaker detection included at no extra cost in all plans.
 - **Custom dictionary**: up to 1,000 domain-specific words added without retraining.
 - **Automatic translation**: transcripts translated into 30+ target languages via AI.
 - **Voice Intelligence add-ons**: summarization, sentiment analysis, topic detection, chapter generation, and entity recognition.
 - **Audio events detection**: identifies non-speech events in audio.
 - **Smart formatting**: formats numbers, dates, currencies, and capitalization automatically.
-- **Sub-1-second real-time latency**: streaming transcription via WebSocket.
 - **Flexible deployment**: cloud API, on-premises, on-device, Docker, and Kubernetes.
 
 ---
 
-## Accuracy Benchmarks (Ursa 2)
+## Models
+
+Three models sit behind the same API: Enhanced, Standard, and Melia 1. Enhanced Medical is a specialist variant of Enhanced, tuned for clinical audio.
+
+| Model | Best for | Regions | Modes |
+|-------|----------|---------|-------|
+| **Enhanced** | Highest accuracy on single-language audio, such as medical, legal, and subtitling work | EU, US, Australia | Batch, real-time |
+| **Enhanced Medical** | Clinical audio like ambient scribes and dictation, tuned to recognize procedures, medications, conditions, and anatomy | EU, US | Batch, real-time (varies by language) |
+| **Standard** | Highest throughput and fastest turnaround, for archival transcription, content indexing, or large-scale captioning | EU, US, Australia | Batch, real-time |
+| **Melia 1** | Multilingual audio, including speakers who switch language mid-conversation | EU, US | Batch (real-time on the roadmap) |
+
+**Enhanced Medical** is kept up to date using officially maintained clinical data sources. It covers English, Arabic English, Danish, Dutch, Finnish, French, German, Norwegian, Spanish, and Swedish.
+
+**Melia 1** handles code-switching across all supported languages, so a recording that moves between languages comes back as one continuous transcript, with no language to select in advance and no language packs to manage. Output includes per-word language labelling, and accuracy is on par with Standard. It is currently in production preview for batch transcription.
+
+---
+
+## Voice Agents
+
+Speechmatics powers the listening layer of real-time voice agents. Core building blocks include turn detection, intelligent segmentation that groups partial transcripts into clean speaker-attributed segments, diarization, speaker focus for multi-speaker scenarios, and preset configurations for a fast start.
+
+There are two ways to build:
+
+- **Integration partners**: [LiveKit](https://livekit.io), [Pipecat](https://www.pipecat.ai), and [Vapi](https://vapi.ai) for the fastest path to a production agent, handling audio transport and infrastructure so developers can focus on agent logic.
+- **Voice SDK**: for custom pipelines and platforms outside those integrations, giving direct access to turn detection, transcript grouping, and diarization.
+
+---
+
+## Accuracy Benchmarks
 
 | Metric | Result |
 |--------|--------|
 | WER on Kincaid46 (English) | 7.88% (surpasses human-level on that test) |
-| WER improvement vs. previous Ursa | 18% reduction across 50+ languages |
 | FLEURS dataset leadership | Leads in 62% of supported languages |
 | Head-to-head vs. other providers | Wins 88% of comparisons |
 
@@ -61,6 +86,7 @@ Volume discounts apply automatically above 500 hours per month per transcription
 
 - **[Batch API Reference](https://docs.speechmatics.com/jobsapi)**: REST API for asynchronous file transcription jobs.
 - **[Real-time API Reference](https://docs.speechmatics.com/api-ref/realtime-transcription-websocket)**: WebSocket API reference for streaming transcription.
+- **[Voice SDK](https://docs.speechmatics.com/voice-agents/voice-sdk)**: Python library for building conversational voice agents.
 - **[Python SDK](https://github.com/speechmatics/speechmatics-python-sdk)**: official SDK covering STT batch, real-time, and TTS.
 - **[JavaScript/TypeScript SDK](https://github.com/speechmatics/speechmatics-js-sdk)**: official browser and Node.js SDK.
 - **[Developer Portal](https://portal.speechmatics.com)**: API key management and usage monitoring.
@@ -69,10 +95,9 @@ Volume discounts apply automatically above 500 hours per month per transcription
 
 ## Ecosystem and Integrations
 
-- Integrates with LiveKit, Pipecat, and Vapi for voice pipeline deployments.
+- Integrates with LiveKit, Pipecat, and Vapi for voice agent pipeline deployments.
 - Available on Microsoft Azure Marketplace.
 - Compatible with on-device and edge deployments via Docker or Kubernetes.
-- Medical Model variant targets clinical transcription in English, German, Danish, and Norwegian.
 
 ---
 

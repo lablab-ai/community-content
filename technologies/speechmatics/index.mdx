@@ -1,6 +1,6 @@
 ---
 title: "Speechmatics"
-description: "Speechmatics is a Cambridge-based speech AI company offering multilingual transcription and real-time voice agent APIs, supporting 55+ languages with industry-leading accuracy."
+description: "Speechmatics is a Cambridge-based speech AI company offering multilingual transcription and real-time voice agent building blocks, supporting 55+ languages with industry-leading accuracy."
 ---
 
 # Speechmatics
@@ -23,10 +23,10 @@ Founded in 2006 by Dr. Tony Robinson, a Cambridge University speech recognition 
 ## Core Products
 
 ### Speechmatics API (Speech-to-Text)
-The Speechmatics API provides batch and real-time transcription across 55+ languages, powered by the Ursa 2 model released in October 2024. It supports speaker diarization, custom dictionaries, automatic translation, and Voice Intelligence add-ons (summarization, sentiment analysis, entity recognition) with no retraining required.
+The Speechmatics API provides batch and real-time transcription across 55+ languages, with speaker diarization, custom dictionaries, automatic translation, and Voice Intelligence add-ons (summarization, sentiment analysis, entity recognition). Three models sit behind the same API, so moving between them is a choice at request time rather than a new integration: Enhanced for highest accuracy on single-language audio (with a specialist Enhanced Medical variant for clinical use), Standard for the fastest turnaround, and Melia 1 for audio that switches between languages mid-conversation. See our [Speechmatics API tech page](/tech/speechmatics/speechmatics-api) for the full breakdown.
 
-### Speechmatics Flow
-Flow is a voice agent API that combines Speechmatics' speech-to-text with an LLM and text-to-speech into a single real-time pipeline. Developers connect through a single API call to build conversational AI agents with smart turn detection, interruption handling, and function calling support.
+### Voice Agents
+Speechmatics powers the listening layer of real-time voice agents, providing turn detection, intelligent segmentation, diarization, speaker focus for multi-speaker scenarios, and preset configurations for a fast start. Developers can build through integration partners LiveKit, Pipecat, and Vapi for the fastest path to production, or the Voice SDK for custom pipelines.
 
 ---
 
@@ -48,7 +48,7 @@ Speechmatics provides SDKs for Python, JavaScript/TypeScript, and .NET, along wi
 ## Key Features
 
 **Multilingual transcription across 55+ languages**
-Speechmatics' Ursa 2 model leads accuracy benchmarks in 62% of supported languages on the FLEURS dataset, with 7.88% WER on Kincaid46 for English, surpassing human-level accuracy on that benchmark.
+Speechmatics leads accuracy benchmarks in 62% of supported languages on the FLEURS dataset, with 7.88% WER on Kincaid46 for English, surpassing human-level accuracy on that benchmark.
 
 **Flexible deployment**
 Speechmatics runs on private SaaS cloud, on-premises, on-device, and via Docker or Kubernetes, making it suitable for data-sensitive industries like healthcare and finance.
@@ -61,10 +61,10 @@ Summarization, sentiment analysis, topic detection, chapter generation, and enti
 ## Use Cases
 
 **Contact center automation**
-Real-time transcription and sentiment analysis during calls, combined with Flow for automated voice agent handling of common queries.
+Real-time transcription and sentiment analysis during calls, combined with the Voice Agents building blocks for automated handling of common queries.
 
 **Clinical transcription**
-Speechmatics' Medical Model (launched 2024) targets 93% real-time accuracy and 96% medical keyword recall for English, German, Danish, and Norwegian.
+Speechmatics' Enhanced Medical model targets 93% real-time accuracy and 96% medical keyword recall, covering English, Arabic English, Danish, Dutch, Finnish, French, German, Norwegian, Spanish, and Swedish.
 
 **Media and broadcast**
 Batch transcription of audio and video files for subtitling, archiving, and content search across multiple languages.
