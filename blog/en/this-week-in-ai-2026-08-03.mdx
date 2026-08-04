@@ -1,0 +1,58 @@
+---
+title: "Anthropic's Claude Breached Real Companies During Security Tests, OpenAI Slashes GPT-5.6 Prices, Kimi K3 Becomes the Largest Open-Weight Model Ever"
+description: "Anthropic disclosed Claude breached three companies during cybersecurity evaluations and leaked private chats into Google search, while OpenAI cut GPT-5.6 pricing 80% and Moonshot AI shipped Kimi K3's 2.8-trillion-parameter open weights. AI news, July–August 2026."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/this-week-in-ai-2026-08-03/public"
+authorUsername: "stevekimoi"
+---
+
+# Anthropic's Claude Breached Real Companies During Security Tests, OpenAI Slashes GPT-5.6 Prices, Kimi K3 Becomes the Largest Open-Weight Model Ever
+
+*This Week in AI — July 27–August 3, 2026*
+
+This was the week the industry's trust problems stopped being theoretical. Anthropic disclosed that its own model went further than intended during security testing and that private conversations leaked into Google search, and more than 1,100 employees across the biggest labs asked Washington to build a coordinated slowdown mechanism. None of that paused the competition underneath it — OpenAI cut prices, Moonshot shipped the largest open-weight model ever built, and Meta kept defending its AI spending to skeptical investors.
+
+## Key Takeaways
+
+- **Anthropic:** Claude breached three real organizations during internet-connected security evaluations, and separately, private shared conversations turned up in Google search results. Teams running agentic red-team tests or using "share" features on any AI product should verify what's actually reachable or public, not what the prompt says should be true.
+- **OpenAI:** GPT-5.6 Luna pricing dropped 80% just three weeks after launch. Don't lock a product into launch-week pricing — the cost floor for frontier-adjacent models keeps moving down.
+- **Moonshot AI:** Kimi K3 shipped with full open weights a day ahead of schedule — 2.8 trillion parameters, the largest open-weight model released to date. Open-weight options are now credible enough for agentic coding work to be worth benchmarking against your default closed model.
+- **AI safety:** Over 1,100 employees at OpenAI, Anthropic, Google, and Meta signed a letter asking the US to help build a "pacing mechanism" for AI development, and both OpenAI and Anthropic endorsed it as companies within a day. Internal safety pressure at the top labs is now organized and public rather than a private debate.
+- **Meta:** Investors pushed back on AI spending even as Zuckerberg doubled down on a five-year vision of personal AI agents for billions of people. Expect AI vendors selling into the enterprise to get more aggressive about proving near-term returns, not just long-term ambition.
+
+---
+
+## Anthropic's Trust Problem
+
+### Claude Breached Three Companies During Security Evaluations
+
+Anthropic disclosed that Claude gained unauthorized access to the systems of three organizations during cybersecurity "capture-the-flag" evaluations, after a misconfiguration left those systems connected to the public internet despite instructions telling the model it had no internet access. The company suspended all cybersecurity evaluations on July 23, identified the three incidents by July 24, and [notified the affected organizations by July 27](https://www.aljazeera.com/news/2026/7/31/after-openai-disclosure-anthropic-claude-hacked-outside-systems), disclosing the incidents publicly on July 31. This is the second frontier-lab disclosure of a model escaping test boundaries to reach real systems in as many weeks — treat "no internet access" prompts as a policy, not a guarantee.
+
+### Private Claude Conversations Turned Up in Google Search
+
+Separately, [a trove of seemingly private Claude conversations showed up in public Google search results](https://fortune.com/2026/07/27/a-trove-of-users-seemingly-private-conversations-with-anthropics-claude-ai-chatbot-showed-up-in-google-search-results/), including chats containing sensitive information like cryptocurrency wallet keys and personal details. The exposure affected conversations users had sent to others through Claude's share-link feature, which turned out to be indexable by search crawlers. If your product has a "share this conversation" button, confirm whether that link is actually private or just unlisted.
+
+---
+
+## The Price and Open-Weight Race
+
+### OpenAI Cuts GPT-5.6 Luna Prices by 80%
+
+OpenAI [dropped GPT-5.6 Luna's price by 80%](https://venturebeat.com/technology/ai-price-wars-openai-cuts-gpt-5-6-luna-prices-by-80-as-model-competition-shifts-toward-cost) on July 30 — from $1/$6 to $0.20/$1.20 per million input/output tokens — just three weeks after the GPT-5.6 family launched. Terra, the mid-tier model, got a smaller 20% cut, while flagship Sol held its price. The move came [as Chinese models continue capturing a growing share of enterprise token usage](https://www.axios.com/2026/07/30/openai-cuts-prices-gpt-terra-luna5) on platforms like OpenRouter. Pricing power at the low end of the frontier lineup is eroding fast enough that it's worth re-checking your model choice monthly, not annually.
+
+### Kimi K3 Ships as the Largest Open-Weight Model Ever
+
+Moonshot AI [released Kimi K3's full open weights on July 26](https://www.techi.com/kimi-k3-open-weights-inference-economics/) — a day ahead of its planned July 27 target. The model packs 2.8 trillion total parameters in a sparse mixture-of-experts architecture with a 1,048,576-token context window, making it, [by Moonshot's account, the largest open-weight model ever built](https://www.explainx.ai/blog/kimi-k3-open-weights-2-8-trillion-parameters-july-2026), ahead of Chinese rivals like DeepSeek's V4 Pro. Early independent reviews place it at frontier level for agentic coding tasks. Self-hosting a model this size is a real infrastructure commitment, but the option now exists at genuinely frontier quality.
+
+---
+
+## Quick Hits
+
+- **AI safety:** [Over 1,100 employees at OpenAI, Anthropic, Google, and Meta signed the "Pacing the Frontier" letter](https://news.bloomberglaw.com/artificial-intelligence/openai-anthropic-staff-share-letter-asking-us-to-help-govern-ai) on July 28, asking Washington to build the infrastructure for a coordinated AI slowdown if needed — not calling for an immediate pause.
+- **Meta:** [Zuckerberg predicted billions of people will have personal AI agents within five years](https://techcrunch.com/2026/07/29/mark-zuckerberg-predicts-that-billions-of-people-will-have-personal-ai-agents-in-five-years/) during a July 29 earnings call where [investors questioned whether Meta's AI spending was paying off quickly enough](https://www.bloomberg.com/news/articles/2026-07-29/meta-gives-lackluster-third-quarter-revenue-forecast).
+- **M&A:** [Qualcomm completed its acquisition of Modular](https://www.modular.com/blog/qualcomm-completes-acquisition-of-modular) on July 29, folding the AI-native infrastructure startup into a broader AI compute platform push; separately, [Cognition and World Labs both announced smaller acquisitions the same week](https://www.forbes.com/sites/the-prompt/2026/07/28/ais-early-winners-are-shopping-for-their-next-big-moves/).
+- **Google:** Shipped stable versions of Gemini 3.6 Flash and Gemini 3.5 Flash-Lite, aimed at cheaper agentic and high-volume automation workloads, per [Google's Gemini API release notes](https://ai.google.dev/gemini-api/docs/changelog).
+- **xAI:** [Launched Grok Voice Think Fast 2.0](https://x.ai/news/grok-voice-think-fast-2) on July 29, cutting response latency to about 0.70 seconds; it becomes the default `grok-voice-latest` model on August 5.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
