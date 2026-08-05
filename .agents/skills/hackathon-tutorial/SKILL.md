@@ -69,7 +69,15 @@ After searching, answer:
 
 Only proceed with an angle that passes: **"I could not find this exact tutorial written anywhere."**
 
-### 4. Define what the tutorial builds
+### 4. Depth check
+
+Passing the uniqueness check is not enough — a "first contact" angle (getting-started, hello-world, minimal wiring to hit the API once) can be technically unique and still too shallow to be worth a full tutorial slot, because it only restates the partner's own quickstart.
+
+Ask: does this angle stop where the partner's official quickstart stops? If yes, push it into the partner tech's differentiating or advanced surface area — the features that separate it from a generic stack, not the wiring to call the API once — rather than presenting the first-contact version. Present the pushed-deeper version.
+
+Exception: if the hackathon page's target participant level is explicitly beginner-focused and an intro piece is the actual goal, shallow is correct — say so explicitly rather than defaulting to it silently.
+
+### 5. Define what the tutorial builds
 
 Specify the demo project in one concrete paragraph:
 
@@ -85,7 +93,7 @@ Estimated steps in the tutorial: [number]
 
 This section forces specificity before writing begins. If you cannot fill it in, the angle is not concrete enough — go back to step 2.
 
-### 5. Generate titles
+### 6. Generate titles
 
 Produce 3 title options. Requirements:
 - Outcome-first: lead with what the reader will have built, not the technology name
@@ -99,7 +107,7 @@ Option 2: [title]
 Option 3: [title]
 ```
 
-### 6. Present the full brief
+### 7. Present the full brief
 
 ```
 ─────────────────────────────────────────────
@@ -134,7 +142,7 @@ Suggested repo name: [kebab-case-repo-name]
 
 Wait for the user to confirm the title and angle before continuing.
 
-### 7. Post to Notion
+### 8. Post to Notion
 
 Once the user confirms, post to the Tasks & Action Items DB (`2cab4088-66ca-4d1f-aeb9-8fe29dafb470`):
 
@@ -159,7 +167,7 @@ Repo: [suggested repo name]
 
 Share the Notion URL with the user.
 
-### 8. Hand off
+### 9. Hand off
 
 Confirm to the user:
 - [ ] Hackathon page parsed

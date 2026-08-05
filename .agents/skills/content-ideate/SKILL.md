@@ -32,11 +32,19 @@ After all searches, answer:
 
 Only proceed with an angle that passes: **"I could not find this written anywhere."** If everything is covered, reframe around the gap rather than retreading existing ground.
 
-### 4. Generate titles
+### 4. Depth check
+
+Passing the uniqueness check is not enough — a "first contact" angle (getting-started, hello-world, basic CRUD wiring) can be technically unique and still too shallow to be worth publishing, because it only restates what the tool's own quickstart already covers.
+
+Ask: does this angle stop where the official quickstart stops? If yes, push it into the tool's differentiating or advanced surface area — the features that separate it from competitors or from "autocomplete with extra steps" — rather than the wiring to get a first example running. Present the pushed-deeper version, not the first draft.
+
+Exception: if the brief explicitly targets a Beginner reader and an intro piece is the actual goal, shallow is correct — say so explicitly rather than defaulting to it silently.
+
+### 5. Generate titles
 
 Produce 3 options — beginner-friendly, outcome-focused, comparison/contrast. Avoid: "A Guide to X", "Everything About X", "The Ultimate X Tutorial".
 
-### 5. Present the brief
+### 6. Present the brief
 
 ```
 Type: [Article / Tutorial]
@@ -54,7 +62,7 @@ Suggested file path: [blog/en/slug.mdx or tutorials/en/slug/article.mdx]
 
 Wait for the user to confirm title and angle.
 
-### 6. Post to Notion
+### 7. Post to Notion
 
 Once confirmed, run:
 
@@ -70,7 +78,7 @@ python3 scripts/post_to_notion.py \
 
 Share the returned Notion URL with the user.
 
-### 7. Create a design request for Damian
+### 8. Create a design request for Damian
 
 Immediately after posting to Notion, create a cover image request in the design database so Damian can start work in parallel.
 
