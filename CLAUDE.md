@@ -23,10 +23,11 @@ topics/           — Topic index pages
 
 ## Skills
 
-Six agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
+Seven agent skills live in `.agents/skills/` and cover the full content lifecycle. Use them in order:
 
 | Skill | When to use |
 |-------|-------------|
+| [`tutorial-gap-scan`](.agents/skills/tutorial-gap-scan/SKILL.md) | When there's no source or hackathon page yet and the ask is open-ended ("what should we write next") — scans hackathon tech partners against published tutorials, finds net-new and stale coverage gaps, ranks by urgency. Hands off to hackathon-tutorial or content-ideate |
 | [`hackathon-tutorial`](.agents/skills/hackathon-tutorial/SKILL.md) | When you have a hackathon page (URL or pasted content) and need a tutorial concept — parses partners/tracks/timeline, finds the strongest angle, does a uniqueness check, outputs a ready-to-write brief. Run this first, before content-start |
 | [`content-ideate`](.agents/skills/content-ideate/SKILL.md) | When you have a source (tweet, article, raw idea) and want to turn it into a content concept — outputs working title + brief, hands off to content-start |
 | [`content-start`](.agents/skills/content-start/SKILL.md) | Before writing any new article or tutorial — runs uniqueness check, gathers sources, confirms angle, sets Notion task to In Progress |
