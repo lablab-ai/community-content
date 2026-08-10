@@ -1,0 +1,517 @@
+---
+title: "Build a MindsDB Agent That Watches Your Database and Pings Slack"
+description: "Build a MindsDB and Composio agent that watches a Postgres database for breakage and pings Slack the moment it happens — a reusable AI hackathon project."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/mindsdb-composio-db-watcher-slack-agent-cover/public"
+authorUsername: "stevekimoi"
+---
+
+## Introduction
+
+Most Composio tutorials follow the same shape: fetch a list of tools, call one of them once against a static file, done. That's fine for showing off what a tool integration looks like, but it skips the part that actually matters for a production alerting agent — reacting to a database that keeps changing, on its own, without a human re-running a script.
+
+This tutorial builds the other half. [MindsDB](https://lablab.ai/tech/mindsdb) runs a scheduled SQL `Job` against a live Postgres database, checking on an interval for rows that indicate something broke. [Composio](https://lablab.ai/tech/composio) holds the Slack connection and fires the actual alert the moment the Job finds one. No cron, no separate orchestrator, no polling logic hand-rolled around a database driver — just SQL that watches, and a small Python script that reacts.
+
+MindsDB has run its own [AI Agents hackathon track on lablab.ai](https://lablab.ai/event/ai-agents-hack-with-lablab-and-mindsdb), and "detect a condition in your data, then have an agent act on it" is one of the most common project shapes across **AI hackathons** more broadly. If you're looking for a hackathon to build this kind of agent in, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
+
+**What you'll build:**
+- A Postgres table that stands in for an application's health-check log
+- A MindsDB Job that copies any new "error" row into a `detected_breaks` table, deduplicated so it never re-copies the same row twice
+- A Composio connection to Slack (OAuth, managed, no custom Slack app required) that posts a formatted alert
+- A small Python watcher that ties the two together
+
+Two things surfaced while building this that the official docs don't mention: MindsDB's `IF (...)` job-gating clause doesn't actually execute the job body in the current release, and Composio's manual tool execution needs a pinned toolkit version. Both are covered in the steps below, with the workaround that made the pipeline actually work.
+
+The full working project is on GitHub at [Stephen-Kimoi/db-watcher-slack-agent](https://github.com/Stephen-Kimoi/db-watcher-slack-agent). Every code block below links to its exact source.
+
+## See it running first
+
+Clone the finished project and run it before writing any code:
+
+```bash
+git clone https://github.com/Stephen-Kimoi/db-watcher-slack-agent.git
+cd db-watcher-slack-agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Fill in `.env` with your Composio API key and Slack auth config ID (see Prerequisites below for exactly where to get them), then bring up Postgres and MindsDB and wire them together:
+
+```bash
+docker compose up -d
+python setup_mindsdb.py
+python connect_slack.py   # prints a link -- open it and authorize Slack
+```
+
+Start the watcher:
+
+```bash
+python main.py
+```
+
+```text
+Watching for breakages every 15s (Ctrl+C to stop)...
+```
+
+In a second terminal, simulate your application breaking:
+
+```bash
+python simulate_events.py error
+```
+
+Within a minute (the Job's schedule), the watcher's terminal shows the detection:
+
+```text
+Break detected: id=6 service=checkout-api
+```
+
+And a real message lands in the Slack channel set in `.env`:
+
+> **Database watcher alert**
+> Service: `checkout-api`
+> Detected at: 2026-07-29 10:46:25.995242
+> Message: checkout-api returned 500 on /charge for 12 consecutive requests
+
+That's the whole payoff: a database that keeps changing, and an agent that notices and speaks up without anyone polling it by hand. The rest of this tutorial builds it from scratch and explains why each piece is shaped the way it is.
+
+## Prerequisites
+
+- Python 3.10+
+- Docker, for running Postgres and MindsDB locally (no MindsDB Cloud account needed)
+- A [Composio account](https://app.composio.dev) and API key (dashboard → API Keys)
+- A Slack workspace you can post test messages into
+
+**Set up the Slack side in the Composio dashboard before writing any code:**
+1. Go to **Toolkits → Slack** in the Composio dashboard, then click **Add to Project**. Slack is one of Composio's managed-auth toolkits, so this creates an Auth Config without you needing to register your own Slack app.
+2. Go to **Auth Configs** in the left sidebar → find the new Slack entry → copy its ID (looks like `ac_xxxxxxxxx`).
+3. Note the toolkit version shown on the Slack toolkit page (e.g. `20260721_00`) — you'll need it later, since Composio's manual tool execution won't accept `"latest"`.
+
+Your `.env` should look like this:
+
+```bash
+# .env.example
+POSTGRES_HOST=localhost
+POSTGRES_PORT=55432
+MINDSDB_POSTGRES_HOST=postgres
+MINDSDB_POSTGRES_PORT=5432
+POSTGRES_DB=appdb
+POSTGRES_USER=appuser
+POSTGRES_PASSWORD=apppassword
+
+MINDSDB_HOST=http://127.0.0.1:47334
+
+COMPOSIO_API_KEY=your_composio_api_key
+COMPOSIO_SLACK_AUTH_CONFIG_ID=your_slack_auth_config_id
+COMPOSIO_USER_ID=db-watcher-demo
+SLACK_CHANNEL=alerts
+```
+
+*[View .env.example on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/.env.example)*
+
+Two host/port pairs are split deliberately: `POSTGRES_HOST`/`POSTGRES_PORT` are how *your machine* reaches Postgres (mapped to `55432` so this doesn't collide with a Postgres you might already have running locally on `5432`), while `MINDSDB_POSTGRES_HOST`/`MINDSDB_POSTGRES_PORT` are how *MindsDB, running inside docker-compose's own network*, reaches the same Postgres container — by its service name and internal port, unaffected by whatever you mapped the host side to.
+
+## Step 1: Define what "your database" means
+
+The scenario needs a table an application would realistically write to, and a second table for MindsDB to write its findings into:
+
+```sql
+-- init.sql
+-- service_events: what the (simulated) application writes on every health check
+CREATE TABLE service_events (
+    id SERIAL PRIMARY KEY,
+    service_name TEXT NOT NULL,
+    status TEXT NOT NULL,       -- 'ok' or 'error'
+    message TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+-- detected_breaks: what MindsDB's Job writes to when it finds a new error
+CREATE TABLE detected_breaks (
+    id SERIAL PRIMARY KEY,
+    source_event_id INTEGER NOT NULL,
+    service_name TEXT NOT NULL,
+    message TEXT,
+    created_at TIMESTAMP NOT NULL
+);
+
+-- seed a few healthy heartbeats so the table isn't empty on first query
+INSERT INTO service_events (service_name, status, message) VALUES
+    ('checkout-api', 'ok', 'health check passed'),
+    ('checkout-api', 'ok', 'health check passed'),
+    ('checkout-api', 'ok', 'health check passed');
+```
+
+*[View init.sql on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/init.sql)*
+
+`service_events` is deliberately generic — a health check, a payment attempt, a job run, anything your real app would log a status for. `detected_breaks` is a separate table rather than a flag column on `service_events`, because it's the mechanism the next step uses to avoid re-alerting on the same row twice: once a row's `source_event_id` shows up here, it's been handled.
+
+Bring up the stack:
+
+```yaml
+# docker-compose.yml
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+    ports:
+      - "55432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+
+  mindsdb:
+    image: mindsdb/mindsdb
+    ports:
+      - "47334:47334"
+      - "47335:47335"
+    depends_on:
+      - postgres
+    volumes:
+      - mindsdb_data:/opt/mdb_storage
+
+volumes:
+  pgdata:
+  mindsdb_data:
+```
+
+*[View docker-compose.yml on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/docker-compose.yml)*
+
+```bash
+docker compose up -d
+```
+
+MindsDB takes a few seconds to fully initialize (Postgres is instant). Confirm it's up before moving on:
+
+```bash
+curl http://127.0.0.1:47334/api/status
+```
+
+## Step 2: Connect MindsDB to Postgres and create the watch Job
+
+This is the core of the "watches your database" half. `setup_mindsdb.py` does two things: registers the Postgres connection, then creates a scheduled Job that copies new error rows into `detected_breaks`. The Job's body deliberately doesn't use MindsDB's `IF (...)` gating clause — the comments in the code below explain why, and the prose after the block covers the debugging story.
+
+```python
+# setup_mindsdb.py
+import os
+import time
+
+import mindsdb_sdk
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MINDSDB_HOST = os.environ["MINDSDB_HOST"]
+PG_CONNECTION_NAME = "pg_conn"
+
+
+def wait_for_mindsdb(server, attempts=30, delay=2):
+    for _ in range(attempts):
+        try:
+            server.status()
+            return
+        except Exception:
+            time.sleep(delay)
+    raise RuntimeError("MindsDB did not become ready in time")
+
+
+def main():
+    server = mindsdb_sdk.connect(MINDSDB_HOST)
+    wait_for_mindsdb(server)
+
+    existing = {db.name for db in server.databases.list()}
+    if PG_CONNECTION_NAME not in existing:
+        server.databases.create(
+            PG_CONNECTION_NAME,
+            engine="postgres",
+            connection_args={
+                "host": os.environ["MINDSDB_POSTGRES_HOST"],
+                "port": int(os.environ["MINDSDB_POSTGRES_PORT"]),
+                "database": os.environ["POSTGRES_DB"],
+                "user": os.environ["POSTGRES_USER"],
+                "password": os.environ["POSTGRES_PASSWORD"],
+            },
+        )
+        print(f"Connected MindsDB to Postgres as '{PG_CONNECTION_NAME}'")
+    else:
+        print(f"'{PG_CONNECTION_NAME}' connection already exists, skipping")
+
+    # The Job is the detection mechanism: every minute, insert any error row
+    # from service_events that isn't already in detected_breaks.
+    #
+    # This deliberately has no IF clause. MindsDB's CREATE JOB ... IF (...)
+    # is documented to gate the body on a condition query, but as of the
+    # mindsdb/mindsdb Docker image tested here (v26.1.0), a job with an IF
+    # clause never executes its body at all, even when the IF condition is
+    # confirmed true (verified independently against a trivial literal-insert
+    # body with no SELECT/JOIN in it). Since that gate can't be relied on, the
+    # anti-join below does the equivalent job itself: it costs one extra join
+    # per run, but the INSERT naturally returns 0 rows (a cheap no-op) when
+    # nothing new has broken, so it's safe to run unconditionally every minute
+    # instead of depending on IF.
+    #
+    # MindsDB's INSERT-from-SELECT also matches columns by name against the
+    # destination table, not by position against the declared column list --
+    # so the source id must be aliased to source_event_id, otherwise it
+    # collides with (and tries to overwrite) detected_breaks' own id column.
+    job_sql = f"""
+        CREATE JOB IF NOT EXISTS watch_service_health (
+            INSERT INTO {PG_CONNECTION_NAME}.detected_breaks
+                (source_event_id, service_name, message, created_at)
+            SELECT se.id AS source_event_id, se.service_name, se.message, se.created_at
+            FROM {PG_CONNECTION_NAME}.service_events se
+            LEFT JOIN {PG_CONNECTION_NAME}.detected_breaks db ON db.source_event_id = se.id
+            WHERE se.status = 'error' AND db.id IS NULL
+        )
+        EVERY 1 minute
+    """
+    server.query(job_sql).fetch()
+    print("Job 'watch_service_health' created (or already existed)")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+*[View setup_mindsdb.py on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/setup_mindsdb.py)*
+
+`server.databases.create()` is MindsDB's SDK wrapper around `CREATE DATABASE ... ENGINE = 'postgres'` — it's what makes `pg_conn.service_events` queryable from MindsDB's own SQL layer, and what the Job reads from and writes to. This step is idempotent (checked against `server.databases.list()`) so re-running setup after the container restarts doesn't error out trying to recreate an existing connection.
+
+The `IF` clause omission is worth being explicit about, because it cost real debugging time: MindsDB's `CREATE JOB ... IF (SELECT ... WHERE created_at > LAST)` pattern is the documented way to gate a job on "has anything changed." Testing it directly — including a version with a trivial `INSERT ... VALUES (...)` body with no `SELECT`, no `LAST`, no join — showed the IF clause reliably detects the condition (visible in `SELECT * FROM information_schema.jobs`, where the tracked `LAST` variable advances correctly) but the body never runs. Dropping `IF` and making the body idempotent on its own — an anti-join against what's already been copied — sidesteps the bug entirely and is arguably a better pattern anyway: it doesn't depend on a cursor variable's exact timing, just its own table state.
+
+Run it:
+
+```bash
+python setup_mindsdb.py
+```
+
+```text
+Connected MindsDB to Postgres as 'pg_conn'
+Job 'watch_service_health' created (or already existed)
+```
+
+## Step 3: Connect Composio to Slack
+
+Composio's Slack toolkit uses **managed auth** — Composio hosts the OAuth app, so there's no separate Slack app to register. `connect_slack.py` runs the one-time authorization:
+
+```python
+# connect_slack.py
+import os
+
+from composio import Composio
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def main():
+    composio = Composio(api_key=os.environ["COMPOSIO_API_KEY"])
+    user_id = os.environ["COMPOSIO_USER_ID"]
+    auth_config_id = os.environ["COMPOSIO_SLACK_AUTH_CONFIG_ID"]
+
+    connection_request = composio.connected_accounts.link(user_id, auth_config_id)
+    print(f"Visit this link and authorize Slack:\n{connection_request.redirect_url}")
+
+    connection_request.wait_for_connection(timeout=300)
+    print(f"Slack connected for user_id={user_id}")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+*[View connect_slack.py on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/connect_slack.py)*
+
+`user_id` here is your own application's identifier for whoever is connecting — Composio scopes the resulting Slack credentials to it, so `tools.execute(..., user_id=...)` later knows which connected account to act as. `connected_accounts.link()` returns a `redirect_url` rather than connecting immediately, because the actual OAuth grant has to happen in a browser; `wait_for_connection()` just blocks this script until that grant completes (a 300-second timeout, generous enough to actually go click through Slack's consent screen).
+
+```bash
+python connect_slack.py
+```
+
+Open the printed link, approve access in Slack, and the script confirms the connection went active. This is a **user-token** connection — Composio posts as a "Composio" app acting on your behalf, to any channel you're already a member of, so there's no separate bot to invite to a channel.
+
+## Step 4: Simulate the application, and the watcher that reacts
+
+`simulate_events.py` stands in for your real application's own logging — in production this would be whatever already writes to your database, not a separate script:
+
+```python
+# simulate_events.py
+import os
+import sys
+
+import psycopg2
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+def get_connection():
+    return psycopg2.connect(
+        host=os.environ["POSTGRES_HOST"],
+        port=os.environ["POSTGRES_PORT"],
+        dbname=os.environ["POSTGRES_DB"],
+        user=os.environ["POSTGRES_USER"],
+        password=os.environ["POSTGRES_PASSWORD"],
+    )
+
+
+def insert_event(status: str, message: str):
+    conn = get_connection()
+    try:
+        with conn, conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO service_events (service_name, status, message) "
+                "VALUES (%s, %s, %s) RETURNING id, created_at",
+                ("checkout-api", status, message),
+            )
+            row = cur.fetchone()
+            print(f"Inserted event id={row[0]} status={status} at {row[1]}")
+    finally:
+        conn.close()
+
+
+if __name__ == "__main__":
+    kind = sys.argv[1] if len(sys.argv) > 1 else "ok"
+    if kind == "error":
+        insert_event("error", "checkout-api returned 500 on /charge for 12 consecutive requests")
+    else:
+        insert_event("ok", "health check passed")
+```
+
+*[View simulate_events.py on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/simulate_events.py)*
+
+Now the watcher, the piece that closes the loop between MindsDB's detection and Composio's Slack call:
+
+```python
+# watcher.py
+import os
+import time
+
+import psycopg2
+from composio import Composio
+
+POLL_INTERVAL_SECONDS = 15
+
+# Composio's manual tools.execute() rejects "latest" -- it needs a concrete
+# toolkit version pinned (see the version shown on the toolkit's page in the
+# Composio dashboard). Pinning it also means a Slack toolkit update can't
+# silently change this tutorial's behavior underneath it.
+SLACK_TOOLKIT_VERSION = "20260721_00"
+
+
+def get_pg_connection():
+    conn = psycopg2.connect(
+        host=os.environ["POSTGRES_HOST"],
+        port=os.environ["POSTGRES_PORT"],
+        dbname=os.environ["POSTGRES_DB"],
+        user=os.environ["POSTGRES_USER"],
+        password=os.environ["POSTGRES_PASSWORD"],
+    )
+    conn.autocommit = True
+    return conn
+
+
+def fetch_new_breaks(conn, last_seen_id):
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT id, service_name, message, created_at FROM detected_breaks "
+            "WHERE id > %s ORDER BY id",
+            (last_seen_id,),
+        )
+        return cur.fetchall()
+
+
+def send_slack_alert(composio, user_id, channel, service_name, message, created_at):
+    alert_text = (
+        "*Database watcher alert*\n"
+        f"Service: `{service_name}`\n"
+        f"Detected at: {created_at}\n"
+        f"Message: {message}"
+    )
+    composio.tools.execute(
+        slug="SLACK_SEND_MESSAGE",
+        arguments={"channel": channel, "markdown_text": alert_text},
+        user_id=user_id,
+        version=SLACK_TOOLKIT_VERSION,
+    )
+
+
+def run():
+    composio = Composio(api_key=os.environ["COMPOSIO_API_KEY"])
+    user_id = os.environ["COMPOSIO_USER_ID"]
+    channel = os.environ["SLACK_CHANNEL"]
+
+    conn = get_pg_connection()
+    last_seen_id = 0
+
+    print(f"Watching for breakages every {POLL_INTERVAL_SECONDS}s (Ctrl+C to stop)...")
+    try:
+        while True:
+            for break_id, service_name, message, created_at in fetch_new_breaks(conn, last_seen_id):
+                print(f"Break detected: id={break_id} service={service_name}")
+                send_slack_alert(composio, user_id, channel, service_name, message, created_at)
+                last_seen_id = break_id
+            time.sleep(POLL_INTERVAL_SECONDS)
+    except KeyboardInterrupt:
+        print("Stopping watcher.")
+    finally:
+        conn.close()
+```
+
+*[View watcher.py on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/watcher.py)*
+
+`conn.autocommit = True` matters here: without it, psycopg2 holds the connection inside one long transaction, and Postgres's default READ COMMITTED isolation only re-checks visibility per new *statement* — autocommit is the simplest way to guarantee each poll actually sees rows other sessions (MindsDB's Job) committed since the last check, rather than debugging transaction-boundary edge cases. `last_seen_id` is the watcher's own cursor — separate from anything MindsDB tracks — so a restart of this script alone never re-alerts on a break it already posted. `markdown_text` is the field to use in the Slack call rather than `text` — [Composio's Slack toolkit docs](https://docs.composio.dev/toolkits/slack) list `text` as deprecated in favor of `markdown_text`, which is what actually renders the `*bold*` and `` `code` `` formatting in the alert. `SLACK_SEND_MESSAGE`'s `channel` argument takes a channel name without the `#`, or a channel ID directly.
+
+`main.py` is the entry point that ties it together:
+
+```python
+# main.py
+from dotenv import load_dotenv
+
+from watcher import run
+
+if __name__ == "__main__":
+    load_dotenv()
+    run()
+```
+
+*[View main.py on GitHub](https://github.com/Stephen-Kimoi/db-watcher-slack-agent/blob/43214b401f672248f7e92b030e42b94e65118b4c/main.py)*
+
+Run the watcher, then in a second terminal fire a breakage:
+
+```bash
+python main.py
+```
+
+```bash
+# in a second terminal
+python simulate_events.py error
+```
+
+Within a minute, the watcher's terminal logs the detection and the Slack channel gets the real alert — the same pipeline shown in "See it running first" above.
+
+## Frequently Asked Questions
+
+**Q: Why doesn't the MindsDB Job use an `IF` clause to gate on new errors?**
+Because in the version tested here (mindsdb/mindsdb v26.1.0), a job with an `IF (...)` clause never executes its body, even when the condition is confirmed true and the tracked `LAST` variable advances correctly in `information_schema.jobs`. The anti-join in the job body does the same gating itself and doesn't depend on cursor timing.
+
+**Q: Do I need to register my own Slack app to use Composio's Slack toolkit?**
+No. Slack is one of Composio's managed-auth toolkits, so Composio hosts the OAuth app. You add Slack to your project in the dashboard, copy the generated Auth Config ID, and `connected_accounts.link()` handles the rest.
+
+**Q: Why does `composio.tools.execute()` reject `"latest"` as a toolkit version?**
+Composio's manual tool execution path requires a concrete toolkit version string (like `20260721_00`), which you can read off the toolkit's page in the dashboard. Pinning it also stops a Slack toolkit update from silently changing the agent's behavior.
+
+**Q: Can this watch something other than Postgres, or alert somewhere other than Slack?**
+Yes — that's the point of the split. MindsDB's connector list covers Snowflake, MongoDB, MySQL, and SaaS APIs, so only the `CREATE DATABASE` call changes. On the reaction side, swapping `SLACK_SEND_MESSAGE` for a GitHub, Linear, or PagerDuty tool slug is a one-line change in `send_slack_alert()`.
+
+**Q: Is a database-watching agent a good project for an online AI hackathon?**
+It's one of the more reliable shapes, because the detect-then-act loop demos in under a minute and the failure modes are visible on screen. If you want to build one with a team, browse [lablab.ai's AI hackathons](https://lablab.ai/ai-hackathons) for an event to enter.
+
+## Conclusion
+
+The pattern here generalizes past Postgres and Slack. MindsDB's [200+ connectors](https://mindshub.ai/mindsdb-query-engine) mean the same `CREATE JOB` shape can watch a Snowflake warehouse, a MongoDB collection, or a SaaS API instead of Postgres; Composio's toolkits mean the reaction can just as easily be a GitHub issue, a PagerDuty incident, or a Linear ticket instead of a Slack message. The core idea stays the same either way: let the database layer do the scheduled checking in SQL, and keep the Python glue to exactly one job — react when something new shows up.
+
+If you're building something like this for a hackathon, this exact shape (detect a data condition, then have an agent act) is one of the most reusable ideas across **AI hackathon** projects — anomaly detectors, ops copilots, data-quality bots. Browse [lablab.ai's upcoming AI hackathons](https://lablab.ai/ai-hackathons) if you want to build on it with a team.

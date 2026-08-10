@@ -1,0 +1,68 @@
+---
+title: "MindsDB"
+description: "MindsDB is the open-source query engine behind MindsHub, letting developers query 200+ databases, warehouses, and SaaS apps in one SQL dialect, with Jobs and Knowledge Bases for automation and RAG."
+---
+
+# MindsDB
+
+MindsDB is an AI-data infrastructure company founded in 2018 in Berkeley, California by Jorge Torres and Adam Carrigan. Its core open-source product, the MindsDB Query Engine, lets developers connect to over 200 data sources (Postgres, MySQL, MongoDB, Snowflake, BigQuery, and more) and query all of them through one SQL dialect, without building a separate ETL pipeline. In 2026, MindsDB renamed its agent platform to MindsHub, since the old name implied a database rather than an AI system, but the underlying query engine that developers self-host is still called MindsDB.
+
+| General  |  |
+| --- | --- |
+| Company | [MindsDB](https://mindshub.ai/about) |
+| Founded | 2018 by Jorge Torres and Adam Carrigan |
+| Headquarters | Berkeley, California |
+| Website | https://mindshub.ai |
+| Documentation | https://mindsdb.github.io/engine/ |
+| Repository | https://github.com/mindsdb/engine |
+| Python SDK | https://github.com/mindsdb/mindsdb_python_sdk |
+| Type | Open-source AI data / SQL query engine |
+
+## Core Products
+
+### MindsDB Query Engine
+The self-hosted core: a SQL layer that unifies structured databases, warehouses, SaaS apps, document stores, and vector indexes under one dialect, so an AI agent has a single, consistent surface to query instead of a different client per data source.
+
+### Knowledge Bases
+Built-in hybrid search that unifies structured tables with vectorized unstructured data, so retrieval-augmented generation can run directly against a Knowledge Base created with SQL rather than a separate vector database.
+
+### Jobs and Triggers
+Automation primitives exposed as SQL: a `CREATE JOB` runs a query body on a schedule, with an optional `IF (<condition>)` clause documented to gate that body on a conditional query, while triggers fire on events from supported connectors. This is what lets a database be watched continuously instead of queried once.
+
+### MindsHub
+The company's hosted agent platform (renamed from MindsDB in 2026): a unified workspace where knowledge workers delegate multi-step tasks to open-source or frontier models, with connected data sources, a model router, and shareable output artifacts.
+
+---
+
+## Developer Resources
+
+MindsDB is open source (800+ contributors, and 39,000+ GitHub stars on the original `mindsdb/mindsdb` repository now hosting MindsHub) and self-hostable on Linux, macOS, Windows, or Docker.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Documentation](https://mindsdb.github.io/engine/): SQL syntax reference for connectors, Jobs, Triggers, and Knowledge Bases
+- [GitHub](https://github.com/mindsdb/engine): the query engine source
+- [Python SDK](https://github.com/mindsdb/mindsdb_python_sdk): official client for MindsDB Server
+- [About MindsDB / MindsHub](https://mindshub.ai/about): company background and product history
+
+---
+
+## Key Features
+
+**No-ETL data access**
+Query a live Postgres table, a MongoDB collection, or a Snowflake warehouse with the same `SELECT`, without copying data into MindsDB first.
+
+**Scheduled, conditional automation**
+`CREATE JOB ... EVERY <interval>` runs a query body on a timer, which is the basis for building a "watch this table and act" agent. The optional `IF (<condition>)` clause is documented to gate the body on a condition query, though in the v26.1.0 Docker image the body does not run when that clause is present — writing an idempotent body and omitting `IF` is the reliable pattern.
+
+---
+
+## Use Cases
+
+**Continuous data monitoring**
+A Job polls an application database on an interval and copies rows matching a breakage condition (an error spike, a failed batch, a data-quality check) into a findings table, forming the detection half of an alerting agent.
+
+**Retrieval-augmented agents**
+Knowledge Bases combine structured and unstructured data behind one SQL interface, so an agent's RAG layer can be built and queried without standing up a separate vector database.
