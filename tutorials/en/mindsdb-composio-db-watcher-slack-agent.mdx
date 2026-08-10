@@ -7,6 +7,8 @@ authorUsername: "stevekimoi"
 
 ## Introduction
 
+<LiteYouTube videoId="SBEGyqS4oyk" containerClassName={"youtubeContainer"} />
+
 Most Composio tutorials follow the same shape: fetch a list of tools, call one of them once against a static file, done. That's fine for showing off what a tool integration looks like, but it skips the part that actually matters for a production alerting agent — reacting to a database that keeps changing, on its own, without a human re-running a script.
 
 This tutorial builds the other half. [MindsDB](https://lablab.ai/tech/mindsdb) runs a scheduled SQL `Job` against a live Postgres database, checking on an interval for rows that indicate something broke. [Composio](https://lablab.ai/tech/composio) holds the Slack connection and fires the actual alert the moment the Job finds one. No cron, no separate orchestrator, no polling logic hand-rolled around a database driver — just SQL that watches, and a small Python script that reacts.
