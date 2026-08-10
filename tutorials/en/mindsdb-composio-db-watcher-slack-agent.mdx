@@ -1,6 +1,6 @@
 ---
-title: "Build an Agent That Watches Your Database and Pings Slack the Moment Something Breaks"
-description: "Build an agent that uses a MindsDB Job to watch a Postgres database for breakage and Composio to fire a real Slack alert the moment something goes wrong."
+title: "Build a MindsDB Agent That Watches Your Database and Pings Slack"
+description: "Build a MindsDB and Composio agent that watches a Postgres database for breakage and pings Slack the moment it happens — a reusable AI hackathon project."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/mindsdb-composio-db-watcher-slack-agent-cover/public"
 authorUsername: "stevekimoi"
 ---
@@ -492,6 +492,23 @@ python simulate_events.py error
 ```
 
 Within a minute, the watcher's terminal logs the detection and the Slack channel gets the real alert — the same pipeline shown in "See it running first" above.
+
+## Frequently Asked Questions
+
+**Q: Why doesn't the MindsDB Job use an `IF` clause to gate on new errors?**
+Because in the version tested here (mindsdb/mindsdb v26.1.0), a job with an `IF (...)` clause never executes its body, even when the condition is confirmed true and the tracked `LAST` variable advances correctly in `information_schema.jobs`. The anti-join in the job body does the same gating itself and doesn't depend on cursor timing.
+
+**Q: Do I need to register my own Slack app to use Composio's Slack toolkit?**
+No. Slack is one of Composio's managed-auth toolkits, so Composio hosts the OAuth app. You add Slack to your project in the dashboard, copy the generated Auth Config ID, and `connected_accounts.link()` handles the rest.
+
+**Q: Why does `composio.tools.execute()` reject `"latest"` as a toolkit version?**
+Composio's manual tool execution path requires a concrete toolkit version string (like `20260721_00`), which you can read off the toolkit's page in the dashboard. Pinning it also stops a Slack toolkit update from silently changing the agent's behavior.
+
+**Q: Can this watch something other than Postgres, or alert somewhere other than Slack?**
+Yes — that's the point of the split. MindsDB's connector list covers Snowflake, MongoDB, MySQL, and SaaS APIs, so only the `CREATE DATABASE` call changes. On the reaction side, swapping `SLACK_SEND_MESSAGE` for a GitHub, Linear, or PagerDuty tool slug is a one-line change in `send_slack_alert()`.
+
+**Q: Is a database-watching agent a good project for an online AI hackathon?**
+It's one of the more reliable shapes, because the detect-then-act loop demos in under a minute and the failure modes are visible on screen. If you want to build one with a team, browse [lablab.ai's AI hackathons](https://lablab.ai/ai-hackathons) for an event to enter.
 
 ## Conclusion
 

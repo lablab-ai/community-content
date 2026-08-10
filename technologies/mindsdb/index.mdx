@@ -27,7 +27,7 @@ The self-hosted core: a SQL layer that unifies structured databases, warehouses,
 Built-in hybrid search that unifies structured tables with vectorized unstructured data, so retrieval-augmented generation can run directly against a Knowledge Base created with SQL rather than a separate vector database.
 
 ### Jobs and Triggers
-Automation primitives exposed as SQL: a `CREATE JOB` runs a query on a schedule and only executes its body when a conditional query returns rows, while triggers fire on events from supported connectors. This is what lets a database be watched continuously instead of queried once.
+Automation primitives exposed as SQL: a `CREATE JOB` runs a query body on a schedule, with an optional `IF (<condition>)` clause documented to gate that body on a conditional query, while triggers fire on events from supported connectors. This is what lets a database be watched continuously instead of queried once.
 
 ### MindsHub
 The company's hosted agent platform (renamed from MindsDB in 2026): a unified workspace where knowledge workers delegate multi-step tasks to open-source or frontier models, with connected data sources, a model router, and shareable output artifacts.
@@ -36,7 +36,7 @@ The company's hosted agent platform (renamed from MindsDB in 2026): a unified wo
 
 ## Developer Resources
 
-MindsDB is open source (39,000+ GitHub stars, 800+ contributors) and self-hostable on Linux, macOS, Windows, or Docker.
+MindsDB is open source (800+ contributors, and 39,000+ GitHub stars on the original `mindsdb/mindsdb` repository now hosting MindsHub) and self-hostable on Linux, macOS, Windows, or Docker.
 
 <TechTutorials/>
 
@@ -55,14 +55,14 @@ MindsDB is open source (39,000+ GitHub stars, 800+ contributors) and self-hostab
 Query a live Postgres table, a MongoDB collection, or a Snowflake warehouse with the same `SELECT`, without copying data into MindsDB first.
 
 **Scheduled, conditional automation**
-`CREATE JOB ... EVERY <interval> IF (<condition>)` runs a check on a timer but only executes the job body when the condition query returns new rows, which is the basis for building a "watch this table and act" agent.
+`CREATE JOB ... EVERY <interval>` runs a query body on a timer, which is the basis for building a "watch this table and act" agent. The optional `IF (<condition>)` clause is documented to gate the body on a condition query, though in the v26.1.0 Docker image the body does not run when that clause is present — writing an idempotent body and omitting `IF` is the reliable pattern.
 
 ---
 
 ## Use Cases
 
 **Continuous data monitoring**
-A Job polls an application database on an interval and only proceeds when a breakage condition (an error spike, a failed batch, a data-quality check) has new matching rows, forming the detection half of an alerting agent.
+A Job polls an application database on an interval and copies rows matching a breakage condition (an error spike, a failed batch, a data-quality check) into a findings table, forming the detection half of an alerting agent.
 
 **Retrieval-augmented agents**
 Knowledge Bases combine structured and unstructured data behind one SQL interface, so an agent's RAG layer can be built and queried without standing up a separate vector database.
