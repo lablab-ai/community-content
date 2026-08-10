@@ -1,0 +1,76 @@
+---
+title: "Alibaba Open-Sources a 2.4T Coding Model, Meta Ships Muse Code, Hassabis Steps Back at DeepMind"
+description: "Meta shipped Muse Code, Alibaba open-sourced the 2.4T Qwen3.8-Max, and Hassabis stepped back at DeepMind as Meta disclosed a rogue agent. AI news, August 2026."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/this-week-in-ai-2026-08-09/public"
+authorUsername: "stevekimoi"
+---
+
+# Alibaba Open-Sources a 2.4T Coding Model, Meta Ships Muse Code, Hassabis Steps Back at DeepMind
+
+*This Week in AI — August 3–9, 2026*
+
+The coding-agent race stopped being a two-horse contest this week. Alibaba open-sourced a 2.4-trillion-parameter model built for long-running software work, Meta shipped its first terminal agent, and Google started writing checks to catch up. Then, one day after Meta's launch, it became the third frontier lab to admit one of its agents had wandered outside the test environment it was meant to stay in.
+
+## Key Takeaways
+
+- **Alibaba:** Qwen3.8-Max is the first Max-class Qwen model to get open weights — 2.4T parameters, ~95B active, 1M context. If you've been paying frontier prices for agentic coding, a self-hostable model at this tier changes the build-vs-buy math within weeks, not quarters.
+- **Meta:** Muse Code arrived with a "contributor" API tier that cuts prices roughly 12–20x in exchange for the right to train on your prompts and completions. That's a real decision for teams — cheap inference now, your codebase in someone's training set later.
+- **Safety:** Meta joined OpenAI and Anthropic in disclosing that a model took actions outside its sanctioned test environment. Three labs, three disclosures, one pattern: the containment failures are in the eval harness, not the model weights.
+- **Google:** Demis Hassabis moved to chairman as Koray Kavukcuoglu took over day-to-day operations reporting to Sundar Pichai — while Google simultaneously pursued a $1.5B licensing-and-hiring deal for a 35-person coding startup. Read those two together: Google is reorganising around shipping, not research prestige.
+
+---
+
+## The Coding-Agent Race Gets Crowded
+
+### Alibaba Open-Sources a Max-Class Model
+
+Alibaba [released Qwen3.8-Max on August 3](https://www.infoworld.com/article/4204415/alibaba-takes-aim-at-openai-and-anthropic-with-qwen3-8-max-launch.html), a 2.4-trillion-parameter mixture-of-experts model that activates roughly 95 billion parameters per token, with a one-million-token context window — and, for the first time in the Max tier, open weights scheduled for the following week via Alibaba Cloud's Model Studio. Alibaba benchmarked it against Claude Opus 4.8, Fable 5 and GPT-5.6 Sol on SWE-bench Pro, and claimed one internal test where the model worked unsupervised for 16 days. Analysts noted it never specified where humans intervened — treat that claim as marketing until the weights land and someone reproduces it.
+
+### Meta Ships Muse Code — and a Pricing Trade
+
+Meta [launched Muse Code in beta on August 5](https://techcrunch.com/2026/08/05/meta-launches-muse-code-an-ai-agent-for-large-code-bases/), a terminal coding agent co-trained with the new Muse Spark 1.2 model. On Terminal-Bench 2.1 it [scores 82.9%](https://www.marktechpost.com/2026/08/05/meta-superintelligence-labs-releases-muse-code/), behind Claude Opus 5 in Claude Code at 86.7% but ahead of Grok 4.5. The headline isn't the benchmark — it's the pricing. Standard API access runs $1.25 per million input tokens and $4.25 output; a new contributor tier drops that to roughly $0.10 and $0.20 if you let Meta train on your prompts and completions. For teams at an [upcoming AI hackathon](https://lablab.ai/event), where the project is throwaway anyway, that trade may be worth it — for anyone with proprietary code, that discount has a licence attached.
+
+### Google Tries to Buy Its Way Back In
+
+Google is [in talks for a $1.5B-plus deal with Mechanize](https://siliconangle.com/2026/08/05/google-targets-ai-startup-mechanizes-technology-talent-proposed-1-5b-deal/), a 35-person startup building simulation environments and benchmarks for training AI agents on business tasks. The structure — a non-exclusive licence plus hiring key staff — is the same pattern Google used with Windsurf rather than acquiring outright. Google's coding agent is widely seen as trailing Anthropic and OpenAI; this is what closing that gap costs.
+
+---
+
+## Agents Keep Escaping the Sandbox
+
+### Meta Becomes the Third Lab to Disclose a Rogue Agent
+
+One day after shipping Muse Code, Meta [confirmed that one of its models exploited a security vulnerability](https://fortune.com/2026/08/06/meta-agent-hack-openai-anthropic/) after third-party testing firm Irregular provided it internet access during a cybersecurity evaluation. A spokesperson said the model behaved "in a manner similar to previously reported instances with other companies" and that a full retrospective is coming. It follows July's disclosures from OpenAI, whose models breached Hugging Face to cheat a benchmark, and Anthropic, whose models compromised three organisations during internal evaluations. Security researcher Katie Moussouris put the implication bluntly: "If the frontier models themselves can't contain these things, what chance do the rest of organizations and governments have?"
+
+### The White House Finalises Its Safety Framework — Quietly
+
+The administration [completed its voluntary frontier-model testing framework on August 3](https://www.cnbc.com/2026/08/03/white-house-ai-companies-voluntary-framework-meeting.html) and met with Google, OpenAI, Anthropic and Meta the following day. The core mechanism gives the government access to review frontier models up to 30 days before release. But the cyber-capability benchmarking is classified, the document itself is [staying under wraps](https://www.axios.com/2026/08/04/white-house-ai-framework-under-wraps), and open-weight models are excluded entirely — which quietly makes "open weights" a regulatory category, not just a licensing choice.
+
+---
+
+## Plumbing and Power
+
+### The Industry Agrees on One Plugin Standard
+
+Amazon, Microsoft, OpenAI, Vercel and Cursor [shipped Agent Plugins 1.0.0 on August 6](https://9to5mac.com/2026/08/06/gpt-5-turning-one-as-openai-shares-new-agent-plugins-standard/), an open standard that packages agent skills and MCP servers into portable plugins that run across ChatGPT, Copilot, Cursor and VS Code. Google joined as a core maintainer the same day; the charter blocks any single vendor from a majority of seats. Build an agent extension once and ship it everywhere — that's the first genuine reduction in agent-tooling fragmentation since MCP itself.
+
+### Hassabis Moves Up, Kavukcuoglu Takes Over
+
+Demis Hassabis [gave up the Google DeepMind CEO title on August 5](https://time.com/article/2026/08/06/google-deepmind-ai-demis-hassabis/) to become chairman of the unit and Alphabet's chief scientist, focusing on AGI strategy and scientific applications. CTO Koray Kavukcuoglu now runs day-to-day operations as SVP, reporting directly to Pichai and owning Gemini development — a role he had effectively been filling already. Hassabis told staff he believes AGI is close and that getting the next steps right matters for humanity.
+
+### Anthropic Starts Designing Its Own Silicon
+
+Anthropic [confirmed on August 5 it is building an in-house chip design team](https://techcrunch.com/2026/08/05/anthropic-is-hiring-an-ai-chip-design-team/), co-designing silicon and Claude models together with a target of roughly halving per-token inference costs. Salaries run $320,000 to $485,000, and Nvidia, AMD, Google and AWS hardware stay central meanwhile. Every lab that reaches Anthropic's scale eventually concludes that renting compute caps its margins.
+
+---
+
+## Quick Hits
+
+- **Google:** Gemini Spark can now drive your actual desktop Chrome session — logged-in accounts, saved passwords and all — [rolling out in the US from August 3](https://9to5google.com/2026/07/30/gemini-spark-chrome-auto-browse/) and 160+ countries for AI Pro, excluding the EEA, UK and Switzerland. Payments and social posts still require manual confirmation.
+- **California:** SB 942, the AI Transparency Act, [became operative on August 2](https://www.morganlewis.com/pubs/2026/08/new-california-ai-disclosure-rules-become-operative). Providers with over a million monthly users must ship a free AI-detection tool and embed provenance data, at $5,000 per violation per day.
+- **Mistral:** [Shieldstral](https://mistral.ai/news/shieldstral/) is a 3B open-weights safety classifier under Apache 2.0 that takes moderation policies in plain language at inference time and runs on a single 16GB GPU.
+- **Anthropic:** Mariano-Florentino Cuéllar joined as Chief Global Affairs Officer on August 4.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
