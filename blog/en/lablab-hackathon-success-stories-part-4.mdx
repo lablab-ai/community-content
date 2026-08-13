@@ -1,0 +1,58 @@
+---
+title: "AI Hackathon Success Stories (Part 4): Three Builders Who Did the Unglamorous Part First"
+description: "AI hackathon success stories: three builders who chose the harder, less flattering path and won anyway: REPOMIND, Atlas, and foreshock."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3801a09d-3a8f-49ed-15ea-30145e734200/public"
+authorUsername: "stevekimoi"
+---
+
+Three builders, three hackathons, three very different problems. None of them took the version of their project that would have looked better in a demo. Each one chose the harder, less flattering path instead, and it is exactly what won.
+
+## Sardor Razikov: The Bug He Filed Instead of Hid
+
+Sardor Razikov was frustrated with tools like Cursor: closed, cloud-only, expensive per seat, and your code never really leaves someone else's servers. When AMD's Developer Hackathon opened up MI300X access, he saw a way to test the opposite claim: that a repo-scale coding agent could read an entire codebase, not a snippet, running fully open-source on hardware a company could actually own.
+
+REPOMIND is an MIT-licensed coding agent built on Qwen3-Coder-Next-FP8. Sardor verified it end-to-end rather than taking the spec sheet's word for it: 256K context confirmed actually usable, not just allocated, tested with a needle-in-haystack check across three positions. Full ingestion of real repositories up to 1.3 million tokens with correct citations. Thirty-one concurrent users handled at 8K to 64K context. Total compute cost across a 124-minute stress test: $4.12.
+
+Building solo meant no one to hide behind. Every number in the submission had to be something he had personally measured, not estimated. While tuning AMD's AITER attention backend for a speed boost, he found a real problem: it silently broke 137 of 144 test outputs under FP8 KV cache. The easy move was to route around it quietly and keep building. Instead, he filed it with AMD's ROCm team. Hakob from the AMD team followed up over the next few days asking for more detail, and Sardor kept sharing data until it fully answered his questions. That back-and-forth mattered more to him than the leaderboard.
+
+Then, partway through judging, something happened that had nothing to do with his code. A bad actor exploited a public invite link into the hackathon's shared HuggingFace org and bulk-deleted participant Spaces, including the judged copy of REPOMIND. Lablab's team stepped in fast: full audit logs, likes preserved, judging integrity confirmed. Sardor's personal-namespace HF Space, kept separate from the shared org, stayed untouched throughout. The lesson stuck: always keep your own copy of your work outside any shared org.
+
+There was a lighter thread running through the same weekend. Discord's spam filter auto-muted him twice, just for posting his own submission links. Both mutes got lifted personally, and he got called out by name during a live Twitch workshop.
+
+REPOMIND won 1st place in the AI Agents track, plus an Outstanding Social Engagement award, out of 481 submissions and 10,770 builders. It was Sardor's first lablab hackathon; before this he had mostly competed on Kaggle.
+
+[REPOMIND](https://lablab.ai/ai-hackathons/amd-developer/repomind/repomind)
+
+## Chanjoong Kim: The Sidebar That Tells You What Exists, Never What Matters
+
+Open a repository you have never seen before and you get a file tree in the sidebar. You scroll it, and it tells you nothing. It shows you what exists. It never tells you what matters. That gap is what Chanjoong Kim decided to build against at the IBM Bob Hackathon.
+
+The information a new codebase needs to communicate is already sitting inside it: directory structure, file sizes, the import graph. An alphabetized list throws all of it away. Atlas renders a repository as a city instead. Top-level directories become color-coded districts. Files become buildings sized by lines of code. Entry points, central modules, and hotspots light up in orange as landmarks. Paste a public GitHub URL, get a map you can pan and zoom, and know roughly where you are inside thirty seconds.
+
+He built the whole thing solo in 48 hours: a four-agent serverless pipeline running on Cloudflare Pages Functions. The hackathon carried a rule that shaped how he approached it. Every submission had to be built with Bob and had to export its Bob sessions as part of the deliverable, so the process itself was part of what got judged, not just the output. For a project whose entire premise is making a codebase legible, documenting how it got built fit the same thesis Atlas was arguing for.
+
+Atlas placed 2nd out of 503 projects and 1,672 teams. Chanjoong is an AI major at Kookmin University in Seoul, and this was his first time testing what an agentic IDE could do when handed a whole project instead of one file at a time.
+
+[Atlas](https://lablab.ai/ai-hackathons/ibm-bob-hackathon/atlas/atlas)
+
+## Eban Schachter: The Riskiest Part Comes First, Not Last
+
+Under DORA, a European regulation, a fintech is legally on the hook for continuous oversight of every critical ICT vendor it depends on, not an annual checkbox. Eban Schachter's diagnosis of the tools already on the market was specific: GRC platforms watch paperwork, security raters watch the attack surface, and neither one watches the business itself changing. The leading indicators of a vendor turning into a risk, leadership exits, lawsuits, hiring freezes, a shift in sentiment, show up in public signals long before they show up in a security score.
+
+foreshock runs a daily agent pipeline that pulls those signals through Bright Data's MCP and SEC EDGAR, scores six risk dimensions, fires an alert when signals converge, and exports a DORA Article 28 ICT Register PDF with every AI claim linked back to its source.
+
+He built it solo in six days, which left no room to waste time on the wrong thing first. So he didn't build the visible, flattering parts of the product first. He built the riskiest, least-proven piece first: the actual Bright Data pull. Scope decisions got made once and stayed made for the rest of the build. That discipline is the only reason a solo build like this ships on time.
+
+The demo video ended up taking longer than the product itself. He lost a screen recording partway through editing and had to redo the take, a mistake that taught him to back footage up to the cloud the moment he captures it, not after. He built and shipped this only days after eye surgery.
+
+foreshock won the Security & Compliance track at the Web Data UNLOCKED hackathon, out of 294 projects, 2,310 participants, and 766 teams.
+
+[foreshock](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon/datawisdom-labs/foreshock-continuous-ict-vendor-risk-monitoring)
+
+## What These Three Share
+
+None of them shipped the version of their project that would have been easier to present. Sardor found a bug that would have been simpler to quietly work around and filed it instead, then leaned on the lablab community when infrastructure failed him for reasons that had nothing to do with his own work. Chanjoong looked at a problem every developer has stopped noticing, the useless file tree, and rebuilt what a codebase's own structure could tell you instead of shipping another flat list. Eban built the least-proven, least-visible part of his product first, when it would have been easier to build the polished parts and hope the hard part worked out later.
+
+The pattern holds across every builder spotlighted in this series so far: the ones who do well are rarely the ones who took the safest technical or narrative shortcut. They are the ones willing to surface the part of the build that was actually uncertain, and let it get judged.
+
+If you are building something, the next lablab hackathon may be the clearest way to find out if it holds up. Browse [upcoming AI hackathons](https://lablab.ai/events) and find your room.
