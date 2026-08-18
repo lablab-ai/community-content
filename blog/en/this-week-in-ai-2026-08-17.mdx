@@ -9,13 +9,13 @@ authorUsername: "stevekimoi"
 
 *This Week in AI — August 10–14, 2026*
 
-This was the week the AI business stopped being a story about valuations and started being a story about numbers that hold up. Anthropic posted its first profitable quarter, Google's Gemini app crossed a billion monthly users, and two labs raced to make frontier-grade output faster and cheaper rather than just bigger — while Meta kept pushing open weights as its answer to all of it.
+Anthropic posted its first profitable quarter, Google's Gemini app crossed a billion monthly users, and two labs raced to make frontier-grade output faster and cheaper rather than just bigger. Meta, meanwhile, kept pushing open weights as its answer to all of it.
 
 ## Key Takeaways
 
-- **Anthropic:** Q2 revenue topped $11.5B with positive operating income for the first time — proof that enterprise AI spend is real money, not just funding-round math. If you're building on Claude, this is the strongest signal yet that the platform isn't going anywhere.
-- **Google:** The Gemini app hit 1 billion monthly active users in under a month from 950 million — the fastest climb of any Google product ever. Distribution through Android and Search is starting to matter as much as model quality.
-- **Speed tiers:** Both Google and OpenAI shipped faster, cheaper access to their frontier models this week. If your product is latency-sensitive, price and speed — not just benchmark scores — are now the thing to watch release notes for.
+- **Anthropic:** Q2 revenue topped $11.5B with positive operating income for the first time, proof that enterprise AI spend is real money, not just funding-round math. If you're building on Claude, this is the strongest signal yet that the platform isn't going anywhere.
+- **Google:** The Gemini app hit 1 billion monthly active users in under a month from 950 million, the fastest climb of any Google product ever. Distribution through Android and Search is starting to matter as much as model quality.
+- **Speed tiers:** Both Google and OpenAI shipped faster, cheaper access to their frontier models this week. If your product is latency-sensitive, price and speed (not just benchmark scores) are now what to watch release notes for.
 - **Meta:** Open-sourced Muse Glimmer, a 30B model that runs on a single consumer GPU, and framed open weights as the deliberate counter to Chinese open-source labs. Self-hostable, agent-capable models keep getting easier to justify for teams wary of API lock-in.
 
 ---
@@ -24,11 +24,11 @@ This was the week the AI business stopped being a story about valuations and sta
 
 ### Anthropic Posts Its First Profitable Quarter
 
-Anthropic's preliminary Q2 revenue came in at [more than $11.5 billion](https://www.cnbc.com/2026/08/15/anthropic-revenue-jumps-to-over-11point5-billion-in-q2-report.html), a more than 14-fold jump from the same quarter last year and up from $4.73 billion in Q1 — with positive adjusted operating income for the first time in the company's history, according to documents reported by CNBC on August 15. The jump comes as Anthropic competes head-to-head with OpenAI for enterprise customers, and as an IPO as soon as this fall looks increasingly plausible. For a company whose entire pitch has rested on "trust us, the model is good," a real profit and loss statement changes the conversation with anyone evaluating Claude as core infrastructure rather than an experiment.
+Anthropic's preliminary Q2 revenue came in at [more than $11.5 billion](https://www.cnbc.com/2026/08/15/anthropic-revenue-jumps-to-over-11point5-billion-in-q2-report.html), a more than 14-fold jump from the same quarter last year and up from $4.73 billion in Q1, with positive adjusted operating income for the first time in the company's history, according to documents reported by CNBC on August 15. The jump comes as Anthropic competes head-to-head with OpenAI for enterprise customers, and as an IPO as soon as this fall looks increasingly plausible. For a company whose entire pitch has rested on "trust us, the model is good," a real profit and loss statement changes the conversation with anyone evaluating Claude as core infrastructure rather than an experiment.
 
 ### Gemini Crosses a Billion Users
 
-Google's Gemini app passed [1 billion monthly active users](https://blog.google/innovation-and-ai/products/gemini-app/one-billion-monthly-users/) on August 11 — up from 950 million just weeks earlier and 400 million in May 2025. Google is calling it the fastest-growing product in the company's 28-year history, the 14th Google product ever to hit that scale. That growth is coming largely from default placement in Android and Search, not organic discovery — a reminder that in this stage of the AI race, distribution is doing as much work as model capability.
+Google's Gemini app passed [1 billion monthly active users](https://blog.google/innovation-and-ai/products/gemini-app/one-billion-monthly-users/) on August 11, up from 950 million just weeks earlier and 400 million in May 2025. Google is calling it the fastest-growing product in the company's 28-year history, the 14th Google product ever to hit that scale. That growth is coming largely from default placement in Android and Search, not organic discovery. At this stage of the AI race, distribution is doing as much work as model capability.
 
 ---
 
@@ -36,11 +36,11 @@ Google's Gemini app passed [1 billion monthly active users](https://blog.google/
 
 ### Google Ships a Cheaper, Faster Coding Model
 
-Google [launched Gemini 3.7 Flash on August 13](https://9to5google.com/2026/08/13/gemini-3-7-flash-launch/), just three weeks after 3.6 Flash, pitched squarely at coding and agent workflows. Google's own benchmarks show DeepSWE scores jumping from 49.0% to 65.3% over the previous Flash model, at introductory pricing of $0.75 per million input tokens and $3.75 output — half of 3.6 Flash's price, [locked in through the end of 2026](https://www.bloomberg.com/news/articles/2026-08-13/google-debuts-new-gemini-flash-while-top-ai-model-still-delayed). Notably, this shipped while Gemini 3.5 Pro, the flagship model originally promised for June, is still nowhere to be seen — Google is optimizing what it can ship reliably while the harder model stays in the oven.
+Google [launched Gemini 3.7 Flash on August 13](https://9to5google.com/2026/08/13/gemini-3-7-flash-launch/), just three weeks after 3.6 Flash, pitched squarely at coding and agent workflows. Google's own benchmarks show DeepSWE scores jumping from 49.0% to 65.3% over the previous Flash model, at introductory pricing of $0.75 per million input tokens and $3.75 output, half of 3.6 Flash's price, [locked in through the end of 2026](https://www.bloomberg.com/news/articles/2026-08-13/google-debuts-new-gemini-flash-while-top-ai-model-still-delayed). This shipped while Gemini 3.5 Pro, the flagship model originally promised for June, is still nowhere to be seen. Google is optimizing what it can ship reliably while the harder model stays in the oven.
 
 ### OpenAI Previews 14x-Faster Inference
 
-OpenAI is [previewing Ultrafast mode](https://openai.com/index/previewing-ultrafast/), a new API tier that runs GPT-5.6 Sol up to 14 times faster than standard processing — up to 750 output tokens per second, powered by Cerebras hardware. It's a limited preview for now, but the target use cases are telling: voice, customer support, commerce, and developer agents, all places where a two-second pause between a question and an answer breaks the product. Speed just became a competitive axis in its own right, separate from raw capability.
+OpenAI is [previewing Ultrafast mode](https://openai.com/index/previewing-ultrafast/), a new API tier that runs GPT-5.6 Sol up to 14 times faster than standard processing, up to 750 output tokens per second, powered by Cerebras hardware. It's a limited preview for now, but the target use cases are telling: voice, customer support, commerce, and developer agents, all places where a two-second pause between a question and an answer breaks the product. Speed is now a competitive axis on its own, separate from raw capability.
 
 ---
 
@@ -48,15 +48,15 @@ OpenAI is [previewing Ultrafast mode](https://openai.com/index/previewing-ultraf
 
 ### Meta Ships a 30B Model You Can Run Locally
 
-Meta Superintelligence Labs [open-sourced Muse Glimmer on August 10](https://venturebeat.com/technology/meta-returns-to-open-source-with-muse-glimmer-an-apache-2-0-licensed-30b-parameter-ai-model-optimized-for-agents-available-now), a 30-billion-parameter model under Apache 2.0 built for offline agentic work — coding, function calling, multi-step tasks — on a single consumer GPU, with 4-bit quantization bringing memory needs down to 18–20GB. Two days later, Meta and Nvidia [both pushed further open-weight releases](https://www.cnbc.com/2026/08/12/meta-nvidia-open-weight-ai-race-china.html), explicitly framing it as a response to Chinese labs' dominance of the open-model leaderboard. If you've been avoiding open models because the good ones were all closed-weight and proprietary-adjacent, that gap keeps closing — and now with two large US labs actively contesting it.
+Meta Superintelligence Labs [open-sourced Muse Glimmer on August 10](https://venturebeat.com/technology/meta-returns-to-open-source-with-muse-glimmer-an-apache-2-0-licensed-30b-parameter-ai-model-optimized-for-agents-available-now), a 30-billion-parameter model under Apache 2.0 built for offline agentic work (coding, function calling, multi-step tasks) on a single consumer GPU, with 4-bit quantization bringing memory needs down to 18–20GB. Two days later, Meta and Nvidia [both pushed further open-weight releases](https://www.cnbc.com/2026/08/12/meta-nvidia-open-weight-ai-race-china.html), explicitly framing it as a response to Chinese labs' dominance of the open-model leaderboard. If you've been avoiding open models because the good ones were all closed-weight and proprietary-adjacent, that gap keeps closing, and two large US labs are now actively contesting it.
 
 ---
 
 ## Quick Hits
 
 - **xAI:** [Grok 4.6 launched on August 12](https://venturebeat.com/technology/spacexai-debuts-grok-4-6-overtaking-kimi-k3s-performance-and-matching-gpt-5-6-sol-for-worlds-third-best-on-artificial-analysis), pricing at $2/$6 per million input/output tokens, and shipped as an option inside GitHub Copilot the same week.
-- **Enterprise security:** The [AI Trust and Security Consortium launched on August 11](https://www.prnewswire.com/news-releases/ai-trust-and-security-consortium-aitsc-launches-to-set-peer-defined-standards-for-enterprise-ai-302847826.html), a peer-governed group of CISOs and CIOs building reference architectures for AI governance — a response to security now being the top-cited barrier to enterprise AI adoption.
-- **Mistral:** [Announced a sovereignty push](https://mistral.ai/news/regional-inference-open-models-new-compute/) on August 11 — regional inference endpoints and a coalition to secure dedicated European compute capacity, up to 1GW by 2030.
+- **Enterprise security:** The [AI Trust and Security Consortium launched on August 11](https://www.prnewswire.com/news-releases/ai-trust-and-security-consortium-aitsc-launches-to-set-peer-defined-standards-for-enterprise-ai-302847826.html), a peer-governed group of CISOs and CIOs building reference architectures for AI governance, a response to security now being the top-cited barrier to enterprise AI adoption.
+- **Mistral:** [Announced a sovereignty push](https://mistral.ai/news/regional-inference-open-models-new-compute/) on August 11: regional inference endpoints and a coalition to secure dedicated European compute capacity, up to 1GW by 2030.
 
 ---
 
