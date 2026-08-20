@@ -26,6 +26,12 @@ Run the `humanizer` skill on the full prose body (frontmatter, code blocks, YAML
 
 Fix what the pass flags (em dashes used as parenthetical punctuation, filler phrases, forced triads, vague sourcing, chatbot artifacts, etc.) without changing any fact, number, name, date, or link. If a flagged pattern is actually the site's deliberate house style (e.g. this repo's consistent title-case section headings, or a recurring series sign-off), leave it and note why in the report rather than forcing a change for its own sake. It's fine for this step to find nothing to change — say so rather than editing for the sake of editing.
 
+Sentence-level tells (dashes, curly quotes, filler words) are the easy half of this check and checking only those produces false confidence — a piece can pass every line-level pattern and still read as AI-written at the structural level. Read the whole draft once specifically for these before signing off:
+- **Reflexive "moral of the story" tags** — a sentence at the end of a paragraph that explicitly states the takeaway ("The lesson stuck: ...", "That discipline is the only reason...", "a mistake that taught him to...") instead of trusting the reader to draw it from the facts already given. Cut these; the preceding facts should already carry the point.
+- **Mystery-box narration** — withholding what happened for a sentence ("something happened that had nothing to do with his code") before revealing it in the next. State it directly.
+- **Redundant recap conclusions** — a closing section that re-narrates each point already made in the body, rather than adding a real synthesis or a different level of abstraction. If the current piece has other installments in the same series, check their closing sections for the actual house pattern before assuming the draft's structure is normal.
+- **Uniform templating across parallel sections** — when a piece covers multiple similar subjects (people, products, releases), check whether each section leans on the identical rhetorical device (the same contrast construction in every headline, the same sentence shape closing every section). Some repetition is natural; identical scaffolding every time is a tell.
+
 ### 4. Run the checklist
 
 #### For both articles and tutorials:
