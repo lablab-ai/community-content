@@ -17,7 +17,16 @@ Ask the user (if not already clear):
 
 Read the full draft file.
 
-### 3. Run the checklist
+### 3. Run the humanizer pass
+
+Run the `humanizer` skill on the full prose body (frontmatter, code blocks, YAML, and link targets stay untouched — content only):
+
+- If `humanizer` appears in the Skill tool registry, invoke it directly in file mode on the draft.
+- If it doesn't (a fresh plugin install doesn't show up until the next session), read `SKILL.md` directly instead of skipping the step — check `~/.claude/plugins/cache/humanizer/humanizer/*/SKILL.md` first; if that's not present, fetch `https://raw.githubusercontent.com/blader/humanizer/main/SKILL.md` — and apply its rewrite process by hand.
+
+Fix what the pass flags (em dashes used as parenthetical punctuation, filler phrases, forced triads, vague sourcing, chatbot artifacts, etc.) without changing any fact, number, name, date, or link. If a flagged pattern is actually the site's deliberate house style (e.g. this repo's consistent title-case section headings, or a recurring series sign-off), leave it and note why in the report rather than forcing a change for its own sake. It's fine for this step to find nothing to change — say so rather than editing for the sake of editing.
+
+### 4. Run the checklist
 
 #### For both articles and tutorials:
 
@@ -27,6 +36,7 @@ Read the full draft file.
 - [ ] **No unverified stats** — any numbers or claims have a linked source in the text
 - [ ] **No marketing language** — scan for: "powerful", "revolutionary", "cutting-edge", "game-changing"
 - [ ] **No internal production notes in the file** — the article/tutorial file must end with published content only. Scan for and strip anything like a "SOCIAL POST BRIEF" section, editor notes, or other non-reader-facing content appended after the sign-off line — these ship live if left in.
+- [ ] **No AI-writing patterns** — covered by the humanizer pass in step 3
 
 #### For articles only:
 
@@ -48,21 +58,23 @@ Read the full draft file.
 - [ ] **Final output shown** — screenshot, terminal output, or demo of the working result
 - [ ] **File saved in** `tutorials/[slug]/article.md`
 
-### 4. Report results
+### 5. Report results
 
 List every checklist item with a pass/fail. For any failure:
 - Quote the specific line or section that has the problem
 - Suggest the fix
 
+Report the humanizer pass separately: what it changed (or that it found nothing to change), and any pattern it flagged that was deliberately left as house style.
+
 Do not mark the piece as done if any item fails.
 
-### 5. Update Notion
+### 6. Update Notion
 
 Once all checklist items pass:
 - Fetch the Notion task by title from DB `2cab4088-66ca-4d1f-aeb9-8fe29dafb470`
 - Update Status → `Done`
 - Add a note to the Notes field: `Draft complete. File: [path]. Checked: [today's date].`
 
-### 6. Confirm
+### 7. Confirm
 
 Report: "All checks passed. Notion task '[title]' set to Done."
