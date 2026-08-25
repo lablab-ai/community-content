@@ -7,20 +7,20 @@ authorUsername: "stevekimoi"
 
 ## Introduction
 
-Alpaca shipped two new agent-facing surfaces this year: a [Trading CLI](https://docs.alpaca.markets/us/docs/alpacas-cli) that turns the Trading API into explicit terminal commands with structured JSON output, and an [official MCP server](https://github.com/alpacahq/alpaca-mcp-server) that exposes those same trading and market-data capabilities as tools any MCP-aware assistant can call. Each is well documented on its own. What's missing is what happens when you actually combine them on one running agent — one interface for scheduled, unattended execution, and a second, separate interface for asking that same agent questions in plain English without touching its schedule.
+Alpaca shipped two new agent-facing surfaces this year: a [Trading CLI](https://docs.alpaca.markets/us/docs/alpacas-cli) that turns the Trading API into explicit terminal commands with structured JSON output, and an [official MCP server](https://github.com/alpacahq/alpaca-mcp-server) that exposes those same trading and market-data capabilities as tools any MCP-aware assistant can call. Each is well documented on its own. What's missing is what happens when you actually combine them on one running agent: one interface for scheduled, unattended execution, and a second, separate interface for asking that same agent questions in plain English without touching its schedule.
 
-That combination is also exactly what the [Alpaca AI Trading Agents Hackathon on lablab.ai](https://lablab.ai/ai-hackathons/alpaca-ai-trading-agents-hackathon) is built around: participants are asked to build AI trading agents using Alpaca's Trading API, MCP server, and CLI together. If you're looking for an **online AI hackathon** to point a finished agent at, that one's the natural fit — and this tutorial's companion project is a submission-ready starting point for it.
+That combination is also exactly what the [Alpaca AI Trading Agents Hackathon on lablab.ai](https://lablab.ai/ai-hackathons/alpaca-ai-trading-agents-hackathon) is built around: participants are asked to build AI trading agents using Alpaca's Trading API, MCP server, and CLI together. If you're looking for an **online AI hackathon** to point a finished agent at, that one's the natural fit, and this tutorial's companion project is a submission-ready starting point for it.
 
-There's a harder problem hiding under "build a trading agent," though: a signal that says "buy" isn't a trading strategy, it's half of one. The other half — how much to buy, where to get out, and what to do when the account is already down for the day — is what turns a script into something you'd trust to run unattended on a schedule. So this project pairs a deliberately simple SMA-crossover signal with a risk layer that does almost all the real work: position sizing derived from the stop distance, a daily-loss circuit breaker, and a concentration cap that catches a real failure mode a naive risk-per-trade calculation walks straight into — more on that below.
+There's a harder problem hiding under "build a trading agent," though: a signal that says "buy" isn't a trading strategy, it's half of one. The other half (how much to buy, where to get out, and what to do when the account is already down for the day) is what turns a script into something you'd trust to run unattended on a schedule. So this project pairs a deliberately simple SMA-crossover signal with a risk layer that does almost all the real work: position sizing derived from the stop distance, a daily-loss circuit breaker, and a concentration cap that catches a real failure mode a naive risk-per-trade calculation walks straight into. More on that below.
 
 **What you'll build:**
 - A risk-sizing module that turns "risk 0.5% of equity" and "stop 3% below entry" into an exact share count, a stop price, and a take-profit price
-- A thin wrapper around the `alpaca` CLI binary — the agent runs the exact same commands you'd type by hand, so anything you can verify manually is exactly what it did
+- A thin wrapper around the `alpaca` CLI binary: the agent runs the exact same commands you'd type by hand, so anything you can verify manually is exactly what it did
 - A single-shot agent script meant to run on cron: it re-derives account state from Alpaca on every run, evaluates a watchlist, places bracket orders (entry + stop-loss + take-profit) that pass every risk check, and logs a rationale for every symbol whether it traded or not
 - A read-only Gradio dashboard over that same account state and decision log
-- Alpaca's official MCP server, wired in as a second interface, so a connected assistant can answer "why did you size AAPL that way?" by reading the decision log directly — something Alpaca's own MCP tools have no way to know on their own
+- Alpaca's official MCP server, wired in as a second interface, so a connected assistant can answer "why did you size AAPL that way?" by reading the decision log directly, something Alpaca's own MCP tools have no way to know on their own
 
-The full working project — including the real paper-trading run this tutorial walks through — is on GitHub at [Stephen-Kimoi/alpaca-risk-agent](https://github.com/Stephen-Kimoi/alpaca-risk-agent). Every code block below links to its exact source.
+The full working project, including the real paper-trading run this tutorial walks through, is on GitHub at [Stephen-Kimoi/alpaca-risk-agent](https://github.com/Stephen-Kimoi/alpaca-risk-agent). Every code block below links to its exact source.
 
 ## See it running first
 
@@ -41,7 +41,7 @@ alpaca account get
 DRY_RUN=true python3 agent.py
 ```
 
-With a real paper account and a live market, that produces exactly what you'd hope for from a risk-aware agent — a mix of trades taken and trades explicitly skipped, each with a reason:
+With a real paper account and a live market, this is what a risk-aware agent should produce: a mix of trades taken and trades explicitly skipped, each with a reason:
 
 ```text
 AAPL: BUY 53 shares @ ~312.05 (stop 302.69, take-profit 330.77)
@@ -55,18 +55,18 @@ Flip `DRY_RUN=false` to place the same order for real (on paper), then start the
 python3 ui.py
 ```
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/alpaca-cli-mcp-risk-managed-trading-agent-demo-dashboard/public" alt="Gradio dashboard showing account equity, the open AAPL position, and a decision log with rationale for every symbol" caption="Real output from a live paper account: one bracket order taken, two symbols skipped on a flat signal — each with its reason." />
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/alpaca-cli-mcp-risk-managed-trading-agent-demo-dashboard/public" alt="Gradio dashboard showing account equity, the open AAPL position, and a decision log with rationale for every symbol" caption="Real output from a live paper account: one bracket order taken, two symbols skipped on a flat signal, each with its reason." />
 
 That's the payoff: an agent that took a real, sized, risk-managed trade on AAPL and can tell you exactly why it passed on MSFT and SPY. The rest of this tutorial builds it from scratch and explains why each piece is shaped the way it is.
 
 ## Prerequisites
 
 - Python 3.10+
-- The [Alpaca Trading CLI](https://docs.alpaca.markets/us/docs/alpacas-cli) — install with `brew install alpacahq/tap/cli` (or `go install github.com/alpacahq/cli/cmd/alpaca@latest`)
-- [`uv`](https://docs.astral.sh/uv/) — needed to run Alpaca's MCP server via `uvx`; `brew install uv`
+- The [Alpaca Trading CLI](https://docs.alpaca.markets/us/docs/alpacas-cli): install with `brew install alpacahq/tap/cli` (or `go install github.com/alpacahq/cli/cmd/alpaca@latest`)
+- [`uv`](https://docs.astral.sh/uv/): needed to run Alpaca's MCP server via `uvx`; `brew install uv`
 - A free [Alpaca paper trading account](https://app.alpaca.markets/paper/dashboard/overview) and its API key/secret
 
-One thing that trips people up: paper trading API keys live on the **Trading Dashboard**, not the docs site. Confirm the switcher in the top-left says "Paper Trading," then go to **Home** — the API Keys panel is there, separate from any live brokerage account application (which is a different flow entirely and not needed for paper trading).
+One thing that trips people up: paper trading API keys live on the **Trading Dashboard**, not the docs site. Confirm the switcher in the top-left says "Paper Trading," then go to **Home**: the API Keys panel is there, separate from any live brokerage account application (which is a different flow entirely and not needed for paper trading).
 
 Your `.env` should look like this:
 
@@ -87,7 +87,7 @@ set -a && source .env && set +a
 alpaca account get
 ```
 
-A real response looks like this — note `buying_power` well above `equity`, because paper accounts start with margin enabled:
+A real response looks like this; note `buying_power` well above `equity`, because paper accounts start with margin enabled:
 
 ```json
 {
@@ -100,13 +100,13 @@ A real response looks like this — note `buying_power` well above `equity`, bec
 }
 ```
 
-Everything downstream — the CLI wrapper, the agent, the dashboard — depends on nothing more than this working. If `alpaca account get` returns real JSON, the rest of this tutorial will too.
+Everything downstream (the CLI wrapper, the agent, the dashboard) depends on nothing more than this working. If `alpaca account get` returns real JSON, the rest of this tutorial will too.
 
-## Step 2: The risk layer — sizing from the stop, not the other way around
+## Step 2: Sizing the risk layer from the stop, not the other way around
 
 This is the part of the project that actually matters, so it's built and tested before anything touches the network. `risk_rules.py` is pure math: no API calls, no I/O, nothing that can silently depend on a mocked response instead of a real one.
 
-The core idea is that position size is *derived* from the stop distance, not chosen independently of it. You decide how many dollars you're willing to lose on a trade, decide where the stop goes, and the share count falls out of those two numbers — a wide stop on a volatile symbol automatically produces a smaller position, and the dollar risk per trade stays constant even though the share count doesn't.
+The core idea is that position size is *derived* from the stop distance, not chosen independently of it. You decide how many dollars you're willing to lose on a trade, decide where the stop goes, and the share count falls out of those two numbers. A wide stop on a volatile symbol automatically produces a smaller position, and the dollar risk per trade stays constant even though the share count doesn't.
 
 ```python
 # risk_rules.py
@@ -165,11 +165,11 @@ def breaches_concentration_limit(
 
 *[View risk_rules.py on GitHub](https://github.com/Stephen-Kimoi/alpaca-risk-agent/blob/0d6f5a5dc5ecfc52d6868f028468df679943510e/risk_rules.py)*
 
-The numbers above (`0.5%` risk per trade, `3%` stop) aren't the first ones this project used, and that's a real finding, not a hypothetical. Wire this module up to a live AAPL price with a `1%` risk budget and a `2%` stop instead, and the math sizes the trade to roughly **50% of account equity** — a single position eating half the portfolio, from parameters that individually sound conservative. `position_size` has no way to know that's too much; it's only doing what it was told, correctly, given a tight stop. `breaches_concentration_limit` is the module's second, independent opinion: a hard cap on how much of the account any one symbol can occupy, regardless of what the risk-per-trade math says is fine. Both checks are in `agent.py`, and neither is optional — one controls how much you lose if the stop fills, the other caps exposure before it does.
+The numbers above (`0.5%` risk per trade, `3%` stop) aren't the first ones this project used, and that's a real finding, not a hypothetical. Wire this module up to a live AAPL price with a `1%` risk budget and a `2%` stop instead, and the math sizes the trade to roughly **50% of account equity**: a single position eating half the portfolio, from parameters that individually sound conservative. `position_size` has no way to know that's too much; it's only doing what it was told, correctly, given a tight stop. `breaches_concentration_limit` is the module's second, independent opinion: a hard cap on how much of the account any one symbol can occupy, regardless of what the risk-per-trade math says is fine. Both checks are in `agent.py`, and neither is optional: one controls how much you lose if the stop fills, the other caps exposure before it does.
 
 ## Step 3: Wrapping the CLI as a subprocess, not a REST client
 
-`alpaca_cli.py` shells out to the same `alpaca` binary you just ran by hand in Step 1, instead of talking to Alpaca's REST API directly through an SDK. That's a deliberate choice for a hackathon built around the CLI specifically: it means there's exactly one code path between "what you can debug by typing a command" and "what the agent actually did" — no separate SDK layer that could behave differently.
+`alpaca_cli.py` shells out to the same `alpaca` binary you just ran by hand in Step 1, instead of talking to Alpaca's REST API directly through an SDK. That's a deliberate choice for a hackathon built around the CLI specifically: it means there's exactly one code path between "what you can debug by typing a command" and "what the agent actually did," with no separate SDK layer that could behave differently.
 
 ```python
 # alpaca_cli.py
@@ -279,13 +279,13 @@ def submit_bracket_order(
 
 Three details in that file came from running the actual CLI against a live paper account, not from reading the docs, and each would have produced a broken agent if assumed instead of verified:
 
-1. **Errors land on stderr, not stdout, once the process isn't attached to a TTY.** Parsing only `stdout` for error JSON works fine by hand and silently breaks the moment `subprocess.run` calls it — `get_position()`'s "no position = None" logic depends on catching that error body wherever it actually lands.
-2. **`position get` takes `--symbol-or-asset-id`, not `--symbol`.** A plausible guess, and wrong — the CLI's own `--help` output is the source of truth, not any summary of it.
-3. **`--stop-loss` forces `order_class` to `bracket` server-side, and bracket orders reject a stop-loss leg without a matching take-profit leg.** Submitting `--stop-loss` alone gets silently overridden, and live returns a `422` for `"bracket orders require take_profit.limit_price"`. That's why `submit_bracket_order` always sends both legs — it's the only request Alpaca's API actually accepts.
+1. **Errors land on stderr, not stdout, once the process isn't attached to a TTY.** Parsing only `stdout` for error JSON works fine by hand and silently breaks the moment `subprocess.run` calls it; `get_position()`'s "no position = None" logic depends on catching that error body wherever it actually lands.
+2. **`position get` takes `--symbol-or-asset-id`, not `--symbol`.** A plausible guess, and wrong: the CLI's own `--help` output is the source of truth, not any summary of it.
+3. **`--stop-loss` forces `order_class` to `bracket` server-side, and bracket orders reject a stop-loss leg without a matching take-profit leg.** Submitting `--stop-loss` alone gets silently overridden, and live returns a `422` for `"bracket orders require take_profit.limit_price"`. That's why `submit_bracket_order` always sends both legs: it's the only request Alpaca's API actually accepts.
 
 ## Step 4: A signal simple enough to not be the point
 
-The trade signal itself is intentionally boring — an SMA crossover, nothing more:
+The trade signal itself is intentionally boring, an SMA crossover and nothing more:
 
 ```python
 # strategy.py
@@ -317,9 +317,9 @@ def signal(bars: list[dict], short_window: int = 5, long_window: int = 15) -> di
 
 *[View strategy.py on GitHub](https://github.com/Stephen-Kimoi/alpaca-risk-agent/blob/0d6f5a5dc5ecfc52d6868f028468df679943510e/strategy.py)*
 
-`signal()` returns the SMA values themselves, not just a `"long"`/`"flat"` label — that's the one non-obvious choice here, and it's load-bearing for Step 6: the decision log needs the actual numbers behind a decision, not just its name, so an assistant reading it later can say *why* a signal fired instead of just that it did.
+`signal()` returns the SMA values themselves, not just a `"long"`/`"flat"` label; that's the one non-obvious choice here, and it's load-bearing for Step 6: the decision log needs the actual numbers behind a decision, not just its name, so an assistant reading it later can say *why* a signal fired instead of just that it did.
 
-## Step 5: The decision log — writing rationale where an assistant can read it later
+## Step 5: Writing rationale into a decision log an assistant can read later
 
 Every risk check in this project produces a reason, whether the outcome is a trade or a skip. `decision_log.py` is the append-only JSONL file that keeps all of them:
 
@@ -354,11 +354,11 @@ def read_decisions(symbol: str | None = None, limit: int = 20) -> list[dict]:
 
 *[View decision_log.py on GitHub](https://github.com/Stephen-Kimoi/alpaca-risk-agent/blob/0d6f5a5dc5ecfc52d6868f028468df679943510e/decision_log.py)*
 
-This is the piece that makes Step 8's "explain itself" claim true rather than aspirational. Alpaca's own MCP server can tell you your current positions and orders — it has no idea *why* the agent sized AAPL at 53 shares instead of 100. `decisions.jsonl` is where that rationale actually lives, in a format any assistant with file access can read directly.
+This is the piece that makes Step 8's "explain itself" claim true rather than aspirational. Alpaca's own MCP server can tell you your current positions and orders; it has no idea *why* the agent sized AAPL at 53 shares instead of 100. `decisions.jsonl` is where that rationale actually lives, in a format any assistant with file access can read directly.
 
 ## Step 6: The scheduled entry point
 
-`agent.py` is what cron actually invokes. It's single-shot by design — no internal loop, no held state between runs — because a scheduled agent shouldn't trust its own memory of what it decided last time; it re-derives everything from Alpaca's account state and re-decides from scratch on every run.
+`agent.py` is what cron actually invokes. It's single-shot by design (no internal loop, no held state between runs) because a scheduled agent shouldn't trust its own memory of what it decided last time; it re-derives everything from Alpaca's account state and re-decides from scratch on every run.
 
 ```python
 # agent.py
@@ -502,7 +502,7 @@ No double order, on a re-run against the same real paper account. For actual sch
 
 ## Step 7: A dashboard for watching the agent think
 
-A JSONL file is fine for `agent.py` to write, but it's not something you'd want to hand a hackathon judge — or check yourself between cron runs. `ui.py` is a read-only Gradio dashboard over the exact same state, built after the CLI pipeline above was already verified end-to-end, and it reuses `alpaca_cli.py` and `decision_log.py` directly rather than re-implementing any of that logic:
+A JSONL file is fine for `agent.py` to write, but it's not something you'd want to hand a hackathon judge, or check yourself between cron runs. `ui.py` is a read-only Gradio dashboard over the exact same state, built after the CLI pipeline above was already verified end-to-end, and it reuses `alpaca_cli.py` and `decision_log.py` directly rather than re-implementing any of that logic:
 
 ```python
 # ui.py
@@ -605,7 +605,7 @@ if __name__ == "__main__":
 
 *[View ui.py on GitHub](https://github.com/Stephen-Kimoi/alpaca-risk-agent/blob/0d6f5a5dc5ecfc52d6868f028468df679943510e/ui.py)*
 
-Run it with `python3 ui.py` and open the local URL Gradio prints — that's the same dashboard shown in the "See it running first" section above, reading whatever `agent.py` has produced so far.
+Run it with `python3 ui.py` and open the local URL Gradio prints; that's the same dashboard shown in the "See it running first" section above, reading whatever `agent.py` has produced so far.
 
 ## Step 8: Wiring in Alpaca's MCP server
 
@@ -625,13 +625,13 @@ claude mcp add alpaca \
 alpaca: uvx alpaca-mcp-server - ✔ Connected
 ```
 
-One real gotcha worth flagging here: a server registered this way doesn't expose its tools to a session that's already running — restart the client after adding it, the same way you would after installing a new extension. This isn't a workaround for a bug; it's just how MCP tool discovery works, and it's easy to assume otherwise the first time.
+One real gotcha worth flagging here: a server registered this way doesn't expose its tools to a session that's already running; restart the client after adding it, the same way you would after installing a new extension. This isn't a workaround for a bug; it's just how MCP tool discovery works, and it's easy to assume otherwise the first time.
 
 Once your assistant has restarted and picked up the new tools, it has two independent sources of truth available at once: Alpaca's MCP tools for live account, position, and market data, and a direct file read of this project's `decisions.jsonl` for the rationale Alpaca's own API has no concept of. Ask it something like:
 
 > Why did you buy AAPL today, and how was the position size decided?
 
-The answer it gives comes from cross-referencing both: the MCP tools confirm the position actually exists and its current state, while the matching `decisions.jsonl` entry supplies the SMA values that triggered the signal and the exact risk math (`risk_per_share`, `dollar_risk_budget`, `qty`) that turned that signal into 53 shares instead of some other number. That's the whole point of keeping the two interfaces separate — the CLI-driven cron job never has to know an assistant exists, and the MCP layer never has to touch the schedule to explain what it did.
+The answer it gives comes from cross-referencing both: the MCP tools confirm the position actually exists and its current state, while the matching `decisions.jsonl` entry supplies the SMA values that triggered the signal and the exact risk math (`risk_per_share`, `dollar_risk_budget`, `qty`) that turned that signal into 53 shares instead of some other number. That's the whole point of keeping the two interfaces separate: the CLI-driven cron job never has to know an assistant exists, and the MCP layer never has to touch the schedule to explain what it did.
 
 ## Frequently Asked Questions
 
@@ -639,14 +639,14 @@ The answer it gives comes from cross-referencing both: the MCP tools confirm the
 The hackathon this project targets is built around the CLI and MCP server as the interface, and shelling out to the same binary you can debug by hand removes an SDK layer that could behave differently from what you tested manually.
 
 **Q: Why does the risk layer need both a per-trade risk cap and a concentration cap?**
-This tutorial hit that exact gap while building it — a tight stop combined with a conservative-sounding 1% risk budget sized one real trade to roughly half of account equity. The per-trade cap controls loss if the stop fills; the concentration cap limits exposure regardless of whether it does. They catch different failures.
+This tutorial hit that exact gap while building it: a tight stop combined with a conservative-sounding 1% risk budget sized one real trade to roughly half of account equity. The per-trade cap controls loss if the stop fills; the concentration cap limits exposure regardless of whether it does. They catch different failures.
 
 **Q: How can I use this in the Alpaca AI Trading Agents Hackathon?**
-Fork the [companion repo](https://github.com/Stephen-Kimoi/alpaca-risk-agent), swap in your own signal in `strategy.py` (the risk layer and CLI wrapper don't need to change), and extend the watchlist or scheduling to fit your submission — one of many [AI hackathons on lablab.ai](https://lablab.ai/ai-hackathons) worth exploring.
+Fork the [companion repo](https://github.com/Stephen-Kimoi/alpaca-risk-agent), swap in your own signal in `strategy.py` (the risk layer and CLI wrapper don't need to change), and extend the watchlist or scheduling to fit your submission, one of many [AI hackathons on lablab.ai](https://lablab.ai/ai-hackathons) worth exploring.
 
 **Q: Is this suitable for a beginner AI hackathon participant?**
 The risk math is plain arithmetic and the CLI wrapper is a subprocess call plus a JSON parse, but it assumes comfort with Python and the command line. If either is new to you, start with Steps 1 through 3 before adding the scheduler and MCP layer.
 
 ## Conclusion
 
-The interesting part of this project was never the SMA crossover — that's a few lines, and it doesn't need to be more. It's that a risk-per-trade calculation that looked conservative on paper (1% risk, 2% stop) sized a real trade to roughly half the account, and the only thing that caught it was a second, independent check that had nothing to do with the signal or the entry price. Alpaca's CLI and MCP server make the mechanics of "schedule an agent" and "let it explain itself" straightforward; the risk layer between them is the part actually worth getting right before you point anything at a hackathon submission — or, eventually, real money.
+The interesting part of this project was never the SMA crossover; that's a few lines, and it doesn't need to be more. It's that a risk-per-trade calculation that looked conservative on paper (1% risk, 2% stop) sized a real trade to roughly half the account, and the only thing that caught it was a second, independent check that had nothing to do with the signal or the entry price. Alpaca's CLI and MCP server make the mechanics of "schedule an agent" and "let it explain itself" straightforward; the risk layer between them is the part actually worth getting right before you point anything at a hackathon submission, or, eventually, real money.
