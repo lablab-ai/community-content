@@ -1,0 +1,169 @@
+---
+title: "BNAI"
+description: "BNAI (Brain Neural AI) is a framework for extracting 'digital DNA' from AI models and cloning their behavioral parameters through neural network architecture."
+author: "Francesco Bulla & Stephanie Ewelu"
+---
+
+# BNAI
+
+BNAI (Brain Neural AI) is an innovative framework for the complete cloning of Artificial Intelligence models. It extracts the "digital DNA" (BNAI profile) of an original AI model and trains a neural network (BNAI HyperNetwork) that generates a clone with an identical or very similar profile.
+
+## Objectives
+
+- **Digital DNA Extraction:** Calculate and normalize BNAI parameters of an AI model
+- **Cloning:** Train a neural network to faithfully replicate the BNAI profile
+- **Validation:** Use tests and benchmarks to verify the clone's fidelity
+
+| General  |  |
+| --- | --- |
+| Release date | 2023 |
+| Author | [Francesco Bulla & Stephanie Ewelu](https://github.com/fra150/BNAI) |
+| Repository | [GitHub Repository](https://github.com/fra150/BNAI) |
+| Type | AI Model Cloning Framework |
+
+## Start building with BNAI
+
+BNAI offers a revolutionary framework for extracting and cloning the behavioral characteristics of AI models. The technology enables developers to quantify various aspects of AI behavior through its comprehensive parameter system and then replicate these characteristics in new models. Check out the apps created with this technology during lablab.ai hackathons!
+
+<TechTutorials />
+
+### BNAI Tutorials
+Currently, there are no specific tutorials available for BNAI. As this technology grows in adoption, tutorials will be added here to help you get started with implementing BNAI in your projects.
+
+### BNAI Libraries
+A curated list of libraries and technologies to help you build great projects with BNAI.
+
+* [BNAI Documentation](https://github.com/fra150/BNAI/blob/main/documentation.md)
+
+
+## Key Components
+
+### BNAI Parameters
+
+The BNAI score is calculated using an optimized formula that considers multiple parameters described below.
+
+### Core Parameters
+
+BNAI calculates and manages the following key parameters:
+
+- **A (Adaptability)**: Range [0.5, 2.0]
+  - Measures ability to adapt to domain variations
+  - Calculated as performance variation on out-of-distribution datasets
+
+- **E_g (Generational Evolution)**: Range [0.8, 1.5]
+  - Average performance improvement between versions
+  - Measured through standard benchmark comparisons
+
+- **G (Growth)**: Range [1.0, 6.0]
+  - Computational capacity based on parameter count
+  - Calculated as log10(number of parameters)
+
+- **H (Learning Entropy)**: Range [0.0, 5.0]
+  - Information acquisition measurement
+  - Calculated as input-output entropy differential
+
+- **I (Interconnection)**: Range [0.0, 2.0]
+  - Knowledge integration capability
+  - Measured through transfer learning performance differential
+
+- **L (Learning Level)**: Range [0.0, 1.0]
+  - Model convergence state
+  - Based on epochs needed for loss stabilization
+
+- **P (Computational Power)**: Range [1.0, 1000.0]
+  - Resource utilization measurement
+  - Based on FLOPS and FLOPS/performance ratio
+
+- **Q (Response Precision)**: Range [0.0, 1.0]
+  - Model accuracy measurement
+  - Using standard metrics (accuracy, F1-score)
+
+- **R (Robustness)**: Range [0.0, 2.0]
+  - Stability under perturbations
+  - Performance variation under attacks/noise
+
+- **U (Autonomy)**: Range [0.0, 1.0]
+  - Operational independence
+  - Ratio of local to delegated operations
+
+- **V (Response Speed)**: Range [0.001, 10.0]
+  - Average inference time
+  - Measured in milliseconds/seconds
+
+- **O (Computational Efficiency)**: Range [0.0, 1.0]
+  - Performance/cost ratio
+  - Accuracy divided by computational cost
+
+### Penalty Parameters
+
+- **B (Bias)**: Range [0.0, 1.0]
+  - Performance disparity across data subsets
+  - Measured using fairness metrics
+
+- **C (Complexity)**: Range [0.0, 100.0]
+  - Overall architectural complexity
+  - Based on total operations count
+
+- **E (Learning Error)**: Range [0.0, 1.0]
+  - Average training errors
+  - Normalized loss value
+
+### Advanced Parameters
+
+- **M (Memory Capacity)**: Range [1.0, 100.0]
+  - Information storage capability
+  - Based on state vector dimensions
+
+- **R_TL (Transfer Learning Coefficient)**: Range [0.5, 2.0]
+  - Knowledge transfer benefit measurement
+  - Calculated as: 1 + (Performance_TL - Performance_base)/Performance_base
+
+- **R_ML (Meta-Learning Coefficient)**: Range [0.5, 2.0]
+  - Rapid task adaptation capability
+  - Based on meta-dataset performance
+
+### Model Architecture
+
+The BNAI HyperNetwork uses a latent space of dimension 100 and generates 21 BNAI parameters through a neural network with:
+
+- Hidden layers: [256, 512]
+- Activation function: ReLU
+- Output dimension: 21
+- Progressive expansion for better feature learning capacity
+
+### Training Configuration
+
+- Learning rate: 0.001
+- Batch size: 32
+- Training epochs: 100
+- Validation split: 0.2
+- L2 regularization with alpha: 0.01
+
+### Future Developments
+
+- **Interpretability and Explainability:** Integration of XAI metrics (e.g., saliency maps, attention weight analysis) to evaluate model explainability
+  
+- **Calibration:** Use of metrics like Expected Calibration Error (ECE) to verify probability calibration
+  
+- **Security:** Integration of prompt injection resistance tests and Out-of-Distribution (OOD) input detection
+  
+- **Ethical Aspects:** Evaluation of model privacy, transparency, and responsibility
+  
+- **Task-Specific Metrics:** Integration of standard metrics (BLEU, ROUGE, F1, EM, etc.) for specific tasks
+
+### Data Processing
+
+- Supports synthetic data generation
+- Implements data normalization
+- Provides train/validation split functionality
+- Includes data augmentation options
+
+### Links
+- [GitHub Repository](https://github.com/fra150/BNAI)
+- [Documentation](https://github.com/fra150/BNAI/blob/main/documentation.md)
+
+### Key Implementations
+
+- **BNAI Parameter Calculation:** Computes BNAI parameters for a given model
+- **Training Loop:** Includes Adam optimizer, custom BNAI loss function, and validation monitoring
+- **Data Management:** Supports JSON file I/O, data preprocessing, and synthetic data generation
