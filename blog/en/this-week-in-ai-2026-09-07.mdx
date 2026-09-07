@@ -1,0 +1,56 @@
+---
+title: "OpenAI Calls It AGI, Anthropic Answers, Google Retires Assistant"
+description: "OpenAI launched GPT-6 Astra and called it the start of the AGI era, Anthropic countered with Claude Fable 5.1 and Mythos 5.1, and Google began shutting down Google Assistant for Gemini. AI news, September 2026."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/this-week-in-ai-2026-09-07/public"
+authorUsername: "stevekimoi"
+---
+
+# OpenAI Calls It AGI, Anthropic Answers, Google Retires Assistant
+
+*This Week in AI — August 31–September 7, 2026*
+
+Four frontier labs shipped new flagship models inside the same 72 hours, but the model cards weren't the interesting part: the framing was. OpenAI used its launch to declare "the AGI era," Anthropic used its launch to talk about safety tiers and cost cuts, and Google used the moment to finally kill off a product it's been running for a decade. Same week, three very different stories about what a launch is supposed to mean.
+
+## Key Takeaways
+
+- **OpenAI:** GPT-6 Astra ships as a computer-using agent that finishes multistep work instead of describing it, but it's also the first OpenAI model flagged as hitting the company's "critical" cybersecurity risk tier, so treat its agent permissions like any other privileged automation: scoped credentials, logging, human sign-off on the actions that matter.
+- **Anthropic:** Fable 5.1 and Mythos 5.1 cut cache-read pricing by 75%, which mostly changes the math on agentic workloads you already run. Re-benchmark long-running agents and RAG pipelines now rather than waiting for the next major version.
+- **Google:** Google Assistant starts disappearing from Android and Wear OS this week in favor of Gemini, and the switch is one-way once it hits a device. Anything you've built against Assistant intents needs a migration plan before the rollout reaches your users.
+- **Meta:** Muse Spark 1.3 does the same agentic coding work as its predecessor with about 20% fewer tool calls and 25% fewer tokens, a real cost lever for anyone running autonomous coding loops with no provider switch required.
+
+---
+
+## Four Launches, Three Different Arguments
+
+### OpenAI calls GPT-6 Astra the start of the "AGI era"
+
+OpenAI released GPT-6 Astra on September 3 as a limited preview, and president Greg Brockman closed the briefing with "welcome to the AGI era," saying he personally believes the company has crossed that line even as he left the definition open to debate ([Axios](https://www.axios.com/2026/09/03/openai-astra-gpt-6-agi-brockman)). Astra is built to operate software the way a person does, working across browsers, spreadsheets, and desktop apps to finish multistep jobs rather than just explain them, and it's state-of-the-art on computer use, browsing, and software engineering ([VentureBeat](https://venturebeat.com/technology/welcome-to-the-agi-era-openai-launches-gpt-6-astra)). It's also the first model OpenAI has designated as reaching the "critical" tier of its cybersecurity preparedness framework, meaning it can find and exploit unknown vulnerabilities without step-by-step guidance; the public release to paid users ships with prompts in that area restricted. The AGI branding is a marketing choice. The cybersecurity threshold is not, and it's the number worth watching.
+
+### Anthropic answers with Claude Fable 5.1 and Mythos 5.1
+
+Anthropic shipped Claude Fable 5.1 and Claude Mythos 5.1 on September 1, the same underlying model at two different safeguard levels, with Fable 5.1 generally available and Mythos 5.1 restricted to trusted-access programs for cybersecurity and life-sciences work ([Anthropic](https://www.anthropic.com/claude-fable-and-mythos-5-1)). Fable 5.1 more than doubles Fable 5's scores on agentic scientific research and beats Opus 5 on every benchmark category Anthropic published, while cache-read pricing drops 75% to $0.25 per million tokens, cutting typical workload costs by roughly a quarter and agentic workloads by up to 45% ([VentureBeat](https://venturebeat.com/technology/anthropics-claude-fable-5-1-and-mythos-5-1-arrive-with-a-75-cost-reduction-for-fable-cache-reads)). Outputs also carry an EU AI Act-required watermark, with a detection API now in private preview. Where OpenAI led with a capability claim, Anthropic led with a cost curve, and the cost curve is the one that actually changes your invoice.
+
+---
+
+## The Incumbents Reshuffle
+
+### Google is finally retiring Google Assistant
+
+Google began pulling Google Assistant from Android phones, tablets, Wear OS watches, and Android Auto on September 4, with Gemini taking over "Hey Google" and long-press triggers ([the-decoder](https://the-decoder.com/google-will-shut-down-google-assistant-starting-september-2026-as-gemini-takes-over-on-android-and-wear-os/)). The rollout is gradual over the coming weeks and explicitly one-way: once a device flips to Gemini, there's no switching back ([9to5Google](https://9to5google.com/2026/08/04/google-assistant-september-2026-shutdown/)). Google shipped the newest piece of that transition, Gemini 3.8 Flash, on September 2 at the same price as its predecessor, alongside a separate cybersecurity-focused variant aimed at government and enterprise customers. A decade-old product line is being retired through a forced migration rather than a deprecation notice, so check anything you've built on Assistant intents before the rollout reaches your users.
+
+### Meta ships a leaner Muse Spark 1.3
+
+Meta released Muse Spark 1.3 on September 2, an update aimed squarely at agentic coding efficiency rather than raw capability ([Axios](https://www.axios.com/2026/09/02/meta-debuts-muse-spark-13-as-personal-agent-work-continues)). The model sustains longer multi-step work in a single thread, asks clarifying questions when it's stuck instead of guessing, and does it with roughly 20% fewer tool calls and 25% fewer tokens than Muse Spark 1.2 ([Meta AI Research](https://research.meta.ai/blog/introducing-muse-spark-1-3)). Pricing holds steady at $1.25/M input and $4.25/M output. A "max reasoning" variant is coming after further safety testing. It's the least flashy of this week's four launches and the easiest one to actually act on: same workflow, lower bill.
+
+---
+
+## Quick Hits
+
+- **xAI:** Grok Bot moved from beta to enterprise on September 3, adding access, network, and audit controls plus a two-week free trial for Grok and Cursor Enterprise customers; early adopters include Legora, Supermicro, and ServiceTitan ([Reworked](https://www.reworked.co/collaboration-productivity/xai-launches-grok-bot-ai-agents-in-beta/)).
+- **xAI:** Grok 4.7 is targeting a September 12 launch, trained partly on SpaceX engineering data at a reported 2.1 trillion parameters, though as of this week xAI's own developer docs still list Grok 4.6 as current ([Big Hat Group](https://www.bighatgroup.com/blog/xai-weekly-2026-09-06/)).
+- **Perplexity:** Shipped Hybrid Compute on September 1, letting its Mac app route sensitive files like tax or medical documents to a local Qwen model on Apple Silicon while cloud models handle everything else ([explainx.ai](https://www.explainx.ai/blog/perplexity-mac-hybrid-compute-local-pii-september-2026)).
+- **Funding:** Gridsight raised a $26M Series B led by Insight Partners to expand its AI-based grid-capacity software from Australia into the US, bringing its total raised to about $33.5M ([Latitude Media](https://www.latitudemedia.com/industry-news/gridsight-raises-26m-series-b-to-unlock-electric-grid-capacity-and-affordability/)).
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
