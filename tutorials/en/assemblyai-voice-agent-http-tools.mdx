@@ -1,6 +1,6 @@
 ---
 title: "Ship a Voice Agent That Books Appointments Without Writing a Tool Dispatcher"
-description: "Build an AI hackathon voice agent on AssemblyAI's Voice Agent API using server-side HTTP tools — no tool dispatcher and no WebSocket in your backend."
+description: "Build an AI hackathon voice agent on AssemblyAI's Voice Agent API using server-side HTTP tools, with no tool dispatcher and no WebSocket in your backend."
 image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/assemblyai-voice-agent-http-tools-cover/public"
 authorUsername: "vicdevman"
 ---
@@ -9,28 +9,28 @@ authorUsername: "vicdevman"
 
 <LiteYouTube videoId="SnNv3B5sy-Y" containerClassName={"youtubeContainer"} />
 
-[AssemblyAI's Voice Agent API](https://www.assemblyai.com/docs/voice-agents/voice-agent-api) gives an agent two different ways to reach the outside world, and the choice between them decides the entire architecture of what you build.
+[AssemblyAI's Voice Agent API](https://www.assemblyai.com/docs/voice-agents/voice-agent-api) has two ways to give an agent a tool, and almost everything written about it uses the same one.
 
-**Function tools** are declared inline on a live WebSocket session. The agent emits a `tool.call`, a connected client runs the logic and sends a `tool.result` back. This is the path the quickstarts demonstrate, and it looks the same whether that client is Python, Node, Twilio or Agora.
+The documented path is **function tools**. You open a WebSocket, declare the tools on the session, then sit waiting for `tool.call` events, run the matching function, and send `tool.result` back. It works, and it's the same shape whether you're in Python, Node, Twilio or Agora.
 
-**HTTP tools** are the other path, and considerably less has been written about them. Rather than declaring tools on a session, you describe the whole agent once as a JSON document, give each tool a URL, and `POST` it to AssemblyAI. It stores the agent and hands back an `agent_id`. From then on, when the agent needs to know what Tuesday looks like, **AssemblyAI makes the HTTP request to that URL itself.**
+The other path is **HTTP tools**, and it barely shows up anywhere. Instead of declaring tools on a session, you describe the whole agent once as a JSON document, put a URL on each tool, and `POST` it to AssemblyAI. It stores that agent and gives you back an `agent_id`. After that, when the agent needs to know what Tuesday looks like, AssemblyAI calls your URL itself.
 
-That difference is not stylistic — it decides where the agent actually lives. A function-tool agent exists only while some process holds the socket open and answers every `tool.call`, so closing the laptop stops it answering. A stored agent with HTTP tools is a document on AssemblyAI's servers talking to a REST API, which is a shape any web backend already fits.
+That's not a style preference. It decides where your agent actually runs. A function-tool agent only exists while something of yours holds the socket open to answer each `tool.call`, so it stops working the moment you close the laptop. A stored agent with HTTP tools is a JSON document sitting on AssemblyAI's servers calling a REST API, which is a shape you already know how to deploy.
 
-This tutorial builds a dental receptionist on that second path. It answers, checks real availability against a live calendar, books a slot, and reads back a confirmation code — with no dispatcher, and no WebSocket anywhere in the backend.
+This tutorial builds a dental receptionist on that second path. It answers, checks real availability against a live calendar, books a slot, and reads back a confirmation code, with no dispatcher and no WebSocket anywhere in the backend.
 
 **What you'll build:**
-- An `agent.json` holding the entire agent — prompt, voice, keyterms, and four HTTP tools — uploaded once and run by AssemblyAI
+- An `agent.json` holding the whole agent (prompt, voice, keyterms, four HTTP tools), uploaded once and run by AssemblyAI
 - A FastAPI booking service whose responses are written to be *spoken*, not parsed
 - A `get_today` tool that fixes the single most common bug in voice schedulers
-- Tool schemas that make the agent re-ask instead of guess, and a phone-number bug that marks exactly where that stops working
-- A browser demo page that shows AssemblyAI hitting the API live, so the mechanism is visible while a call is happening
+- Tool schemas that make the agent re-ask instead of guess, plus the phone-number bug that shows exactly where that stops working
+- A browser demo page that shows AssemblyAI hitting the API live, so you can watch the mechanism while a call is happening
 
-Three things surfaced while building this that the docs don't cover: tool-schema rejection is completely opaque to the agent, which quietly turns a correct validation rule into a lost booking; an empty slot list means two different things, and conflating them makes the agent state something untrue; and logging tool calls from FastAPI middleware needs one specific header dropped or the response comes back malformed. Each is covered in the step where it bit.
+Three things came up while building this that the docs don't cover. Schema rejection is completely opaque to the agent, which quietly turns a correct validation rule into a lost booking. An empty slot list means two different things, and conflating them makes the agent say something untrue. And logging tool calls from FastAPI middleware needs one specific header dropped or the response comes back malformed. Each one is covered in the step where it bit.
 
 AssemblyAI runs its own [Voice Agent Hackathon on lablab.ai](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon), and agents that *take an action* rather than just transcribe are a common shape across **AI hackathons** more broadly. If you want an event to build one in, browse [lablab.ai's global AI hackathons](https://lablab.ai/ai-hackathons).
 
-The reference implementation is on GitHub: [vicdevman/assemblyai-voice-agent-scheduler](https://github.com/vicdevman/assemblyai-voice-agent-scheduler). Every code block below links to its exact source.
+The reference implementation is on GitHub at [vicdevman/assemblyai-voice-agent-scheduler](https://github.com/vicdevman/assemblyai-voice-agent-scheduler). Every code block below links to its exact source.
 
 ## See it running first
 
@@ -49,13 +49,13 @@ Put your AssemblyAI key in `.env`, then start the API, expose it, and publish th
 
 ```bash
 uvicorn app.main:app --reload                    # terminal 1
-cloudflared tunnel --url http://localhost:8000   # terminal 2 — copy the https URL into .env
+cloudflared tunnel --url http://localhost:8000   # terminal 2, copy the https URL into .env
 python scripts/create_agent.py                   # terminal 3
 ```
 
 Open `http://localhost:8000`, press **Start call**, and ask for a cleaning next Tuesday.
 
-Here is a real call, unedited. The arrows are AssemblyAI hitting the booking API on its own — nothing of the developer's is in the loop:
+Here's a real call, unedited. The arrows are AssemblyAI hitting the booking API on its own, with nothing of the developer's in the loop:
 
 ```text
 AGENT   Thanks for calling Brightsmile Dental. Are you looking to book
@@ -71,7 +71,7 @@ AGENT   Tuesday the 8th is fully booked, but I can do Wednesday the 9th
         at 9:00 am or 11:30 am. Would either work?
 CALLER  Wednesday morning's fine, the early one.
 
-AGENT   Great — can I get your full name?
+AGENT   Great, can I get your full name?
 CALLER  Ada Lovelace.
 AGENT   And a mobile number for the confirmation?
 CALLER  zero nine one, six three eight three, six nine five zero
@@ -90,9 +90,9 @@ AGENT   You're booked for Wednesday at 9. Your code is K-G-L-D-A-4,
         and I've texted it over.
 ```
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/assemblyai-voice-agent-http-tools-demo-live-call/public" alt="The demo page during a live call: a root canal conversation on the left where the agent declines a Saturday booking, and on the right a feed of seven HTTP tool calls AssemblyAI made to the booking API" caption="A different call, mid-flight. The agent turns down Saturday because the API told it the clinic is closed, not because it guessed — and the right pane is your own server's log, since the browser never sees these calls happen." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/full-page.png" alt="The demo page during a live call: a root canal conversation on the left where the agent declines a Saturday booking, and on the right a feed of seven HTTP tool calls AssemblyAI made to the booking API" caption="A different call, mid-flight. The agent turns down Saturday because the API told it the clinic is closed, not because it guessed. The right pane is your own server's log, since the browser never sees these calls happen." />
 
-Two moments there matter more than the booking. When Tuesday came back full, the agent offered Wednesday instead of apologising — because the API's failure response *carried the alternative*. And when the caller read a Nigerian number with no country code, the agent asked which country rather than dying. Both of those are design decisions, and both are covered below.
+Two moments there matter more than the booking. When Tuesday came back full, the agent offered Wednesday instead of apologising, because the API's failure response *carried the alternative*. And when the caller read a Nigerian number with no country code, the agent asked which country rather than falling over. Both are design decisions, and both are covered below.
 
 ## Prerequisites
 
@@ -101,7 +101,7 @@ Two moments there matter more than the booking. When Tuesday came back full, the
 - **A tunnel.** Either [ngrok](https://ngrok.com/download) or [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/). Step 6 explains why.
 - **A browser with a microphone.** Chrome or Edge are the smoothest.
 
-No WebSocket experience, no async Python, and no audio programming are required. That is the point of this path.
+You don't need WebSocket experience, async Python, or any audio programming. That's the point of this path.
 
 The whole configuration is three values:
 
@@ -122,9 +122,9 @@ PUBLIC_API_BASE_URL=
 
 *[View .env.example on GitHub](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/.env.example)*
 
-Note what is *not* in there: no WebSocket URL, no model name, no voice setting, no tool definitions. All of that lives on AssemblyAI's side after Step 7, which is the whole point of the architecture.
+Notice what isn't in there: no WebSocket URL, no model name, no voice setting, no tool definitions. All of that lives on AssemblyAI's side after Step 7, which is the whole point of the architecture.
 
-Dependencies are similarly thin — there is no AssemblyAI SDK here, because the only thing your server ever does is `POST` a JSON document and mint a token:
+Dependencies are similarly thin. There's no AssemblyAI SDK here, because the only things your server ever does are `POST` a JSON document and mint a token:
 
 ```text
 fastapi==0.115.6
@@ -136,9 +136,9 @@ httpx==0.28.1
 
 ## Step 1: The agent is a JSON file, not a program
 
-Start with the thing that trips people up. In this architecture your agent is not code. It is a document you upload once, and AssemblyAI stores it and runs it.
+Start with the thing that trips people up. In this architecture your agent isn't code. It's a document you upload once, and AssemblyAI stores it and runs it.
 
-Here is the skeleton of [`agent.json`](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/agent.json):
+Here's the skeleton of [`agent.json`](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/agent.json):
 
 ```json
 {
@@ -151,13 +151,13 @@ Here is the skeleton of [`agent.json`](https://github.com/vicdevman/assemblyai-v
 }
 ```
 
-Four kinds of thing live in there, and it is worth naming them separately:
+Four kinds of thing live in there, and they're worth naming separately:
 
-- **Who it is** — `name`, `voice`, `greeting`, `system_prompt`. Its personality and its rules.
-- **What it should expect to hear** — `keyterms`. These bias the transcriber toward your vocabulary, so "whitening" does not come back as "widening".
-- **What it is allowed to do** — `tools`, each with a name, a description, an argument schema, and a URL.
+- **Who it is:** `name`, `voice`, `greeting`, `system_prompt`. Its personality and its rules.
+- **What it should expect to hear:** `keyterms`. These bias the transcriber toward your vocabulary, so "whitening" doesn't come back as "widening".
+- **What it's allowed to do:** `tools`, each with a name, a description, an argument schema, and a URL.
 
-And one thing that is emphatically **not** in there: the calendar. Not a single appointment, not one open slot. The agent has no idea what Tuesday looks like until it calls your API during the conversation.
+And one thing that's emphatically *not* in there: the calendar. Not a single appointment, not one open slot. The agent has no idea what Tuesday looks like until it calls your API during the conversation.
 
 That split is the whole mental model:
 
@@ -173,11 +173,11 @@ when the agent needs a fact, AssemblyAI POSTs to the tool's URL
 
 Configuration is uploaded once. Data is fetched on every call. You can rebook the entire calendar without touching `agent.json`, and change the agent's voice without touching the calendar.
 
-The demo page built in Step 8 has a **Demo data** panel that shows both halves of that split side by side, which is the fastest way to see what the agent is and is not carrying around:
+The demo page built in Step 8 has a **Demo data** panel that puts both halves of that split side by side, which is the fastest way to see what the agent is and isn't carrying around:
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/assemblyai-voice-agent-http-tools-agent-knows/public" alt="The What the agent knows panel, showing the stored agent's name, voice, four callable tools and boosted keyterms under a Who it is heading, and the clinic's opening hours under a What it can see heading" caption="Above the line: agent.json, uploaded once — identity, voice, tool names, keyterms. Below it: the clinic hours and calendar, none of which is in the JSON. The agent finds that out by calling the API while you talk to it." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/demo-data.png" alt="The What the agent knows panel, showing the stored agent's name, voice, four callable tools and boosted keyterms under a Who it is heading, and the clinic's opening hours under a What it can see heading" caption="Above the line: agent.json, uploaded once. Identity, voice, tool names, keyterms. Below it: the clinic hours and calendar, none of which is in the JSON. The agent finds that out by calling the API while you talk to it." />
 
-The `system_prompt` deserves a proper look, because in this architecture it is doing the work a dispatcher's control flow would normally do. It is one JSON string in the file; unescaped, it reads:
+The `system_prompt` is worth reading properly, because in this architecture it's doing the work a dispatcher's control flow would normally do. It's one JSON string in the file. Unescaped, it reads:
 
 ```text
 You are the scheduling assistant for Brightsmile Dental. Keep every reply
@@ -213,11 +213,11 @@ tool returns ok=false, tell the caller what the message says and act on it:
 system is broken. Never invent an opening, a confirmation code, or a price.
 ```
 
-Three things in there are load-bearing, and each one exists because the agent got it wrong without them. The numbered sequence stops it calling `book_appointment` with a guessed name. "Under two sentences" stops it monologuing, which on a phone call sounds broken. And the last paragraph — *base what you say on the `message` field* — is what makes Step 2 work at all: an API that answers in sentences is useless unless the prompt tells the agent to trust those sentences over its own improvisation.
+Three things in there are doing real work, and each one exists because the agent got it wrong without them. The numbered sequence stops it calling `book_appointment` with a guessed name. "Under two sentences" stops it monologuing, which on a phone call just sounds broken. And that last paragraph, *base what you say on the `message` field*, is what makes Step 2 work at all. An API that answers in sentences is useless unless the prompt tells the agent to trust those sentences over its own improvisation.
 
 ## Step 2: A booking API that answers in sentences
 
-Before wiring anything to AssemblyAI, build the service it will call. It is an ordinary FastAPI app. The interesting decision is not the routing, it is the **shape of the responses**.
+Before wiring anything to AssemblyAI, build the service it'll call. It's an ordinary FastAPI app. The interesting decision isn't the routing, it's the **shape of the responses**.
 
 A REST API written for another program raises exceptions and returns status codes. An API written for a voice agent should return values the model can read out loud. Every endpoint here returns an `ok` flag and a `message` field:
 
@@ -239,7 +239,7 @@ def check_availability(req: AvailabilityRequest) -> dict:
                 "message": "Date must be in YYYY-MM-DD form."}
 ```
 
-Notice there is no `raise HTTPException` anywhere in that path. A 4xx response tells the agent "something went wrong" and nothing else, and what it says to the caller afterwards is a coin flip. A `200` carrying `ok: false` and a sentence tells it exactly what to say next.
+There's no `raise HTTPException` anywhere in that path. A 4xx response tells the agent "something went wrong" and nothing else, and what it says to the caller afterwards is a coin flip. A `200` carrying `ok: false` and a sentence tells it exactly what to say next.
 
 The most important case is a failure that carries a way forward. When the requested day is full:
 
@@ -262,7 +262,7 @@ The most important case is a failure that carries a way forward. When the reques
 
 *[View app/main.py on GitHub](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/app/main.py)*
 
-That is why the agent in the transcript offered Wednesday. It did not reason its way there — the API handed it the alternative inside the failure. **Failures are values, not exceptions.** A voice agent that treats every non-success as a dead end will hang up on people.
+That's why the agent in the transcript offered Wednesday. It didn't reason its way there; the API handed it the alternative inside the failure. **Failures are values, not exceptions.** A voice agent that treats every non-success as a dead end will hang up on people.
 
 The same applies to a double booking. `book_appointment` returns `slot_taken` along with the times still free that day, so the agent recovers inside the same breath instead of starting over.
 
@@ -278,9 +278,9 @@ def _speak_time(value: str) -> str:
     return f"{hour}:{parsed.minute:02d} {suffix}"
 ```
 
-Hand the model `"14:30"` and you are relying on it to convert. Hand it `"2:30 pm"` and there is nothing to get wrong.
+Hand the model `"14:30"` and you're relying on it to convert. Hand it `"2:30 pm"` and there's nothing to get wrong.
 
-The calendar behind all this is deliberately boring — a dict of services, a set of taken slots, and a seeded scatter of existing bookings so availability looks realistic on a first run:
+The calendar behind all this is deliberately boring: a dict of services, a set of taken slots, and a seeded scatter of existing bookings so availability looks realistic on a first run.
 
 ```python
 # app/store.py
@@ -308,15 +308,15 @@ def _seed_existing_bookings() -> None:
 
 *[View app/store.py on GitHub](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/app/store.py)*
 
-The seed is fixed on purpose. A random calendar means the "Tuesday is full" moment in your demo works once and then never again; a fixed seed means every clone of this repo hits the same busy days, so the tutorial and the demo agree.
+The seed is fixed on purpose. A random calendar means the "Tuesday is full" moment in your demo works once and then never again. A fixed seed means every clone of this repo hits the same busy days, so the tutorial and the demo agree.
 
-`available_slots` also caps at four by default. That is not a performance choice — it is because "we have nine thirty, ten, ten thirty, eleven, eleven thirty, twelve…" read aloud is unusable. Truncating the list in the API is cheaper than prompting the model not to recite it.
+`available_slots` also caps at four by default. That isn't a performance choice. It's because "we have nine thirty, ten, ten thirty, eleven, eleven thirty, twelve…" read aloud is unusable, and truncating the list in the API is cheaper than prompting the model not to recite it.
 
 ## Step 3: The agent has no clock
 
-This is the bug that will eat your afternoon if nobody warns you.
+This is the bug that'll eat your afternoon if nobody warns you.
 
-Ask the agent for "next Tuesday" and it will confidently produce a date. It will often be wrong, because the model has no reliable sense of today. It is not looking at a calendar; it is predicting what a date probably looks like.
+Ask the agent for "next Tuesday" and it'll confidently produce a date. It'll often be wrong, because the model has no reliable sense of today. It isn't looking at a calendar, it's predicting what a date probably looks like.
 
 The fix is a tool whose only job is to answer that question:
 
@@ -342,16 +342,16 @@ Then make the system prompt insist on it:
 
 > You have no sense of today's date. Call `get_today` before reasoning about any day the caller mentions ('tomorrow', 'next Tuesday') and convert it to a YYYY-MM-DD date yourself. The clinic is open Monday to Friday only.
 
-One extra round trip at the start of the conversation, and every date after it is anchored to something real. Returning `next_open_days` in the same response is what keeps it to one round trip — the agent gets "today is Saturday" and "the next three days we're open" together, so a caller asking for "the soonest you have" does not trigger a second lookup.
+One extra round trip at the start of the conversation, and every date after it is anchored to something real. Returning `next_open_days` in the same response is what keeps it to one round trip: the agent gets "today is Saturday" and "the next three days we're open" together, so a caller asking for "the soonest you have" doesn't trigger a second lookup.
 
-While you are here, handle the weekend honestly. An early version of this project returned "fully booked" for a Saturday, because `available_slots` came back empty and the code did not distinguish empty-because-busy from empty-because-shut. The agent then told a caller the clinic was fully booked on a day it was simply closed — a small lie that sounds exactly like a real one. The endpoint now checks `store.is_open(day)` *before* it looks at slots, and returns `reason: "closed"` with the next open day attached.
+While you're here, handle the weekend honestly. An early version of this project returned "fully booked" for a Saturday, because `available_slots` came back empty and the code didn't distinguish empty-because-busy from empty-because-shut. The agent then told a caller the clinic was fully booked on a day it was simply closed, which is a small lie that sounds exactly like a real one. The endpoint now checks `store.is_open(day)` *before* it looks at slots, and returns `reason: "closed"` with the next open day attached.
 
 ## Step 4: Letting AssemblyAI make the call
 
 Now the part that separates this from every other tutorial. AssemblyAI supports two kinds of tool:
 
-- **Function tools** — declared inline in `session.tools`. The agent emits `tool.call`, *your code* runs the logic and sends back `tool.result`. This is what every other tutorial uses.
-- **HTTP tools** — declared on a stored agent with a `url`. **AssemblyAI makes the request for you.**
+- **Function tools**, declared inline in `session.tools`. The agent emits `tool.call`, *your code* runs the logic and sends back `tool.result`. This is what every other tutorial uses.
+- **HTTP tools**, declared on a stored agent with a `url`. **AssemblyAI makes the request for you.**
 
 An HTTP tool looks like this:
 
@@ -383,19 +383,19 @@ An HTTP tool looks like this:
 
 *[View agent.json on GitHub](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/agent.json)*
 
-The `http` block is the entire difference. With it, there is no `tool.call` for you to handle, no dispatcher to write, and no long-lived process to keep alive. Your API secrets stay on your server, because your server is the only thing that ever touches them.
+The `http` block is the entire difference. With it there's no `tool.call` for you to handle, no dispatcher to write, and no long-lived process to keep alive. Your API secrets stay on your server, because your server is the only thing that ever touches them.
 
-`{{BASE_URL}}` is not an AssemblyAI feature — it is a placeholder this project substitutes at publish time, so the same `agent.json` works against a tunnel today and a Render URL tomorrow without a hand-edit. Step 7 shows the four lines that do it.
+`{{BASE_URL}}` isn't an AssemblyAI feature. It's a placeholder this project substitutes at publish time, so the same `agent.json` works against a tunnel today and a Render URL tomorrow without a hand-edit. Step 7 shows the four lines that do it.
 
-Two details in that block are easy to skim past. `timeout_seconds` is per tool, and it is a real budget: the caller is sitting in silence while it runs. And `description` is read by the model, not by you — "The clinic is closed at weekends" is in there so the agent does not waste a turn checking Saturday.
+Two details in that block are easy to skim past. `timeout_seconds` is per tool, and it's a real budget, because the caller is sitting in silence while it runs. And `description` is read by the model, not by you, which is why "The clinic is closed at weekends" is in there: so the agent doesn't waste a turn checking Saturday.
 
-A practical constraint from the docs worth respecting: keep tool sets small, under about ten per phase. Past that, the model's accuracy at picking the right one drops. This project uses four, which is comfortable.
+One constraint from the docs worth respecting is to keep tool sets small, under about ten per phase. Past that, the model's accuracy at picking the right one drops. This project uses four, which is comfortable.
 
 ## Step 5: Schemas that make the agent re-ask instead of guess
 
-Look again at that schema. `enum`, `pattern`, `examples` — those are not documentation. They are enforcement. A value that fails them is rejected **before your API is ever called**, and the agent asks the caller again.
+Look again at that schema. `enum`, `pattern`, `examples` aren't documentation, they're enforcement. A value that fails them gets rejected **before your API is ever called**, and the agent asks the caller again.
 
-That is enormously useful, and it is also where I broke this project badly enough that the failure is worth reproducing in full.
+That's enormously useful, and it's also where I broke this project badly enough that the failure is worth reproducing in full.
 
 The phone field originally used strict E.164:
 
@@ -403,7 +403,7 @@ The phone field originally used strict E.164:
 "phone": { "type": "string", "pattern": "^\\+[1-9]\\d{1,14}$" }
 ```
 
-Correct, on paper. Then a real caller read a real Nigerian number out loud — `091 6383 6950` — and this happened:
+Correct, on paper. Then a real caller read a real Nigerian number out loud, `091 6383 6950`, and this happened:
 
 ```text
 CALLER  Okay, um, 091-6383-6950.
@@ -414,7 +414,7 @@ AGENT   I'm so sorry, I'm having some trouble getting that to go through
         on my end. Would you like me to have someone call you back?
 ```
 
-The booking was lost. And the guardrail was working *perfectly* — a national number genuinely does not match E.164. The problem is that schema rejection is **opaque**. The agent learns that the call failed. It does not learn that a country code was missing, so it cannot ask for one. It reaches for the only explanation it has: the system is broken.
+The booking was lost. And the guardrail was working *perfectly*, because a national number genuinely doesn't match E.164. The problem is that schema rejection is **opaque**. The agent learns that the call failed. It doesn't learn that a country code was missing, so it can't ask for one. It reaches for the only explanation it has: the system is broken.
 
 The fix is to move that particular check one layer out. Loosen the pattern to "looks like a phone number":
 
@@ -448,9 +448,9 @@ def _normalize_phone(raw: str) -> tuple[str | None, str]:
     return None, "incomplete"
 ```
 
-The return type is the load-bearing part: `(value, problem)` rather than a raise or a bare `None`. It separates *this number is unusable* from *this number is fine but under-specified*, and only the second one is worth asking the caller about. Collapse them and you are back to the opaque failure that lost the booking.
+The return type is what makes this work: `(value, problem)` rather than a raise or a bare `None`. It separates *this number is unusable* from *this number is fine but under-specified*, and only the second one is worth asking the caller about. Collapse them and you're back to the opaque failure that lost the booking.
 
-And return a sentence the agent can act on:
+Then return a sentence the agent can act on:
 
 ```python
 # app/main.py
@@ -466,21 +466,21 @@ And return a sentence the agent can act on:
         }
 ```
 
-Note who that `message` is addressed to. It is not a line for the caller to hear — it is an instruction to the agent, telling it what question to ask. Both audiences share one field, and writing for the wrong one is how you end up with an agent reciting "ask the caller which country" out loud.
+Note who that `message` is addressed to. It isn't a line for the caller to hear, it's an instruction to the agent telling it what question to ask. Both audiences share one field, and writing for the wrong one is how you end up with an agent reciting "ask the caller which country" out loud.
 
 Now the same call ends with a booking, because the agent knows what to ask.
 
-The other branch earns its keep too, and a real call shows why. The system prompt is explicit that `book_appointment` must never be called with a missing or guessed field. The agent called it anyway, with the string `"unknown"` in both `customer_name` and `phone`:
+The other branch pulls its weight too, and a real call shows why. The system prompt is explicit that `book_appointment` must never be called with a missing or guessed field. The agent called it anyway, with the string `"unknown"` in both `customer_name` and `phone`:
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/assemblyai-voice-agent-http-tools-tool-feed/public" alt="Three tool calls in the demo feed: get_today returning today's date, check_availability returning four open times, and book_appointment sent with customer_name and phone both set to the string unknown, answered with a BAD PHONE badge and an instruction to ask the caller to repeat the number" caption="The bottom call is the guardrail working. The prompt said never to send a guessed field; the agent sent two. The API caught it and replied with a sentence the agent could act on instead of a status code it could only apologise for." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/tool-section.png" alt="Three tool calls in the demo feed: get_today returning today's date, check_availability returning four open times, and book_appointment sent with customer_name and phone both set to the string unknown, answered with a BAD PHONE badge and an instruction to ask the caller to repeat the number" caption="The bottom call is the guardrail working. The prompt said never to send a guessed field; the agent sent two. The API caught it and replied with a sentence the agent could act on, instead of a status code it could only apologise for." />
 
-That is worth sitting with, because it is the argument for the whole layer. A system prompt is guidance the model usually follows, not a constraint it cannot violate — and "usually" is doing a lot of work in a live phone call. `"unknown"` sails through the schema (it matches no pattern the phone field rejects, since the pattern was deliberately loosened) and lands in your API, which is the only place left that can catch it. It returns `bad_phone`, the agent re-asks, and the call survives. Had that check lived nowhere, the booking would have been written with a placeholder phone number and nobody would have found out until someone tried to call it.
+That's the argument for the whole layer, in one screenshot. A system prompt is guidance the model usually follows, not a constraint it can't violate, and "usually" covers a lot of ground on a live phone call. `"unknown"` sails through the schema, since the pattern was deliberately loosened and nothing about it looks invalid, and lands in your API, which is the only place left that can catch it. It returns `bad_phone`, the agent re-asks, and the call survives. If that check lived nowhere, the booking would have been written with a placeholder phone number and nobody would have found out until someone tried to call it.
 
-The rule this leaves you with is short enough to remember: **put a check in the schema when the agent can fix it by listening again; put it in your API when the agent needs it explained.** An `enum` of four services belongs in the schema — a caller asking for a haircut just needs re-prompting. A phone number missing a country code belongs in your API, because recovering needs a question the agent could not otherwise know to ask.
+The rule this leaves you with is short enough to remember: **put a check in the schema when the agent can fix it by listening again, and in your API when the agent needs it explained.** An `enum` of four services belongs in the schema, since a caller asking for a haircut just needs re-prompting. A phone number missing a country code belongs in your API, because recovering needs a question the agent couldn't otherwise know to ask.
 
 ## Step 6: Why localhost will never work
 
-Your tools now have URLs, and AssemblyAI calls them from its own servers. Which means `http://localhost:8000` is unreachable — not slow, not flaky, simply invisible.
+Your tools now have URLs, and AssemblyAI calls them from its own servers. Which means `http://localhost:8000` is unreachable. Not slow, not flaky, simply invisible.
 
 You need a public **HTTPS** address. With the API running locally:
 
@@ -514,7 +514,7 @@ curl -X POST https://a1b2-102-89-33-14.ngrok-free.app/tools/get_today
 
 If that returns today's date, AssemblyAI can reach it too.
 
-One trap that will bite you later: **both free tiers hand you a new URL every restart.** When yours changes, update `.env` and re-publish the agent, or it will keep calling a dead address and every tool will time out mid-conversation while the agent apologises to your caller.
+One trap that'll bite you later: **both free tiers hand you a new URL every restart.** When yours changes, update `.env` and re-publish the agent, or it'll keep calling a dead address and every tool will time out mid-conversation while the agent apologises to your caller.
 
 ## Step 7: Publishing the agent and talking to it
 
@@ -542,7 +542,7 @@ def check_reachable(base_url: str) -> None:
     print(f"  booking API reachable: {resp.json()['message']}")
 ```
 
-That reachability check is not defensive padding. Skip it and a bad URL is accepted silently, and you discover it thirty seconds into a call when the agent goes quiet and then apologises. Failing at publish time costs you a second; failing at call time costs you the demo.
+That reachability check isn't defensive padding. Skip it and a bad URL gets accepted silently, and you find out thirty seconds into a call when the agent goes quiet and then apologises. Failing at publish time costs you a second. Failing at call time costs you the demo.
 
 ```bash
 python scripts/create_agent.py
@@ -579,9 +579,9 @@ def api_token() -> dict:
     return {"token": resp.json()["token"]}
 ```
 
-Both numbers are deliberate. `expires_in_seconds=300` is how long the token can be *used to start* a session; `max_session_duration_seconds=600` caps how long that session may then run. A leaked token is worth at most one ten-minute call, which on a $4.50/hour meter is under a dollar of damage.
+Both numbers are deliberate. `expires_in_seconds=300` is how long the token can be *used to start* a session. `max_session_duration_seconds=600` caps how long that session may then run. A leaked token is worth at most one ten-minute call, which on a $4.50/hour meter is under a dollar of damage.
 
-Second, connecting to a stored agent is a one-line session update. No prompt, no tools, no voice — the server already has all of it:
+Second, connecting to a stored agent is a one-line session update. No prompt, no tools, no voice, because the server already has all of it:
 
 ```javascript
 // web/app.js
@@ -596,9 +596,9 @@ ws.onopen = () => {
 
 *[View web/app.js on GitHub](https://github.com/vicdevman/assemblyai-voice-agent-scheduler/blob/1e1c4415b4e5092f4115b6e5ae138878f0bf8dd3/web/app.js)*
 
-Compare that to the inline-tools version of the same message, which has to carry the full prompt and every tool definition on every single connection. Here the client does not know what the agent can do, and does not need to.
+Compare that to the inline-tools version of the same message, which has to carry the full prompt and every tool definition on every single connection. Here the client doesn't know what the agent can do, and doesn't need to.
 
-Audio is PCM16 at 24 kHz, base64-encoded into `input.audio` frames, with `reply.audio` coming back the same way. Ask for the microphone with `echoCancellation` on so the agent does not interrupt itself:
+Audio is PCM16 at 24 kHz, base64-encoded into `input.audio` frames, with `reply.audio` coming back the same way. Ask for the microphone with `echoCancellation` on so the agent doesn't interrupt itself:
 
 ```javascript
 // web/app.js
@@ -610,9 +610,9 @@ stream = await navigator.mediaDevices.getUserMedia({
 audioCtx = new AudioContext({ sampleRate: SAMPLE_RATE });
 ```
 
-Setting `sampleRate` on the `AudioContext` as well as on the constraint is what stops the browser resampling behind your back. Audio that "sort of works" but transcribes badly is far more confusing to debug than audio that fails outright.
+Setting `sampleRate` on the `AudioContext` as well as on the constraint is what stops the browser resampling behind your back. Audio that sort of works but transcribes badly is far more confusing to debug than audio that fails outright.
 
-Barge-in — letting the caller cut the agent off mid-sentence — is one event and one function:
+Barge-in, letting the caller cut the agent off mid-sentence, is one event and one function:
 
 ```javascript
 // web/app.js
@@ -630,9 +630,9 @@ ws.send(JSON.stringify({ type: "session.end" }));
 
 ## Step 8: Watching the calls land
 
-Here is a wrinkle worth understanding, because it is the flip side of the whole approach. Since HTTP tools execute on AssemblyAI's servers, **your browser never sees them happen.** There is no `tool.call` event to render. From the front end, the agent simply knows things.
+There's a wrinkle here that's the flip side of the whole approach. Since HTTP tools execute on AssemblyAI's servers, **your browser never sees them happen.** There's no `tool.call` event to render. From the front end, the agent simply knows things.
 
-That is fine in production and terrible for a demo, where the entire point is showing the mechanism. The fix is to log the calls where they actually arrive — in your API — with one piece of middleware:
+That's fine in production and terrible for a demo, where the entire point is showing the mechanism. The fix is to log the calls where they actually arrive, in your API, with one piece of middleware:
 
 ```python
 # app/main.py
@@ -653,13 +653,13 @@ async def record_tool_calls(request, call_next):
     )
 ```
 
-Two gotchas are buried in those last lines. Draining `response.body_iterator` consumes the stream, so you have to build a fresh `Response` from the bytes you captured — return the original and the client gets an empty body. And `content-length` has to be dropped from the copied headers, because Starlette recalculates it from the new content; leave the stale one in and the response is malformed.
+Two gotchas are buried in those last lines. Draining `response.body_iterator` consumes the stream, so you have to build a fresh `Response` from the bytes you captured. Return the original and the client gets an empty body. And `content-length` has to be dropped from the copied headers, because Starlette recalculates it from the new content. Leave the stale one in and the response is malformed.
 
-Expose that log at `/api/events`, poll it from the page while a call is live, and you get a panel that fills up in real time as AssemblyAI hits your endpoints — the right-hand pane in both screenshots above. Each agent reply carries small chips naming the tools behind it; clicking one jumps to the exact request and response, which is how the `"unknown"` phone argument in Step 5 became visible at all.
+Expose that log at `/api/events`, poll it from the page while a call is live, and you get a panel that fills up in real time as AssemblyAI hits your endpoints. That's the right-hand pane in both screenshots above. Each agent reply carries small chips naming the tools behind it, and clicking one jumps to the exact request and response, which is how the `"unknown"` phone argument in Step 5 became visible at all.
 
 Open `http://localhost:8000`, press **Start call**, and ask to book a cleaning for next Tuesday.
 
-One honest caveat before you demo this to anyone: `send_confirmation` does not send an SMS. It marks the appointment as confirmed and returns a message saying it went out, which is enough to exercise the tool-calling path end to end. Wiring it to Twilio or Africa's Talking is a small change and a genuinely good first extension — but say "simulated" out loud when you present it.
+One honest caveat before you demo this to anyone: `send_confirmation` doesn't send an SMS. It marks the appointment as confirmed and returns a message saying it went out, which is enough to exercise the tool-calling path end to end. Wiring it to Twilio or Africa's Talking is a small change and a genuinely good first extension, but say "simulated" out loud when you present it.
 
 ## Step 9: Deploying so the link outlives your terminal
 
@@ -679,44 +679,44 @@ PUBLIC_API_BASE_URL=https://your-app.onrender.com
 python scripts/create_agent.py --update <agent_id>
 ```
 
-Vercel supports FastAPI too, but its functions are ephemeral and can run on different instances per request. The browser polls `/api/events` several times a second, so it would keep missing calls that landed on another instance — the agent would work correctly while the demo panel sat empty, which is a confusing failure to debug precisely because nothing is actually broken. Move `store.py` onto a real database first and it works fine.
+Vercel supports FastAPI too, but its functions are ephemeral and can run on different instances per request. The browser polls `/api/events` several times a second, so it'd keep missing calls that landed on another instance. The agent would work correctly while the demo panel sat empty, which is a confusing failure to debug precisely because nothing is actually broken. Move `store.py` onto a real database first and it works fine.
 
-Whatever you choose, you never need server-side WebSockets. The browser talks straight to AssemblyAI; your API only ever answers plain HTTP. Deploy it once and anyone with the link can talk to the agent.
+Whatever you choose, you never need server-side WebSockets. The browser talks straight to AssemblyAI, and your API only ever answers plain HTTP. Deploy it once and anyone with the link can talk to the agent.
 
 ## Frequently Asked Questions
 
 **Q: When should I use function tools instead of HTTP tools?**
-When the tool needs something only the client has — reading the user's local filesystem, controlling the page they are looking at, or touching hardware. Anything that is really a server-side action (a database, a payment, an email, a booking) is a better fit for HTTP tools, because it removes the dispatcher entirely and keeps credentials off the client.
+When the tool needs something only the client has: reading the user's local filesystem, controlling the page they're looking at, or touching hardware. Anything that's really a server-side action (a database, a payment, an email, a booking) is a better fit for HTTP tools, because it removes the dispatcher entirely and keeps credentials off the client.
 
 **Q: Does this still work if my API is slow?**
 Each tool has `timeout_seconds`, and a tool that overruns leaves the agent waiting mid-conversation, which sounds like dead air. Keep tool handlers fast and boring. If something genuinely takes ten seconds, acknowledge it in the system prompt so the agent says "let me check that for you" before the silence.
 
 **Q: Why does my agent keep getting dates wrong?**
-Because it has no clock. See Step 3 — add a `get_today` tool and instruct the system prompt to call it before interpreting any relative day. This is the single most common bug in voice schedulers.
+Because it has no clock. See Step 3: add a `get_today` tool and instruct the system prompt to call it before interpreting any relative day. This is the single most common bug in voice schedulers.
 
 **Q: My tool calls all time out after working fine yesterday. What broke?**
 Almost certainly your tunnel URL changed. Free ngrok and Cloudflare tunnels issue a new address on every restart, and the agent is still pointed at the old one. Update `PUBLIC_API_BASE_URL` and re-run `create_agent.py --update <agent_id>`.
 
 **Q: How do I stop anyone on the internet from calling my tool endpoints?**
-They are public URLs, so treat them as such — this project is safe because there is nothing worth stealing behind them. For anything real, send a shared secret in a header on each tool's `http` block and reject requests that arrive without it, and never let a tool return data the caller in the conversation should not hear.
+They're public URLs, so treat them as such. This project is safe because there's nothing worth stealing behind them. For anything real, send a shared secret in a header on each tool's `http` block and reject requests that arrive without it, and never let a tool return data the caller in the conversation shouldn't hear.
 
 **Q: Can I use my own LLM instead of AssemblyAI's?**
-Yes. The Voice Agent API accepts any OpenAI-compatible endpoint via an `llm` block with `base_url`, `model` and `api_key`, and it must support streamed chat completions. Be deliberate about it though — latency and reliability become yours, and this is a realtime voice loop where a slow first token is immediately audible.
+Yes. The Voice Agent API accepts any OpenAI-compatible endpoint via an `llm` block with `base_url`, `model` and `api_key`, and it must support streamed chat completions. Be deliberate about it though, because latency and reliability become yours, and this is a realtime voice loop where a slow first token is immediately audible.
 
 **Q: Can I put this on a real phone number?**
-Not on a Twilio trial number, which only dials numbers you have verified in advance — so nobody else could ring your demo. On a paid number, AssemblyAI connects over SIP, and none of the architecture above changes: the agent is still a stored JSON document calling your REST API.
+Not on a Twilio trial number, which only dials numbers you've verified in advance, so nobody else could ring your demo. On a paid number AssemblyAI connects over SIP, and none of the architecture above changes: the agent is still a stored JSON document calling your REST API.
 
 **Q: Where should I take this pattern next?**
-The four tools here are a teaching set, not a product. Swapping the in-memory store for a real database, wiring `send_confirmation` to an actual SMS provider, and adding reschedule and cancel tools that look an appointment up by confirmation code are each a step toward something real. The underlying shape — a stored agent, a few HTTP tools, a service that answers in sentences — transfers to restaurants, field dispatch and support triage without changing. It is also a practical thing to know going into an **AI hackathon**, where a voice agent that survives its own demo beats one that needs a laptop kept open; browse [lablab.ai's AI hackathons](https://lablab.ai/ai-hackathons) for an event to build in.
+The four tools here are a teaching set, not a product. Swapping the in-memory store for a real database, wiring `send_confirmation` to an actual SMS provider, and adding reschedule and cancel tools that look an appointment up by confirmation code are each a step toward something real. The underlying shape, a stored agent plus a few HTTP tools plus a service that answers in sentences, transfers to restaurants, field dispatch and support triage without changing. It's also a practical thing to know going into an **AI hackathon**, where a voice agent that survives its own demo beats one that needs a laptop kept open. Browse [lablab.ai's AI hackathons](https://lablab.ai/ai-hackathons) for an event to build in.
 
 ## Conclusion
 
-The interesting thing about this build is not that it books appointments. It is how little of it is yours to run. There is no dispatcher, no persistent connection, no orchestration loop — a JSON file describing an agent, and a REST API that answers questions when asked.
+The interesting thing about this build isn't that it books appointments. It's how little of it is yours to run. There's no dispatcher, no persistent connection, no orchestration loop, just a JSON file describing an agent and a REST API that answers questions when asked.
 
 What that buys you is a voice agent shaped like ordinary web infrastructure. You can deploy it anywhere that serves HTTP, test the tools with `curl`, and hand someone a link without keeping a terminal open.
 
-The two lessons worth carrying to your own project are smaller than the architecture. Write API responses to be spoken, and make failures carry a way forward — a full day that names the next open one keeps a conversation alive where a bare error ends it. And put your validation where the agent can act on it: schema checks for what it can fix by listening again, your own code for anything that needs explaining. That distinction is one lost booking away from being obvious, and now you get it for free.
+The two lessons worth carrying to your own project are smaller than the architecture. Write API responses to be spoken, and make failures carry a way forward, because a full day that names the next open one keeps a conversation alive where a bare error ends it. And put your validation where the agent can act on it: schema checks for what it can fix by listening again, your own code for anything that needs explaining. That distinction is one lost booking away from being obvious, and now you get it for free.
 
-This shape — a stored agent, a handful of HTTP tools, and a service that answers in sentences — is one of the most reusable ideas across **AI hackathon** projects, because it swaps a fragile long-lived process for infrastructure you already know how to deploy. Browse [lablab.ai's upcoming AI hackathons](https://lablab.ai/ai-hackathons) if you want to build on it with a team.
+This shape is one of the most reusable ideas across **AI hackathon** projects, because it swaps a fragile long-lived process for infrastructure you already know how to deploy. Browse [lablab.ai's upcoming AI hackathons](https://lablab.ai/ai-hackathons) if you want to build on it with a team.
 
 Clone the repo at [vicdevman/assemblyai-voice-agent-scheduler](https://github.com/vicdevman/assemblyai-voice-agent-scheduler), and go build something that answers the phone.
