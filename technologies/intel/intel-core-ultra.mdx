@@ -1,0 +1,54 @@
+---
+title: "Intel Core Ultra"
+author: "intel"
+description: "Intel Core Ultra is Intel's client processor family combining CPU, GPU, and NPU compute for on-device AI, with Series 2 delivering up to 48 NPU TOPS and 120 TOPS of combined platform AI performance."
+---
+
+# Intel Core Ultra
+
+[Intel Core Ultra](https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2.html) is Intel's line of client processors built for AI PCs, pairing a CPU and GPU with a dedicated Neural Processing Unit (NPU) so AI workloads can run locally instead of relying on the cloud. Core Ultra Series 2 (code-named Arrow Lake and Lunar Lake) launched in 2024, and Series 3 processors are the current generation used in Intel's latest Physical AI and edge AI reference designs.
+
+| General | |
+|---------|--|
+| **Release date** | Series 2 desktop: October 10, 2024 |
+| **Developer** | Intel Corporation |
+| **Type** | Client CPU with integrated GPU and NPU |
+| **License** | Commercial hardware |
+| **Documentation** | [Core Ultra Series 2 product page](https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2.html) |
+
+---
+
+## Core Features
+
+- **Intel AI Boost NPU** — the 200V series NPU delivers up to 48 TOPS, built from two Neural Compute Engine tiles with configurable MAC engines and Movidius SHAVE DSPs.
+- **Combined platform performance** — Intel cites up to 120 TOPS of combined CPU, GPU, and NPU AI performance on Core Ultra Series 2.
+- **On-device inference** — runs optimized models through [OpenVINO](/technologies/intel/openvino) without a network round trip, reducing latency for vision and language workloads.
+- **Robotics and physical AI** — used as the compute target for [Intel Physical AI Studio](/technologies/intel/intel-physical-ai-studio) VLA policies, providing low-latency control loops for robotic systems.
+
+---
+
+## Model Variants
+
+| Variant | NPU TOPS | Combined Platform TOPS | Best for |
+|---------|----------|-------------------------|----------|
+| **Core Ultra 200V** | Up to 48 | — | Thin-and-light AI PCs |
+| **Core Ultra 200S (Desktop)** | 13 (Int8) | — | Desktop AI PC workloads |
+| **Core Ultra Series 2 (platform)** | — | Up to 120 | Combined CPU/GPU/NPU AI workloads |
+
+---
+
+## Tools and Resources
+
+- **Core Ultra Series 2 product page** — [intel.com](https://www.intel.com/content/www/us/en/products/details/processors/core-ultra/series-2.html), full spec listings by SKU.
+- **Intel NPU driver documentation** — [Intel NPU datasheet](https://edc.intel.com/content/www/us/en/design/products/platforms/details/arrow-lake-s/core-ultra-200s-series-processors-datasheet-volume-1-of-2/intel-neural-processing-unit-intel-npu/), NPU architecture details.
+
+---
+
+## Ecosystem and Integrations
+
+- Runs [OpenVINO](/technologies/intel/openvino) as its primary inference optimization layer.
+- Serves as the reference hardware target for [Intel Physical AI Studio](/technologies/intel/intel-physical-ai-studio) robotics workflows.
+
+---
+
+See the [Core Ultra Series 2 product brief](https://www.intel.com/content/www/us/en/products/docs/processors/core-ultra/core-ultra-desktop-processors-series-2-brief.html) for full SKU-level specifications.
