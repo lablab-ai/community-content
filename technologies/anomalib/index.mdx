@@ -1,0 +1,66 @@
+---
+title: "Anomalib"
+description: "Anomalib is an open-source anomaly detection library with state-of-the-art visual inspection algorithms, built by Intel's Open Edge Platform team and optimized for OpenVINO edge deployment."
+---
+
+# Anomalib
+
+Anomalib is an open-source deep learning library focused on visual anomaly detection, the task of finding and localizing defects or irregularities in images and video. First released on PyPI in December 2021, it is maintained under Intel's Open Edge Platform GitHub organization (formerly the OpenVINO Toolkit org) and ships a large collection of state-of-the-art anomaly detection algorithms alongside tools for experiment management, hyperparameter optimization, and edge inference.
+
+| General | |
+|---------|--|
+| **Company** | [Intel Open Edge Platform](https://github.com/open-edge-platform) |
+| **Founded** | First released December 2021 |
+| **Website** | [anomalib.readthedocs.io](https://anomalib.readthedocs.io/) |
+| **Documentation** | [Anomalib Documentation](https://anomalib.readthedocs.io/en/latest/markdown/get_started/anomalib.html) |
+| **GitHub** | [open-edge-platform/anomalib](https://github.com/open-edge-platform/anomalib) |
+| **Type** | Open-source anomaly detection library |
+| **License** | Apache License 2.0 |
+
+---
+
+## Core Products
+
+### Anomalib Library
+A PyTorch and PyTorch Lightning based Python library implementing multiple visual anomaly detection algorithms behind a common training and inference API, with built-in support for public and custom datasets.
+
+### Anomalib Studio
+A low-code and no-code web application for training and deploying anomaly detection models without writing Python, aimed at operational and inspection teams rather than ML engineers.
+
+---
+
+## Developer Resources
+
+Anomalib provides a full experiment-to-deployment pipeline for anomaly detection, from dataset loading through training, benchmarking, and export to OpenVINO for edge inference.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Anomalib Documentation](https://anomalib.readthedocs.io/en/latest/markdown/get_started/anomalib.html) — getting started guide and API reference
+- [GitHub](https://github.com/open-edge-platform/anomalib) — source code, examples, and release notes
+- [Defect Detection with Anomalib and OpenVINO](https://www.intel.com/content/www/us/en/developer/articles/training/defect-detection-with-anomalib.html) — Intel walkthrough tutorial
+- [MAINTAINERS.md](https://github.com/open-edge-platform/anomalib/blob/main/MAINTAINERS.md) — project maintainers and governance
+
+---
+
+## Key Features
+
+**State-of-the-Art Algorithm Collection**
+Anomalib implements a wide range of anomaly detection approaches in a single, benchmarkable codebase, letting teams compare algorithms on the same dataset without reimplementing each one.
+
+**Multiple Inference Backends**
+Trained models can be exported and run through Torch, Lightning, Gradio, or OpenVINO Intermediate Representation, with the OpenVINO path providing accelerated inference on Intel CPUs, GPUs, and NPUs.
+
+**Edge-Ready Export**
+Built-in export to OpenVINO IR makes Anomalib models deployable on constrained edge hardware, aligning it with Intel's broader edge AI stack including [OpenVINO](/technologies/intel/openvino) and [Intel Core Ultra](/technologies/intel/intel-core-ultra) processors.
+
+---
+
+## Use Cases
+
+**Industrial Visual Inspection**
+Detect and localize manufacturing defects, such as surface scratches or missing components, from camera images on a production line.
+
+**Physical AI Anomaly Detection**
+Pair Anomalib with [Intel Physical AI Studio](/technologies/intel/intel-physical-ai-studio) and OpenVINO to flag visual anomalies as part of a robotics defect-detection and response pipeline.
