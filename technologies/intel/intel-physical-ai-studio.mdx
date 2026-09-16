@@ -1,0 +1,46 @@
+---
+title: "Intel Physical AI Studio"
+author: "intel"
+description: "Intel Physical AI Studio is an open-source, browser-based application for collecting robot demonstration data, training Vision-Language-Action model policies, and running them on real hardware."
+---
+
+# Intel Physical AI Studio
+
+[Physical AI Studio](https://github.com/open-edge-platform/physical-ai-studio) is an end-to-end, open-source framework for teaching robots to perform tasks through imitation learning. It provides a browser-based interface covering the full workflow, from hardware setup and demonstration recording through Vision-Language-Action (VLA) model training and policy execution, and is designed to run on a developer's own hardware.
+
+| General | |
+|---------|--|
+| **Release date** | 0.1.0 public preview |
+| **Developer** | Intel Corporation |
+| **Type** | Open-source robot imitation-learning and VLA training framework |
+| **License** | Open source |
+| **GitHub** | [open-edge-platform/physical-ai-studio](https://github.com/open-edge-platform/physical-ai-studio) |
+| **Documentation** | [Physical AI Studio docs](https://github.com/open-edge-platform/physical-ai-studio/blob/main/library/docs/index.md) |
+
+---
+
+## Core Features
+
+- **Browser-based UI** — covers hardware setup, dataset recording, model training, and policy execution from a single interface.
+- **Imitation learning pipeline** — trains Vision-Language-Action policies from human demonstration data rather than hand-coded control logic.
+- **physicalai-train package** — a full-cycle VLA development stack for defining a PyTorch model, benchmarking it, and exporting it to a deployment framework.
+- **Heterogeneous deployment** — pairs with [OpenVINO](/technologies/intel/openvino) to run trained policies with low-latency, low-jitter control loops on Intel Core Ultra Series 3 hardware.
+
+---
+
+## Tools and Resources
+
+- **GitHub repository** — [open-edge-platform/physical-ai-studio](https://github.com/open-edge-platform/physical-ai-studio), including release notes and setup docs.
+- **Robotics AI Suite** — Intel's broader software layer pairing Physical AI Studio with optimized ROS 2 implementations for deployment.
+- **verify_stack.py** — an included script for verifying the NPU, iGPU driver, OpenVINO, and LeRobot environment before running a workflow.
+
+---
+
+## Ecosystem and Integrations
+
+- Built to run on Intel Core Ultra Series 2/3 processors, using the onboard NPU and iGPU for training and inference.
+- Uses [OpenVINO](/technologies/intel/openvino) as its inference and optimization backend, and LeRobot on PyTorch XPU for policy training.
+
+---
+
+Get started from the [Physical AI Studio GitHub repository](https://github.com/open-edge-platform/physical-ai-studio) or the [OpenVINO Physical AI for Robotics page](https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/physical-ai.html).
