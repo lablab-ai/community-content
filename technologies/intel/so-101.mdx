@@ -1,0 +1,48 @@
+---
+title: "SO-101"
+author: "intel"
+description: "SO-101 is an open-source, 3D-printed 6-DOF robotic arm from TheRobotStudio and Hugging Face's LeRobot library, used as the reference hardware in Intel's Physical AI Studio robotics workflows."
+---
+
+# SO-101
+
+[SO-101](https://github.com/TheRobotStudio/SO-ARM100) is an open-source robotic arm designed by TheRobotStudio in collaboration with Hugging Face, and is the next-generation successor to the SO-100 arm. Every part of the project, from the mechanical design and 3D-printable files to the control code and pretrained models, is published openly, and the arm pairs directly with Hugging Face's LeRobot library for teleoperation, data collection, and imitation-learning research. It is the reference hardware used in Intel's Physical AI Studio robotics challenges.
+
+| General | |
+|---------|--|
+| **Release date** | Successor to SO-100 |
+| **Developer** | TheRobotStudio, with Hugging Face |
+| **Type** | Open-source robotic arm hardware |
+| **License** | Open source (hardware and software) |
+| **GitHub** | [TheRobotStudio/SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100) |
+| **Documentation** | [SO-101 on Hugging Face](https://huggingface.co/docs/lerobot/so101) |
+
+---
+
+## Core Features
+
+- **6 degrees of freedom** — driven by STS3215 bus servos delivering up to 30kg.cm of torque, with a 12-bit magnetic encoder and UART communication.
+- **Fully open hardware** — every mechanical part is 3D-printable from published files, with a public bill of materials.
+- **Leader/follower teleoperation** — ships as a passive leader arm and powered follower arm, the standard LeRobot setup for recording demonstration data.
+- **Improved build over SO-100** — simplified wiring and no gear-removal step required during assembly, with updated leader-arm motors.
+
+---
+
+## Tools and Resources
+
+- **SO-101 on Hugging Face** — [huggingface.co/docs/lerobot/so101](https://huggingface.co/docs/lerobot/so101), setup, assembly, and LeRobot integration guide.
+- **SO-ARM100 GitHub** — [TheRobotStudio/SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100), mechanical design, bill of materials, and assembly guide.
+- **LeRobot GitHub** — [huggingface/lerobot](https://github.com/huggingface/lerobot), the open-source library that drives SO-101 for data collection and policy training.
+- **LeRobot Discord** — [discord.com/invite/s3KuuzsPFb](https://discord.com/invite/s3KuuzsPFb), community support for hardware and software.
+
+---
+
+## Ecosystem and Integrations
+
+- Used as the robotics hardware for [Intel Physical AI Studio](/technologies/intel/intel-physical-ai-studio) VLA training and policy execution workflows.
+- Trained policies deploy through [OpenVINO](/technologies/intel/openvino) on [Intel Core Ultra](/technologies/intel/intel-core-ultra) processors for low-latency control loops.
+- Pairs with [Anomalib](/technologies/intel/anomalib) in defect-detection-and-response pipelines, where SO-101 performs the physical response after a visual anomaly is flagged.
+
+---
+
+Start with the [SO-101 setup guide on Hugging Face](https://huggingface.co/docs/lerobot/so101) or the [SO-ARM100 GitHub repository](https://github.com/TheRobotStudio/SO-ARM100).
