@@ -1,0 +1,47 @@
+---
+title: "OpenVINO"
+author: "intel"
+description: "OpenVINO is Intel's open-source toolkit for optimizing and deploying deep learning inference across computer vision, generative AI, speech, and NLP workloads, from edge devices to cloud servers."
+---
+
+# OpenVINO
+
+[OpenVINO](https://github.com/openvinotoolkit/openvino) (Open Visual Inference and Neural Network Optimization) is Intel's open-source toolkit for accelerating deep learning inference. First released on May 16, 2018, it takes trained models from popular frameworks and compiles them to run efficiently across Intel CPUs, integrated and discrete GPUs, and NPUs, without requiring developers to rewrite their models for each target device.
+
+| General | |
+|---------|--|
+| **Release date** | May 16, 2018 (initial release) |
+| **Developer** | Intel Corporation |
+| **Type** | Open-source inference optimization toolkit |
+| **License** | Apache License 2.0 |
+| **GitHub** | [openvinotoolkit/openvino](https://github.com/openvinotoolkit/openvino) |
+| **Documentation** | [OpenVINO for AI PC](https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/ai-pc.html) |
+
+---
+
+## Core Features
+
+- **Framework interoperability** — imports models trained in PyTorch, TensorFlow, ONNX, Keras, PaddlePaddle, and JAX/Flax without manual conversion.
+- **Heterogeneous execution** — runs the same compiled model across Intel CPUs, GPUs, and NPUs, letting the runtime pick the most efficient device.
+- **Generative AI support** — the OpenVINO GenAI repository and OpenVINO Tokenizers add pipelines for running LLMs and diffusion models on Intel hardware.
+- **Quantization and compression** — the Neural Network Compression Framework (NNCF) applies quantization, pruning, and sparsity to shrink models for edge deployment.
+- **Model serving** — OpenVINO Model Server (OVMS) exposes optimized models as a scalable inference service.
+
+---
+
+## Tools and Resources
+
+- **Optimum Intel** — integrates OpenVINO with the Hugging Face API for direct model loading and optimization.
+- **OpenVINO Physical AI for Robotics** — extends OpenVINO to robot-policy deployment as part of Intel's Robotics AI Suite.
+- **GitHub repository** — [github.com/openvinotoolkit/openvino](https://github.com/openvinotoolkit/openvino).
+
+---
+
+## Ecosystem and Integrations
+
+- Used as the deployment layer in Intel's [Physical AI Studio](/technologies/intel/intel-physical-ai-studio) VLA workflow, optimizing trained policies for Intel Core Ultra processors.
+- Runs across Intel's AI PC lineup (Core Ultra) as well as Xeon servers and Intel Tiber AI Cloud instances.
+
+---
+
+Start with the [OpenVINO GitHub repository](https://github.com/openvinotoolkit/openvino) or the [AI PC developer guide](https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/ai-pc.html) to install the toolkit and run a first inference pipeline.
