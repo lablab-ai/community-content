@@ -1,0 +1,791 @@
+---
+title: "Vultr Serverless Inference Tutorial: Build an Auditable Tool-Calling Agent for AI Hackathons"
+description: "AI hackathon guide: build an auditable tool-calling support agent with Vultr Serverless Inference, policy grounding, FastAPI, and safe action logs."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e8d8f67c-936e-4167-4c9e-ce5dacf15500/public"
+authorUsername: "stevekimoi"
+---
+
+# Build an Auditable Tool-Calling Agent with Vultr Serverless Inference
+
+AI agents become much more useful when they can take action. They also become much riskier. A support agent that can look up a customer, draft a refund, or escalate a security case needs clear boundaries, policy context, and an audit trail that explains what happened after the model responded.
+
+In this tutorial, you will build a support operations agent with **Vultr Serverless Inference**. The agent reads a support ticket, grounds the decision in policy text, lets the model request tool calls, executes only allowlisted tools, and records every requested, blocked, dry-run, or completed action in a JSONL audit log.
+
+This is a strong pattern for **AI hackathons**, especially agent-focused challenges where judges need to see more than a chatbot. A demo that shows policy-grounded tool use, sandboxed actions, and transparent logs is easier to trust in enterprise, fintech, healthcare, education, and customer support tracks. If you are looking for a place to build with this stack, browse [upcoming AI hackathons on LabLab.ai](https://lablab.ai/ai-hackathons).
+
+Vultr's chat endpoint supports tool calling through the OpenAI-compatible API shape, and Vultr also provides Vector Store and RAG endpoints for grounding model responses in your own documents. In this build, you will start with a local policy retriever so the project is runnable in one sitting, then you will see exactly where to swap in Vultr Vector Store for a production or hackathon submission version.
+
+## What You Will Build
+
+You will build a FastAPI service and CLI that process support tickets through a safe tool-calling workflow:
+
+- Load a support ticket from a small JSON dataset
+- Retrieve the most relevant policy snippets
+- Send the ticket, policy context, and tool schemas to Vultr Serverless Inference
+- Validate the model's requested tool calls against a local allowlist
+- Run safe tools such as `lookup_customer`, `draft_refund`, and `escalate_ticket`
+- Keep refund actions in dry-run mode by default
+- Write a JSONL audit log for every action
+
+**Stack:** Python 3.10+, FastAPI, OpenAI Python SDK, Vultr Serverless Inference, Vultr Vector Store, JSONL audit logs.
+
+## See It Running First
+
+Create the finished project locally:
+
+```bash
+mkdir vultr-auditable-tool-calling-agent
+cd vultr-auditable-tool-calling-agent
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Create `requirements.txt`:
+
+```txt
+fastapi>=0.115.0
+openai>=1.60.0
+pydantic>=2.9.0
+python-dotenv>=1.0.1
+uvicorn[standard]>=0.30.0
+```
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+By the end of the tutorial, the safe mock run will produce output like this:
+
+```json
+{
+  "ticket_id": "TCK-1001",
+  "policy_context": [
+    "refund-window",
+    "billing-credit"
+  ],
+  "tool_results": [
+    {
+      "found": true,
+      "customer_id": "CUST-0842",
+      "plan": "Team",
+      "account_status": "active",
+      "refunds_last_12_months": 0,
+      "risk": "low"
+    },
+    {
+      "status": "dry_run",
+      "tool": "draft_refund",
+      "arguments": {
+        "customer_id": "CUST-0842",
+        "amount_usd": 49,
+        "reason": "Duplicate charge within the 30-day refund window."
+      }
+    }
+  ],
+  "audit_log": "audit_log.jsonl"
+}
+```
+
+The important detail is that the model does not directly perform the refund. It asks for a tool call, your application validates that request, and the refund stays in dry-run mode unless you explicitly allow it.
+
+## Prerequisites
+
+Before you start, make sure you have:
+
+- Python 3.10 or newer
+- A Vultr account
+- A Vultr Serverless Inference subscription
+- A Vultr Serverless Inference API key
+- Basic comfort with Python, JSON, and terminal commands
+
+You can create a Serverless Inference subscription from the Vultr console under **Products > Serverless > Inference**. Vultr's docs explain how to retrieve the inference API key from the subscription overview page, and the chat completion endpoint is available at `https://api.vultrinference.com/v1/chat/completions`.
+
+Tool calling on Vultr's standard chat endpoint is documented for the `kimi-k2-instruct` model. For RAG-based flows, Vultr's RAG chat endpoint also supports tool calling with supported RAG models. Check the current Vultr model list in your account before you build your final AI hackathon submission.
+
+## Step 1: Add Environment Files
+
+Create `.env.example`:
+
+```bash
+INFERENCE_API_KEY=your_vultr_serverless_inference_key
+VULTR_MODEL=kimi-k2-instruct
+DRY_RUN=true
+```
+
+Create `.gitignore`:
+
+```gitignore
+.env
+.venv/
+__pycache__/
+*.pyc
+audit_log.jsonl
+```
+
+The `.env.example` file documents the variables readers need, while `.gitignore` keeps real credentials and generated audit logs out of version control. This matters in AI hackathon projects because teams often push quickly near submission time; keeping secrets out of Git from the first commit prevents avoidable cleanup later.
+
+## Step 2: Create Demo Tickets and Policies
+
+Create `policies.json`:
+
+```json
+[
+  {
+    "id": "refund-window",
+    "title": "Refund eligibility",
+    "text": "Refunds are allowed within 30 days of purchase when the account is active, the customer has fewer than two prior refunds in the last 12 months, and the refund amount is below 100 USD. Refunds above 100 USD require human approval."
+  },
+  {
+    "id": "security-escalation",
+    "title": "Security escalation",
+    "text": "Requests involving credential resets, suspicious login activity, account ownership disputes, or payment method changes must be escalated to the security queue. The support agent may draft the escalation but must not complete the account change."
+  },
+  {
+    "id": "billing-credit",
+    "title": "Service credit",
+    "text": "A service credit can be drafted for verified downtime when the incident ID is present. The draft must include customer ID, incident ID, requested credit amount, and the supporting policy reason."
+  }
+]
+```
+
+Create `tickets.json`:
+
+```json
+[
+  {
+    "ticket_id": "TCK-1001",
+    "customer_id": "CUST-0842",
+    "subject": "Refund request for duplicate charge",
+    "body": "I was charged twice for my March subscription. The duplicate payment was 49 USD and happened 12 days ago. Can you refund the extra charge?"
+  },
+  {
+    "ticket_id": "TCK-1002",
+    "customer_id": "CUST-1930",
+    "subject": "Change account owner",
+    "body": "Our admin left the company and I need you to move ownership to my email today. I cannot access the old admin inbox."
+  },
+  {
+    "ticket_id": "TCK-1003",
+    "customer_id": "CUST-7721",
+    "subject": "Downtime credit",
+    "body": "We had downtime during incident INC-4421 and want a 30 USD credit on the next invoice."
+  }
+]
+```
+
+These files give the agent enough context to demonstrate different safety paths: a low-risk refund draft, a security escalation, and a billing credit case. In a production version, `policies.json` would be replaced by documents stored in Vultr Vector Store and retrieved through the RAG chat endpoint.
+
+## Step 3: Build a Lightweight Policy Retriever
+
+Create `policy_store.py`:
+
+```python
+import json
+from pathlib import Path
+
+
+def load_policies(path: str = "policies.json") -> list[dict]:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def retrieve_policy_context(query: str, policies: list[dict], limit: int = 2) -> list[dict]:
+    query_terms = {term.strip(".,!?;:").lower() for term in query.split()}
+    ranked = []
+
+    for policy in policies:
+        haystack = f"{policy['title']} {policy['text']}".lower()
+        score = sum(1 for term in query_terms if term and term in haystack)
+        ranked.append((score, policy))
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return [policy for score, policy in ranked[:limit] if score > 0] or policies[:limit]
+```
+
+This simple retriever keeps the tutorial runnable without a vector database. The load-bearing idea is the same one you would use with Vultr Vector Store: retrieve a small amount of relevant policy context before asking the model to choose an action.
+
+For the full Vultr version, create a vector store collection, upload policy files, then call the RAG endpoint at:
+
+```text
+https://api.vultrinference.com/v1/chat/completions/RAG
+```
+
+The RAG request includes the `collection` ID, `model`, `messages`, and the same tool definitions you will add below.
+
+## Step 4: Define the Only Tools the Agent May Use
+
+Create `tools.py`:
+
+```python
+from datetime import datetime, timezone
+
+
+CUSTOMERS = {
+    "CUST-0842": {
+        "plan": "Team",
+        "account_status": "active",
+        "refunds_last_12_months": 0,
+        "risk": "low",
+    },
+    "CUST-1930": {
+        "plan": "Enterprise",
+        "account_status": "active",
+        "refunds_last_12_months": 1,
+        "risk": "high",
+    },
+    "CUST-7721": {
+        "plan": "Business",
+        "account_status": "active",
+        "refunds_last_12_months": 0,
+        "risk": "medium",
+    },
+}
+
+
+def lookup_customer(customer_id: str) -> dict:
+    customer = CUSTOMERS.get(customer_id)
+    if not customer:
+        return {"found": False, "customer_id": customer_id}
+    return {"found": True, "customer_id": customer_id, **customer}
+
+
+def draft_refund(customer_id: str, amount_usd: float, reason: str) -> dict:
+    return {
+        "status": "drafted",
+        "customer_id": customer_id,
+        "amount_usd": amount_usd,
+        "reason": reason,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def escalate_ticket(ticket_id: str, queue: str, reason: str) -> dict:
+    return {
+        "status": "escalated",
+        "ticket_id": ticket_id,
+        "queue": queue,
+        "reason": reason,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+TOOL_REGISTRY = {
+    "lookup_customer": {
+        "callable": lookup_customer,
+        "schema": {
+            "type": "function",
+            "function": {
+                "name": "lookup_customer",
+                "description": "Look up customer status, plan, refund history, and risk level.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "customer_id": {"type": "string", "description": "Customer ID such as CUST-0842"}
+                    },
+                    "required": ["customer_id"],
+                },
+            },
+        },
+    },
+    "draft_refund": {
+        "callable": draft_refund,
+        "schema": {
+            "type": "function",
+            "function": {
+                "name": "draft_refund",
+                "description": "Draft a refund. This never sends money; it creates a reviewable draft only.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "customer_id": {"type": "string"},
+                        "amount_usd": {"type": "number"},
+                        "reason": {"type": "string"},
+                    },
+                    "required": ["customer_id", "amount_usd", "reason"],
+                },
+            },
+        },
+    },
+    "escalate_ticket": {
+        "callable": escalate_ticket,
+        "schema": {
+            "type": "function",
+            "function": {
+                "name": "escalate_ticket",
+                "description": "Escalate a ticket to a human review queue.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "ticket_id": {"type": "string"},
+                        "queue": {"type": "string", "enum": ["billing", "security", "support_lead"]},
+                        "reason": {"type": "string"},
+                    },
+                    "required": ["ticket_id", "queue", "reason"],
+                },
+            },
+        },
+    },
+}
+
+
+def tool_schemas() -> list[dict]:
+    return [entry["schema"] for entry in TOOL_REGISTRY.values()]
+```
+
+The registry is the sandbox boundary. The model can ask for a tool, but your application decides whether that tool exists, whether its arguments are valid JSON, and whether it should run in dry-run mode. If a model invents `delete_account` or `send_wire_transfer`, the application will block it because the function is not in `TOOL_REGISTRY`.
+
+## Step 5: Add the Audit Log
+
+Create `audit.py`:
+
+```python
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+class AuditLog:
+    def __init__(self, path: str = "audit_log.jsonl") -> None:
+        self.path = Path(path)
+
+    def write(self, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
+        event = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "event_type": event_type,
+            "payload": payload,
+        }
+        with self.path.open("a", encoding="utf-8") as audit_file:
+            audit_file.write(json.dumps(event) + "\n")
+        return event
+```
+
+The audit log is intentionally boring: one JSON object per line. That makes it easy to inspect in a terminal, ship to object storage, or import into a dashboard later. For an AI hackathon demo, open this file after running a ticket and show judges the sequence of `ticket_received`, `tool_requested`, `tool_dry_run`, and `agent_finished` events.
+
+## Step 6: Build the Tool-Calling Agent
+
+Create `agent.py`:
+
+```python
+import argparse
+import json
+import os
+from pathlib import Path
+from typing import Any
+
+from audit import AuditLog
+from policy_store import load_policies, retrieve_policy_context
+from tools import TOOL_REGISTRY, tool_schemas
+
+
+SYSTEM_PROMPT = """You are a support operations agent.
+Use policy context before taking action.
+You may call only the provided tools.
+Prefer draft actions and human escalation over irreversible account changes.
+Return a concise final answer with the decision, action taken, and audit note."""
+
+
+def load_ticket(ticket_id: str, path: str = "tickets.json") -> dict[str, Any]:
+    tickets = json.loads(Path(path).read_text(encoding="utf-8"))
+    for ticket in tickets:
+        if ticket["ticket_id"] == ticket_id:
+            return ticket
+    raise ValueError(f"Ticket {ticket_id} was not found")
+
+
+def build_messages(ticket: dict[str, Any], policy_context: list[dict[str, str]]) -> list[dict[str, str]]:
+    policies = "\n\n".join(
+        f"{policy['title']} ({policy['id']}): {policy['text']}" for policy in policy_context
+    )
+    user_content = f"""Policy context:
+{policies}
+
+Ticket:
+ID: {ticket['ticket_id']}
+Customer: {ticket['customer_id']}
+Subject: {ticket['subject']}
+Body: {ticket['body']}
+
+Decide the safest next action. Use a tool when customer lookup, refund drafting, or escalation is needed."""
+    return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_content}]
+```
+
+This first part loads the ticket and builds the prompt. Notice that the prompt does not say "you are allowed to do anything." It gives the model a narrow job and pushes it toward draft actions and escalation when the request is sensitive.
+
+Add the mock model response helper:
+
+```python
+def mock_model_response(ticket: dict[str, Any]) -> dict[str, Any]:
+    body = ticket["body"].lower()
+    if "charged twice" in body or "refund" in body:
+        return {
+            "content": "",
+            "tool_calls": [
+                {
+                    "id": "call_lookup",
+                    "type": "function",
+                    "function": {
+                        "name": "lookup_customer",
+                        "arguments": json.dumps({"customer_id": ticket["customer_id"]}),
+                    },
+                },
+                {
+                    "id": "call_refund",
+                    "type": "function",
+                    "function": {
+                        "name": "draft_refund",
+                        "arguments": json.dumps(
+                            {
+                                "customer_id": ticket["customer_id"],
+                                "amount_usd": 49,
+                                "reason": "Duplicate charge within the 30-day refund window.",
+                            }
+                        ),
+                    },
+                },
+            ],
+        }
+    if "ownership" in body or "admin" in body:
+        return {
+            "content": "",
+            "tool_calls": [
+                {
+                    "id": "call_escalate",
+                    "type": "function",
+                    "function": {
+                        "name": "escalate_ticket",
+                        "arguments": json.dumps(
+                            {
+                                "ticket_id": ticket["ticket_id"],
+                                "queue": "security",
+                                "reason": "Ownership change requires human security review.",
+                            }
+                        ),
+                    },
+                }
+            ],
+        }
+    return {
+        "content": "",
+        "tool_calls": [
+            {
+                "id": "call_credit",
+                "type": "function",
+                "function": {
+                    "name": "escalate_ticket",
+                    "arguments": json.dumps(
+                        {
+                            "ticket_id": ticket["ticket_id"],
+                            "queue": "billing",
+                            "reason": "Downtime credit requires incident verification before approval.",
+                        }
+                    ),
+                },
+            }
+        ],
+    }
+```
+
+The mock path is useful for demos, tests, and workshops. It returns the same kind of `tool_calls` object that an OpenAI-compatible chat completion response uses, so the rest of your code exercises the same validation and audit logic.
+
+Add the Vultr API call and tool executor:
+
+```python
+def call_vultr(messages: list[dict[str, str]], model: str) -> dict[str, Any]:
+    from openai import OpenAI
+
+    client = OpenAI(api_key=os.environ["INFERENCE_API_KEY"], base_url="https://api.vultrinference.com/v1")
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        tools=tool_schemas(),
+        tool_choice="auto",
+        max_tokens=512,
+    )
+    return response.choices[0].message.model_dump()
+
+
+def execute_tool_call(tool_call: dict[str, Any], audit: AuditLog, dry_run: bool) -> dict[str, Any]:
+    function = tool_call.get("function", {})
+    name = function.get("name")
+    raw_arguments = function.get("arguments") or "{}"
+
+    audit.write("tool_requested", {"tool": name, "arguments": raw_arguments})
+
+    if name not in TOOL_REGISTRY:
+        result = {"status": "blocked", "reason": f"Tool {name} is not allowlisted"}
+        audit.write("tool_blocked", result)
+        return result
+
+    try:
+        arguments = json.loads(raw_arguments)
+    except json.JSONDecodeError as exc:
+        result = {"status": "blocked", "reason": f"Invalid JSON arguments: {exc}"}
+        audit.write("tool_blocked", result)
+        return result
+
+    if dry_run and name in {"draft_refund"}:
+        result = {"status": "dry_run", "tool": name, "arguments": arguments}
+        audit.write("tool_dry_run", result)
+        return result
+
+    result = TOOL_REGISTRY[name]["callable"](**arguments)
+    audit.write("tool_executed", {"tool": name, "result": result})
+    return result
+```
+
+This is the core safety layer. The model response is treated as an untrusted request, not as an instruction your program blindly follows. The executor records the request first, blocks unknown tools, blocks malformed arguments, and keeps refund drafting in dry-run mode unless you run with `--apply`.
+
+Finish `agent.py`:
+
+```python
+def run_agent(ticket_id: str, mock: bool, dry_run: bool) -> dict[str, Any]:
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+    except ImportError:
+        pass
+
+    audit = AuditLog()
+    ticket = load_ticket(ticket_id)
+    policies = load_policies()
+    policy_context = retrieve_policy_context(f"{ticket['subject']} {ticket['body']}", policies)
+    messages = build_messages(ticket, policy_context)
+
+    audit.write("ticket_received", {"ticket_id": ticket_id, "customer_id": ticket["customer_id"]})
+
+    if mock:
+        assistant_message = mock_model_response(ticket)
+    else:
+        if not os.getenv("INFERENCE_API_KEY"):
+            raise RuntimeError("Set INFERENCE_API_KEY or run with --mock")
+        assistant_message = call_vultr(messages, os.getenv("VULTR_MODEL", "kimi-k2-instruct"))
+
+    results = []
+    for tool_call in assistant_message.get("tool_calls") or []:
+        results.append(execute_tool_call(tool_call, audit, dry_run=dry_run))
+
+    final = {
+        "ticket_id": ticket_id,
+        "policy_context": [policy["id"] for policy in policy_context],
+        "tool_results": results,
+        "audit_log": str(audit.path),
+    }
+    audit.write("agent_finished", final)
+    return final
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ticket", default="TCK-1001")
+    parser.add_argument("--mock", action="store_true")
+    parser.add_argument("--apply", action="store_true", help="Execute draft_refund instead of dry-running it")
+    args = parser.parse_args()
+
+    result = run_agent(ticket_id=args.ticket, mock=args.mock, dry_run=not args.apply)
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Run the mock refund flow:
+
+```bash
+python agent.py --ticket TCK-1001 --mock
+```
+
+Run the security escalation flow:
+
+```bash
+python agent.py --ticket TCK-1002 --mock
+```
+
+Inspect the audit log:
+
+```bash
+tail -n 8 audit_log.jsonl
+```
+
+You should see events for the ticket, each requested tool, the dry-run or executed result, and the final agent response.
+
+## Step 7: Run with Vultr Serverless Inference
+
+Copy your example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and add your real inference key:
+
+```bash
+INFERENCE_API_KEY=your_real_key_here
+VULTR_MODEL=kimi-k2-instruct
+DRY_RUN=true
+```
+
+Then run:
+
+```bash
+python agent.py --ticket TCK-1001
+```
+
+The code uses the OpenAI Python SDK with Vultr's OpenAI-compatible base URL:
+
+```python
+client = OpenAI(
+    api_key=os.environ["INFERENCE_API_KEY"],
+    base_url="https://api.vultrinference.com/v1",
+)
+```
+
+If you want to use Vultr Vector Store instead of the local `policy_store.py`, create a collection, upload your policy files, and call the RAG endpoint with your collection ID. The important design stays the same: retrieval happens before tool execution, and tool execution still happens only after your application validates the model's requested function call.
+
+## Step 8: Expose the Agent with FastAPI
+
+Create `app.py`:
+
+```python
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+from agent import run_agent
+
+
+app = FastAPI(title="Vultr Auditable Tool-Calling Agent")
+
+
+class TicketRunRequest(BaseModel):
+    ticket_id: str = "TCK-1001"
+    mock: bool = False
+    dry_run: bool = True
+
+
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.post("/run-ticket")
+def run_ticket(request: TicketRunRequest) -> dict:
+    return run_agent(ticket_id=request.ticket_id, mock=request.mock, dry_run=request.dry_run)
+```
+
+Start the API:
+
+```bash
+uvicorn app:app --reload --port 8000
+```
+
+Test the safe mock endpoint:
+
+```bash
+curl -X POST http://127.0.0.1:8000/run-ticket \
+  -H "Content-Type: application/json" \
+  -d '{"ticket_id":"TCK-1001","mock":true,"dry_run":true}'
+```
+
+For an AI hackathon demo, this endpoint gives you a clean backend for a simple frontend: a dropdown of tickets, a "Run Agent" button, an output panel for tool results, and a second panel for the audit log.
+
+## Step 9: Deploy on Vultr Cloud Compute
+
+For a quick demo deployment, create an Ubuntu instance on Vultr Cloud Compute, SSH into it, and install Python:
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip
+```
+
+Copy your project to the server:
+
+```bash
+scp -r ./vultr-auditable-tool-calling-agent root@YOUR_VULTR_IP:/opt/vultr-agent
+```
+
+SSH into the server and run:
+
+```bash
+cd /opt/vultr-agent
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+nano .env
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+
+Test it from your machine:
+
+```bash
+curl -X POST http://YOUR_VULTR_IP:8000/run-ticket \
+  -H "Content-Type: application/json" \
+  -d '{"ticket_id":"TCK-1002","mock":true,"dry_run":true}'
+```
+
+Before showing this publicly, add a Vultr Firewall Group and restrict port `8000` to your own IP address. For a longer-running app, put Nginx in front of Uvicorn and run the app with a process manager such as `systemd`.
+
+## Step 10: Make It Hackathon-Ready
+
+The base project is intentionally compact. To turn it into a stronger AI hackathon submission, add one or two features that make the safety story visible:
+
+- Replace local policy retrieval with Vultr Vector Store and the RAG chat endpoint
+- Add a small web UI that shows the ticket, retrieved policies, tool calls, and audit events side by side
+- Add a blocked-tool test where the model requests a function that is not in `TOOL_REGISTRY`
+- Store audit logs in a database or object bucket
+- Add a human approval screen for dry-run refunds
+
+The best demo is not "the model can call a tool." The best demo is "the model asked to act, the app checked policy and permissions, and every action is reviewable."
+
+## Troubleshooting
+
+If the model does not call a tool, confirm that you are using a model that supports tool calling and that `tool_choice` is set to `auto`. Vultr's chat endpoint documentation notes tool calling support for `kimi-k2-instruct` on the standard chat endpoint.
+
+If you get an authentication error, make sure you are using the Serverless Inference API key, not only your general Vultr account API token. The inference key is available from the Serverless Inference subscription page.
+
+If your API starts but the endpoint fails, run the CLI first:
+
+```bash
+python agent.py --ticket TCK-1001 --mock
+```
+
+The CLI is easier to debug because it removes HTTP from the path. Once that works, return to FastAPI.
+
+## Frequently Asked Questions
+
+### How can I use Vultr Serverless Inference in an AI hackathon?
+
+Use it as the reasoning layer for an agent that needs to classify requests, call tools, summarize data, or work with retrieved context. For hackathons, the OpenAI-compatible API shape is helpful because teams can build quickly with familiar SDK patterns while still deploying on Vultr.
+
+### Is this suitable for beginners in AI hackathons?
+
+This tutorial is best for intermediate developers. Beginners can still follow it if they are comfortable with Python and JSON, but tool calling, policy grounding, and deployment introduce more moving parts than a basic chatbot.
+
+### What AI hackathon project ideas can use this pattern?
+
+You can adapt this pattern into a customer support agent, a finance approval assistant, a cloud incident responder, an HR policy assistant, or a healthcare intake triage tool. The common thread is controlled action: the agent can request tools, but the app validates and logs everything.
+
+### Why not let the model directly perform actions?
+
+Models can misunderstand policies, produce malformed arguments, or request actions your system should not allow. A local tool registry, dry-run mode, and audit log keep the model useful without giving it unchecked authority.
+
+### How long does this take to build during an AI hackathon?
+
+The core CLI and API can be built in 60 to 90 minutes. Budget extra time if you add Vultr Vector Store, a frontend, authentication, or a polished demo video.
+
+## Conclusion
+
+You now have an auditable tool-calling agent that can process support tickets, retrieve policy context, request actions through Vultr Serverless Inference, and execute only the tools your application allows. The same pattern works for any AI agent that needs to do real work without becoming a black box.
+
+For a hackathon submission, the next upgrade is Vultr Vector Store. Move the policy text into a collection, call the RAG chat completion endpoint, and keep the same audit-first tool executor. That gives judges a clear story: grounded reasoning, controlled actions, and proof of what the agent did.
+
+## Sources
+
+- [Vultr Serverless Inference chat endpoint](https://docs.vultr.com/products/serverless/inference/management/usage/chat)
+- [Vultr Serverless Inference Python guide](https://docs.vultr.com/how-to-use-vultr-serverless-inference-in-python)
+- [Vultr Vector Store overview](https://docs.vultr.com/products/serverless/inference/vector-store)
+- [Vultr RAG chat collection guide](https://docs.vultr.com/products/compute/serverless-inference/vector-store/rag-chat-collection)
+- [Vultr Serverless Inference API reference](https://api.vultrinference.com/)
