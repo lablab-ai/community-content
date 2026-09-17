@@ -1,0 +1,115 @@
+---
+title: "Talk to the images in PDFs with Gemini"
+description: "Leverage the power of Gemini Vision Pro and Spire to answer natural language questions based on images in PDFs"
+image: ""
+authorUsername: "raghavan848"
+---
+
+## Introduction
+With the advent of Retrieval Augmented Generation, there are several applications using Vector Search + Large Language models to answer natural language questions based on the text in the PDFs. In this article, we will show how to use Gemini and answer natural language questions based on the images in a PDF.
+
+This article leverages spire and Gemini-Pro-Vision to build a multi-modal RAG application that can talk to images in the PDF to answer natural language questions.
+Existing solutions:
+There are example solutions of Multi Modal RAG solutions [1] that uses GPT-4V  and llamaindex. There is an example that uses langchain [2]. Another recent tutorial is that is based on Gemini and llama index [3] However, there are very few examples that leverage spire and Gemini-Pro-Vision. For scholarly purposes, it is important to learn to extract images for ourselves from PDFs and be able to use Gemini without having to rely on popular off-the-shelf orchestration libraries.
+
+
+## Step-by-Step Tutorial: Flask Web Application for Image-Based AI Responses
+
+This tutorial explains a Flask web application designed to process images and text inputs, extract information from PDFs, and generate responses using the Google Gemini AI model.
+
+### Requirements
+To run this application, certain Python libraries and a Google API key are required. Here is an example of what your `requirements.txt` file should include:
+
+```
+Flask
+google-generativeai
+Pillow
+Spire.PDF
+werkzeug
+```
+
+### Gemini API Key
+The Gemini API Key is crucial for accessing Google's Gemini AI model. This key should be kept secure and not shared publicly. In the code, it's set as:
+
+```python
+GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
+```
+
+Replace `"YOUR_GOOGLE_API_KEY"` with your actual Google API key.
+
+### High-Level Pseudo Code
+1. **Import necessary libraries**: Flask for web framework, Pillow for image processing, and Google's Gemini AI and Spire.PDF for PDF processing.
+2. **Initialize Flask app** and configure upload folder and allowed file extensions.
+3. **Define helper functions**:
+   - `allowed_file(filename)`: Check if the uploaded file is of an allowed type.
+   - `extract_images_from_pdf(pdf_path, output_directory)`: Extract images from a PDF and save them.
+4. **Set up the Gemini AI model** with the API key.
+5. **Define Flask routes**:
+   - `index()`: Handle GET and POST requests. On POST, process uploaded files, extract text and images, and use the Gemini model to generate a response.
+6. **Run the Flask app**.
+
+### Explaining the Prompt
+The prompt is a string that guides the Gemini AI model on how to process the input images and text. It sets the context for the AI to understand that it should answer questions based on the provided images. The prompt includes instructions on how the response should be formatted and what it should contain, like citing the image used for the answer.
+
+### Code Snippets
+
+#### Configure Flask and File Uploads
+```python
+app = Flask(__name__)
+UPLOAD_FOLDER = 'uploads/'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'png'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+```
+
+#### Extract Images from PDF
+```python
+def extract_images_from_pdf(pdf_path, output_directory):
+    # PDF processing code here...
+```
+
+#### Gemini AI Model Configuration
+```python
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-pro-vision')
+```
+
+#### Flask Route for Handling Requests
+```python
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    # Code to handle file uploads and text processing...
+```
+
+#### Running the Flask App
+```python
+if __name__ == '__main__':
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    app.run(debug=True)
+```
+
+This code constructs a web application where users can upload images or PDFs, input a text question, and receive an AI-generated response based on the images. The application uses Google's Gemini AI model for generating responses and Flask as the web framework.
+
+Github link with working code: https://github.com/Raghavan1988/talk_to_images_with_gemini/
+
+## Demo screenshots
+Contrastive Chain of thought is a popular prompt engineering technique. [5] After uploading a survey paper about various prompt engineering techniques, let's ask the question "How much did Contrastive COT score in Arithematic Reasoning?"
+We can see that application was able to extract the image and answer the question using Gemini Vision Pro.
+Answer:  The image shows a table with the results of the Contrastive COT model on the Arithmetic Reasoning task. The table shows that the model achieves a score of 79.0, which is significantly higher than the score of 27.4 achieved by the standard prompting method. This demonstrates that the Contrastive COT model is better able to solve arithmetic reasoning problems than the standard prompting method.
+
+![Question](https://freeimage.host/i/JRdxrxt "Optional Title")
+![Answer](https://freeimage.host/i/JRdxUbI "Optional Title")
+
+It's important to note, LLMs may hallucinate.
+
+## Conclusion
+In summary, Gemini-pro-vision provides a powerful capability to understand images. If we can extract images from PDFs and building a wide range of multimodal RAG applications for healthcare, researchers becomes easy to implement.
+
+
+## Reference
+[1] https://blog.llamaindex.ai/multi-modal-rag-621de7525fea
+[2] https://python.langchain.com/docs/templates/rag-chroma-multi-modal
+[3] https://blog.llamaindex.ai/llamaindex-gemini-8d7c3b9ea97e
+[4] https://github.com/Raghavan1988/talk_to_images_with_gemini/
+[5] https://arxiv.org/abs/2311.09277
+
