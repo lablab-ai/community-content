@@ -1,0 +1,94 @@
+---
+title: "AI Hackathon Success Stories (Part 5): Five Builders Who Exposed the Hidden Blind Spots in AI Systems"
+description: "AI hackathon success stories: five builders who exposed systemic blind spots in AI. LUNA AI, Hearsay, JACOBI, ProcureGuard AI, and BrainConnect-ASD."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/3801a09d-3a8f-49ed-15ea-30145e734200/public"
+authorUsername: "hamza13525223081"
+---
+
+The subtlest failure of an AI system is rarely a dramatic hallucination. More often, it is a blind spot: an unexamined assumption built into the workflow that everyone accepts until someone writes software to expose it. 
+
+Across earlier installments of this series, we documented builders who [created guardrails to stop autonomous agents from acting badly](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-2), and engineers who [tackled the unglamorous plumbing first](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-4). In this fifth chapter, five builders and teams took on structural asymmetries that platforms quietly ignore: a 24-hour clock that disregards biological rhythms, the regulatory lag between spoken testimony and written policy, invisible price discrimination in online shopping, uncritical optimism in automated vendor approvals, and scanner artifacts that corrupt neuroimaging models. 
+
+They did not build passive wrappers. They engineered the missing layer of accountability.
+
+## Carolina Alvarez-Areces Miranda, Hazem Gobran, Omar Emara, and Safiullah Saleem: Bio-Intelligence for Executive Leadership
+
+Standard executive productivity tools operate on a single assumption: the 24-hour circadian day. Every morning demands the same output, every afternoon expects identical focus, and every calendar slot carries equal cognitive weight. For executive women, that assumption conflicts with an underlying biological reality: a 28-day infradian rhythm that systematically influences energy reserves, risk calibration, cognitive bandwidth, and stress resilience.
+
+At the AI Agent Olympics during Milan AI Week 2026—the same high-intensity event where Nevine Fakhereddin architected OlympusOS in [Part 2](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-2)—Carolina Alvarez-Areces Miranda and her team set out to dismantle that mismatch.
+
+LUNA AI is an agentic operating system designed to align executive decision-making with female biological cycles. Rather than treating biology as a scheduling inconvenience, LUNA treats it as strategic intelligence. Deploying specialized multi-agent workflows across Gemini, Featherless, Speechmatics, and Vultr, the system centers on a Profiler agent that constructs a dynamic cognitive baseline—incorporating strategic goals, core values, non-negotiables, and hormonal profile.
+
+LUNA schedules high-stakes negotiations and strategic pivots during peak confidence windows, reserving analytical audits for lower-energy phases. The build required navigating months of research, personal burnout, and high-pressure architecture choices before the components unified in Milan.
+
+The project earned First Place and the Champion title at the AI Agent Olympics. The team is now evolving LUNA from a personal executive assistant into an enterprise-wide multi-agent architecture.
+
+[LUNA AI](https://lablab.ai/ai-hackathons/milan-ai-week-hackathon/luna/luna-strategic-intelligence-for-executive-women)
+
+## Rifqi Haikal: The Spoken Signal Regulators Drop First
+
+Rifqi Haikal spends his days in security research, auditing smart contracts and competing in CTFs. In that discipline, the earliest indicator of a vulnerability rarely appears in an official advisory. It surfaces as an offhand remark in a discussion, a forum comment, or a question during a technical talk. By the time a formal security notice publishes, the window for proactive defense has closed.
+
+When Rifqi looked at regulatory compliance, he recognized the exact same latency. Regulatory direction does not begin on an agency's press release page. It begins as spoken intent in public hearings, legislative testimony, and panel debates. Weeks later, that intent solidifies into draft PDFs. Only at the end does it reach official portals as established policy. Most compliance tools monitor only that final step.
+
+Built solo during the Web Data UNLOCKED Hackathon—the same event where Eban Schachter built continuous DORA vendor monitoring in [Part 4](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-4)—Hearsay tracks all three stages across 125 regulatory bodies in 67 jurisdictions. Written pages stream through Bright Data's Web Unlocker, scanned PDFs are parsed with GPT-4o Vision, and spoken hearing audio is transcribed by Speechmatics before being evaluated by Claude Opus 4.7 for forward-looking policy trajectory. 
+
+Hearsay classifies each event by severity, maps it directly to SOC 2, ISO, and NIST controls, and delivers structured reasoning alongside three actionable recommendations. A single hearing remark can trigger a compliance alert weeks before formal documentation exists.
+
+The project won the Speechmatics Track at Web Data UNLOCKED. Rifqi's advice for hackathon participants: "Build the thing that already annoys you in your actual work. You make better calls under time pressure when you know which shortcuts are safe."
+
+[Hearsay](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon/rifqi-haikal/hearsay)
+
+## Rayan Sameer Salahuddin, Wasif Waseem, and Hussain S.: Flipping the Script on Dynamic Pricing
+
+Dynamic pricing algorithms have turned online shopping into a moving target. Search for a flight, a hotel room, or a consumer product, and the quote you receive is rarely a neutral reflection of market supply. It is calibrated against your digital profile: your zip code, your device hardware, how often you refresh, and tracking cookies.
+
+During the Web Data UNLOCKED Hackathon, Rayan Sameer Salahuddin, Wasif Waseem, and Hussain S. decided to reverse that dynamic. While most commercial tools use proxy networks and web scraping to extract intelligence on consumers for corporations, the Jacobi team flipped the infrastructure defensively, using enterprise proxy routing to build an adversarial probe that profiles the pricing algorithms themselves.
+
+When a user searches for an item on JACOBI, the backend fires 24 parallel, asynchronous agent streams in a sub-second burst. These agents simultaneously spoof distinct device signatures (from basic Linux setups to premium iOS configurations) and route requests across 24 geographic nodes via Bright Data's residential proxy network. By comparing quotes simultaneously, JACOBI maps the hidden pricing topology in real time, strips away demographic markups, and returns the lowest verified baseline price worldwide.
+
+Late at night, anti-bot systems began flagging the probe tree due to timing anomalies across concurrent streams. The team rapidly overhauled their async loops in Node.js and integrated Web Unlocker headers dynamically to preserve session integrity without losing sub-second speed.
+
+The project earned strong recognition at the event and has evolved into an active venture, with a V2 architecture live and investor pitches underway. Rayan's advice: "Focus on a real asymmetry. Don't just build a wrapper over an API. Find a problem where powerful entities have an unfair advantage over regular people, and use technology to tilt the balance back."
+
+[JACOBI](https://lablab.ai/ai-hackathons/brightdata-ai-agents-web-data-hackathon/brightthree/jacobi-adversarial-pricing-topology-probe)
+
+## Ihtisham Ahmad: The Agent with the Authority to Say No
+
+Enterprise procurement is traditionally slow, siloed, and vulnerable to blind spots. Assessing a new vendor requires cross-referencing balance sheets, legal liabilities, SOC 2 reports, cybersecurity assessments, and contracts. Because reviews are fragmented across departments, teams face pressure to rush approvals, often leaving critical operational exposures unexamined.
+
+At the Band of Agents Hackathon, Ihtisham Ahmad competed solo as Team Purrwolf to solve this bottleneck. Rather than building another dashboard or an uncritical summarization tool, he built ProcureGuard AI: a collaborative decision room where eight specialized AI agents review vendor credentials simultaneously alongside a human procurement lead.
+
+The system assigns distinct operational boundaries to each specialist, covering intake verification, financial ROI modeling, and regulatory compliance. But the critical architectural innovation is the Red Team Auditor. 
+
+Most multi-agent setups suffer from consensus bias, where agents reinforce one another's positive assessments. The Red Team Auditor operates as an intentional counterweight, building on the fail-closed risk gate principles seen in projects like Vertex Sentinel and BEE SENTINEL-X in [Part 2](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-2). Its sole objective is to challenge optimistic assumptions, probe for hidden liabilities, and stress-test the findings of the other seven agents. If it identifies an unaddressed security vulnerability or financial risk, it possesses the authority to issue a binding veto—immediately halting automated approvals and forcing human escalation.
+
+Managing the architecture, agent communication protocols, and UI solo under hackathon deadlines required strict prioritization. ProcureGuard AI won the Best Use of AI/ML API award, and Ihtisham is now evolving the platform into an enterprise-ready procurement solution with third-party compliance data integrations. His advice: "Start with a real problem... Give every AI agent a specific responsibility, clear boundaries, and a genuine reason to collaborate. The quality of their roles, communication, and decision process matters much more than the number of agents."
+
+[ProcureGuard AI](https://lablab.ai/ai-hackathons/band-of-agents-hackathon/purrwolf/procureguard-ai)
+
+## Raghav Sharma: Refusing the Diagnostic Benchmark Shortcut
+
+In medical machine learning, high benchmark scores can be deceptive. A model trained on resting-state fMRI scans to detect Autism Spectrum Disorder (ASD) can appear to perform exceptionally well on a test set while actually learning acquisition-site shortcuts: variations in scanner hardware, magnetic field strengths, and local preprocessing protocols across hospitals. When tested on data from an unfamiliar clinic, the model's predictive power collapses.
+
+Raghav Sharma entered the AMD Developer Hackathon 2026 to tackle this confounding problem directly. Competing solo as XonKore—in the same arena where Sardor Razikov stress-tested open-source coding agents in [Part 4](https://lablab.ai/ai-articles/lablab-hackathon-success-stories-part-4)—he built BrainConnect-ASD.
+
+Rather than treating fMRI data as flat tabular features, BrainConnect-ASD converts functional connectivity signals into graph representations evaluated by a Graph Convolutional Network (GCN). To strip out site-specific bias, Raghav implemented an adversarial site-classification branch with gradient reversal. While the feature extractor optimizes for ASD classification, it is penalized if the adversarial branch can identify which hospital collected the scan, forcing the network to isolate invariant biological markers.
+
+Raghav also fine-tuned Qwen2.5-7B with LoRA to act as an experimental interpreter, translating structured graph outputs into transparent summaries for researchers. Crucially, Raghav maintained strict scientific discipline: BrainConnect-ASD is an open-source research prototype designed to study site-invariant generalization, not a clinical diagnostic tool.
+
+That discipline extended to his evaluation. Using strict leave-one-site-out validation, models were tested only on hospital datasets unseen during training. A four-site evaluation reached a ROC AUC of 0.7872 across 529 held-out subjects; a broader 20-site evaluation across 1,102 subjects achieved 0.7298 ROC AUC. Raghav explicitly separated these metrics to avoid misleading claims. Access to AMD Instinct MI300X accelerators running ROCm proved critical, allowing him to run 60 parallel model and atlas evaluations across 20 folds within the event timeframe.
+
+BrainConnect-ASD took First Place in the Fine-Tuning on AMD GPUs track. Raghav's advice: "Define the human problem first, then translate it into a narrow technical question and a measurable evaluation method... Document the limitations. That makes a project trustworthy."
+
+[BrainConnect-ASD](https://lablab.ai/ai-hackathons/amd-developer/xonkore/brainconnect-asd)
+
+## What These Five Share
+
+None of these builders settled for a superficial demonstration. 
+
+Carolina Alvarez-Areces Miranda's team questioned a productivity paradigm that has ignored human biological rhythms for a century. Rifqi Haikal recognized that critical regulatory intelligence is spoken long before it is published. Rayan Sameer Salahuddin's team turned scraping infrastructure into a defensive shield against algorithmic price exploitation. Ihtisham Ahmad recognized that an autonomous multi-agent system without a binding veto is a liability, not an asset. And Raghav Sharma refused to pad his benchmark numbers with confounded scanner data, choosing rigorous methodology over easy marketing claims.
+
+Hackathons reward this level of conviction because building under tight constraints leaves nowhere to hide weak architecture. When a project solves a genuine structural asymmetry, the result resonates far beyond the closing ceremony.
+
+If you are building something, the next lablab hackathon may be the clearest path to finding out whether it works. Browse [upcoming AI hackathons](https://lablab.ai/events) and find your room.
