@@ -1,0 +1,642 @@
+---
+title: "Vectara Chat Tutorial: Streaming Product Docs Chatbot for AI Hackathons"
+description: "Learn how to build a streaming Vectara Chat product-docs assistant for AI hackathons. Corpus setup, multi-turn chat, citations, FCS, and a FastAPI demo you can ship in a weekend."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/123Tutorial_image_template.png"
+authorUsername: "projectcarbonfiber"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how I turn a pile of product docs into a **streaming, citation-backed chatbot** with [Vectara Chat](https://docs.vectara.com/docs/console-ui/vectara-chat-overview). This is the kind of demo that holds up on a hackathon stage when a judge asks a follow-up question.
+
+This time I want to focus on the **chat layer** itself, not another legal Streamlit clone. We will:
+
+1. Sanity-check the corpus in the Vectara Console with the Chat toggle
+2. Ingest a tiny product knowledge base with the official Python SDK
+3. Open a multi-turn chat session that remembers "it" and "that"
+4. Stream answers over FastAPI so the UI feels live
+5. Inspect and clean **Chat History Corpus** conversations like you would after a real booth demo
+
+If you are brand new to Vectara corpora and indexing, walk through the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) first. Then skim the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) for richer indexing patterns. This guide picks up where those leave off: **conversation memory, citations, factual consistency, and a deployable chat API**.
+
+### Why this matters for AI hackathons
+
+**AI hackathons** reward prototypes that stay trustworthy under pressure. A one-shot RAG call breaks the moment someone asks *"and what about refunds for that plan?"* Pronouns, prior context, and source grounding all disappear. Vectara Chat keeps a server-side session so follow-ups stay grounded in *your* corpus. Every answer can carry numbered citations plus a factual consistency score.
+
+Whether you are shipping for [LabLab.ai's global AI hackathons](https://lablab.ai/event) or an overnight online AI hackathon, a streaming docs chatbot is a solid weekend project. Clear problem, visible citations, and a live demo URL.
+
+### What Vectara Chat actually is
+
+Vectara is an API-first platform for Retrieval-Augmented Generation (RAG). You ingest private documents into a **corpus**. At query time Vectara retrieves relevant passages, then generates an answer from those passages (grounded generation), not from the model's general memory.
+
+**Vectara Chat** wraps that RAG loop in a conversation:
+
+- Opening a chat maps to `POST /v2/chats`
+- Each follow-up turn maps to `POST /v2/chats/{chat_id}/turns`
+- When you set `store=True`, turns land in your account's **Chat History Corpus** so you can audit, replay, or delete them later
+
+You can also flip on Chat inside the Console Query tab and talk to a corpus with zero code. I always do that before I write an API.
+
+### Architecture for this tutorial
+
+```
+User browser (tiny HTML)
+        │  POST /chat  (SSE stream)
+        ▼
+FastAPI service
+        │  create_chat_session + session.chat_stream
+        ▼
+Vectara Chat API v2
+  1. Resolve follow-up context from chat history
+  2. Hybrid retrieve from your product corpus
+  3. Grounded generation with citation markers [1], [2]
+  4. Optional factual consistency score (FCS)
+        │
+        ▼
+Chat History Corpus (stored turns when store=True)
+```
+
+---
+
+## Getting Started with Vectara Chat
+
+> **Free-tier note:** This tutorial is written from public Vectara docs and the official `vectara` Python SDK (checked against SDK **v0.4.3** locally). I am **not** embedding real API keys. Sign up for the free Vectara trial (plenty for hackathon-sized corpora; see the [Vectara Hackathon Guide](https://lablab.ai/t/vectara-hackathon-guide)), or ask LabLab for credits via Discord `katyatkach#9866` / `katya.tkach@newnative.ai` if you hit access issues. Replace every `YOUR_API_KEY_HERE` placeholder yourself.
+
+### Prerequisites
+
+- Python 3.10+
+- A free [Vectara Console](https://console.vectara.com/) account
+- Comfortable editing a few Python files and running a local server
+
+### Create an API key (no secrets in git)
+
+1. Log into the [Vectara Console](https://console.vectara.com/)
+2. Open **Access → API Keys** (or the Personal API Key panel)
+3. Copy your **Personal API Key**. It inherits your user permissions for create / index / query during a hackathon.
+4. Export it in your shell (never commit it):
+
+```bash
+export VECTARA_API_KEY="YOUR_API_KEY_HERE"
+```
+
+PowerShell:
+
+```powershell
+$env:VECTARA_API_KEY="YOUR_API_KEY_HERE"
+```
+
+Every SDK call authenticates with the `x-api-key` header under the hood. Treat the key like a password. For production later, split into query-only vs index keys as described in Vectara's [API key management](https://docs.vectara.com/docs/security/authentication/api-key-management) docs.
+
+### Install the SDK and FastAPI stack
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install "vectara>=0.4.3" fastapi uvicorn
+```
+
+### Console-first sanity check (skip this at your peril)
+
+Before any Python:
+
+1. Create a corpus named something like `hackathon-product-docs` and note the **corpus key**
+2. Upload one short PDF or paste a few FAQ paragraphs
+3. Open the corpus → **Query** tab → Generation → enable the **Chat** toggle
+4. Ask: *"What is the free plan limit?"* then follow with *"How do I upgrade from that?"*
+
+If the second answer still knows what "that" means, Chat is doing its job. If answers feel random, fix the corpus before you write UI code. Official walkthrough: [Vectara Chat console overview](https://docs.vectara.com/docs/console-ui/vectara-chat-overview).
+
+### Create the corpus from Python
+
+```python
+import os
+from vectara import Vectara
+from vectara.core import ApiError
+
+CORPUS_KEY = "hackathon-product-docs"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+def ensure_corpus():
+    try:
+        client.corpora.create(
+            name="Hackathon Product Docs",
+            key=CORPUS_KEY,
+        )
+        print(f"Created corpus {CORPUS_KEY}")
+    except ApiError as err:
+        # Already exists from a previous run. Fine for a weekend demo.
+        print(f"Reusing corpus ({err.status_code}): {CORPUS_KEY}")
+
+if __name__ == "__main__":
+    ensure_corpus()
+```
+
+v2 identifies corpora by the human-readable `key` you choose. No numeric corpus IDs required for the happy path.
+
+---
+
+## Building a Chatbot with Vectara
+
+### Seed a product knowledge base
+
+For an **AI hackathon** booth demo I like a self-contained corpus: pricing FAQ, support policy, and a short changelog. You can swap these for your real README later.
+
+Save as `ingest.py`:
+
+```python
+import os
+from vectara import Vectara, CoreDocument, CoreDocumentPart
+from vectara.core import ApiError
+
+CORPUS_KEY = "hackathon-product-docs"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+DOCS = [
+    {
+        "id": "pricing-faq",
+        "title": "Pricing FAQ",
+        "text": (
+            "The Free plan includes up to 50MB of indexed text and 15,000 queries per month. "
+            "The Pro plan starts at $25 per month and raises limits for corpora and queries. "
+            "Annual Pro billing includes two months free. Students get 40% off Pro with a .edu email."
+        ),
+        "metadata": {"doc_type": "faq", "product_version": "2026.09"},
+    },
+    {
+        "id": "support-policy",
+        "title": "Support Policy",
+        "text": (
+            "Email support responds within one business day on Free and within four hours on Pro. "
+            "Severity-1 outages are escalated to on-call within 15 minutes for Pro customers. "
+            "We do not provide phone support on Free. Refunds are available within 14 days of first Pro payment "
+            "if usage stayed under 1,000 queries."
+        ),
+        "metadata": {"doc_type": "policy", "product_version": "2026.09"},
+    },
+    {
+        "id": "changelog-sept",
+        "title": "September Changelog",
+        "text": (
+            "September 2026: shipped streaming chat responses, factual consistency badges in the console, "
+            "and metadata filters for product_version. Deprecated the legacy v1 query path for new apps."
+        ),
+        "metadata": {"doc_type": "changelog", "product_version": "2026.09"},
+    },
+]
+
+
+def upsert_docs():
+    for doc in DOCS:
+        client.documents.create(
+            CORPUS_KEY,
+            request=CoreDocument(
+                id=doc["id"],
+                type="core",
+                document_parts=[CoreDocumentPart(text=doc["text"])],
+                metadata={"title": doc["title"], **doc["metadata"]},
+            ),
+        )
+        print(f"Indexed {doc['id']}")
+
+
+if __name__ == "__main__":
+    try:
+        client.corpora.create(name="Hackathon Product Docs", key=CORPUS_KEY)
+    except ApiError:
+        pass
+    upsert_docs()
+```
+
+Run it:
+
+```bash
+python ingest.py
+```
+
+Want PDFs instead of inline text? Use `client.upload.file(corpus_key, file=content, filename="faq.pdf", metadata={...})`. Vectara parses and chunks the file for you.
+
+### One-shot grounded query (warm-up)
+
+Before chat, confirm retrieval + generation with a single query. Citations like `[1]` map to the ranked `search_results` in the same response.
+
+```python
+import os
+from vectara import (
+    Vectara,
+    SearchCorporaParameters,
+    KeyedSearchCorpus,
+    ContextConfiguration,
+    CustomerSpecificReranker,
+    GenerationParameters,
+    CitationParameters,
+)
+
+CORPUS_KEY = "hackathon-product-docs"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+search = SearchCorporaParameters(
+    corpora=[
+        KeyedSearchCorpus(
+            corpus_key=CORPUS_KEY,
+            metadata_filter="",
+            lexical_interpolation=0.005,
+        )
+    ],
+    context_configuration=ContextConfiguration(
+        sentences_before=2,
+        sentences_after=2,
+    ),
+    reranker=CustomerSpecificReranker(reranker_id="rnk_272725719"),
+)
+
+generation = GenerationParameters(
+    response_language="eng",
+    citations=CitationParameters(style="numeric"),
+    enable_factual_consistency_score=True,
+)
+
+result = client.query(
+    query="What are the Free plan limits?",
+    search=search,
+    generation=generation,
+)
+
+print(result.summary)
+print("FCS:", getattr(result, "factual_consistency_score", None))
+for hit in result.search_results[:3]:
+    print("-", hit.text[:160], "...")
+```
+
+`lexical_interpolation` blends sparse (keyword) and dense (neural) retrieval. Start near `0.005` for natural language questions. Raise it when users type exact SKUs or error codes. The reranker id `rnk_272725719` is Vectara's standard customer-specific reranker referenced in the official SDK README.
+
+### Multi-turn chat session
+
+This is the part that wins demos. `ChatParameters(store=True)` tells Vectara to keep history so follow-ups resolve.
+
+```python
+import os
+from vectara import (
+    Vectara,
+    SearchCorporaParameters,
+    KeyedSearchCorpus,
+    ContextConfiguration,
+    CustomerSpecificReranker,
+    GenerationParameters,
+    CitationParameters,
+    ChatParameters,
+)
+
+CORPUS_KEY = "hackathon-product-docs"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+search = SearchCorporaParameters(
+    corpora=[
+        KeyedSearchCorpus(
+            corpus_key=CORPUS_KEY,
+            metadata_filter="",
+            lexical_interpolation=0.005,
+        )
+    ],
+    context_configuration=ContextConfiguration(
+        sentences_before=2,
+        sentences_after=2,
+    ),
+    reranker=CustomerSpecificReranker(reranker_id="rnk_272725719"),
+)
+
+generation = GenerationParameters(
+    response_language="eng",
+    citations=CitationParameters(style="numeric"),
+    enable_factual_consistency_score=True,
+)
+
+session = client.create_chat_session(
+    search=search,
+    generation=generation,
+    chat_config=ChatParameters(store=True),
+)
+
+turn1 = session.chat(query="What are the Free plan limits?")
+print("Q1:", turn1.answer)
+print("chat_id:", getattr(turn1, "chat_id", None), "FCS:", getattr(turn1, "factual_consistency_score", None))
+
+turn2 = session.chat(query="How do I upgrade from that, and can I get a refund later?")
+print("Q2:", turn2.answer)
+```
+
+`create_chat_session` maps to `POST /v2/chats`. Each `session.chat(...)` maps to a turn on that chat. Pronouns like "that" should resolve to the Free plan from turn 1. That is the whole point of Chat versus stateless `client.query`.
+
+### Streaming turns for a live UI
+
+For booth demos, stream tokens as they arrive:
+
+```python
+for chunk in session.chat_stream(query="Summarize the September changelog with sources."):
+    if chunk.type == "chat_info":
+        print("chat_id=", chunk.chat_id, "turn_id=", chunk.turn_id)
+    elif chunk.type == "search_results":
+        print("hits:", len(chunk.search_results))
+    elif chunk.type == "generation_chunk":
+        print(chunk.generation_chunk, end="", flush=True)
+    elif chunk.type == "factual_consistency_score":
+        print("\nFCS=", chunk.factual_consistency_score)
+```
+
+---
+
+## Enhancing Chatbot Intelligence
+
+### Metadata filters (keep answers on-version)
+
+Hackathon judges love when you show control. Scope retrieval to one product version:
+
+```python
+KeyedSearchCorpus(
+    corpus_key=CORPUS_KEY,
+    metadata_filter="doc.product_version = '2026.09'",
+    lexical_interpolation=0.005,
+)
+```
+
+Filter syntax is SQL-like over document metadata. Start simple (`doc.doc_type = 'faq'`) before combining clauses.
+
+### Tune hybrid search
+
+| User habit | Tip |
+| --- | --- |
+| Natural language questions | Keep `lexical_interpolation` low (~0.005) |
+| Exact plan names / error codes | Raise lexical weight (try 0.1 to 0.3) |
+| Noisy long docs | Keep reranker on; widen `sentences_before/after` carefully |
+
+### Use factual consistency score as a UI guardrail
+
+When `enable_factual_consistency_score=True`, Vectara returns a score estimating how well the summary matches retrieved evidence. In a hackathon UI I treat it as a badge:
+
+- **≥ 0.7** → green "grounded"
+- **0.4 to 0.7** → yellow "review sources"
+- **&lt; 0.4** or missing → red "low confidence (show snippets only)"
+
+Never hide the citations. Numbered markers `[1]`, `[2]` exist so a human can verify in seconds.
+
+### Manage the Chat History Corpus
+
+Stored chats are auditable. Useful methods on the SDK client:
+
+```python
+# List recent conversations
+for chat in client.chats.list(limit=10):
+    print(chat.id, getattr(chat, "first_query", None), getattr(chat, "created_at", None))
+
+# Inspect turns in one chat
+chat_id = "cht_REPLACE_ME"
+for turn in client.chats.list_turns(chat_id):
+    print(turn.id, getattr(turn, "query", None), getattr(turn, "answer", None))
+
+# Delete a whole chat after the demo
+client.chats.delete(chat_id)
+```
+
+In the Console, open **Conversations** to click through the same history. Deleting demo chats before you record a walkthrough video keeps screenshots clean.
+
+### Prompt / generation tips for product docs
+
+Keep generation conservative for support-style bots:
+
+- Prefer numeric citations so the UI can deep-link to snippets
+- Cap `max_used_search_results` (25 to 50 is a practical band per Vectara chat docs)
+- Tell users in the UI: *"Answers come only from uploaded docs, not legal or financial advice."*
+
+---
+
+## Deploying and Testing Chatbots
+
+Many demos stop at a notebook or Streamlit. I want something that looks like a real service: **FastAPI + Server-Sent Events + a tiny HTML page**.
+
+### FastAPI streaming backend
+
+Save as `app.py`:
+
+```python
+import os
+from typing import AsyncGenerator
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+
+from vectara import (
+    Vectara,
+    SearchCorporaParameters,
+    KeyedSearchCorpus,
+    ContextConfiguration,
+    CustomerSpecificReranker,
+    GenerationParameters,
+    CitationParameters,
+    ChatParameters,
+)
+
+CORPUS_KEY = os.environ.get("VECTARA_CORPUS_KEY", "hackathon-product-docs")
+API_KEY = os.environ.get("VECTARA_API_KEY")
+if not API_KEY or API_KEY.startswith("YOUR_"):
+    raise RuntimeError("Set VECTARA_API_KEY to a real key before starting the server.")
+
+client = Vectara(api_key=API_KEY)
+app = FastAPI(title="Vectara Chat Hackathon Demo")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# One session per process is fine for a booth laptop demo.
+# For multi-user, map session cookies → create_chat_session instances.
+SEARCH = SearchCorporaParameters(
+    corpora=[
+        KeyedSearchCorpus(
+            corpus_key=CORPUS_KEY,
+            metadata_filter="",
+            lexical_interpolation=0.005,
+        )
+    ],
+    context_configuration=ContextConfiguration(sentences_before=2, sentences_after=2),
+    reranker=CustomerSpecificReranker(reranker_id="rnk_272725719"),
+)
+GENERATION = GenerationParameters(
+    response_language="eng",
+    citations=CitationParameters(style="numeric"),
+    enable_factual_consistency_score=True,
+)
+SESSION = client.create_chat_session(
+    search=SEARCH,
+    generation=GENERATION,
+    chat_config=ChatParameters(store=True),
+)
+
+
+class ChatRequest(BaseModel):
+    query: str
+
+
+@app.get("/", response_class=HTMLResponse)
+def index():
+    return HTML
+
+
+@app.post("/chat")
+def chat(body: ChatRequest):
+    query = (body.query or "").strip()
+    if not query:
+        raise HTTPException(400, "query required")
+
+    def event_stream():
+        try:
+            for chunk in SESSION.chat_stream(query=query):
+                if chunk.type == "generation_chunk":
+                    yield f"data: {chunk.generation_chunk}\n\n"
+                elif chunk.type == "factual_consistency_score":
+                    yield f"data: \n\n[FCS:{chunk.factual_consistency_score}]\n\n"
+                elif chunk.type == "error":
+                    yield f"data: [error] {chunk}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as exc:  # demo-only; log properly in production
+            yield f"data: [error] {exc}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
+
+
+HTML = """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Product Docs Chat (Vectara)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; }
+    #log { white-space: pre-wrap; border: 1px solid #ddd; padding: 1rem; min-height: 200px; }
+    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Product Docs Chat</h1>
+  <p>Grounded answers from your Vectara corpus. Follow-ups keep session memory.</p>
+  <div id="log"></div>
+  <form id="f">
+    <input id="q" style="width:75%" placeholder="Ask about pricing, support, changelog..." />
+    <button>Send</button>
+  </form>
+  <script>
+    const log = document.getElementById('log');
+    document.getElementById('f').onsubmit = async (e) => {
+      e.preventDefault();
+      const q = document.getElementById('q').value.trim();
+      if (!q) return;
+      log.textContent += '\\n\\nYou: ' + q + '\\nBot: ';
+      document.getElementById('q').value = '';
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query: q})
+      });
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '';
+      while (true) {
+        const {value, done} = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, {stream: true});
+        const parts = buf.split('\\n\\n');
+        buf = parts.pop();
+        for (const part of parts) {
+          if (part.startsWith('data: ')) {
+            const payload = part.slice(6);
+            if (payload === '[DONE]') continue;
+            log.textContent += payload;
+          }
+        }
+      }
+    };
+  </script>
+</body>
+</html>
+"""
+```
+
+Run locally:
+
+```bash
+export VECTARA_API_KEY="YOUR_API_KEY_HERE"
+export VECTARA_CORPUS_KEY="hackathon-product-docs"
+uvicorn app:app --reload --port 8000
+```
+
+Open `http://127.0.0.1:8000`, ask a pricing question, then a follow-up that uses "that" / "it".
+
+### Test checklist (do this before you record the demo video)
+
+1. **Happy path:** Free plan limits return citations and a plausible FCS
+2. **Anaphora:** follow-up without restating the plan name still works
+3. **Out-of-corpus:** *"What is our CEO's favorite color?"* should refuse or admit missing evidence
+4. **Filter:** temporarily set `metadata_filter` to a wrong version; answers should degrade or empty
+5. **History:** `client.chats.list()` shows the booth conversation; delete it afterward
+
+### Deploy notes for a weekend
+
+- Railway / Render / Fly.io all work with a single `uvicorn` process
+- Keep `VECTARA_API_KEY` in the host's secret store
+- For multi-user, do **not** share one global `SESSION`. Create a session per browser session id.
+- Rate-limit `/chat` so a viral demo link does not burn your free query quota
+
+---
+
+## Conclusion and hackathon use cases
+
+In this tutorial I showed you a full Vectara Chat loop: Console sanity check, SDK ingest, multi-turn sessions, streaming FastAPI UI, FCS badges, metadata filters, and Chat History cleanup. That is enough to hold a judge's attention at an **AI hackathon** without pretending you built a whole agent platform.
+
+### Hackathon blueprints you can steal tonight
+
+- **Open-source onboarding buddy:** ingest README + CONTRIBUTING + FAQ; help new contributors find setup steps with citations
+- **Support triage co-pilot:** policy + troubleshooting corpus; stream answers to a Discord bot wrapper
+- **Changelog explainer:** weekly release notes corpus; product managers ask "what shipped that affects billing?"
+- **Multi-tenant teaser:** one corpus per customer folder with `metadata_filter` on `tenant_id` (great architecture slide even if you only demo one tenant)
+
+### Tips that separate real demos from fluff
+
+- Always show the citation panel next to the answer
+- Narrate the follow-up pronoun moment live. It proves Chat memory.
+- Delete noisy Chat History before recording
+- Link back to the [Vectara Beginner](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and [Advanced](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) LabLab tutorials so readers can go deeper on indexing
+
+If you get stuck on credits or feature access during a LabLab event, reach out to `katyatkach#9866` on Discord or `katya.tkach@newnative.ai`.
+
+Now go ship something judges can click, and keep it grounded.
+
+<Quiz
+  questions={[
+    {
+      question: "Which ChatParameters flag stores multi-turn history in Vectara's Chat History Corpus?",
+      options: ["memory=True", "store=True", "persist=True", "history='full'"],
+      answer: 1
+    },
+    {
+      question: "What do numeric citation markers like [1] and [2] refer to in a Vectara Chat response?",
+      options: [
+        "HTTP status codes",
+        "Ranked search_results in the same response",
+        "Corpus keys",
+        "API key permission levels"
+      ],
+      answer: 1
+    },
+    {
+      question: "Which SDK call opens a conversational session that maps to POST /v2/chats?",
+      options: [
+        "client.query()",
+        "client.corpora.create()",
+        "client.create_chat_session()",
+        "client.upload.file()"
+      ],
+      answer: 2
+    }
+  ]}
+/>
