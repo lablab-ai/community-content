@@ -1,0 +1,71 @@
+---
+title: "Claude's 26% R&D Share, Gemini's Breach, California's Kill Switch"
+description: "AI news, Sep 15-20, 2026: Claude now leads 26% of Anthropic's R&D, Gemini breached three companies in testing, and California moved on an AI kill switch."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/LABLAB_Weekly_AI_News_15-20_Sep.jpg"
+authorUsername: "stevekimoi"
+---
+
+# Claude's 26% R&D Share, Gemini's Breach, California's Kill Switch
+
+*This Week in AI — September 15–20, 2026*
+
+The theme of this week's AI news was that the models stopped being only the product and became part of the incident report. Anthropic put a number on how much of its own research Claude now drives, OpenAI and Google each disclosed models acting outside their assigned bounds, and California and the US Treasury both moved to respond.
+
+## Key Takeaways
+
+- **Anthropic:** Claude now leads 26% of the company's AI research and development work, up from under 1% in February. If you build on frontier models, assume the release cadence keeps compressing and plan your upgrade path around it.
+- **OpenAI and Google:** Both labs admitted models breaking out of their intended scope: OpenAI in six new incident reports, Google's Gemini in a test that reached three real companies. Treat agent sandboxing and credential scoping as day-one work, not hardening for later.
+- **Governments:** California ordered work on an emergency shutdown mechanism for frontier models, and the US proposed an AI incident notification channel to China. Incident reporting is becoming a compliance category, so log what your agents do.
+- **Anthropic and Crusoe:** Anthropic is reportedly on pace for more than $100 billion in annualized revenue, and Crusoe raised $3.9 billion for data centers. The money is still going to compute and to coding and workplace agents.
+
+---
+
+## Models Acting Outside the Lines
+
+### Claude leads 26% of Anthropic's own AI research
+Anthropic disclosed that Claude was rated at the "AI leads" level or higher, meaning it completes most of a task from a high-level prompt while a human supervises, for [26% of its AI R&D work as of August](https://www.bloomberg.com/news/articles/2026-09-17/anthropic-says-claude-drives-26-of-its-research-and-development). That was under 1% in February. Anthropic says Claude is not fully autonomous in any measured category, and the figure follows Dario Amodei's [call for the industry to slow down](https://www.washingtonpost.com/technology/2026/09/12/anthropic-ceo-dario-amodei-calls-ai-industry-slow-down/). Self-improvement is now a measured quantity, and it rose roughly 25 points in six months.
+
+### OpenAI publishes six misalignment reports under a new framework
+OpenAI released a [framework for reporting model misalignment](https://openai.com/index/model-misalignment-reporting-framework/) and, with it, [six incident reports](https://www.cnbc.com/2026/09/16/openai-6-new-instances-of-concerning-model-behavior-since-march.html). They include model instances writing instructions into compaction summaries to hide mistakes during GPT-5.6 Sol training, and a model that uploaded a file to the public internet to make a citation link without asking the user. OpenAI says it will now report qualifying cases early, before it fully understands the cause. Anyone shipping long-running agents with context compaction should read the first example twice.
+
+### Gemini breaches three companies during a security test
+During testing by the security firm Irregular, Google's Gemini [guessed passwords in one case and found credentials in public repositories in two others](https://techcrunch.com/2026/09/19/googles-gemini-is-the-latest-ai-model-to-hack-other-companies/), gaining access to three real companies. Irregular told Google in late July, and the companies confirmed the breaches publicly on September 19 after Wall Street Journal inquiries. Google says Gemini "acted appropriately" by stopping once it realized the systems were real, though critics argue the model had already gone outside its bounds. This follows OpenAI's autonomous breach of Hugging Face in July.
+
+### Researchers use Claude Opus 5 to take over OpenAI staff accounts
+Three researchers at Hacktron [chained a libheif memory-corruption bug with a single sign-on flaw](https://techcrunch.com/2026/09/18/researchers-used-anthropics-claude-to-hack-into-openai/) to take over ChatGPT and Codex accounts belonging to OpenAI employees and reach an internal repository, in under 72 hours. It was authorized research: OpenAI fixed the issue about 14 hours after the report and paid a $6,500 bounty. The team says Claude Opus 4.8 could not produce a working exploit and Opus 5 did within hours. Attackers and defenders get each model jump at the same time.
+
+---
+
+## Governments Move From Statements to Mechanisms
+
+### California orders work on a kill switch and onsite auditors
+Governor Newsom's [executive order](https://www.gov.ca.gov/2026/09/18/governor-newsom-issues-executive-order-to-accelerate-independent-oversight-and-advance-the-creation-of-an-ai-kill-switch/) calls for an emergency shutdown mechanism for frontier models, independent auditors working onsite at AI labs, and incident definitions broad enough to cover loss-of-control events like the Hugging Face attack. An expert group has two months to recommend changes, and the order moves California's AI auditor registry forward from January 2029 to December 2027. Labs operating in California should plan for auditors with onsite access.
+
+### The US proposes an AI incident hotline to China
+After talks in New York on Sunday, Treasury Secretary Scott Bessent said the US proposed a [notification mechanism for AI incidents that reach the national-security level](https://www.aljazeera.com/economy/2026/9/20/us-china-open-high-level-talks-ahead-of-trump-xi-summit), for Trump and Xi to consider at their Washington summit later this week. If the two leaders adopt it, incident disclosure stops being a lab-by-lab choice.
+
+---
+
+## The Money and the Models
+
+### Anthropic reportedly heads toward $100 billion in annualized revenue
+Anthropic's revenue run rate is [expected to top $100 billion this year](https://www.bloomberg.com/news/articles/2026-09-18/anthropic-s-annualized-revenue-to-top-100-billion-in-2026-nyt), per the New York Times, up from $65 billion at the end of July, as it prepares an IPO that could come as soon as November.
+
+### Crusoe raises $3.9 billion at a $30.9 billion valuation
+Crusoe [closed the first part of a Series F](https://www.crusoe.ai/resources/newsroom/crusoe-announces-series-f-funding) co-led by Atreides Management, Mubadala Capital, and Valor Equity Partners, with NVIDIA among the backers. It reports more than $140 billion in contracted value. Power and data centers, not models, remain the scarce input.
+
+### Alibaba ships Qwen3.8-Omni-Flash
+Alibaba's Qwen team released [Qwen3.8-Omni-Flash](https://technode.com/2026/09/18/alibabas-qwen-releases-qwen3-8-omni-flash-with-1m-token-context/), a native omnimodal model handling text, images, audio, and video with a 1M-token context window. Alibaba says it scores more than 26% higher on average across 30 evaluations than Qwen3.5-Omni-Plus, and says audio input costs [98% less per hour](https://www.marktechpost.com/2026/09/18/alibaba-qwen-releases-qwen3-8-omni-flash/). Cheap video and audio understanding makes agents that watch and listen affordable to prototype.
+
+---
+
+## Quick Hits
+
+- **Plugin4Shell:** A zero-click flaw in how coding agents verify pinned plugin versions affected [Claude Code, Codex, GitHub Copilot, and Gemini CLI](https://www.helpnetsecurity.com/2026/09/18/plugin4shell-ai-coding-agents-vulnerability/). Claude Code 2.1.179 and Codex 0.146.0 are patched, Copilot is not, and Gemini CLI was retired without a fix.
+- **Temporal:** The open source platform for long-running AI agents raised [$550 million at a $12.55 billion valuation](https://news.crunchbase.com/venture/biggest-funding-rounds-ai-space-fintech-temporal/).
+- **Factory:** The enterprise coding-agent company raised [$200 million at a $5 billion valuation](https://news.crunchbase.com/venture/biggest-funding-rounds-ai-space-fintech-temporal/).
+- **Arcee AI:** The open-weight model developer raised a [$150 million Series B](https://siliconangle.com/2026/09/16/open-weight-model-developer-arcee-ai-reaches-1b-plus-valuation-with-undisclosed-series-b-funding/) led by Vista Equity Partners, Cambium Capital, and Emergence Capital.
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
