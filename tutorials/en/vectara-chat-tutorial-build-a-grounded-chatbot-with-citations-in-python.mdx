@@ -1,0 +1,423 @@
+---
+title: "Vectara Chat Tutorial: Build a Grounded Chatbot with Citations in Python"
+description: "In this hands-on Vectara Chat tutorial I will show you how to build a complete RAG chatbot in Python - create a corpus, ingest documents, ask grounded questions with citations, and ship a Streamlit chat UI."
+image: "https://iili.io/nqIRE6Q.png"
+authorUsername: "Furox-Art"
+---
+
+In this tutorial I will show you how to build a chat experience that is grounded in your own documents using **Vectara Chat**. This time I want to go beyond a "hello world" and build something you can actually demo at a hackathon: a small knowledge base, a cited question-answering script, a real multi-turn chat session, and a deployable Streamlit interface - all written against the current version 2 of the Vectara API and the official Python SDK.
+
+If you have already followed the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) or the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case), you have seen how to build apps on top of Vectara in legal and customer-support scenarios. In this article I will zoom into the chat layer itself: how Vectara keeps a conversation grounded in your data and how you get citations you can trust.
+
+## Introduction to Vectara Chat
+
+Vectara is an API-first platform for Retrieval Augmented Generation (RAG). Instead of asking a language model to answer from its general training data, Vectara first retrieves the most relevant passages from *your* corpus and then generates a summary strictly from those passages. The result is what Vectara calls grounded generation: answers that are verifiable, because every claim is anchored in data you supplied.
+
+### What makes Vectara Chat different
+
+A plain LLM API gives you a text completion. Vectara Chat gives you a complete conversational RAG stack:
+
+- **Retrieval from your corpus** - your questions are answered from documents you ingest, not from the model's memory. This dramatically reduces hallucinations.
+- **Numbered citations** - generated answers contain markers like `[1]`, `[2]` that map to the ranked search results returned in the same response, so your users can verify every claim.
+- **Conversation memory** - the chat can maintain history across turns, so follow-up questions like "and what about the days I don't use?" resolve correctly.
+- **Factual consistency score** - every generated answer comes with a score indicating the probability that the summary is factually consistent with the retrieved results.
+
+### How the pieces fit together
+
+The workflow you will build in this tutorial has three stages:
+
+1. **Ingest** - create a corpus and add documents to it. Vectara handles chunking, embedding and indexing for you.
+2. **Retrieve and generate** - send a user query to the Query API with a `generation` block; Vectara searches the corpus and writes a grounded, cited answer.
+3. **Converse** - wrap the same retrieval and generation settings into a chat session that keeps history across turns.
+
+The REST endpoints live under `https://api.vectara.io/v2/` (the older `/v1` endpoints and numeric corpus IDs have been replaced by resource-oriented v2 routes and user-defined `corpus_key` values - the [official migration guide](https://docs.vectara.com/docs/migration-guide-api-v2) maps them out). In this tutorial I will use the official Python SDK, which wraps all of these endpoints. You can also chat with a corpus directly from the [Vectara Console](https://docs.vectara.com/docs/console-ui/vectara-chat-overview) by opening a corpus, going to the Query tab and enabling the Chat toggle - a nice way to sanity-check your data before writing any code.
+
+## Getting Started with Vectara Chat
+
+### Create your account and API key
+
+First things first, you need a Vectara account and a key:
+
+1. Sign up at [vectara.com](https://vectara.com/) and log into the Vectara Console.
+2. Navigate to **Authorization, API Keys** and copy your **Personal API Key**. A personal key inherits your user permissions, so it can create corpora, index documents and query them. If you later split work into services, generate dedicated query-only or indexing keys instead - the [API key management guide](https://docs.vectara.com/docs/security/authentication/api-key-management) explains the permission profiles.
+3. Export the key as an environment variable so it never ends up in your code:
+
+```bash
+export VECTARA_API_KEY="your_api_key_here"
+```
+
+On Windows PowerShell the equivalent is `$env:VECTARA_API_KEY="your_api_key_here"`.
+
+> **Note**: Treat this key like a password. Every request you will make in this tutorial authenticates with the `x-api-key` header (the SDK does this for you), so anyone who steals the key can read - and index into - your data.
+
+### Set up the Python environment
+
+The official SDK is published on PyPI as [`vectara`](https://pypi.org/project/vectara/) and requires Python 3.10 or newer. I recommend a fresh virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install vectara streamlit
+```
+
+### Create your first corpus
+
+A corpus is the container for your documents - think of it as a vertical, domain-specific index. Create a file called `ingest.py`:
+
+```python
+import os
+
+from vectara import Vectara
+from vectara.core import ApiError
+
+CORPUS_KEY = "vectara-chat-tutorial"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+
+def create_corpus():
+    try:
+        client.corpora.create(name="Vectara Chat Tutorial", key=CORPUS_KEY)
+        print(f"Corpus '{CORPUS_KEY}' created.")
+    except ApiError as error:
+        # Most likely the corpus already exists from a previous run.
+        print(f"Corpus creation skipped ({error.status_code}). Reusing existing corpus.")
+
+
+if __name__ == "__main__":
+    create_corpus()
+```
+
+Two details worth noticing: the client is authenticated purely from the `VECTARA_API_KEY` environment variable, and the corpus is identified by the human-readable `key` you choose - no numeric IDs to keep track of anymore.
+
+## Building a Chatbot with Vectara
+
+### Ingest your documents
+
+Every chatbot is only as good as its knowledge base. For this tutorial I will index two short company-policy documents so the demo is self-contained, but the same code works for your hackathon data. Append to `ingest.py`:
+
+```python
+from vectara import CoreDocument, CoreDocumentPart
+
+
+def add_document(doc_id: str, title: str, text: str):
+    client.documents.create(
+        CORPUS_KEY,
+        request=CoreDocument(
+            id=doc_id,
+            type="core",
+            document_parts=[CoreDocumentPart(text=text)],
+            metadata={"title": title},
+        ),
+    )
+    print(f"Added document '{doc_id}'.")
+
+
+if __name__ == "__main__":
+    create_corpus()
+    add_document(
+        "remote-work-policy",
+        "Remote Work Policy",
+        "Acme employees may work remotely up to three days per week. "
+        "Remote work requires prior manager approval, and home-office equipment "
+        "is shipped within five business days. Internet costs are reimbursed "
+        "up to 40 USD per month.",
+    )
+    add_document(
+        "vacation-policy",
+        "Vacation Policy",
+        "Full-time employees receive 24 paid vacation days per year. "
+        "Unused vacation days roll over into the next year, up to a maximum "
+        "of 10 days. Requests longer than two weeks require one month of notice.",
+    )
+```
+
+The `CoreDocument` type is for raw text. If your content is structured (sections with titles and metadata), use `StructuredDocument` instead. And if you want to index real files such as PDFs or Word documents, skip text extraction entirely and let Vectara parse the file for you:
+
+```python
+def upload_pdf(path: str):
+    with open(path, "rb") as file:
+        client.upload.file(
+            CORPUS_KEY,
+            file=file.read(),
+            filename=os.path.basename(path),
+        )
+    print(f"Uploaded {path}.")
+```
+
+Run the script with `python ingest.py`. Under the hood this calls the v2 endpoints `POST /v2/corpora`, `POST /v2/corpora/{corpus_key}/documents` and the multipart `POST /v2/corpora/{corpus_key}/upload_file` route - the SDK handles all the headers and encoding for you.
+
+### Ask your first grounded question
+
+Now for the fun part. Create `chat.py` with shared retrieval and generation settings, plus a single-shot query:
+
+```python
+import os
+
+from vectara import (
+    ContextConfiguration,
+    GenerationParameters,
+    KeyedSearchCorpus,
+    SearchCorporaParameters,
+    Vectara,
+)
+
+CORPUS_KEY = "vectara-chat-tutorial"
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+
+search = SearchCorporaParameters(
+    corpora=[
+        KeyedSearchCorpus(
+            corpus_key=CORPUS_KEY,
+            metadata_filter="",
+            lexical_interpolation=0.005,
+        )
+    ],
+    context_configuration=ContextConfiguration(
+        sentences_before=2,
+        sentences_after=2,
+    ),
+)
+
+generation = GenerationParameters(
+    response_language="eng",
+    enable_factual_consistency_score=True,
+)
+
+
+def print_sources(response):
+    for i, result in enumerate(response.search_results or [], start=1):
+        score = round(result.score, 3) if result.score is not None else "n/a"
+        print(f"  [{i}] score={score} document={result.document_id}")
+        snippet = (result.text or "").strip().replace("\n", " ")
+        print(f"      {snippet[:140]}...")
+
+
+if __name__ == "__main__":
+    answer = client.query(
+        query="How many vacation days do I get, and do unused days roll over?",
+        search=search,
+        generation=generation,
+    )
+    print(answer.summary)
+    print(f"\nFactual consistency score: {answer.factual_consistency_score}")
+    print("Sources:")
+    print_sources(answer)
+```
+
+Run `python chat.py` and you should see output similar to this:
+
+```text
+Full-time employees receive 24 paid vacation days per year [1]. Unused vacation
+days roll over into the next year, up to a maximum of 10 days [1].
+
+Factual consistency score: 0.982
+Sources:
+  [1] score=0.743 document=vacation-policy
+      Full-time employees receive 24 paid vacation days per year. Unused vacation
+      days roll over into the next year, up to a maximum of 10 days. Requests...
+```
+
+This is the core of Vectara Chat in a single call: the `summary` field contains the generated answer with inline `[1]`-style citations, and `search_results` contains the ranked passages those numbers point to - same order, so citation `[1]` is `search_results[0]`. The `factual_consistency_score` tells you how confidently you can repeat this answer to a user.
+
+### Turn it into a real conversation
+
+A chatbot needs memory. The SDK gives you a chat session object that wraps Vectara's chat API and stores the conversation history for you, so pronouns and follow-ups just work. Add to `chat.py`:
+
+```python
+from vectara import ChatParameters
+
+session = client.create_chat_session(
+    search=search,
+    generation=generation,
+    chat_config=ChatParameters(store=True),
+)
+
+first = session.chat(query="How many vacation days do I get?")
+print("Bot:", first.answer)
+
+second = session.chat(query="And what happens to the days I do not use?")
+print("Bot:", second.answer)
+print("Chat ID:", second.chat_id)
+```
+
+Note what happened in the second turn: the question never mentions "vacation days", yet the bot still answers about rollover, because `store=True` keeps the conversation history on Vectara's side and each new turn is grounded in the same corpus. The response objects carry `chat_id` and `turn_id` if you want to inspect or resume a stored conversation later, plus the same `search_results` and `factual_consistency_score` fields as a single query - so you can render citations in every turn of your UI.
+
+## Enhancing Chatbot Intelligence
+
+Out of the box the experience is already good, but hackathon-winning chatbots tune two layers: retrieval (what gets found) and generation (how the answer is written).
+
+### Tune the retrieval layer
+
+`SearchCorporaParameters` is your control panel:
+
+- **`lexical_interpolation`** balances keyword (lexical) matching against neural, semantic matching. Values near `0.005` favour semantic understanding - great when users describe problems in their own words. Raise it towards `1` if your users search for exact product codes or error messages.
+- **`context_configuration`** controls how much surrounding text is attached to each match (`sentences_before` / `sentences_after`, or character-based windows). More context gives the model more to reason about, at the cost of larger prompts.
+- **Reranking** reorders the raw matches with a dedicated model so the best passage lands first, which is exactly what the summarizer reads. Vectara exposes rerankers you can reference by ID:
+
+```python
+from vectara import CustomerSpecificReranker
+
+search = SearchCorporaParameters(
+    corpora=[KeyedSearchCorpus(corpus_key=CORPUS_KEY, lexical_interpolation=0.005)],
+    context_configuration=ContextConfiguration(sentences_before=2, sentences_after=2),
+    reranker=CustomerSpecificReranker(reranker_id="rnk_272725719"),
+)
+```
+
+You can create and manage rerankers in the Vectara Console; the ID above is the one used throughout Vectara's own SDK examples, so it is a solid default for a first demo.
+
+### Control the generation layer
+
+`GenerationParameters` decides how the answer is written:
+
+- **`response_language`** - either `"auto"` (match the user's language) or an explicit ISO 639-3 code such as `eng`, `deu`, `spa`, `zho`. Note that v2 uses three-letter codes, a change from v1's two-letter ones.
+- **`max_used_search_results`** - how many retrieved passages the model may use as evidence. More results can improve coverage but also add noise.
+- **`max_response_characters`** - cap the answer length, which is handy for chat widgets where screen space is scarce.
+- **`generation_preset_name`** - choose the summarizer model. The [official quickstart](https://docs.vectara.com/docs/quickstart) uses Vectara's Mockingbird family, their RAG-focused LLM tuned for grounded, accurately cited output.
+- **`citations`** - control citation formatting with `CitationParameters`, for example numeric style (the `[1]` markers you saw) or linked HTML/Markdown styles for web UIs. You can even disable them with `style="none"`.
+
+```python
+from vectara import CitationParameters
+
+generation = GenerationParameters(
+    response_language="eng",
+    max_used_search_results=5,
+    max_response_characters=300,
+    citations=CitationParameters(style="numeric"),
+    enable_factual_consistency_score=True,
+)
+```
+
+### Watch the factual consistency score
+
+The factual consistency score is a free quality gate. In production I like to flag any answer below a threshold (say `0.8`) and show the user the sources instead of the raw answer - an honest "here is what I found, judge yourself" beats a confident hallucination every time. You can also log low-scoring turns and use them as a to-do list for improving your corpus.
+
+### Stream responses in real time
+
+Waiting three seconds for a full answer feels slow in a chat UI. The SDK supports streaming for both queries and chat - you iterate over chunks as they arrive:
+
+```python
+response = client.query_stream(
+    query="How many vacation days do I get?",
+    search=search,
+    generation=generation,
+)
+for chunk in response:
+    if chunk.type == "generation_chunk":
+        print(chunk.generation_chunk, end="", flush=True)
+    elif chunk.type == "search_results":
+        print("\n-- retrieved passages --")
+```
+
+This renders the answer token-by-token like modern AI products do, and the search-results chunk arrives early enough to show a "searching..." state.
+
+## Deploying and Testing Chatbots
+
+### Wrap it in a Streamlit UI
+
+A chatbot lives or dies by its interface. Here is a complete `app.py` using Streamlit's native chat elements - no extra chat widgets needed:
+
+```python
+import os
+
+import streamlit as st
+from vectara import (
+    ChatParameters,
+    GenerationParameters,
+    KeyedSearchCorpus,
+    SearchCorporaParameters,
+    Vectara,
+)
+
+CORPUS_KEY = "vectara-chat-tutorial"
+VECTARA_API_KEY = os.environ.get("VECTARA_API_KEY")
+
+st.set_page_config(page_title="Acme Handbook Chat", page_icon="💬")
+st.title("💬 Chat with the Acme handbook")
+
+if not VECTARA_API_KEY:
+    st.error("Set the VECTARA_API_KEY environment variable before starting the app.")
+    st.stop()
+
+client = Vectara(api_key=VECTARA_API_KEY)
+search = SearchCorporaParameters(
+    corpora=[KeyedSearchCorpus(corpus_key=CORPUS_KEY, lexical_interpolation=0.005)]
+)
+generation = GenerationParameters(
+    response_language="eng",
+    enable_factual_consistency_score=True,
+)
+
+if "session" not in st.session_state:
+    st.session_state.session = client.create_chat_session(
+        search=search,
+        generation=generation,
+        chat_config=ChatParameters(store=True),
+    )
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+        for citation in message.get("citations", []):
+            st.markdown(citation)
+
+prompt = st.chat_input("Ask something about the handbook...")
+if prompt:
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        response = st.session_state.session.chat(query=prompt)
+        st.markdown(response.answer or "I could not find an answer in the handbook.")
+        if response.factual_consistency_score is not None:
+            st.caption(f"Factual consistency: {response.factual_consistency_score:.2f}")
+        citations = []
+        for i, result in enumerate(response.search_results or [], start=1):
+            line = f"**[{i}]** {(result.text or '').strip()}"
+            citations.append(line)
+            st.markdown(line)
+
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response.answer or "", "citations": citations}
+    )
+```
+
+The chat session is kept in `st.session_state`, so the conversation context survives Streamlit's rerun-per-interaction model. Every assistant message is stored together with its numbered sources, so citations stay visible as the conversation scrolls.
+
+### Test it like a hackathon judge
+
+Start the app with `streamlit run app.py` and put yourself in the judge's seat. These are the three test cases I always run:
+
+1. **A grounded question** ("How many vacation days do I get?") - the answer must contain a `[1]` citation that matches a real passage in the sources list.
+2. **A follow-up** ("And what happens to the days I don't use?") - proves conversation memory works.
+3. **An out-of-scope question** ("What is the weather on Mars?") - the bot should either say it cannot find the information or return a low factual consistency score, never invent an answer. If this case feels weak, the fix is almost always more or better corpus data, not prompt hacks.
+
+### Ship it
+
+To deploy, freeze your dependencies, push the project to GitHub and host it on [Streamlit Community Cloud](https://share.streamlit.io/) (or any platform that runs Python apps):
+
+```bash
+pip freeze > requirements.txt
+git init && git add app.py ingest.py requirements.txt
+git commit -m "Add Vectara chat app"
+git remote add origin <YOUR_GITHUB_REPO_URL>
+git push -u origin main
+```
+
+Configure `VECTARA_API_KEY` as an environment variable or secret in your host's dashboard - never commit it to the repository, and never embed an API key in client-side code. Vectara's own security guidance is to keep keys on the server; if you build a browser app, route requests through a small backend that holds the key.
+
+## Conclusion and Tips for Hackathon Participants
+
+In this tutorial I showed you the full Vectara Chat pipeline: creating a corpus with `client.corpora.create`, ingesting text documents and PDFs, asking grounded questions with `client.query`, printing `[1]`-style citations mapped to `search_results`, maintaining multi-turn memory with `create_chat_session` and `ChatParameters(store=True)`, tuning retrieval and generation, streaming answers, and packaging everything into a deployable Streamlit app.
+
+A few parting tips from me to you:
+
+- **Pick use cases where sources matter.** Legal document Q&A, customer-support assistants and internal policy bots are perfect fits - the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) shows exactly these scenarios, while the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) walks through a first legal-domain app.
+- **Show your citations in the UI.** Judges trust a chatbot that shows its work. Rendering the numbered sources takes ten lines of code and instantly makes your demo look production-grade.
+- **Let the corpus do the heavy lifting.** Vectara's retrieval quality is your real competitive advantage - spend your remaining hackathon hours on ingestion quality and UX rather than fighting prompt templates.
+- **Keep conversations healthy.** `store=True` handles history for you, but very long chats dilute context; offering a "start new conversation" button is cheap insurance.
+- **Protect the key.** Environment variables on the server, never in the repo and never in the browser.
+
+The best documentation for going further is the [Vectara Python SDK](https://github.com/vectara/python-sdk) repository with its runnable notebooks, the [chat SDK guide](https://docs.vectara.com/docs/sdk/python/chats), and the [Query API reference](https://docs.vectara.com/docs/rest-api/query). Now go build something that answers with receipts - happy hacking! 🚀
