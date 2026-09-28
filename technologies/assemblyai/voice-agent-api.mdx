@@ -1,0 +1,57 @@
+---
+title: "Voice Agent API"
+author: "AssemblyAI"
+authorUsername: "stevekimoi"
+description: "AssemblyAI's Voice Agent API is a fully managed speech-to-speech pipeline combining transcription, LLM reasoning, and text-to-speech over one WebSocket, with native LiveKit and Pipecat support."
+---
+
+# Voice Agent API
+
+The [Voice Agent API](https://www.assemblyai.com/products/voice-agent-api) is AssemblyAI's fully managed speech-to-speech pipeline. It combines speech-to-text, LLM reasoning, text-to-speech, turn detection, interruption handling, and tool calling behind a single WebSocket connection, with an end-to-end latency of roughly one second.
+
+| General | |
+|---------|--|
+| **Developer** | AssemblyAI |
+| **Type** | Managed voice agent / speech-to-speech API |
+| **License** | Commercial API |
+| **Documentation** | [assemblyai.com/products/voice-agent-api](https://www.assemblyai.com/products/voice-agent-api) |
+| **GitHub** | [AssemblyAI/voice-agent-starter-python](https://github.com/AssemblyAI/voice-agent-starter-python) |
+
+---
+
+## Core Features
+
+- **Single-WebSocket pipeline**: transcription, LLM reasoning, and text-to-speech run behind one connection instead of separate services to wire together.
+- **Turn detection and interruption handling**: manages conversational turn-taking so an agent can be interrupted mid-response.
+- **Tool calling**: agents can call external tools/functions as part of a conversation.
+- **PCI certification**: the pipeline is PCI-certified end-to-end, relevant for payment-related voice use cases.
+- **Native framework plugins**: one-line integration with LiveKit (via `livekit-agents` 1.6+ and the `assemblyai` plugin) and Pipecat, both using Universal-3.5 Pro under the hood.
+- **Telephony support**: works with Twilio and Telnyx out of the box.
+
+---
+
+## Pricing
+
+The Voice Agent API is billed at a flat $4.50/hour ($0.075/minute) for the full pipeline, rather than pricing each component (STT, LLM, TTS) separately.
+
+Source: [assemblyai.com/pricing](https://www.assemblyai.com/pricing)
+
+---
+
+## Tools and Resources
+
+- **[Voice agent starter (Python)](https://github.com/AssemblyAI/voice-agent-starter-python)**: reference implementation to build from.
+- **[Voice agent starter (JS)](https://github.com/AssemblyAI/voice-agent-starter-js)**: JavaScript/TypeScript starter template.
+- **[LiveKit integration guide](https://www.assemblyai.com/blog/build-a-voice-agent-with-livekit-voice-agent-api)**: walkthrough for building a voice agent with LiveKit.
+
+---
+
+## Ecosystem and Integrations
+
+- Native plugins for **LiveKit** and **Pipecat**.
+- Out-of-the-box telephony support via **Twilio** and **Telnyx**.
+- Built on AssemblyAI's [Universal-Streaming](/tech/assemblyai/streaming-speech-to-text) model for the listening layer.
+
+---
+
+Start with the [voice agent starter templates](https://github.com/AssemblyAI/voice-agent-starter-python) or the [LiveKit integration guide](https://www.assemblyai.com/blog/build-a-voice-agent-with-livekit-voice-agent-api).

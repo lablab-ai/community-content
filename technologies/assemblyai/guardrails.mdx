@@ -1,0 +1,58 @@
+---
+title: "Guardrails API"
+author: "AssemblyAI"
+authorUsername: "stevekimoi"
+description: "AssemblyAI's Guardrails API adds safety and compliance controls to audio and transcripts, including PII text and audio redaction, profanity filtering, and content moderation."
+---
+
+# Guardrails API
+
+The [Guardrails API](https://www.assemblyai.com/products/guardrails) adds safety, privacy, and compliance controls to AssemblyAI transcripts and audio. It covers PII redaction in both transcript text and the underlying audio, profanity filtering, and content moderation, applied as add-ons to a transcription request.
+
+| General | |
+|---------|--|
+| **Developer** | AssemblyAI |
+| **Type** | Safety and compliance API |
+| **License** | Commercial API |
+| **Documentation** | [assemblyai.com/products/guardrails](https://www.assemblyai.com/products/guardrails) |
+
+---
+
+## Core Features
+
+- **PII text redaction**: removes personally identifiable information from transcript text.
+- **PII audio redaction**: redacts personally identifiable information directly in the audio file.
+- **Profanity filtering**: filters profane language out of transcript output.
+- **Content moderation**: flags or filters unsafe or policy-violating content.
+
+---
+
+## Pricing
+
+Guardrails features are billed as add-ons on top of the base Speech-to-Text rate:
+
+| Add-on | Rate |
+|--------|------|
+| Profanity Filtering | +$0.01/hour |
+| PII Text Redaction | +$0.08/hour |
+| Content Moderation | +$0.15/hour |
+
+Source: [assemblyai.com/pricing](https://www.assemblyai.com/pricing)
+
+---
+
+## Use Cases
+
+- **Regulated industries**: healthcare and financial services use cases that require PII redaction before storing or sharing transcripts.
+- **Customer support and contact centers**: content moderation and profanity filtering on recorded or live calls.
+- **Compliance workflows**: redacting sensitive information from audio archives before retention or sharing.
+
+---
+
+## Ecosystem and Integrations
+
+Guardrails add-ons apply to output from both [Speech-to-Text](/tech/assemblyai/speech-to-text) and [Universal-Streaming](/tech/assemblyai/streaming-speech-to-text), and can be combined with [Speech Understanding](/tech/assemblyai/speech-understanding) add-ons on the same request.
+
+---
+
+Read the [Guardrails docs](https://www.assemblyai.com/products/guardrails) to add safety and compliance controls to an existing transcription request.

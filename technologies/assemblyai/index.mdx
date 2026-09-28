@@ -1,0 +1,82 @@
+---
+title: "AssemblyAI"
+description: "AssemblyAI is a San Francisco speech AI company building Speech-to-Text, Voice Agent, and audio intelligence APIs for developers."
+authorUsername: "stevekimoi"
+---
+
+# AssemblyAI
+
+AssemblyAI is a speech AI company founded in 2017 by CEO Dylan Fox. The company builds APIs that turn audio and voice into structured data and conversational experiences, spanning pre-recorded and real-time transcription, fully managed voice agents, and audio intelligence add-ons like sentiment analysis and PII redaction. AssemblyAI has raised approximately $145M across three funding rounds, most recently a $50M Series C in December 2023 led by Accel.
+
+| General | |
+|---------|--|
+| **Company** | [AssemblyAI](https://www.assemblyai.com) |
+| **Founded** | 2017 by Dylan Fox |
+| **Headquarters** | San Francisco, California, United States |
+| **Website** | [assemblyai.com](https://www.assemblyai.com) |
+| **Documentation** | [assemblyai.com/docs](https://www.assemblyai.com/docs) |
+| **GitHub** | [github.com/AssemblyAI](https://github.com/AssemblyAI) |
+| **Type** | Speech AI / Voice AI infrastructure |
+
+---
+
+## Core Products
+
+### [Speech-to-Text](/tech/assemblyai/speech-to-text)
+Transcribes pre-recorded audio and video across 99 languages using the Universal-3.5 Pro model, with speaker diarization, PII redaction, and native code-switching for audio that moves between languages.
+
+### [Universal-Streaming](/tech/assemblyai/streaming-speech-to-text)
+Real-time transcription over WebSocket for live captioning and voice agents, built on the Universal-3.5 Pro Realtime model with sub-second latency.
+
+### [Voice Agent API](/tech/assemblyai/voice-agent-api)
+A fully managed speech-to-speech pipeline combining transcription, LLM reasoning, text-to-speech, turn detection, and tool calling behind a single WebSocket connection.
+
+### [Speech Understanding API](/tech/assemblyai/speech-understanding)
+Layers structured intelligence on top of transcripts: sentiment analysis, entity detection, topic detection, summarization, translation, and speaker identification.
+
+### [Guardrails API](/tech/assemblyai/guardrails)
+Safety and compliance controls for audio and transcripts, including PII redaction, profanity filtering, and content moderation.
+
+### [LLM Gateway](/tech/assemblyai/llm-gateway)
+An OpenAI-compatible API for calling frontier language models like Claude, GPT, and Gemini inside voice AI workflows, replacing the deprecated LeMUR product.
+
+---
+
+## Developer Resources
+
+AssemblyAI provides official SDKs for Python and JavaScript/TypeScript, starter templates for voice agents, and $50 in free credit at signup with no credit card required.
+
+<TechTutorials/>
+
+### Helpful Links
+
+- [Documentation](https://www.assemblyai.com/docs): API reference, guides, and quickstarts
+- [GitHub](https://github.com/AssemblyAI): official SDKs and starter templates
+- [Pricing](https://www.assemblyai.com/pricing): per-product rates and free tier details
+- [Discord](https://discord.com/invite/csPF6ADpTa): community support
+
+---
+
+## Key Features
+
+**99-language transcription with native code-switching**
+Universal-3.5 Pro transcribes 99 languages and natively handles audio that switches between 18 of them mid-conversation, without requiring a language to be selected in advance.
+
+**Fully managed voice agent pipeline**
+The Voice Agent API bundles speech-to-text, LLM reasoning, text-to-speech, turn detection, and tool calling into one WebSocket connection, with native plugins for LiveKit and Pipecat.
+
+**Modular audio intelligence**
+Sentiment analysis, entity detection, topic detection, PII redaction, and content moderation are available as add-ons on top of any transcription request, priced and billed independently.
+
+---
+
+## Use Cases
+
+**Voice agents and conversational AI**
+Build speech-to-speech agents with the Voice Agent API, deployed through LiveKit, Pipecat, Twilio, or Telnyx telephony.
+
+**Contact center and sales call analytics**
+Combine transcription with sentiment analysis, topic detection, and entity detection to analyze calls at scale.
+
+**Meeting intelligence and medical documentation**
+Use contextual prompting and Speech Understanding add-ons to generate accurate transcripts and summaries for meetings and clinical audio.

@@ -1,0 +1,65 @@
+---
+title: "Speech-to-Text"
+author: "AssemblyAI"
+authorUsername: "stevekimoi"
+description: "AssemblyAI's Speech-to-Text API transcribes pre-recorded audio and video across 99 languages using the Universal-3.5 Pro model, with diarization, PII redaction, and native code-switching."
+---
+
+# Speech-to-Text
+
+AssemblyAI's [Speech-to-Text API](https://www.assemblyai.com/docs/getting-started/universal-3-5-pro) transcribes pre-recorded audio and video across 99 languages. The current flagship model is Universal-3.5 Pro, released July 7, 2026 as the successor to Universal-3 Pro. AssemblyAI also keeps Universal-2 available as a lower-cost legacy tier.
+
+| General | |
+|---------|--|
+| **Release date** | July 7, 2026 (Universal-3.5 Pro) |
+| **Developer** | AssemblyAI |
+| **Type** | Asynchronous speech-to-text API |
+| **License** | Commercial API |
+| **Documentation** | [assemblyai.com/docs](https://www.assemblyai.com/docs) |
+| **GitHub** | [AssemblyAI/assemblyai-python-sdk](https://github.com/AssemblyAI/assemblyai-python-sdk) |
+
+---
+
+## Core Features
+
+- **99 languages**: transcription coverage for pre-recorded audio and video.
+- **Native code-switching**: audio that moves between languages mid-recording is transcribed without selecting a language in advance, across 18 languages: English, Spanish, French, German, Italian, Portuguese, Arabic, Danish, Dutch, Finnish, Hebrew, Hindi, Japanese, Mandarin, Norwegian, Swedish, Turkish, and Vietnamese.
+- **Speaker diarization**: identifies and labels individual speakers in a transcript, available as an add-on.
+- **PII redaction**: removes personally identifiable information from transcript text or the underlying audio.
+- **Contextual prompting**: developers can pass domain context (e.g. medical terminology) with a request; in AssemblyAI's internal healthcare testing this reduced missed medical terms by 31%, and customer Metaview reported roughly 47% fewer low-confidence tokens.
+- **Synchronous transcription**: a separate mode for short clips up to 120 seconds, returning a transcript in a single request/response instead of polling or webhooks.
+
+---
+
+## Benchmarks
+
+On AssemblyAI's published code-switching benchmark (normalized WER), Universal-3.5 Pro scored 7.69%, compared to ElevenLabs Scribe v2 (8.77%), Deepgram Nova-3 (12.22%), and OpenAI GPT-4o (44.58%). Its predecessor, Universal-3 Pro, scored 9.07% on the same test.
+
+On speaker diarization (cpWER), Universal-3.5 Pro averaged 30.17%, compared to Deepgram Nova-3 English (37.92%), ElevenLabs Scribe v2 (35.26%), and Gladia (36.87%).
+
+Source: [Universal-3.5 Pro announcement](https://www.assemblyai.com/blog/universal-3-5-pro-async)
+
+---
+
+## Pricing
+
+| Model | Rate | Notes |
+|-------|------|-------|
+| **Universal-3.5 Pro** | $0.21/hour | current flagship async model |
+| **Universal-2** | $0.15/hour | legacy tier, still supported |
+
+Speaker diarization adds $0.02/hour. New accounts get $50 in free credit at signup with no credit card required.
+
+Source: [assemblyai.com/pricing](https://www.assemblyai.com/pricing)
+
+---
+
+## Tools and Resources
+
+- **[Python SDK](https://github.com/AssemblyAI/assemblyai-python-sdk)**: official client for the Speech-to-Text API.
+- **[Node.js/TypeScript SDK](https://github.com/AssemblyAI/assemblyai-node-sdk)**: official JavaScript and TypeScript client.
+- **[API Reference](https://www.assemblyai.com/docs)**: full documentation for transcription, diarization, and redaction endpoints.
+
+---
+
+Start with the [$50 free credit](https://www.assemblyai.com/pricing) and the [Speech-to-Text docs](https://www.assemblyai.com/docs/getting-started/universal-3-5-pro) to send your first transcription request.
