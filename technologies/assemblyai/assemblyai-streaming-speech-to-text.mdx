@@ -1,0 +1,61 @@
+---
+title: "Universal-Streaming"
+author: "AssemblyAI"
+authorUsername: "stevekimoi"
+description: "Universal-Streaming is AssemblyAI's real-time speech-to-text API, delivering live transcription over WebSocket with the Universal-3.5 Pro Realtime model for voice agents and captioning."
+---
+
+# Universal-Streaming
+
+Universal-Streaming is AssemblyAI's real-time speech-to-text product, delivering live transcription over a WebSocket connection with roughly 150ms latency. Its current model, Universal-3.5 Pro Realtime, is the successor to Universal-3 Pro Realtime and is built for voice agents, live captioning, and real-time agent-assist tools.
+
+| General | |
+|---------|--|
+| **Developer** | AssemblyAI |
+| **Type** | Real-time (streaming) speech-to-text API |
+| **License** | Commercial API |
+| **Documentation** | [assemblyai.com/docs](https://www.assemblyai.com/docs) |
+| **GitHub** | [AssemblyAI/realtime-transcription-browser-js-example](https://github.com/AssemblyAI/realtime-transcription-browser-js-example) |
+
+---
+
+## Core Features
+
+- **Low-latency streaming**: live audio is transcribed over WebSocket at approximately 150ms latency.
+- **Universal-3.5 Pro Realtime model**: scores 4.1% WER on AssemblyAI's AA-WER Streaming benchmark, with roughly 0.4 seconds to the first final result.
+- **Three latency/accuracy modes**: Balanced (default), Max Accuracy, and Min Latency.
+- **Persistent conversation context**: context can be passed at the start of a call and after each agent turn without reconnecting the WebSocket.
+
+Source: [Universal-3.5 Pro Realtime announcement](https://x.com/ArtificialAnlys/status/2074160133702402314), AssemblyAI docs hub.
+
+---
+
+## Pricing
+
+| Model | Rate |
+|-------|------|
+| **Universal-3.5 Pro Realtime** | $0.45/hour ($7.50 per 1,000 minutes) |
+| **Universal-Streaming** (English or Multilingual) | $0.15/hour |
+
+Streaming is billed by WebSocket session duration, including idle time, rather than by audio duration. Streaming diarization adds $0.12/hour.
+
+Source: [assemblyai.com/pricing](https://www.assemblyai.com/pricing)
+
+---
+
+## Tools and Resources
+
+- **[Node.js/TypeScript SDK](https://github.com/AssemblyAI/assemblyai-node-sdk)**: official streaming client.
+- **[Python SDK](https://github.com/AssemblyAI/assemblyai-python-sdk)**: official streaming client.
+- **[Realtime browser example](https://github.com/AssemblyAI/realtime-transcription-browser-js-example)**: reference implementation for browser-based streaming.
+- **[Streaming self-hosting stack](https://github.com/AssemblyAI/streaming-self-hosting-stack)**: Python stack for self-hosted streaming deployments.
+
+---
+
+## Ecosystem and Integrations
+
+Universal-Streaming powers the listening layer behind AssemblyAI's [Voice Agent API](/tech/assemblyai/assemblyai-voice-agent-api), and is also available as a standalone streaming transcription endpoint for custom pipelines.
+
+---
+
+Get started with the [streaming docs](https://www.assemblyai.com/docs) and the $50 free credit available on signup.

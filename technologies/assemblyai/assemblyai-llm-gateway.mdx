@@ -1,0 +1,59 @@
+---
+title: "LLM Gateway"
+author: "AssemblyAI"
+authorUsername: "stevekimoi"
+description: "LLM Gateway is AssemblyAI's OpenAI-compatible API for calling frontier language models like Claude, GPT, and Gemini inside voice AI workflows, replacing the deprecated LeMUR product."
+---
+
+# LLM Gateway
+
+[LLM Gateway](https://www.assemblyai.com/products/llm-gateway) is AssemblyAI's unified, OpenAI-compatible API for calling frontier language models inside voice AI workflows. It replaces LeMUR ("Leveraging Large Language Models to Understand Recognized speech"), which is deprecated and stops working March 31, 2026.
+
+| General | |
+|---------|--|
+| **Developer** | AssemblyAI |
+| **Type** | LLM gateway / unified API for voice AI workflows |
+| **License** | Commercial API |
+| **Documentation** | [assemblyai.com/products/llm-gateway](https://www.assemblyai.com/products/llm-gateway) |
+
+---
+
+## Core Features
+
+- **OpenAI-compatible API**: a single interface for calling multiple LLM providers.
+- **Multi-provider failover**: requests can fail over between providers.
+- **Tool calling and JSON output**: supports structured output and tool/function calling.
+- **Zero-data-retention option**: available for workflows with stricter data handling requirements.
+- **Supported providers**: OpenAI, Anthropic, Google Gemini, Alibaba Qwen, and Moonshot Kimi.
+
+---
+
+## Pricing
+
+LLM Gateway is billed per 1M tokens, with separate input and output rates:
+
+| Model | Input (per 1M tokens) | Output (per 1M tokens) |
+|-------|------------------------|--------------------------|
+| Claude 4.5 Sonnet | $3.00 | $15.00 |
+| GPT-5.1 | $1.25 | $10.00 |
+| Gemini 3.5 Flash | $1.50 | $9.00 |
+
+Source: [assemblyai.com/pricing](https://www.assemblyai.com/pricing)
+
+---
+
+## Use Cases
+
+- **Transcript summaries and chapter markers**: generate summaries directly from transcript output.
+- **Structured data extraction**: pull structured fields out of call transcripts.
+- **Live LLM enhancement**: apply LLM processing to transcript streams as they arrive.
+
+---
+
+## Migrating from LeMUR
+
+Existing LeMUR integrations need to move to LLM Gateway before LeMUR stops working on March 31, 2026. AssemblyAI publishes a [migration guide](https://www.assemblyai.com/docs/llm-gateway/migration-from-lemur) covering the API changes.
+
+---
+
+Read the [LLM Gateway docs](https://www.assemblyai.com/products/llm-gateway) or the [migration guide](https://www.assemblyai.com/docs/llm-gateway/migration-from-lemur) to get started.
