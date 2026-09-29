@@ -7,6 +7,8 @@ authorUsername: "stevekimoi"
 
 ## Introduction
 
+<LiteYouTube videoId="8oxtH_Ju6kI" containerClassName={"youtubeContainer"} />
+
 Intel's own [Anomalib reference kit](https://github.com/openvinotoolkit/openvino_build_deploy/tree/master/ai_ref_kits/defect_detection_anomalib) already shows how to spot a defective part with OpenVINO: train a one-class model on "good" images, export it to OpenVINO's IR format, and run inference on CPU. What it doesn't cover is the other half of a real sorting line — the rule that decides *where* a defective part goes changes from shift to shift, and today that means a human editing a config file or hard-coding a threshold. Nobody has written up replacing that step with something an operator can just say out loud.
 
 This tutorial builds that missing half. An operator speaks a sort rule — "send anomalous items to bin two, normal items to bin one" — [Speechmatics](https://www.speechmatics.com/) transcribes it in real time, and a small deterministic parser turns it into a structured rule. Separately, an [Anomalib](https://github.com/open-edge-platform/anomalib) Padim model, exported to OpenVINO and run through OpenVINO's runtime, scores an item image as normal or anomalous. The two fuse into one decision: which bin this specific item goes to, right now, under whatever rule was spoken most recently.
