@@ -54,7 +54,7 @@ jobs:
             page += 1
 
         needs_trusted_processing = []
-        img_pattern = re.compile(r'<Img[^<>]*\\ssrc="(.*?)"\\s[^<>]*?/?>')
+        img_pattern = re.compile(r'<Img[^<>]*\ssrc="(.*?)"\s[^<>]*?/?>')
 
         for item in mdx_files:
             request = urllib.request.Request(
