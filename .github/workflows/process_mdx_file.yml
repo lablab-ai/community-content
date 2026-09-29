@@ -8,21 +8,102 @@ on:
 jobs:
   process-mdx:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Validate fork MDX without checking out fork code
+      if: github.event.pull_request.head.repo.full_name != github.repository
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPOSITORY: ${{ github.repository }}
+      run: |
+        python - <<'PY'
+        import json
+        import os
+        import re
+        import sys
+        import urllib.request
+
+        token = os.environ["GITHUB_TOKEN"]
+        repo = os.environ["REPOSITORY"]
+        pr_number = os.environ["PR_NUMBER"]
+        api_headers = {
+            "Accept": "application/vnd.github+json",
+            "Authorization": f"Bearer {token}",
+            "User-Agent": "community-content-mdx-validator",
+        }
+
+        mdx_files = []
+        page = 1
+        while True:
+            url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files?per_page=100&page={page}"
+            request = urllib.request.Request(url, headers=api_headers)
+            with urllib.request.urlopen(request) as response:
+                files = json.load(response)
+            if not files:
+                break
+            mdx_files.extend(
+                item for item in files
+                if item.get("filename", "").endswith(".mdx")
+                and item.get("status") != "removed"
+                and item.get("raw_url")
+            )
+            page += 1
+
+        needs_trusted_processing = []
+        img_pattern = re.compile(r'<Img[^<>]*\\ssrc="(.*?)"\\s[^<>]*?/?>')
+
+        for item in mdx_files:
+            request = urllib.request.Request(
+                item["raw_url"],
+                headers={"User-Agent": "community-content-mdx-validator"},
+            )
+            with urllib.request.urlopen(request) as response:
+                content = response.read().decode("utf-8")
+
+            external_images = [
+                image_url
+                for image_url in img_pattern.findall(content)
+                if "imagedelivery.net" not in image_url
+            ]
+            if external_images:
+                needs_trusted_processing.append(item["filename"])
+
+        if needs_trusted_processing:
+            print(
+                "Fork PR contains MDX images that require trusted Cloudflare processing: "
+                + ", ".join(needs_trusted_processing)
+            )
+            print(
+                "A maintainer must process these images from a trusted branch; "
+                "fork code is intentionally never checked out in pull_request_target."
+            )
+            sys.exit(1)
+
+        print(
+            f"Fork-safe validation passed for {len(mdx_files)} changed MDX file(s); "
+            "no trusted image-processing step is required."
+        )
+        PY
+
+    - name: Checkout trusted same-repository PR code
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }}
-        repository: ${{ github.event.pull_request.head.repo.full_name }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
     - name: Install dependencies
+      if: github.event.pull_request.head.repo.full_name == github.repository
       run: |
         python -m pip install --upgrade pip
         pip install requests
@@ -30,6 +111,7 @@ jobs:
         sudo apt-get install jq
 
     - name: Get list of changed .mdx files
+      if: github.event.pull_request.head.repo.full_name == github.repository
       id: changed_files
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,13 +122,18 @@ jobs:
         echo "PR Number: $PR_NUMBER"
         echo "Repository: $REPO_FULL_NAME"
         RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/files")
-        echo "GitHub API response: $RESPONSE"
+          "https://api.github.com/repos/$REPO_FULL_NAME/pulls/$PR_NUMBER/files?per_page=100")
         CHANGED_FILES=$(echo "$RESPONSE" | jq -r '.[] | select(.filename | endswith(".mdx")) | .filename')
-        echo "CHANGED_FILES=$CHANGED_FILES" >> $GITHUB_ENV
-        echo "Changed files: $CHANGED_FILES"
+        {
+          echo "CHANGED_FILES<<EOF"
+          echo "$CHANGED_FILES"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
 
     - name: Run image processing script and check for changes
+      if: github.event.pull_request.head.repo.full_name == github.repository
       id: run_script
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -55,6 +142,7 @@ jobs:
         echo "Running script"
         if [ -z "$CHANGED_FILES" ]; then
           echo "No .mdx files changed."
+          echo "NO_CHANGES" > script_output.txt
         else
           echo "Running script with files: $CHANGED_FILES"
           python scripts/process_images.py $CHANGED_FILES | tee script_output.txt
@@ -62,22 +150,23 @@ jobs:
       continue-on-error: true
 
     - name: Set change detection flag
+      if: github.event.pull_request.head.repo.full_name == github.repository
       id: set_changes_flag
       run: |
         if grep -q "CHANGES_MADE" script_output.txt; then
-          echo "script_changes=true" >> $GITHUB_ENV
+          echo "script_changes=true" >> "$GITHUB_ENV"
         else
-          echo "script_changes=false" >> $GITHUB_ENV
+          echo "script_changes=false" >> "$GITHUB_ENV"
         fi
 
     - name: Print changes made by the script
-      if: env.script_changes == 'true'
+      if: github.event.pull_request.head.repo.full_name == github.repository && env.script_changes == 'true'
       run: |
         echo "Printing changes made by the script:"
         git diff
 
     - name: Commit and push changes
-      if: env.script_changes == 'true'
+      if: github.event.pull_request.head.repo.full_name == github.repository && env.script_changes == 'true'
       env:
         PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
       run: |
@@ -85,11 +174,11 @@ jobs:
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
         git commit -m "Processed images in MDX files"
-        git push https://github-actions:${{ secrets.PAT_TOKEN }}@github.com/${{ github.event.pull_request.head.repo.full_name }} HEAD:${{ github.event.pull_request.head.ref }}
+        git push https://github-actions:${PAT_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.event.pull_request.head.ref }}
       continue-on-error: true
 
     - name: Debugging Upload Failure
-      if: failure()
+      if: failure() && github.event.pull_request.head.repo.full_name == github.repository
       run: |
         echo "Upload failed. Debugging information:"
         git status
