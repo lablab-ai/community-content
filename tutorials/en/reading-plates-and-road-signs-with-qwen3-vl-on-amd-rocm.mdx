@@ -1,0 +1,94 @@
+---
+title: "Reading Plates and Road Signs with Qwen3-VL on AMD ROCm"
+description: "How I packaged Qwen3-VL-8B for the AMD AI Academy OCR mini-challenge: a load-once server, GPU warm-up, and the pitfalls that cost the most time."
+image: "https://cdn.jsdelivr.net/gh/faisal-fida/amd-ocr@03a566f67212719d33b6bd99431a6e3b49788352/tutorial/cover.svg"
+authorUsername: "faisalfida"
+---
+
+## Introduction
+
+Mini-Challenge 2 focuses on OCR for real-world road scenes, specifically vehicle license plates (both US and Chinese) and complex road signs under challenging conditions like blur, glare, night lighting, and extreme camera angles. The task requires taking an input image and returning normalized text in a JSON structure across 10 hidden evaluation images. I joined this challenge to gain hands-on experience deploying modern vision-language models on AMD ROCm hardware and to prove that an open-weight model could reliably conquer strict operational latency constraints.
+
+Code: [github.com/faisal-fida/amd-ocr](https://github.com/faisal-fida/amd-ocr)
+
+## The Grader
+
+The most surprising discovery was the grader's execution model: it invokes a brand new `python3 /app/app.py` process for every single evaluation image. The hard gates leave zero margin for error: an uncompressed image size under 60 GiB, strict ROCm base layers, a 10-minute startup window, and a 30-second per-image timeout.
+
+The single biggest risk was the 30-second execution window. Loading a modern vision-language model cold inside `app.py` would easily breach that limit on every run, resulting in an immediate zero score regardless of how accurate the model actually is.
+
+## Architecture and Design
+
+Because cold-loading the 8B model into GPU memory took between 33 and 41 seconds on the test pod, doing model loading inside `app.py` was out of the question.
+
+### Load-Once Background Service
+
+I implemented a decoupled architecture where a background daemon (`server.py`) initializes during the 10-minute container launch window, mounts the model onto the GPU once, and listens across a local Unix domain socket. The grader's `app.py` acts purely as a thin standard-library client that passes image paths and reads responses.
+
+### Proactive GPU Warm-up
+
+The initial forward pass on AMD MI300X took roughly 9.9 seconds due to ROCm/HIP kernel compilation. By executing a dummy inference warm-up during container boot, subsequent evaluation inferences dropped to 0.16 to 0.35 seconds per image, cleanly staying within budget.
+
+## Model Selection
+
+I chose Qwen3-VL-8B-Instruct running in BF16 precision for three primary reasons:
+
+### Target Domain Coverage
+
+It natively handles Chinese characters alongside standard alphanumeric plates without needing secondary OCR pipelines.
+
+### Resource Envelope
+
+At ~17 GB uncompressed weights, its peak operational memory on MI300X hovered at 18.4 GB VRAM, comfortably under the 48 GiB ceiling while leaving plenty of headroom.
+
+### Autonomous Deployment
+
+The model weights were baked directly into the Docker image with a pinned revision, enabling clean, offline execution with zero runtime network calls.
+
+## Pitfalls and Fixes
+
+During build and deployment, three distinct issues popped up:
+
+### CUDA PyTorch Contamination
+
+Initializing a standard virtual environment inside the ROCm notebook pod caused pip to automatically pull down torch 2.14.0+cu130 and over 3 GB of NVIDIA packages, overriding the native ROCm build.
+
+Fix: Removed the duplicate wheel installation and pointed the venv directly to the base image's system ROCm packages using a localized `.pth` path file.
+
+### Host Resource and Build Constraints
+
+The development pod lacked the admin capability needed to run Docker, and sat behind a restrictive proxy blocking Docker Hub.
+
+Fix: Provisioned an AMD Developer Cloud MI300X instance to assemble, test, and export the container image cleanly.
+
+### GHCR Default Visibility
+
+Pushing the finished container to GitHub Container Registry (ghcr.io) defaulted the package visibility to private, which would fail public grader pulls.
+
+Fix: Updated the container package permissions to Public via the GitHub web UI settings before submission.
+
+## Results
+
+Grader-style run on an AMD Instinct MI300X, using the exact submitted image:
+
+| Check | Result | Limit |
+|---|---|---|
+| Sample images | 10/10 | |
+| Startup | 20 s | 600 s |
+| Per image | 0.16 to 0.35 s | 30 s |
+| Peak VRAM | 18.4 GB | 1 to 48 GiB |
+| Uncompressed image size | 45.7 GiB | 60 GiB |
+
+Synthetic hard set (blur, motion blur, noise, low light, glare, perspective, rotation, heavy JPEG, low and very high resolution):
+
+| Set | Score |
+|---|---|
+| 72 images | 71/72 |
+| 180 images | 179/180 |
+| 180 unseen images | 178/180 |
+
+## Summary and Advice for Beginners
+
+Measured Performance: The container scored 10/10 on the 10 public sample images, achieving consistent 0.16 to 0.35 s inference times and passing all hard grader checks. Synthetic stress testing held steady at 71/72 and 178/180 accuracy across blur, glare, noise, low-light and angle variations.
+
+Advice: Don't spend the first week tuning prompt templates or model weights. Build your container plumbing, IPC socket, and ROCm environment first. Test your startup lifecycle and packaging constraints using a tiny dummy script before touching multi-gigabyte models. Packaging and system design account for most disqualifications in this challenge.
