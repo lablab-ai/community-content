@@ -1,0 +1,242 @@
+---
+title: "Improving GPT's instruction following ability of non english prompts"
+description: "Learn how to improve response quality of GPT 3.5 for non english prompts."
+image: "" 
+authorUsername: "raghavan848"
+---
+
+## GPT-3.5 and Language Limitations: A Study in Multilingual Adaptation
+
+## Introduction
+The advent of large language models (LLMs) like GPT-3.5 has revolutionized the field of natural language processing. However, their proficiency predominantly lies in English, creating a gap in multi-language accessibility. Let's take a simple example of "Write 3 paragraphs of 4 lines each about the solar system" in english.
+
+## GPT-3.5's Abilities in English
+GPT-3.5 shows remarkable understanding and generation capabilities in English, adept in various tasks from creative writing to technical problem-solving. It writes 3 paragraphs and 4 lines.
+
+```GPT Response
+The solar system, a marvel of cosmic architecture, is home to a diverse family of celestial bodies. At its heart lies the Sun, a glowing furnace of nuclear fusion, providing light and warmth to its planetary offspring. Orbiting it are the planets, each unique in its composition and appearance, from the rocky inner worlds to the gas giants further out. This celestial dance is set against the backdrop of the Milky Way, with asteroids, comets, and distant stars completing the stunning vista.
+Mercury, Venus, Earth, and Mars make up the inner solar system, characterized by their solid surfaces and closer proximity to the Sun. Earth, with its life-supporting conditions, stands out as a blue jewel among its neighbors. Beyond Mars lies the asteroid belt, a region of rocky debris that marks the boundary to the outer solar system. Here, the gas giants Jupiter and Saturn, with their impressive rings and moons, dominate, followed by the more distant and enigmatic Uranus and Neptune.
+At the fringes of the solar system, the Kuiper Belt and Oort Cloud are regions filled with icy bodies and remnants from the solar system's formation. Dwarf planets like Pluto reside here, challenging our definitions of what constitutes a planet. The solar system is not just a collection of planets and moons; it's a dynamic and evolving system, constantly shaped by gravitational forces, solar winds, and cosmic events. As we explore further, we continue to uncover the mysteries and wonders of this cosmic neighborhood we call home.
+```
+Without judging the quality, we can see that GPT 3.5 has generated 3 paragraphs and 4 lines each as mentioned in the prompt.
+However, if we do the same in other languages, this is not guaranteed.
+
+[English response](https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09)
+
+## Performance in Non-English Languages
+When dealing with languages other than English, GPT-3.5's performance drops significantly. For example, prompts in South Asian or Middle Eastern languages often result in less accurate or coherent responses.
+| Language | GPT 3.5 Link | Instruction followed? |
+| :--------|:-------------|:----------------------|
+| Arabic | [link](https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4) | More than 3 paragraphs and different lines in each paragraph |
+| Hindi | [link](https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6) | Got the 3 paragraphs right but line counts are wrong |
+| Tamil | [link](https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd) | 3 bullet points, got both paragraphs & line count wrong |
+
+This pattern can be reproduced for south asian and middle eastern languages that have lesser representation in the training data.
+
+## Why is this the case ?
+
+### Training data disparity:
+Quoting directly from wikipedia, common crawl dataset which is used by GPT series models has 46% english, followed by german, russian, japanese, french, spanish and chinese each less than 6%
+With less examples to learn from, GPT’s understanding of non-English semantics and collective knowledge is poorer.
+
+
+### Grammatical complexity:
+South Asian and middle eastern languages have complex morphology, case systems, tense rules etc. These are harder for models to handle properly in non-English languages. Language specific enhancements can help. 
+We may need a language specific tokenizer.
+
+## Scaling Challenges of Training Multilingual LLMs:
+Training a separate LLM for each language is not scalable due to immense data and computational requirements.
+Fine tuning also requires capital investment although orders of magnitude lesser than training a separate LLM.
+
+## Proposed Solution: Translation Layer
+A practical solution involves implementing a translation layer. This layer translates non-English prompts to English, processes them through GPT-3.5, and then translates the responses back to the original language.
+
+### Pseudocode
+1. Check if the input prompt is english
+2. If not, translate the prompt to english using GPT 3.5 itself or python translate package
+3. Send the english prompt to GPT 3.5 for response
+4. Reverse Translate the response to original language 
+5. Return the response
+
+This improves the response quality (anecdotally) significantly and LLM response follows instructions as expected
+### Code Implementation
+### necessary packages
+
+```python
+flask==3.0.3
+openai==0.28.1
+translate=3.6.1
+```
+### method to translate prompt to english
+
+```python
+# Define a function to translate text to English using GPT-3.5
+def translate_to_english(text):
+    # Template prompt for language translation. The prompt outlines the task for GPT-3.5.
+    template = """
+         Identify the language of the input input_text: {}
+        Output the language, code and english_translation in JSON format using the SCHEMA
+        ...<prompt clipped>
+    """
+    prompt = template.format(text)  # Format the template with the input text
+
+    # Call the OpenAI API with the formatted prompt
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful translator."},
+            {"role": "user", "content": prompt}
+        ]
+      )
+    
+    print (template)  # Print the template (might not be necessary for production)
+    print(response)  # Print the API response (might not be necessary for production)
+    return response.choices[0].message.content  # Return the translation from the API response
+
+```
+See the full prompt here [link](https://github.com/Raghavan1988/translation_augmented_generation/blob/6450672bc069015a8565a72a9357fd9425153ce8/translate_RAG.py#L11)
+### method to call GPT 3.5 and get the LLM response
+
+```python
+# Function to get a generic response from GPT-3.5 based on the text
+def get_GPT_35_response(text):
+    # Call the OpenAI API with the input text
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": text}
+        ]
+      )
+    return response.choices[0].message.content  # Return the response from the API
+```
+
+
+### method to translate english response from GPT To original input language using translate package
+```python
+# Function to translate text from English to a specified language
+def translate_from_english_to_input_language(text, code):
+    translator = Translator(to_lang=code)  # Initialize the Translator with the target language code
+    translation = translator.translate(text)  # Translate the text
+    return translation  # Return the translated text
+```
+
+### Flask application
+Complete code is available on Github: [https://github.com/Raghavan1988/translation_augmented_generation](link)
+```python
+# Define a route for the root URL, displaying a form
+@app.route('/')
+def my_form():
+    return render_template('my-form.html')  # Return the HTML form for user input
+
+# Define a route for processing form submissions
+@app.route('/', methods=['POST'])
+def my_form_post():
+    text = request.form['text']  # Extract the submitted text from the form
+
+    # Get a raw response from GPT-3.5 for comparison
+    raw_response = get_GPT_35_response(text)
+
+    # Attempt to translate the submitted text to English
+    try:
+      translated_response = translate_to_english(text)
+      # Clean up the translation output
+      translated_response = translated_response.replace("```", "").replace("json", "").strip()
+
+      json_dict = json.loads(translated_response)  # Parse the translation into a dictionary
+      code = json_dict['code']  # Extract the language code
+      english_translation = json_dict['english_translation']  # Extract the English translation
+    except Exception as e:  # Handle errors during translation
+      print(e)
+      return "Error translating to English"
+
+    # Get a GPT-3.5 response for the English translation
+    gpt35_response_english_translation = get_GPT_35_response(english_translation)
+
+    # Translate the GPT-3.5 response back to the original language
+    translation_augmented_response = translate_from_english_to_input_language(gpt35_response_english_translation, code)
+    
+    # Build an HTML response to display the results
+    HTMLRepsonse = "<html>" \
+                   "<table border=5>" \
+                   "<tr><td>Input</td><td>" + text + "</td></tr>" \
+                   "<tr><td> raw response </td><td>" + raw_response + "</td></tr>" \
+                   "<tr><td> translation augmented response  </td><td>" + translation_augmented_response + "</td></tr>" \
+                   "</table>" \
+                   "</html>"
+
+    return HTMLRepsonse  # Return the HTML response 
+```
+
+### Commands to run the flask application on terminal
+```shell
+$ export FLASK_APP=<filename.py>
+$ export OPENAI_API_KEY=<your OPENAI_API_KEY>
+$ flask run
+ * Serving Flask app 'translate_RAG.py'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+```
+
+
+```
+
+There are two options to achieve the translation. One option is to use translate package while other option is to use GPT 3.5 itself to translate. Sometimes GPT 3.5 is not a reliable translator
+
+#### option-1 use python translate package
+```python
+# Example Python snippet for translation implementation using translate package (pip install translate=3.6.1) from English to any language
+>>> from translate import Translator
+>>> translator = Translator(to_lang="ta")
+>>> translation = translator.translate("How long does it take for light to travel from the sun to the earth?")
+>>> translation
+'சூரியனிலிருந்து பூமிக்கு ஒளி பயணிக்க எவ்வளவு நேரம் ஆகும்?'
+>>> 
+```
+
+#### option-2 use GPT 3.5 itself to translate
+```python
+## Translate from any language to English
+    template = """
+        Take a deep breath
+        You are a language translator. You are going to translate the following text into English.
+        Identify the language of the input {text}
+        Output the language code in JSON format using the SCHEMA in TYPESCRIPT
+        SCHEMA:
+            language: string,
+            code: string,
+            english_translation: string
+        If the language matches one of the following in the list, use the code.
+        Language - Code
+    Afrikaans - af
+    Albanian - sq
+    Amharic - am
+    ...<truncated>
+    """
+```
+
+## Example flask demo in Tamil
+
+Let's ask "How long does it take for light to travel from the sun to the earth?"  in Tamil
+Prompt: சூரியனில் இருந்து பூமிக்கு ஒளி பயணிக்க எவ்வளவு நேரம் ஆகும் 
+Without translation, the raw GPT 3.5 response is not accurate. It did not get the answer of 8 min 20 seconds
+With translation layer, GPT 3.5 response is accurate. It got the answer of 8 minutes 20 seconds
+![tamil example screenshot](https://github.com/Raghavan1988/translation_augmented_generation/assets/493090/dc7fdd87-7f9d-4f62-ac52-6a3cb8ed2424)
+
+## Conclusion
+This approach enables users to leverage the power of GPT-3.5 in their native languages, democratizing access to advanced AI technologies.
+Complete code is available on Github: [https://github.com/Raghavan1988/translation_augmented_generation](link)
+
+
+## Reference
+1. https://en.wikipedia.org/wiki/Common_Crawl
+2. https://chat.openai.com/share/224b0baa-40ed-4921-a9ba-586a435aee09
+3. https://chat.openai.com/share/bae93526-e60c-4d9b-8042-4a3df8be62d4
+4. https://chat.openai.com/share/cc55c456-f908-4487-aee1-53c62c8269f6
+5. https://chat.openai.com/share/b53ba6b8-8bef-4423-ae2d-5d328e3943fd
+6. https://dzone.com/articles/lost-in-translation-gaps-of-gpt-35-in-south-asian
+
+Author: Raghavan Muthuregunathan
+Linkedin: https://www.linkedin.com/in/raghavanmit/
