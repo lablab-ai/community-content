@@ -1,7 +1,7 @@
 ---
 title: "Build a Reviewer-Gated Software Factory in BAND Desktop (AI Hackathon Guide)"
 description: "AI hackathon guide: learn how to build a software factory in BAND Desktop with three agents, a shared folder and a Reviewer that can block bad work."
-image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-COVER-IMAGE-ID/public"
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/LabLab_tutorial_THREE-AGENTSOFTWARE%20FACTORY.jpg"
 authorUsername: "vicdevman"
 ---
 
@@ -48,7 +48,7 @@ You need Node 18 or newer, and nothing else. The suite should finish like this:
 
 Then open `index.html` in your browser. Add a few cards, move four into **Doing**, and the board refuses the fourth with a message on the page.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-11-board-filled/public" alt="The Focus Board in dark theme with To do, Doing and Done columns, each holding cards with move and delete buttons" caption="The finished Focus Board. Nobody on the human side wrote a line of it. Three agents planned it, built it and checked it." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/board-filled.png" alt="The Focus Board in dark theme with To do, Doing and Done columns, each holding cards with move and delete buttons" caption="The finished Focus Board. Nobody on the human side wrote a line of it. Three agents planned it, built it and checked it." />
 
 Everything in that folder except `SPEC.md` and `prompts/` was written by the three agents. The rest of this tutorial shows how to set that factory up from scratch.
 
@@ -70,7 +70,7 @@ Install BAND Desktop from the [official docs](https://docs.band.ai/band-desktop)
 
 A **runtime** is the coding tool that actually does the work behind an agent. BAND Desktop supports Claude Code and OpenCode, plus a generic ACP agent option. There is no manual connection step. When a runtime is installed on your machine, BAND Desktop picks it up on its own, and you can check what it found under **Settings**, then **Integrations**.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-01-integrations/public" alt="BAND Desktop Settings open on the Integrations page, listing the detected Claude Code and OpenCode runtimes" caption="Settings, then Integrations. If a runtime is installed and signed in, it shows up here without any setup inside BAND." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Integrations-page-Claude-Code-OpenCode-detected.png" alt="BAND Desktop Settings open on the Integrations page, listing the detected Claude Code and OpenCode runtimes" caption="Settings, then Integrations. If a runtime is installed and signed in, it shows up here without any setup inside BAND." />
 
 Before you move on, open a plain terminal and run each tool once (`claude` and `opencode`) to confirm you are signed in and a model is configured. A runtime that cannot answer on its own cannot answer inside BAND either, and it is much easier to find that out here than in the middle of a room.
 
@@ -82,7 +82,7 @@ The factory needs two things on disk before any agent exists: a spec to build fr
 
 Create a folder called `factory-demo` and put a `SPEC.md` in it. The one in this project describes a tiny kanban board with no build step: plain HTML, CSS and JavaScript, with a pure logic file the tests can load in Node.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-02-spec/public" alt="SPEC.md open in VS Code showing the files, behaviour, board.js API, UI requirements and acceptance criteria sections" caption="SPEC.md for the Focus Board. The exact error strings and element ids are written down so nobody has to guess them." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/03-spec.png" alt="SPEC.md open in VS Code showing the files, behaviour, board.js API, UI requirements and acceptance criteria sections" caption="SPEC.md for the Focus Board. The exact error strings and element ids are written down so nobody has to guess them." />
 
 The part that matters most is the end of the file, the acceptance criteria:
 
@@ -127,7 +127,7 @@ one-paragraph summary for the human.
 
 The Engineer's mandate owns the five code files and a `HANDOFF.md`, and must run `node --test` before every handoff. The Reviewer's mandate owns only `REVIEW.md`, must re-run the tests itself, and carries the veto rule: if a claim is not backed by evidence in the room or reproduced by the Reviewer, the answer is BLOCKED. Read both in the [prompts folder](https://github.com/vicdevman/factory-demo/tree/7af97eb1ae32a5c1adc97d73f22de800ea06c5ba/prompts).
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-03-mandates-folder/public" alt="VS Code explorer showing the factory-demo folder with a prompts folder holding engineer.md, planner.md and reviewer.md, and SPEC.md beside it" caption="The starting state: a spec and three mandates. No code yet." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/04-mandate.png" alt="VS Code explorer showing the factory-demo folder with a prompts folder holding engineer.md, planner.md and reviewer.md, and SPEC.md beside it" caption="The starting state: a spec and three mandates. No code yet." />
 
 Finally, commit it, so the agents start from a clean, known state:
 
@@ -143,7 +143,7 @@ You will see why this matters in Step 5, when the Engineer reports the state of 
 
 BAND Desktop ships with a library of predefined agents. Open **Agents**, then **Browse predefined agents**, and you get cards for Planner, Implementer, Reviewer, Investigator, Test author, Security reviewer and more. Each card has a runtime dropdown and an **Add** button.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-04-agent-library/public" alt="The BAND Desktop agent library showing template cards for Implementer, Reviewer, Planner, Investigator, Test author, Security reviewer, Performance engineer, Integrator, Release engineer and Technical writer, each with a runtime dropdown and an Add button" caption="The agent library. A template is a ready-made role. We use three of them: Planner, Implementer and Reviewer." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/agent-library.png" alt="The BAND Desktop agent library showing template cards for Implementer, Reviewer, Planner, Investigator, Test author, Security reviewer, Performance engineer, Integrator, Release engineer and Technical writer, each with a runtime dropdown and an Add button" caption="The agent library. A template is a ready-made role. We use three of them: Planner, Implementer and Reviewer." />
 
 This factory uses three templates. To see every field, create the Planner with **New agent**, which walks through three screens: Identity, Runtime and Review.
 
@@ -151,7 +151,7 @@ This factory uses three templates. To see every field, create the Planner with *
 
 The Identity screen has a name, a handle, a description and optional tags. Below them is the **Role** box, with a **Use a template** dropdown and a **Choose role file** button. Picking the Planner template fills the Role box with the template's own instructions.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-05-create-agent-identity/public" alt="The New agent Identity screen with the name Planner, the handle @victor1/planner, a description, empty tags, and a Role box already filled with the Planner template text" caption="Identity screen. The Role box is filled by the template. Leave it alone." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/05-create-planner-agent-1%20(1).png" alt="The New agent Identity screen with the name Planner, the handle @victor1/planner, a description, empty tags, and a Role box already filled with the Planner template text" caption="Identity screen. The Role box is filled by the template. Leave it alone." />
 
 **Leave that text in place.** Choosing a role file replaces what the template wrote, and that text is the template's own operating instructions for the role. If you swap it for your own mandate, you have swapped out the layer that came with the role. So the split in this factory is deliberate:
 
@@ -163,7 +163,7 @@ The Identity screen has a name, a handle, a description and optional tags. Below
 
 Continue to the Runtime screen. This is where the agent gets its engine and, importantly, its working folder.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-06-create-agent-runtime/public" alt="The New agent Runtime screen with the Claude Code tab selected, the working directory set to a factory-demo folder, provider default model and reasoning effort, Auto permission mode, a Launch details line, and a passing runtime check" caption="Runtime screen. The working directory is the field that makes three separate agents share one project." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/05-create-planner-agent-2%20(1).png" alt="The New agent Runtime screen with the Claude Code tab selected, the working directory set to a factory-demo folder, provider default model and reasoning effort, Auto permission mode, a Launch details line, and a passing runtime check" caption="Runtime screen. The working directory is the field that makes three separate agents share one project." />
 
 Set these fields:
 
@@ -185,7 +185,7 @@ Two choices make this a team and not three copies of one tool:
 
 The point of the second choice is independence. A reviewer that runs on a different tool, and can be given a different model, is less likely to share its blind spots with the agent whose work it is judging. It is also a good way to show that a BAND room does not care what each seat is made of.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-07-agents-runtimes/public" alt="The Agents page listing three Band Hosted agents: Planner and Engineer with a Claude Code badge, and Reviewer with an opencode badge, each online and showing message, tool call and error counts" caption="Three agents, two runtimes. The badges show which engine sits behind each seat." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/all-agents-runtime.png" alt="The Agents page listing three Band Hosted agents: Planner and Engineer with a Claude Code badge, and Reviewer with an opencode badge, each online and showing message, tool call and error counts" caption="Three agents, two runtimes. The badges show which engine sits behind each seat." />
 
 The Agents page lists your seats under **Band Hosted**, each with its runtime badge and an online dot. Each card also keeps counts of messages, tool calls and errors, which is useful after a run. Here the Engineer made the most tool calls, the Planner and Reviewer fewer, and nobody logged an error.
 
@@ -193,7 +193,7 @@ The Agents page lists your seats under **Band Hosted**, each with its runtime ba
 
 Open **Rooms** and press the plus to start a new session. Add your three agents as participants. The Participants panel lists you under Users and the three agents with their handles and a green dot each.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-08-room-participants/public" alt="A new BAND room with the Participants panel open, showing the user and the Reviewer, Planner and Engineer agents with their handles, and joined messages in the chat" caption="A new room with all three seats joined. Keep it to exactly three agents." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/06-room.png" alt="A new BAND room with the Participants panel open, showing the user and the Reviewer, Planner and Engineer agents with their handles, and joined messages in the chat" caption="A new room with all three seats joined. Keep it to exactly three agents." />
 
 Before you give them work, check that each seat is alive and can see the project. Mention all three at once:
 
@@ -201,7 +201,7 @@ Before you give them work, check that each seat is alive and can see the project
 @Reviewer @Engineer @Planner hey
 ```
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-09-agents-reply/public" alt="The room showing the Reviewer, Planner and Engineer each replying to a hello message, with the Engineer reporting that the factory-demo repo is clean on main at a commit named spec and mandates" caption="All three replied. The Engineer's reply proves its working directory is the right folder." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/agent-check.png" alt="The room showing the Reviewer, Planner and Engineer each replying to a hello message, with the Engineer reporting that the factory-demo repo is clean on main at a commit named spec and mandates" caption="All three replied. The Engineer's reply proves its working directory is the right folder." />
 
 All three answer, each in its template's voice. The reply worth reading is the Engineer's. It reports that the `factory-demo` repo is clean on `main` at the commit named "spec and mandates". That is the commit you made in Step 2, so the Engineer is reading your folder and not a managed workspace somewhere else. If a seat reports a different folder or does not answer, fix it now: re-open the agent, check the working directory, and run **Test runtime** again.
 
@@ -221,7 +221,7 @@ Nobody says "done" until the Reviewer says APPROVED.
 
 In the room, open the message with an `@Planner` mention. The three numbered lines refer to the Planner, the Engineer and the Reviewer in that order, and the chat shows each @mention as a coloured chip.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-10-kickoff-working/public" alt="The kickoff message in the room, with the Planner, Engineer and Reviewer chips, and below it a live panel showing all three agents calling tools: the Reviewer calling read and the Planner and Engineer calling Bash" caption="About seventeen seconds in, all three seats are calling tools. They are reading their mandates first, as the message told them to." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/agents-working%20(1).png" alt="The kickoff message in the room, with the Planner, Engineer and Reviewer chips, and below it a live panel showing all three agents calling tools: the Reviewer calling read and the Planner and Engineer calling Bash" caption="About seventeen seconds in, all three seats are calling tools. They are reading their mandates first, as the message told them to." />
 
 The message does three jobs. It points each seat at its own file. It names the files each seat must produce, so the handoffs have a paper trail. And it ends with the rule that matters most: nobody says "done" until the Reviewer says APPROVED.
 
@@ -329,7 +329,7 @@ Then open `index.html`, either by double-clicking it or with a static server suc
 - Toggle the theme, then refresh the page. The board and the theme should both survive.
 - Narrow the window below 640px. The columns should stack.
 
-<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/REPLACE-IMG-12-wip-message/public" alt="The Focus Board with a red WIP limit 3 message under the add form, and the Doing column holding three cards" caption="The fourth move into Doing is refused, and the reason appears on the page, not in the console." />
+<Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/wip-message.png" alt="The Focus Board with a red WIP limit 3 message under the add form, and the Doing column holding three cards" caption="The fourth move into Doing is refused, and the reason appears on the page, not in the console." />
 
 That red message is criterion 3 and criterion 5 working together: the logic refuses, and the interface says so.
 
