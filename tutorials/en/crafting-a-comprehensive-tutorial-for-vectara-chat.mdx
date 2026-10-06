@@ -1,0 +1,374 @@
+---
+title: "Crafting a Comprehensive Tutorial for Vectara Chat: Grounded Conversational AI"
+description: "In this tutorial I will show you how to build, enhance, test, and deploy a hallucination-resistant conversational AI assistant using Vectara Chat, hybrid retrieval, MMR reranking, and Factual Consistency Scores."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full"
+authorUsername: "sergioprica"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build a production-ready, grounded conversational AI assistant using [Link to Vectara](https://vectara.com/) and its built-in **Vectara Chat** capabilities. When building Retrieval-Augmented Generation (RAG) chatbots from scratch, developers typically have to stitch together a document parser, a chunking pipeline, an embedding model, a vector database, a conversational memory store, a reranker, and an LLM prompt orchestrator. Vectara unifies this entire stack behind a single API designed from the ground up for **Grounded Generation**—minimizing hallucinations and providing verifiable inline citations for every response.
+
+### Why Vectara Chat Stands Out for Conversational AI
+
+Unlike Stateless RAG pipelines where each user query is embedded in isolation, **Vectara Chat** natively manages multi-turn conversation history (`conversation_id` and `turn_id`). When a user asks a follow-up question containing pronouns or implicit context—such as *"How does that compare to the enterprise tier?"*—Vectara automatically rewrites and contextualizes the query against prior turns before executing hybrid neural-lexical retrieval.
+
+Key capabilities we will cover in this guide include:
+
+- **End-to-End Grounded Generation**: Automatic text extraction, semantic chunking, Boomerang neural embeddings, and citation-backed summarization.
+- **Native Multi-Turn Memory**: Stateful chat sessions stored directly in your Vectara corpus without external Redis or database boilerplate.
+- **Hybrid Search & Reranking**: Combining neural semantic understanding with BM25 lexical precision (`lambda` interpolation), Maximal Marginal Relevance (MMR), and multilingual cross-attention reranking.
+- **Hallucination Detection**: Real-time verification using Vectara's Hughes Hallucination Evaluation Model (HHEM) and Factual Consistency Score (FCS).
+
+If you are looking for domain-specific examples after completing this guide, check out the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) on lablab.ai.
+
+---
+
+## Getting Started with Vectara Chat
+
+This time I want to show you how to set up your Vectara workspace, configure a corpus with filterable metadata attributes, and authenticate securely via API keys or OAuth 2.0.
+
+### Creating Your Vectara Account and Corpus
+
+1. Sign up or log in to the [Link to Vectara Console](https://console.vectara.com/).
+2. Navigate to **Corpora** and click **Create Corpus**.
+3. Give your corpus a descriptive name (for example, `product-knowledge-chat`) and define any metadata filter attributes you plan to query against—such as `doc.category` (Text), `doc.updated_year` (Integer), or `part.section` (Text).
+4. Record your **Customer ID**, **Corpus ID** (or Corpus Key in API v2), and generate an **API Key** with both **Indexing** and **QueryService** permissions.
+
+### Setting Up Your Python Environment
+
+Create a clean virtual environment and install the required dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install requests python-dotenv fastapi uvicorn streamlit
+```
+
+Create a `.env` file in your project root so credentials are never hardcoded:
+
+```bash
+VECTARA_CUSTOMER_ID="your_customer_id"
+VECTARA_CORPUS_ID="your_corpus_id"
+VECTARA_API_KEY="zwt_your_personal_or_query_api_key"
+```
+
+### Indexing Knowledge Documents into Your Corpus
+
+Before our chatbot can answer user questions, we need to ingest domain knowledge into the corpus. In the code below, I created a reusable helper that indexes structured documents with custom metadata using Vectara's Indexing API:
+
+```python
+import os
+import json
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY = os.environ["VECTARA_API_KEY"]
+
+def index_document(document_id: str, title: str, sections: list[dict], metadata: dict) -> dict:
+    url = "https://api.vectara.io/v1/index"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "customer-id": CUSTOMER_ID,
+        "x-api-key": API_KEY,
+    }
+    payload = {
+        "customerId": int(CUSTOMER_ID),
+        "corpusId": CORPUS_ID,
+        "document": {
+            "documentId": document_id,
+            "title": title,
+            "metadataJson": json.dumps(metadata),
+            "section": sections,
+        },
+    }
+    response = requests.post(url, headers=headers, json=payload, timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+if __name__ == "__main__":
+    sample_sections = [
+        {
+            "title": "Architecture Overview",
+            "text": (
+                "Vectara Chat provides stateful multi-turn RAG over your indexed corpora. "
+                "Every response is grounded in retrieved document segments and scored "
+                "with the Hughes Hallucination Evaluation Model (HHEM)."
+            ),
+        },
+        {
+            "title": "Rate Limits and SLAs",
+            "text": (
+                "The Growth and Enterprise plans support high-throughput concurrent chat "
+                "streams, hybrid lexical-semantic retrieval, and custom prompt templates."
+            ),
+        },
+    ]
+    res = index_document(
+        document_id="vectara-architecture-guide-v1",
+        title="Vectara Chat Architecture & SLA Guide",
+        sections=sample_sections,
+        metadata={"category": "documentation", "updated_year": 2026},
+    )
+    print("Indexed document status:", res)
+```
+
+---
+
+## Building a Chatbot with Vectara
+
+Now that our corpus contains grounded domain documents, let's build a stateful `VectaraChatClient` that automatically starts a conversation on the first turn and chains subsequent turns using the returned `conversationId`.
+
+### Implementing Multi-Turn Conversational State
+
+When querying `https://api.vectara.io/v1/query`, adding the `chat` configuration block inside `summary` instructs Vectara to store the turn and rewrite follow-up questions using the conversation history:
+
+```python
+import os
+import requests
+from dataclasses import dataclass
+from dotenv import load_dotenv
+
+load_dotenv()
+
+@dataclass
+class ChatResponse:
+    answer: str
+    conversation_id: str
+    turn_id: str
+    factual_consistency_score: float | None
+    citations: list[dict]
+
+
+class VectaraChatClient:
+    def __init__(self, customer_id: str, corpus_id: int, api_key: str):
+        self.customer_id = customer_id
+        self.corpus_id = corpus_id
+        self.api_key = api_key
+        self.conversation_id: str | None = None
+
+    def send_message(
+        self,
+        user_query: str,
+        lambda_val: float = 0.025,
+        mmr_diversity_bias: float = 0.3,
+        metadata_filter: str = "",
+        prompt_name: str = "vectara-summary-ext-24-05-med-omni",
+    ) -> ChatResponse:
+        url = "https://api.vectara.io/v1/query"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "customer-id": self.customer_id,
+            "x-api-key": self.api_key,
+        }
+
+        chat_config: dict = {"store": True}
+        if self.conversation_id:
+            chat_config["conversationId"] = self.conversation_id
+
+        corpus_key_config: dict = {
+            "customerId": int(self.customer_id),
+            "corpusId": self.corpus_id,
+            "lexicalInterpolationConfig": {"lambda": lambda_val},
+        }
+        if metadata_filter:
+            corpus_key_config["metadataFilter"] = metadata_filter
+
+        payload = {
+            "query": [
+                {
+                    "query": user_query,
+                    "start": 0,
+                    "numResults": 10,
+                    "contextConfig": {
+                        "sentencesBefore": 2,
+                        "sentencesAfter": 2,
+                        "startTag": "[",
+                        "endTag": "]",
+                    },
+                    "corpusKey": [corpus_key_config],
+                    "rerankingConfig": {
+                        "rerankerId": 272725718,  # MMR Reranker
+                        "mmrConfig": {"diversityBias": mmr_diversity_bias},
+                    },
+                    "summary": [
+                        {
+                            "maxSummarizedResults": 5,
+                            "responseLang": "en",
+                            "summarizerPromptName": prompt_name,
+                            "chat": chat_config,
+                            "factualConsistencyScore": True,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        resp = requests.post(url, headers=headers, json=payload, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+
+        result_set = data["responseSet"][0]
+        summary_block = result_set["summary"][0]
+        chat_meta = summary_block.get("chat", {})
+
+        self.conversation_id = chat_meta.get("conversationId", self.conversation_id)
+        turn_id = chat_meta.get("turnId", "")
+        fcs = summary_block.get("factualConsistency", {}).get("score")
+
+        raw_responses = result_set.get("response", [])
+        documents = result_set.get("document", [])
+        citations = []
+        for idx, item in enumerate(raw_responses[:5], start=1):
+            doc_idx = item.get("documentIndex", 0)
+            doc_info = documents[doc_idx] if doc_idx < len(documents) else {}
+            citations.append(
+                {
+                    "rank": idx,
+                    "score": round(item.get("score", 0.0), 4),
+                    "documentId": doc_info.get("id", "unknown"),
+                    "snippet": item.get("text", ""),
+                }
+            )
+
+        return ChatResponse(
+            answer=summary_block.get("text", ""),
+            conversation_id=self.conversation_id or "",
+            turn_id=turn_id,
+            factual_consistency_score=fcs,
+            citations=citations,
+        )
+```
+
+---
+
+## Enhancing Chatbot Intelligence
+
+A great conversational AI assistant does more than retrieve top-k chunks—it balances semantic recall with exact keyword precision, avoids redundant passages, and verifies that generated claims are strictly supported by source documents.
+
+### Tuning Hybrid Search with Lexical Interpolation (`lambda`)
+
+Vectara's Boomerang embedding model captures deep semantic meaning, while BM25 lexical matching excels at exact product SKUs, legal clauses, error codes, and proper nouns:
+
+- **`lambda = 0.0`**: Pure neural semantic search.
+- **`lambda = 0.025` to `0.05`**: Recommended sweet spot for technical and enterprise chatbots where both semantic intent and exact terminology matter.
+- **`lambda = 0.1+`**: Strong keyword weighting for catalog lookup, legal citations, or API reference bots.
+
+### Eliminating Redundancy with Maximal Marginal Relevance (MMR)
+
+When multiple chunks in a long document repeat similar paragraphs, standard top-k retrieval can fill the LLM context window with near-duplicates. Enabling the MMR reranker (`rerankerId: 272725718`) with `diversityBias` between `0.2` and `0.4` forces the retrieval step to select chunks that cover complementary facets of the user's question.
+
+### Guarding Against Hallucinations with Factual Consistency Score (FCS)
+
+By setting `"factualConsistencyScore": True` in the `summary` request, Vectara evaluates the generated answer against the retrieved evidence using the Hughes Hallucination Evaluation Model ([Link to HHEM on Hugging Face](https://huggingface.co/vectara/hallucination_evaluation_model)). You can enforce a strict confidence threshold in your application layer:
+
+```python
+def format_verified_answer(chat_resp: ChatResponse, min_fcs: float = 0.70) -> str:
+    fcs = chat_resp.factual_consistency_score
+    badge = f"Verified Grounded (FCS: {fcs:.2f})" if (fcs is not None and fcs >= min_fcs) else f"Low Confidence (FCS: {fcs})"
+    sources = "\n".join(
+        f"  [{c['rank']}] ({c['documentId']}, score={c['score']}): {c['snippet'][:120]}..."
+        for c in chat_resp.citations
+    )
+    return f"{chat_resp.answer}\n\n---\n**Status:** {badge}\n**Sources:**\n{sources}"
+```
+
+---
+
+## Deploying and Testing Chatbots
+
+In this section I will show you how to wrap our `VectaraChatClient` in an interactive **Streamlit** web interface and run an automated verification suite to test multi-turn memory and factual grounding before deploying to production.
+
+### Building an Interactive Streamlit Chat Interface
+
+Save the following application as `app.py`:
+
+```python
+import os
+import streamlit as st
+from dotenv import load_dotenv
+from vectara_chat_client import VectaraChatClient, format_verified_answer
+
+load_dotenv()
+
+st.set_page_config(page_title="Vectara Grounded Chat Assistant", page_icon="💬", layout="wide")
+st.title("💬 Vectara Grounded Conversational AI")
+
+with st.sidebar:
+    st.header("Retrieval & Grounding Controls")
+    lambda_val = st.slider("Hybrid Search Lambda (Keyword Weight)", 0.0, 0.20, 0.025, 0.005)
+    mmr_bias = st.slider("MMR Diversity Bias", 0.0, 1.0, 0.30, 0.05)
+    min_fcs = st.slider("Minimum Factual Consistency Score", 0.0, 1.0, 0.70, 0.05)
+    if st.button("Reset Conversation"):
+        st.session_state.messages = []
+        st.session_state.client = None
+        st.rerun()
+
+if "client" not in st.session_state or st.session_state.client is None:
+    st.session_state.client = VectaraChatClient(
+        customer_id=os.environ["VECTARA_CUSTOMER_ID"],
+        corpus_id=int(os.environ["VECTARA_CORPUS_ID"]),
+        api_key=os.environ["VECTARA_API_KEY"],
+    )
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input("Ask a question about your indexed documents..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        with st.spinner("Retrieving grounded context and verifying factual consistency..."):
+            resp = st.session_state.client.send_message(
+                user_query=prompt,
+                lambda_val=lambda_val,
+                mmr_diversity_bias=mmr_bias,
+            )
+            formatted = format_verified_answer(resp, min_fcs=min_fcs)
+            st.markdown(formatted)
+            st.session_state.messages.append({"role": "assistant", "content": formatted})
+```
+
+### Automated Multi-Turn & Hallucination Regression Testing
+
+Before launching your chatbot in a hackathon demo or production environment, run a deterministic evaluation script that tests pronoun resolution across turns and asserts that the Factual Consistency Score stays above your threshold:
+
+```python
+def run_chat_smoke_test(client: VectaraChatClient) -> None:
+    turn1 = client.send_message("What model does Vectara Chat use to evaluate hallucinations?")
+    assert turn1.conversation_id, "Expected a stateful conversationId on Turn 1"
+    assert "HHEM" in turn1.answer or "Hughes" in turn1.answer, "Expected HHEM mention in Turn 1"
+
+    # Follow-up question relying on conversational memory ("it")
+    turn2 = client.send_message("How does it help enterprise teams?")
+    assert turn2.conversation_id == turn1.conversation_id, "Conversation ID must persist across turns"
+    if turn2.factual_consistency_score is not None:
+        assert turn2.factual_consistency_score >= 0.5, f"FCS too low: {turn2.factual_consistency_score}"
+    print(f"Smoke test passed! Conversation ID: {turn2.conversation_id}, FCS: {turn2.factual_consistency_score}")
+```
+
+---
+
+## Conclusion and Tips for Hackathon Participants on Use Cases for the Models
+
+We have walked through the complete lifecycle of building a grounded conversational AI assistant with **Vectara Chat**—from corpus creation and metadata-enriched indexing to stateful multi-turn retrieval, hybrid `lambda` tuning, MMR diversity reranking, and real-time hallucination verification via Factual Consistency Scores.
+
+### High-Impact Hackathon Use Cases & Winning Tips
+
+If you are building with Vectara during a lablab.ai hackathon, here are practical strategies to make your project stand out to judges:
+
+1. **Surface the Factual Consistency Score (FCS) in Your UI**: Judges love transparency. Display a real-time trust badge alongside clickable inline citations so users can inspect the exact source paragraph behind every claim.
+2. **High-Stakes Domain Copilots (Legal, Healthcare, Compliance, FinTech)**: Generic LLM wrappers struggle when precision is mandatory. Use metadata filters (`doc.jurisdiction == 'EU'`) combined with hybrid search (`lambda = 0.04`) to build contract analyzers or clinical guideline assistants—see the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) for inspiration.
+3. **Multilingual Customer Support Agents**: Because Vectara's Boomerang embeddings and cross-lingual reranker operate across 100+ languages, you can index English technical documentation once and let users chat in Spanish, German, Japanese, or Arabic without maintaining separate translated knowledge bases.
