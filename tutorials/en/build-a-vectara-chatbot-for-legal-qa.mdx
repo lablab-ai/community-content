@@ -1,0 +1,72 @@
+---
+title: "Build a Legal Q&A Chatbot with Vectara Chat"
+description: "Create a grounded chatbot that answers questions from legal documents using Vectara Chat."
+image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f"
+authorUsername: "millionazma-lgtm"
+---
+
+# Build a Legal Q&A Chatbot with Vectara Chat
+
+Vectara Chat is useful when your app needs answers grounded in private documents instead of generic model knowledge. In this tutorial, you will build a small legal Q&A assistant that can answer questions from a set of policy documents, contracts, or research notes.
+
+## What you will build
+
+The final app accepts a user question, searches a Vectara corpus, and returns a concise answer with context from the uploaded documents. This pattern works well for internal legal knowledge bases, contract review support, compliance FAQs, and customer support workflows where accuracy matters.
+
+## Prerequisites
+
+You need a Vectara account, a corpus for your documents, and a few PDF or text files for testing. For a legal demo, use public documents or synthetic examples. Do not upload confidential client material while prototyping.
+
+## Step 1: Prepare your corpus
+
+Create a new corpus in Vectara and give it a clear name such as legal-qa-demo. Keep the corpus focused on one domain. A small, well scoped corpus produces better answers than a mixed collection of unrelated documents.
+
+Add document metadata while uploading files. Useful fields include document type, source, jurisdiction, date, and owner. Metadata helps you debug answers later and makes filtering easier when the project grows.
+
+## Step 2: Upload documents
+
+Upload your selected legal documents to the corpus. Start with three to five short files so the first test cycle is easy to understand. After upload, ask a few questions where you already know the answer. This checks that the documents were indexed correctly before you build the chat experience.
+
+Good starter questions include:
+
+- What does the policy say about data retention?
+- Which party is responsible for notice requirements?
+- Are there any renewal terms?
+- What limitations are described in the agreement?
+
+## Step 3: Design the chat prompt
+
+A legal assistant should be careful and transparent. Use instructions that ask the assistant to answer only from retrieved context, mention uncertainty, and avoid giving legal advice.
+
+A practical system instruction is: Answer using only the provided document context. If the answer is not present, say that the documents do not provide enough information. Keep the answer concise and include the source document when possible.
+
+## Step 4: Build the user flow
+
+The first version only needs four states: empty, loading, answered, and no answer. Keep the interface simple. Show the question box, the generated answer, and the supporting source snippets. Source snippets are important because users need to verify legal answers before acting on them.
+
+For each answer, display:
+
+- The direct response
+- The source document title
+- A short supporting excerpt
+- A confidence or review note
+
+## Step 5: Test with edge cases
+
+Test the app with questions that should not be answered. Ask about facts outside the corpus, ask for legal advice, and ask ambiguous questions. The assistant should refuse to invent details and should tell the user when the documents are insufficient.
+
+Example edge cases:
+
+- What should I do in court tomorrow?
+- Does this contract comply with every local regulation?
+- Summarize the missing appendix.
+
+## Step 6: Improve the experience
+
+Once the baseline works, add filters for document type or jurisdiction. You can also add a review checklist for human approval before an answer is exported or shared. For legal workflows, the goal is not to replace expert review. The goal is to make document lookup faster, clearer, and easier to verify.
+
+## Next steps
+
+Connect the chat flow to your application, add authentication, and log unanswered questions. Unanswered questions are valuable because they reveal missing documents, unclear policies, or places where the corpus needs better metadata.
+
+You now have a focused Vectara Chat workflow that can ground legal Q&A in uploaded documents while keeping the user aware of source context and uncertainty.
