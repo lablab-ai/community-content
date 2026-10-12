@@ -1,0 +1,90 @@
+---
+title: "Evolus AI"
+description: "Evolus AI is an AI agent platform for business processes, with digital employees, workflow automations, an AI phone switchboard, a REST API, an OpenAI-compatible endpoint, and an MCP server."
+authorUsername: "stevekimoi"
+---
+
+# Evolus AI
+
+[Evolus AI](https://evolus.ai) is an AI orchestration platform that lets companies build agents to run real business processes. Its agents read documents, answer from company knowledge, run automations, and act on the systems a business already uses through APIs and MCP. Developers can bring their own OpenAI-compatible model, including models hosted on AMD infrastructure, and drive the whole platform through a REST API.
+
+| General | |
+|---------|--|
+| **Company** | [Evolus AI](https://evolus.ai) (legal entity: Codedesign SRL) |
+| **Website** | [evolus.ai](https://evolus.ai) |
+| **Documentation** | [Developer quickstart](https://evolus.ai/developers) |
+| **App** | [app.evolus.ai](https://app.evolus.ai) |
+| **Type** | AI agent and automation platform |
+
+---
+
+## Core Products
+
+### Specialized Agents
+Task-specific assistants, such as one that processes invoices, that work through chat, a website, or WhatsApp. Agents can be backed by your own model.
+
+### Digital Employees
+AI colleagues with their own email and calendar access that work in email and Microsoft Teams, attend meetings, and take minutes.
+
+### Automations and Workflows
+Multi-step processes triggered by emails, WhatsApp messages, schedules, or other inputs, built without code.
+
+### AI Phone Switchboard
+An assistant that answers calls around the clock, books appointments, and transcribes conversations.
+
+### Evolus Studio
+A desktop app for macOS, Windows, and Linux that includes a coding agent with Evolus tools already connected.
+
+---
+
+## Developer Resources
+
+Everything on the platform is available through the Evolus REST API. Agents can also be reached through an OpenAI-compatible chat endpoint, and an MCP server lets coding agents build on Evolus directly.
+
+<TechTutorials/>
+
+### Integration Points
+
+| Interface | Base URL | Authentication |
+|-----------|----------|----------------|
+| **REST API** | `https://api.evolus.ai/api/v1` | `X-ApiKey` and `X-Application-Id` headers |
+| **OpenAI-compatible agent chat** | `https://api.evolus.ai/v1` | `Authorization: Bearer <application API key>` |
+| **MCP server** | `https://api.evolus.ai/mcp` | `X-ApiKey` and `X-Application-Id` headers |
+
+The REST API covers workflow execution, document extractors, AI tools, and knowledge libraries. Only agent chat is OpenAI-compatible, so any OpenAI SDK can point at the `/v1` base URL. List the available agents with `GET /v1/models`, where each ID takes the form `<applicationId>:<agentId>`.
+
+### Bring Your Own Model
+
+Evolus accepts any OpenAI-compatible endpoint, as long as the model supports function calling. Examples from the quickstart include Fireworks AI and a vLLM server running on AMD Developer Cloud. Calls to your own model do not use platform credits.
+
+### Helpful Links
+
+- [Developer quickstart](https://evolus.ai/developers) for setup, authentication, and endpoint reference
+- [Evolus app](https://app.evolus.ai) to create a workspace and API keys
+- [Evolus website](https://evolus.ai) for product and pricing details
+
+---
+
+## Key Features
+
+**Agents that act on real systems**
+Agents connect to existing tools through APIs and MCP rather than only answering questions.
+
+**Company knowledge**
+Libraries store documents that agents use to answer from company-specific information.
+
+**Model choice**
+Use a hosted model or point Evolus at your own OpenAI-compatible endpoint.
+
+---
+
+## Use Cases
+
+**Document processing**
+Extract structured JSON, CSV, or text from uploaded files, such as invoices, through document extractors.
+
+**Customer-facing assistants**
+Deploy a chat widget or phone switchboard that books appointments and collects contact details.
+
+**Internal digital colleagues**
+Run an agent in email and Microsoft Teams that drafts replies and takes meeting minutes.
