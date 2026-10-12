@@ -1,0 +1,52 @@
+---
+title: "Evolus REST API"
+author: "Evolus AI"
+authorUsername: "stevekimoi"
+description: "The Evolus REST API drives the Evolus platform programmatically, covering workflow execution, document extractors, AI tools, and knowledge libraries behind a single API key."
+---
+
+# Evolus REST API
+
+The [Evolus REST API](https://evolus.ai/developers) exposes the Evolus platform to developers. Everything configured in an Evolus workspace, from workflows to document extractors to knowledge libraries, can be driven over HTTP.
+
+| General | |
+|---------|--|
+| **Developer** | Evolus AI |
+| **Type** | REST API |
+| **License** | Commercial API |
+| **Base URL** | `https://api.evolus.ai/api/v1` |
+| **Documentation** | [Developer quickstart](https://evolus.ai/developers) |
+
+---
+
+## Core Features
+
+- **Workflows**: start a workflow with `POST /workflows/{workflowId}/execute` (multipart upload, returns `202`), then poll `GET /workflows/{workflowId}/executions/{executionId}` for the result.
+- **Extractors**: pull structured data from documents with `POST /agents/{agentId}/json/{extractorId}/ask-file`. Use `csv` or `text` in the path for those output formats, and `ask-files` to send several documents at once.
+- **AI Tools**: list the catalog with `GET /ai-tools`, then run a tool with `POST /ai-tools/{tool}/run`, `/run-media`, or `/run-file`.
+- **Libraries**: manage company knowledge with `POST /memories/{libraryId}/documents`, `POST /memories/{libraryId}/documents/import-url`, `GET /memories/{libraryId}/documents`, and `GET /memories/document-formats`.
+
+---
+
+## Authentication
+
+Requests use an API key created on the workspace's API keys page, sent as `X-ApiKey` together with an `X-Application-Id` header. The quickstart also lists `X-User-ApiKey` as an alternative.
+
+---
+
+## Tools and Resources
+
+- **[Developer quickstart](https://evolus.ai/developers)**: setup, authentication, and endpoint reference.
+- **Interactive API reference**: available inside each Evolus workspace at [app.evolus.ai](https://app.evolus.ai).
+
+---
+
+## Use Cases
+
+- **Document intake**: send invoices or forms to an extractor and receive structured JSON.
+- **Back-office automation**: trigger a workflow from your own application and poll for completion.
+- **Knowledge ingestion**: import documents or URLs into a library so agents can answer from them.
+
+---
+
+Create a workspace at [app.evolus.ai](https://app.evolus.ai) and follow the [developer quickstart](https://evolus.ai/developers) to make your first call.

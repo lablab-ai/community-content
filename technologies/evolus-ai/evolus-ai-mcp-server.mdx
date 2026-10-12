@@ -1,0 +1,44 @@
+---
+title: "Evolus MCP Server"
+author: "Evolus AI"
+authorUsername: "stevekimoi"
+description: "The Evolus MCP server lets coding agents and MCP clients build on the Evolus platform directly, using the same API key authentication as the REST API."
+---
+
+# Evolus MCP Server
+
+The [Evolus MCP server](https://evolus.ai/developers) lets coding agents and other MCP clients work with the Evolus platform directly. It is the route to use when an AI assistant, rather than your own code, should create and run agents on Evolus.
+
+| General | |
+|---------|--|
+| **Developer** | Evolus AI |
+| **Type** | MCP server |
+| **License** | Commercial API |
+| **URL** | `https://api.evolus.ai/mcp` |
+| **Documentation** | [Developer quickstart](https://evolus.ai/developers) |
+
+---
+
+## Core Features
+
+- **Transport**: HTTP, so it works with any MCP client that supports remote servers.
+- **Authentication**: `X-ApiKey` and `X-Application-Id` headers, or `X-User-ApiKey`.
+- **Client-agnostic**: the config file format depends on the MCP client you use.
+
+---
+
+## Tools and Resources
+
+- **[Developer quickstart](https://evolus.ai/developers)**: connection details and authentication.
+- **[Evolus Studio](/tech/evolus-ai/evolus-studio)**: a desktop app with a coding agent that already has Evolus tools connected.
+
+---
+
+## Use Cases
+
+- **Coding agents building agents**: let a coding assistant configure and test Evolus agents as part of a project.
+- **Agents acting on business systems**: expose Evolus capabilities to any MCP-compatible assistant.
+
+---
+
+Create an API key at [app.evolus.ai](https://app.evolus.ai), then add the server URL to your MCP client.

@@ -1,0 +1,52 @@
+---
+title: "Evolus Agent Chat API"
+author: "Evolus AI"
+authorUsername: "stevekimoi"
+description: "The Evolus Agent Chat API exposes Evolus agents through an OpenAI-compatible endpoint, so any OpenAI SDK can talk to them with streaming and conversation continuity."
+---
+
+# Evolus Agent Chat API
+
+The [Evolus Agent Chat API](https://evolus.ai/developers) lets applications talk to Evolus agents through an OpenAI-compatible interface. Point any OpenAI SDK at the Evolus base URL and each agent appears as a model.
+
+| General | |
+|---------|--|
+| **Developer** | Evolus AI |
+| **Type** | OpenAI-compatible chat API |
+| **License** | Commercial API |
+| **Base URL** | `https://api.evolus.ai/v1` |
+| **Documentation** | [Developer quickstart](https://evolus.ai/developers) |
+
+---
+
+## Core Features
+
+- **Agents as models**: `GET /v1/models` lists the available agents. Each ID has the form `<applicationId>:<agentId>`.
+- **Chat completions**: `POST /v1/chat/completions` sends a conversation to an agent.
+- **Streaming**: set `stream: true` to receive Server-Sent Events that end with `data: [DONE]`.
+- **Conversation continuity**: return the `X-Conversation-Id` response header on the next request to continue a conversation.
+- **Authentication**: `Authorization: Bearer <application API key>`.
+
+The quickstart notes that only agent chat is OpenAI-compatible. The rest of the platform is reached through the [REST API](/tech/evolus-ai/evolus-ai-rest-api).
+
+---
+
+## Bring Your Own Model
+
+Agents can run on a model you supply, as long as it exposes an OpenAI-compatible endpoint and supports function calling. The quickstart gives two examples:
+
+- **Fireworks AI**: base URL `https://api.fireworks.ai/inference/v1`, model `accounts/fireworks/models/<model>`.
+- **vLLM on AMD Developer Cloud**: base URL `http://<droplet-ip>:8000/v1`, protected with `--api-key`. For Qwen models the quickstart suggests `--tool-call-parser hermes`.
+
+Calls to your own model do not use Evolus platform credits.
+
+---
+
+## Use Cases
+
+- **Drop-in chat backend**: swap an existing OpenAI client for an Evolus agent that already knows company documents.
+- **Custom front ends**: build a web or mobile interface on top of an agent with streaming responses.
+
+---
+
+Create an API key in your workspace at [app.evolus.ai](https://app.evolus.ai), then follow the [developer quickstart](https://evolus.ai/developers).
