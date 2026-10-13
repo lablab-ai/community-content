@@ -1,0 +1,35 @@
+---
+title: "Vectara Chat: Build a Conversational AI Chatbot - A Comprehensive Guide"
+description: "Learn how to build, enhance and deploy an intelligent chatbot with Vectara Chat from scratch with practical code samples."
+image: "https://iili.io/nYMPQOg.png"
+authorUsername: "satyamsingh877"
+---
+
+## Introduction to Vectara Chat
+In this tutorial I will show you how Vectara Chat enables conversational RAG with grounded responses and citations. We will explore how it differs from basic LLMs.
+
+## Getting Started with Vectara Chat
+### Setting Up Vectara Corpus and API Keys
+First create a corpus in Vectara Console, then generate API key. Install Python SDK with `pip install vectara`.
+
+### Linking Required Tutorials
+For basics check <a href="https://lablab.ai/t/vectara-beginner-app-tutorial" target="_blank">Vectara Beginner App Tutorial</a> and for advanced concepts see <a href="https://lablab.ai/t/vectara-advanced-app-tutorial" target="_blank">Vectara Advanced App Tutorial</a>.
+
+## Building a Chatbot with Vectara
+### Creating Multi-turn Conversations with Vectara API
+Use `/v2/chats` and `/v2/chats/{id}/turns` endpoints to maintain context. Example Python code for chat session...
+
+## Enhancing Chatbot Intelligence
+### Improving Responses with Hybrid Search and Citations
+Enable hybrid search, tune lexical matching and parse citations `[1][2]` for hallucination reduction.
+
+## Deploying and Testing Chatbots
+### Deploying with Streamlit
+Create `app.py` with Streamlit UI and deploy. Test citations and streaming response.
+
+## Conclusion
+### Tips for Hackathon Participants
+Use Vectara Chat for docs Q&A, customer support bot and legal QA use-cases. Keep prompts grounded.
+
+<Quiz questions={[{"question":"What does Vectara Chat use for grounded responses?","options":["Only LLM","RAG with citations","Only keywords","No search"],"answer":1}]} />
+
