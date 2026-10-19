@@ -1,0 +1,62 @@
+---
+title: "Nvidia Slides, Meta Opens Muse Spark, Gemini 4 Argon Ships"
+description: "AI news October 2026: Nvidia lost $365B on financing fears; Meta released Muse Spark Open. Google opened the Gemini 4 Argon API, and eight states sued OpenAI."
+image: "https://res.cloudinary.com/dygkv9gam/image/upload/v1/lablab-static/this-week-in-ai-cover.jpg"
+authorUsername: "vicdevman"
+---
+
+# Nvidia Slides, Meta Opens Muse Spark, Gemini 4 Argon Ships
+
+*This Week in AI — October 12–18, 2026*
+
+This was the week AI's bills came due. Investors questioned how the build-out gets financed, state attorneys general went after OpenAI, and banks decided which AI agents get near customer money. Model launches from Meta and Google kept arriving anyway.
+
+## Key Takeaways
+
+- **Nvidia and CoreWeave:** Nvidia [shed about $365 billion in market value](https://invezz.com/news/2026/10/19/nvidia-stock-loses-365-billion-in-a-week-could-the-ai-boom-be-running-out-of-money/) in five sessions as borrowing costs rose, and debt-heavy CoreWeave took the worst of it. If your inference runs on a leveraged GPU cloud, line up a second provider.
+- **Anthropic:** Reported Q3 revenue and IPO plans landed alongside a call to pause the listing. Treat any AI vendor's financials as part of your due diligence.
+- **Meta and Google:** Muse Spark Open and Gemini 4 Argon both widen access to frontier-level models. Read the license and the pricing end date before you build on either.
+- **OpenAI and banks:** Eight states sued OpenAI, and Citi, Bank of America and JPMorgan limited outside agents. If you ship agents, design for read-only access first.
+
+---
+
+## The AI Money Question
+
+### Nvidia loses $365 billion as financing fears spread
+Nvidia lost roughly $365 billion in market value over the five sessions ending October 16, with shares [down 6.6% to $214.13](https://invezz.com/news/2026/10/19/nvidia-stock-loses-365-billion-in-a-week-could-the-ai-boom-be-running-out-of-money/). CoreWeave took the sharpest hit: Reuters reported its shares [fell more than 15% on the week](https://whbl.com/2026/10/16/coreweave-shares-bonds-headed-for-steep-weekly-losses-as-ai-borrowing-concerns-mount/), the company carries about $50 billion in debt, and one bond yield briefly passed 16% after a hot inflation print. Check how your compute vendors are financed, not just what they charge.
+
+### Anthropic's IPO prep meets its first public pushback
+Anthropic [reportedly told investors](https://www.cnbc.com/2026/10/15/anthropics-third-quarter-revenue-hits-16point8-billion-ipo.html) its third-quarter revenue reached $16.8 billion, up from $11.6 billion in the second quarter. [IFR reports](https://www.ifre.com/equities/2499407/anthropic-pushes-ahead-with-mid-november-ipo) a public filing planned for October 26, a roadshow from November 9 and a target of up to $100 billion at a $2 trillion valuation, while New York City's comptroller asked the company to pause over AI safety concerns. These figures come from unnamed sources, so treat them as reporting, not confirmed fact. If the filing lands on schedule, vendor-risk reviews get a lot easier.
+
+---
+
+## Open Weights and Wider Access
+
+### Meta ships Muse Spark Open
+On Thursday Meta [released Muse Spark Open](https://thenewstack.io/meta-muse-spark-open/), an 816B-parameter open-weight model with 42B active parameters and a 1 million token context window. Meta calls it [the most capable US open-weight model to date](https://www.khaleejtimes.com/business/tech/meta-open-ai-model-rival-chinese-competition), but [Kimi K3 still leads it on Terminal-Bench 2.1, 85 to 76.4](https://www.techrepublic.com/article/news-meta-muse-spark-open-apple-mac-studio/), and running it locally takes about 1 terabyte of memory. The Muse Model License also requires a visible attribution label in products built on it, so read the terms before you ship.
+
+### Gemini 4 Argon moves from vetted testers to the paid API
+Google [made Gemini 4 Argon generally available on October 13](https://letsdatascience.com/news/google-releases-gemini-4-argon-for-scientific-computing-644a49ff) under the API ID `gemini-4-argon`, after a September 30 debut limited to trusted cyber defenders. [Introductory pricing is $2 per million input tokens and $10 per million output tokens through November 30](https://aicybr.com/blog/google-gemini-4-argon-pricing-benchmarks-availability), with one 1,048,576-token budget shared across input, thinking and output. Run your evals before the introductory rate expires.
+
+---
+
+## Agents Meet Liability
+
+### Eight states sue OpenAI over ChatGPT safety
+On October 14, attorneys general in [Iowa, Kansas, Arizona, Arkansas, Idaho, Montana, Nebraska and West Virginia](https://www.aljazeera.com/news/2026/10/15/why-are-eight-us-states-suing-openai) filed separate state-court suits alleging ChatGPT misled users about its safety. [They want court-ordered changes](https://arynews.tv/us-states-sue-openai-claiming-chatgpt-harms-young-users), including a bar on developing self-improving models until alignment can be ensured, plus civil penalties. OpenAI [says it wants to work with states](https://www.pymnts.com/?p=4315459) on rules for the whole industry, and no court has ruled yet. Regulation is arriving through state courts rather than Congress, so audit any product that serves minors.
+
+### Banks wall off customer accounts from AI agents
+JPMorgan [blocks outside AI agents](https://cybernews.com/security/jpmorgan-chase-blocks-outside-ai-agents/) from logging into retail accounts with customers' credentials, and [Citi and Bank of America followed with limits of their own](https://digg.com/ai/c61euovc), per the Financial Times. Citi still allows limited read-only access through some open-banking providers, and [the banks cite security, liability and deposit-movement worries](https://behindfintech.substack.com/p/behind-fintech-daily-19-october-2026). Build agents against sanctioned read-only APIs, not credential logins.
+
+---
+
+## Quick Hits
+
+- **Anthropic:** Pledged 5% of its shares, about $48 billion, to a new Public Benefit Fund, [announced October 18](https://beincrypto.com/anthropic-48-billion-stock-ipo-buyers); governance rules are still to come.
+- **TSMC:** Locked in [3–6% wafer price increases for 2027](https://www.digitimes.com/news/a20261019VL200/2026-capacity-fab-production-intel.html), per DigiTimes.
+- **ByteDance:** Its Seed team [launched a dedicated AI safety team](https://www.digitimes.com/news/a20261019VL200/2026-capacity-fab-production-intel.html) with a global recruitment drive.
+- **Wearables:** Lawyers warn Apple, Amazon and Meta AI wearables [risk two-party wiretap violations in 12 US states](https://aiweekly.co/ai-news-today).
+
+---
+
+*This Week in AI is published every Monday by the [Lablab](https://lablab.ai) team.*
