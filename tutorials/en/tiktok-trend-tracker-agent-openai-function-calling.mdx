@@ -1,0 +1,320 @@
+---
+title: "OpenAI Function Calling Tutorial: Build a TikTok Trend Tracker Agent in Python (AI Hackathon Guide)"
+description: "AI hackathon guide: build a TikTok trend tracker agent with OpenAI function calling and Python that checks hashtag growth before it calls anything a trend."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/123Tutorial_image_template.png"
+authorUsername: "viktorhendelmann"
+---
+
+## Introduction
+
+Ask a chat model "what's trending on TikTok right now?" and you get a confident answer drawn from training data that is months old. Ask it to *find out* and give it the right tools, and the answer changes completely. That gap, between a model that guesses and a model that checks, is the reason function calling exists.
+
+In this tutorial you will build a small **TikTok trend tracker agent** in Python. You give it a niche ("home coffee brewing", "budget travel", "indie games"). It pulls the current trending feed, picks hashtags that could fit the niche, checks whether those hashtags are actually gaining views, reads a few video transcripts, and writes a markdown brief with evidence links. Every number in the brief comes from a tool call, not from the model's memory.
+
+**Disclosure up front:** the TikTok data in this tutorial comes from [ScrapeAtlas*](https://scrapeatlas.com), a scraping API that I founded and build. I use it here because it is what I know best. The agent pattern itself doesn't depend on it: the tools are plain Python functions, so you can swap in any data source that returns the same fields.
+
+This build fits **AI hackathons** well. Judges have seen plenty of chatbots, but an agent that pulls live data, keeps state between runs and refuses to invent numbers is a stronger demo, and it takes an afternoon to build. Marketing, creator-economy and e-commerce tracks are natural fits. If you want somewhere to ship it, browse the [upcoming AI hackathons on lablab.ai](https://lablab.ai/ai-hackathons).
+
+### What you will build
+
+- A thin API client with a hard **credit budget** per run
+- Four tools: trending feed, hashtag stats, hashtag videos, video transcript
+- A **SQLite snapshot table**, so "growing" means "gained views since the last run", not "the model said so"
+- An agent loop using the OpenAI Python SDK's Chat Completions tool calling
+- A dated markdown brief written to disk
+
+**Stack:** Python 3.10+, `openai` SDK (any recent version with `tools` support), `requests`, SQLite (standard library).
+
+## Building the TikTok Trend Tracker Agent
+
+### Setup
+
+```bash
+mkdir tiktok-trend-agent && cd tiktok-trend-agent
+python3 -m venv .venv && source .venv/bin/activate
+pip install openai requests
+export OPENAI_API_KEY="sk-..."
+export SCRAPEATLAS_API_KEY="..."
+```
+
+The model defaults to `gpt-4.1-mini`; override it with `OPENAI_MODEL`. Any chat model that supports tool calling works. Because the endpoint shape is OpenAI-compatible, you can also point `OPENAI_BASE_URL` at another provider that speaks the same API.
+
+### The API client and the credit budget
+
+Agents love to call tools. Left alone, a model will happily request the trending feed five times "to be thorough". Every successful request costs one credit (failed requests are free), so the client counts successful calls and stops when the budget is used up.
+
+`scrapeatlas.py`:
+
+```python
+import os
+import requests
+
+BASE_URL = "https://api.scrapeatlas.com"
+
+
+class ScrapeAtlas:
+    def __init__(self, api_key=None, budget=25):
+        self.session = requests.Session()
+        self.session.headers["x-api-key"] = api_key or os.environ["SCRAPEATLAS_API_KEY"]
+        self.budget = budget  # max successful calls (credits) per run
+        self.spent = 0
+
+    def get(self, path, **params):
+        if self.spent >= self.budget:
+            raise RuntimeError(f"credit budget of {self.budget} reached")
+        params = {k: v for k, v in params.items() if v is not None}
+        r = self.session.get(f"{BASE_URL}{path}", params=params, timeout=60)
+        r.raise_for_status()
+        data = r.json()
+        if not data.get("success", False):
+            raise RuntimeError(f"{path} failed: {data.get('status_msg') or data}")
+        self.spent += 1
+        return data
+```
+
+When the budget runs out, the error goes back to the model as a tool result, and the model has to finish with what it already has. That is the behavior you want in production as well.
+
+### The tools
+
+The raw TikTok records are large: each video carries dozens of fields about covers, bitrates and settings. Sending that to the model wastes tokens and buries the signal, so `slim_video()` keeps only what matters for trend analysis: the URL, caption, author, follower count, plays, likes, shares, hashtags, sound and post time.
+
+The hashtag stats tool is where the agent gets its honesty. TikTok reports lifetime view totals for a hashtag. A total of 4 billion views says nothing about whether the hashtag is rising this week. So every call stores a snapshot, and the tool compares against the newest snapshot that is at least an hour old. On the first run there is no history, and the tool says so explicitly instead of returning a number the model could misread.
+
+`tools.py`:
+
+```python
+import re
+import sqlite3
+import time
+
+db = sqlite3.connect("trends.db")
+db.execute("""CREATE TABLE IF NOT EXISTS hashtag_snapshots (
+    hashtag TEXT, view_count INTEGER, video_count INTEGER, taken_at INTEGER)""")
+
+
+def slim_video(item):
+    """Keep only the fields the model needs; raw items are huge."""
+    stats = item.get("stats", {})
+    author = item.get("author", {})
+    return {
+        "url": f"https://www.tiktok.com/@{author.get('uniqueId')}/video/{item.get('id')}",
+        "desc": (item.get("desc") or "")[:200],
+        "author": author.get("uniqueId"),
+        "followers": item.get("authorStats", {}).get("followerCount"),
+        "plays": stats.get("playCount"),
+        "likes": stats.get("diggCount"),
+        "shares": stats.get("shareCount"),
+        "hashtags": [c.get("title") for c in item.get("challenges", []) if c.get("title")],
+        "sound": item.get("music", {}).get("title"),
+        "posted": item.get("createTime"),
+    }
+
+
+def get_trending(sa, region="US", limit=15):
+    data = sa.get("/v1/tiktok/trending", region=region)
+    return [slim_video(i) for i in data.get("itemList", [])[:limit]]
+
+
+def get_hashtag_stats(sa, hashtag):
+    hashtag = hashtag.lstrip("#").lower()
+    info = sa.get("/v1/tiktok/hashtag", hashtag=hashtag)["challengeInfo"]
+    stats = info.get("statsV2") or info.get("stats", {})
+    views, videos = int(stats.get("viewCount", 0)), int(stats.get("videoCount", 0))
+
+    now = int(time.time())
+    prev = db.execute(  # newest snapshot that is at least an hour old
+        "SELECT view_count, taken_at FROM hashtag_snapshots "
+        "WHERE hashtag=? AND taken_at <= ? ORDER BY taken_at DESC LIMIT 1",
+        (hashtag, now - 3600)).fetchone()
+    db.execute("INSERT INTO hashtag_snapshots VALUES (?,?,?,?)", (hashtag, views, videos, now))
+    db.commit()
+
+    result = {"hashtag": hashtag, "views": views, "videos": videos}
+    if prev:
+        hours = (now - prev[1]) / 3600
+        result["views_gained"] = views - prev[0]
+        result["views_per_hour"] = round((views - prev[0]) / hours)
+        result["hours_since_last_snapshot"] = round(hours, 1)
+    else:
+        result["note"] = "no snapshot at least 1h old yet, so no growth data"
+    return result
+
+
+def get_hashtag_videos(sa, hashtag, limit=10):
+    data = sa.get("/v1/tiktok/search/hashtag", hashtag=hashtag.lstrip("#"))
+    return [slim_video(i) for i in data.get("itemList", [])[:limit]]
+
+
+def get_transcript(sa, url):
+    vtt = sa.get("/v1/tiktok/video/transcript", url=url).get("transcript", "")
+    lines = [l for l in vtt.splitlines()
+             if l and l != "WEBVTT" and "-->" not in l and not l.isdigit()]
+    return {"url": url, "text": re.sub(r"\s+", " ", " ".join(lines))[:2000]}
+
+
+TOOL_SCHEMAS = [
+    {"type": "function", "function": {
+        "name": "get_trending",
+        "description": "Current TikTok trending feed for a region. Returns slimmed video records.",
+        "parameters": {"type": "object", "properties": {
+            "region": {"type": "string", "description": "Two-letter country code, e.g. US"}},
+            "required": []}}},
+    {"type": "function", "function": {
+        "name": "get_hashtag_stats",
+        "description": "Total views/videos for a hashtag, plus growth since the last stored snapshot.",
+        "parameters": {"type": "object", "properties": {
+            "hashtag": {"type": "string"}}, "required": ["hashtag"]}}},
+    {"type": "function", "function": {
+        "name": "get_hashtag_videos",
+        "description": "Top videos currently listed under a hashtag.",
+        "parameters": {"type": "object", "properties": {
+            "hashtag": {"type": "string"}}, "required": ["hashtag"]}}},
+    {"type": "function", "function": {
+        "name": "get_transcript",
+        "description": "Caption text of one TikTok video, if TikTok has captions for it.",
+        "parameters": {"type": "object", "properties": {
+            "url": {"type": "string"}}, "required": ["url"]}}},
+]
+
+TOOLS = {
+    "get_trending": get_trending,
+    "get_hashtag_stats": get_hashtag_stats,
+    "get_hashtag_videos": get_hashtag_videos,
+    "get_transcript": get_transcript,
+}
+```
+
+### Writing tool descriptions the model can use
+
+The JSON schemas are part of the prompt. Notice that the descriptions explain what comes *back*, not just what the tool is called. "Plus growth since the last stored snapshot" is what tells the model to call `get_hashtag_stats` before claiming anything is growing. Keep parameters minimal: the model only chooses a hashtag, a URL or a region. Limits such as `limit=15` stay in your code, where the model can't raise them.
+
+### The agent loop
+
+`agent.py`:
+
+```python
+import json
+import os
+import sys
+from datetime import date
+
+from openai import OpenAI
+
+from scrapeatlas import ScrapeAtlas
+from tools import TOOL_SCHEMAS, TOOLS
+
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-4.1-mini")
+MAX_STEPS = 12
+
+SYSTEM = """You are a TikTok trend analyst for a brand in this niche: {niche}.
+Use the tools to find which trends are relevant to the niche and gaining momentum.
+Rules:
+- Only cite numbers that came back from a tool. Never estimate or invent metrics.
+- Check get_hashtag_stats before calling a hashtag "growing". If there is no
+  growth data yet, say so.
+- Read at most 3 transcripts, only for videos you plan to recommend.
+- Finish with a markdown brief: top 3-5 trends, why each fits the niche, the
+  evidence (with video URLs), and one concrete content idea per trend."""
+
+
+def run(niche, region="US"):
+    client = OpenAI()
+    sa = ScrapeAtlas(budget=25)
+    messages = [
+        {"role": "system", "content": SYSTEM.format(niche=niche)},
+        {"role": "user", "content": f"Build today's trend brief for region {region}."},
+    ]
+
+    for step in range(MAX_STEPS):
+        resp = client.chat.completions.create(
+            model=MODEL, messages=messages, tools=TOOL_SCHEMAS)
+        msg = resp.choices[0].message
+        messages.append(msg)
+
+        if not msg.tool_calls:
+            return msg.content
+
+        for call in msg.tool_calls:
+            args = json.loads(call.function.arguments or "{}")
+            print(f"[step {step}] {call.function.name}({args})", file=sys.stderr)
+            fn = TOOLS.get(call.function.name)
+            try:
+                if fn is None:
+                    raise ValueError(f"unknown tool {call.function.name}")
+                result = fn(sa, **args)
+            except Exception as e:  # hand errors back to the model
+                result = {"error": str(e)}
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.id,
+                "content": json.dumps(result)[:12000],
+            })
+
+    return "Stopped: step limit reached before the agent finished."
+
+
+if __name__ == "__main__":
+    niche = sys.argv[1] if len(sys.argv) > 1 else "home coffee brewing"
+    brief = run(niche)
+    path = f"brief-{date.today()}.md"
+    with open(path, "w") as f:
+        f.write(brief)
+    print(brief)
+```
+
+The loop is the standard tool-calling cycle:
+
+1. Send the conversation plus the tool schemas.
+2. If the model returns `tool_calls`, run each one, append the results as `tool` messages with the matching `tool_call_id`, and go round again.
+3. If it returns plain content, that is the final brief.
+
+Three details matter more than they look:
+
+- **Errors become data.** An exception in a tool, an unknown tool name or a spent budget is returned to the model as `{"error": ...}`. The model can then retry with a different hashtag or move on, instead of crashing the run.
+- **Tool output is truncated** to 12,000 characters. A hashtag with a long video list can otherwise blow up your context window and your bill.
+- **`MAX_STEPS` is a hard stop.** Twelve rounds is plenty for this task. If the agent hasn't finished by then, something is wrong and you want to know about it.
+
+### Running it
+
+```bash
+python agent.py "home coffee brewing"
+```
+
+The stderr log shows the agent's reasoning path, one tool call per line:
+
+```text
+[step 0] get_trending({'region': 'US'})
+[step 1] get_hashtag_stats({'hashtag': 'coffeetok'})
+[step 1] get_hashtag_videos({'hashtag': 'coffeetok'})
+[step 2] get_transcript({'url': 'https://www.tiktok.com/@.../video/...'})
+```
+
+Models often request several tools in parallel in a single step, as in step 1 above, and the loop handles that because it iterates over every call in the message. The brief lands in `brief-YYYY-MM-DD.md`.
+
+Run it once now and again tomorrow, or put it on cron: `0 9 * * * cd ~/tiktok-trend-agent && .venv/bin/python agent.py "home coffee brewing"`. The first brief will honestly say there is no growth data yet. From the second run on, the agent can rank hashtags by views per hour.
+
+### Limits you should know about
+
+- **The trending feed is a sample, not the whole of TikTok.** It is a regional feed, so for niche topics most of it will be irrelevant. That's why the agent also drills into hashtags.
+- **Growth data is only as good as your snapshot cadence.** One snapshot a day can't tell a spike from a steady climb. If you need that resolution, snapshot your watchlist hashtags hourly with a separate script that doesn't call the LLM, and let the agent read the history.
+- **Not every video has a transcript.** Captions exist only when TikTok auto-generated them or the creator added them. Music-only videos come back empty, and the agent should treat that as "no text", not as an error.
+- **Counts are what TikTok shows publicly** at fetch time. They are rounded on some surfaces and lag on others. Treat them as directional.
+- **The model can still overreach in the prose.** The system prompt and slim tool outputs cut this down a lot, but they don't eliminate it. If the brief drives real decisions, add a check that every number in the final text appears in a tool result.
+- **Cost.** A typical run uses 5 to 10 credits and a few thousand tokens. The budget and step limit cap the worst case.
+
+### Ideas to extend it for a hackathon
+
+- Add a `get_profile_videos` tool built on `/v1/tiktok/profile/videos` so the agent can compare a brand's own account against the trend.
+- Post the brief to Slack or Discord with a webhook.
+- Track sounds as well as hashtags. Trending audio often moves before hashtags do.
+- Store the briefs and let a second agent answer "what changed since last week?"
+
+## Conclusion
+
+You built a TikTok trend tracker agent that does what a plain chatbot can't: it fetches live data through OpenAI function calling, keeps state in SQLite so "growing" is measured rather than guessed, stays within a credit budget, and writes a brief in which every claim links back to evidence.
+
+The reusable lessons apply to any tool-calling agent: keep tool outputs small, write schema descriptions that explain what comes back, push hard limits into code rather than the prompt, return errors to the model as data, and make the tools honest about what they don't know. Swap the TikTok tools for another data source and the same loop works.
+
+---
+
+*I build it. I'm Viktor Hendelmann, founder of ScrapeAtlas, the API used for the TikTok data in this tutorial. I have a commercial interest in it, and it isn't the only way to get this data.*
