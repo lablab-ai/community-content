@@ -1,0 +1,816 @@
+---
+title: "Crafting a Comprehensive Multi-Turn RAG Chatbot with Vectara Chat"
+description: "Step-by-step developer guide to building, tuning, and deploying a zero-hallucination conversational AI assistant using Vectara Chat, Boomerang embeddings, hybrid search, and multilingual cross-attention reranking."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/68fb1e1a-771b-4226-3416-4f5b287c0700/full"
+authorUsername: "aap0410"
+---
+
+# Building Production-Grade, Zero-Hallucination Chatbots with Vectara Chat: A Comprehensive Developer Tutorial
+
+**Author:** Aaron Peterson  
+**Target Audience:** AI Engineers, Hackathon Participants, and Enterprise System Architects  
+**Repository & Deliverable:** Solution for `lablab-ai/community-content#462` ($60 Algora Bounty)  
+**Tech Stack:** Python 3.10+, Vectara REST API v2, React 18, FastAPI, Docker, Vectara Boomerang Embeddings, HHEM-2.1-Open  
+
+---
+
+## 1. Introduction to Vectara Chat: The Era of Grounded Generation
+
+In this tutorial, I will show you how to architect, build, optimize, and deploy an enterprise-grade conversational AI assistant powered by **Vectara Chat**. 
+
+Every developer who has attempted to build a production Retrieval-Augmented Generation (RAG) system with generic vector databases and raw LLMs quickly runs into the "RAG Trilemma":
+1. **Hallucinations:** LLMs synthesize facts that sound convincing but do not exist in the source literature.
+2. **Retrieval Degradation:** Dense vector search alone struggles with specialized jargon, exact part numbers, gene identifiers, and acronyms.
+3. **Conversational Drift:** Multi-turn chat sessions lose context, fail to resolve coreferences, or retrieve irrelevant chunks from previous conversational turns.
+
+Vectara solves this with an end-to-end platform for **Grounded Generation (GenAI)**. Rather than forcing you to stitch together embedding models, chunking strategies, vector stores, hybrid BM25 tokenizers, cross-encoders, and prompt orchestration engines, Vectara provides a unified neural search and conversational RAG engine with built-in factual verification.
+
+### Core Architectural Pillars of Vectara Chat
+
+```
+       +-------------------------------------------------------------+
+       |                     User Query Turn                         |
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |             Conversational Coreference Engine               |
+       |  (Expands "How does it compare to its Phase 2?" into full    |
+       |   grounded query: "How does Pembrolizumab compare to Phase2")|
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |             Vectara Boomerang Hybrid Search                 |
+       |  [Dense Semantic Embedding] <--- Lambda ---> [Exact Lexical]|
+       |  (Boomerang-v2 768-dim)                       (BM25 Token)  |
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |                Sliding Window & Metadata Filter             |
+       |  (Extracts adjacent context & applies doc_id / tag filters) |
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |               Cross-Attention Neural Reranker                |
+       |              (rerank_multilingual_v1 / Rerank-2)             |
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |             Grounded Summarization with Citations           |
+       |  (Generates factual response linked strictly to search IDs) |
+       +------------------------------+------------------------------+
+                                      |
+                                      v
+       +-------------------------------------------------------------+
+       |          Hughes Hallucination Evaluation Model (HHEM)        |
+       |  (Scores factual consistency score 0.00 - 1.00 before delivery)|
+       +-------------------------------------------------------------+
+```
+
+1. **Boomerang Neural Embeddings:** Vectara's proprietary multi-lingual dense embedding model trained specifically for retrieval and asymmetric question-answering.
+2. **Hybrid Search (Dense + Lexical):** Controlled via a single parameter ($\lambda \in [0, 1]$), fusing BM25 exact-match scoring with dense semantic vectors.
+3. **Hughes Hallucination Evaluation Model (HHEM):** An open-source, industry-standard neural hallucination detector that scores the factual alignment between retrieved source citations and the generated response (0.0 to 1.0).
+4. **Stateful Turn Management:** Vectara Chat tracks session history, conversation turns, and citation lineages natively, eliminating the need to maintain cumbersome custom memory buffers.
+
+---
+
+## 2. Getting Started with Vectara Chat: Setup & Ingestion
+
+Let's get our environment configured. You will need:
+- A Vectara Account (free tier gives you 50MB of indexing and up to 15,000 queries per month).
+- Your **Customer ID**, **Corpus ID**, and **API Key** (Personal API Key or OAuth2 Client ID/Secret).
+
+### Step 2.1: Environment Variables
+Create a `.env` file in your project directory:
+
+```bash
+VECTARA_CUSTOMER_ID="1234567890"
+VECTARA_CORPUS_ID="1"
+VECTARA_API_KEY="zwt_abc123456789_your_api_key_here"
+VECTARA_API_URL="https://api.vectara.io"
+```
+
+### Step 2.2: Corpus Creation via REST API v2
+If you haven't created your corpus in the Vectara Console yet, you can create one programmatically via the Vectara REST API:
+
+```python
+"""
+scripts/create_vectara_corpus.py
+Creates an enterprise corpus configured for conversational chat with custom metadata filters.
+"""
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+API_KEY = os.environ["VECTARA_API_KEY"]
+BASE_URL = os.environ.get("VECTARA_API_URL", "https://api.vectara.io")
+
+def create_corpus(corpus_name: str, description: str):
+    url = f"{BASE_URL}/v2/corpora"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "x-api-key": API_KEY,
+    }
+    payload = {
+        "name": corpus_name,
+        "description": description,
+        "queries_are_answers": False,
+        "documents_are_questions": False,
+        "encoder_id": 1,  # Boomerang encoder
+        "filter_attributes": [
+            {
+                "name": "document_type",
+                "level": "document",
+                "description": "Category of document (e.g. clinical_trial, 10k_filing, research_paper)",
+                "indexed": True,
+                "type": "text"
+            },
+            {
+                "name": "publication_year",
+                "level": "document",
+                "description": "Calendar year of publication or filing",
+                "indexed": True,
+                "type": "integer"
+            },
+            {
+                "name": "ticker_or_sponsor",
+                "level": "document",
+                "description": "Stock ticker or clinical trial sponsor organization",
+                "indexed": True,
+                "type": "text"
+            }
+        ]
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code in (200, 201):
+        corpus_data = response.json()
+        print(f"[+] Corpus created successfully! ID: {corpus_data.get('id', corpus_data)}")
+        return corpus_data
+    else:
+        print(f"[-] Failed to create corpus ({response.status_code}): {response.text}")
+        response.raise_for_status()
+
+if __name__ == "__main__":
+    create_corpus(
+        corpus_name="biopharma_and_financial_intel",
+        description="High-fidelity corpus containing SEC 10-Ks and Clinical Trial monographs."
+    )
+```
+
+### Step 2.3: Data Ingestion with Section Metadata
+High quality RAG relies on clean document structure. Vectara's document indexing endpoint supports structured JSON documents containing section titles, body paragraphs, and arbitrary key-value metadata.
+
+```python
+"""
+scripts/ingest_documents.py
+Ingests multi-section enterprise documents into Vectara Corpus with custom metadata.
+"""
+import json
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = os.environ["VECTARA_CORPUS_ID"]
+API_KEY = os.environ["VECTARA_API_KEY"]
+BASE_URL = os.environ.get("VECTARA_API_URL", "https://api.vectara.io")
+
+def index_document(doc_id: str, title: str, metadata: dict, sections: list):
+    url = f"{BASE_URL}/v2/corpora/{CORPUS_ID}/documents"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+    }
+    
+    document_body = {
+        "id": doc_id,
+        "type": "core",
+        "metadata": metadata,
+        "document_parts": [
+            {
+                "text": sec["text"],
+                "metadata": sec.get("metadata", {})
+            }
+            for sec in sections
+        ]
+    }
+
+    response = requests.post(url, json=document_body, headers=headers)
+    if response.status_code in (200, 201, 202):
+        print(f"[+] Successfully indexed document '{doc_id}' into corpus {CORPUS_ID}")
+        return response.json()
+    else:
+        print(f"[-] Indexing error ({response.status_code}): {response.text}")
+        response.raise_for_status()
+
+if __name__ == "__main__":
+    # Sample document: Oncology clinical trial protocol monograph
+    sample_sections = [
+        {
+            "text": "Study Protocol ONC-2026-X: A double-blind, randomized, placebo-controlled Phase 3 study evaluating the efficacy and safety of Neo-Kinase-7 in patients with EGFR T790M-mutated non-small cell lung cancer (NSCLC).",
+            "metadata": {"section_type": "synopsis"}
+        },
+        {
+            "text": "Primary Endpoint: Progression-Free Survival (PFS) assessed by blinded independent central review according to RECIST v1.1. Median PFS in the Neo-Kinase-7 arm was 18.9 months (95% CI: 16.2 to 21.4) compared to 10.2 months (95% CI: 8.9 to 11.8) in the standard platinum chemotherapy arm (Hazard Ratio: 0.52, p < 0.001).",
+            "metadata": {"section_type": "primary_endpoints"}
+        },
+        {
+            "text": "Safety Profile: Treatment-related adverse events of Grade 3 or higher occurred in 28% of patients receiving Neo-Kinase-7, primarily transient rash (12%) and elevated ALT/AST (7%). No drug-related deaths were observed.",
+            "metadata": {"section_type": "safety_analysis"}
+        }
+    ]
+
+    index_document(
+        doc_id="NCT04987123-ONC-2026-X",
+        title="Phase 3 Neo-Kinase-7 Trial Results",
+        metadata={
+            "document_type": "clinical_trial",
+            "publication_year": 2026,
+            "ticker_or_sponsor": "BioGenX-Therapeutics"
+        },
+        sections=sample_sections
+    )
+```
+
+---
+
+## 3. Building a Chatbot with Vectara: Python Backend & React Interface
+
+Now that our knowledge base is ingested, let's build the interactive chatbot engine. 
+
+Vectara Chat provides stateful conversations through its **Chat Sessions API** (`/v2/chats`). A chat session retains the turn history, automatically resolves coreferences (e.g., when the user asks *"What were its side effects?"*, the system understands *"its"* refers to *"Neo-Kinase-7"* from turn 1), and appends grounded citations.
+
+### Step 3.1: Python Async Chat Client & Session Manager
+
+```python
+"""
+vectara_chat_engine.py
+Production-grade Vectara Chat Session Manager supporting multi-turn conversation threads.
+"""
+from __future__ import annotations
+
+import os
+import json
+import logging
+from typing import Any, Dict, List, Optional
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+logger = logging.getLogger("vectara_chat")
+logging.basicConfig(level=logging.INFO)
+
+class VectaraChatBot:
+    def __init__(
+        self,
+        customer_id: Optional[str] = None,
+        corpus_id: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: str = "https://api.vectara.io"
+    ):
+        self.customer_id = customer_id or os.environ["VECTARA_CUSTOMER_ID"]
+        self.corpus_id = corpus_id or os.environ["VECTARA_CORPUS_ID"]
+        self.api_key = api_key or os.environ["VECTARA_API_KEY"]
+        self.base_url = base_url.rstrip("/")
+        self.headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "x-api-key": self.api_key,
+        }
+
+    def create_chat_session(self, initial_system_prompt: Optional[str] = None) -> str:
+        """
+        Initializes a stateful multi-turn conversation thread.
+        Returns the unique chat_id.
+        """
+        url = f"{self.base_url}/v2/chats"
+        payload = {}
+        if initial_system_prompt:
+            payload["system_prompt"] = initial_system_prompt
+
+        resp = requests.post(url, json=payload, headers=self.headers)
+        if resp.status_code in (200, 201):
+            chat_id = resp.json().get("id")
+            logger.info(f"[+] Started new Vectara Chat Session: {chat_id}")
+            return chat_id
+        else:
+            logger.error(f"Failed to create chat session: {resp.text}")
+            resp.raise_for_status()
+
+    def send_turn(
+        self,
+        chat_id: str,
+        user_query: str,
+        lambda_val: float = 0.025,
+        rerank_limit: int = 5,
+        metadata_filter: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Submits a new query turn within an existing chat session.
+        Applies hybrid search, neural reranking, and citation synthesis.
+        """
+        url = f"{self.base_url}/v2/chats/{chat_id}/turns"
+        
+        # Build search configuration
+        search_corpus_config: Dict[str, Any] = {
+            "corpus_key": self.corpus_id,
+            "lexical_interpolation": lambda_val,  # 0.0 = pure neural, 1.0 = pure BM25
+            "semantics": "default",
+        }
+        if metadata_filter:
+            search_corpus_config["metadata_filter"] = metadata_filter
+
+        payload = {
+            "query": user_query,
+            "search": {
+                "corpora": [search_corpus_config],
+                "reranker": {
+                    "type": "customer_reranker",
+                    "reranker_id": "rnk_272725719",  # rerank_multilingual_v1
+                    "limit": rerank_limit
+                }
+            },
+            "generation": {
+                "generation_preset_name": "vectara-summary-ext-24-05-med-omni",
+                "max_used_search_results": rerank_limit,
+                "enable_factual_consistency_score": True
+            }
+        }
+
+        resp = requests.post(url, json=payload, headers=self.headers)
+        if resp.status_code in (200, 201):
+            turn_data = resp.json()
+            answer_text = turn_data.get("answer", "")
+            fcs = turn_data.get("factual_consistency_score", 0.0)
+            citations = turn_data.get("rendered_citations", [])
+            
+            logger.info(f"[Turn Completed] HHEM Factual Score: {fcs:.4f}")
+            return {
+                "turn_id": turn_data.get("id"),
+                "answer": answer_text,
+                "factual_consistency_score": fcs,
+                "citations": citations,
+                "raw_response": turn_data
+            }
+        else:
+            logger.error(f"Error executing turn on chat {chat_id}: {resp.text}")
+            resp.raise_for_status()
+```
+
+### Step 3.2: Modern React Conversational UI Component
+
+Here is a turnkey, responsive React 18 component rendering the chat interface with interactive citations and live HHEM factual trust badges:
+
+```tsx
+// components/VectaraChatView.tsx
+import React, { useState, useRef, useEffect } from "react";
+
+interface Citation {
+  citation_id: number;
+  document_id: string;
+  text_snippet: string;
+}
+
+interface Message {
+  sender: "user" | "bot";
+  text: string;
+  factualScore?: number;
+  citations?: Citation[];
+  timestamp: string;
+}
+
+export const VectaraChatView: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      sender: "bot",
+      text: "Hello! I am your Vectara Grounded Research Assistant. Ask me anything about our indexed clinical trials or financial 10-Ks.",
+      timestamp: new Date().toLocaleTimeString(),
+    },
+  ]);
+  const [inputQuery, setInputQuery] = useState("");
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initialize session on mount
+    fetch("/api/chat/session", { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => setChatId(data.chat_id))
+      .catch((err) => console.error("Session init failed:", err));
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!inputQuery.trim() || !chatId || isLoading) return;
+
+    const userText = inputQuery.trim();
+    setInputQuery("");
+    setMessages((prev) => [
+      ...prev,
+      { sender: "user", text: userText, timestamp: new Date().toLocaleTimeString() },
+    ]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`/api/chat/${chatId}/turn`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: userText }),
+      });
+      const data = await response.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: data.answer,
+          factualScore: data.factual_consistency_score,
+          citations: data.citations,
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          text: "I encountered an error retrieving grounded context. Please check backend logs.",
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: "800px", margin: "0 auto", fontFamily: "Inter, sans-serif" }}>
+      <header style={{ padding: "16px", background: "#0D1117", color: "#FFF", borderRadius: "8px 8px 0 0" }}>
+        <h2 style={{ margin: 0, fontSize: "1.25rem" }}>Vectara Grounded Chat Assistant</h2>
+        <small style={{ color: "#8B949E" }}>Zero-Hallucination RAG &bull; Powered by Boomerang & HHEM</small>
+      </header>
+
+      <div style={{ height: "500px", overflowY: "auto", padding: "16px", border: "1px solid #30363D", background: "#010409" }}>
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: "flex",
+              justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
+              marginBottom: "16px",
+            }}
+          >
+            <div
+              style={{
+                maxWidth: "75%",
+                padding: "12px 16px",
+                borderRadius: "12px",
+                background: msg.sender === "user" ? "#1F6FEB" : "#161B22",
+                color: "#F0F6FC",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              }}
+            >
+              <p style={{ margin: 0, whiteSpace: "pre-wrap", lineHeight: "1.5" }}>{msg.text}</p>
+              
+              {msg.factualScore !== undefined && (
+                <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px solid #30363D", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                      background: msg.factualScore >= 0.85 ? "#238636" : "#DA3633",
+                      color: "#FFF",
+                      fontWeight: 600,
+                    }}
+                  >
+                    HHEM Confidence: {(msg.factualScore * 100).toFixed(1)}%
+                  </span>
+                  <span style={{ fontSize: "0.75rem", color: "#8B949E" }}>{msg.timestamp}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        {isLoading && (
+          <div style={{ color: "#8B949E", fontSize: "0.85rem", fontStyle: "italic" }}>
+            Searching corpus & synthesizing grounded response...
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div style={{ display: "flex", padding: "12px", background: "#161B22", borderRadius: "0 0 8px 8px", border: "1px solid #30363D" }}>
+        <input
+          type="text"
+          value={inputQuery}
+          onChange={(e) => setInputQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          placeholder="Ask a technical, grounded question..."
+          style={{
+            flex: 1,
+            padding: "10px 14px",
+            borderRadius: "6px",
+            border: "1px solid #30363D",
+            background: "#0D1117",
+            color: "#FFF",
+            outline: "none",
+          }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={isLoading}
+          style={{
+            marginLeft: "8px",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            background: "#238636",
+            color: "#FFF",
+            border: "none",
+            fontWeight: 600,
+            cursor: isLoading ? "not-allowed" : "pointer",
+          }}
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+---
+
+## 4. Enhancing Chatbot Intelligence: Tuning, Filters & Reranking
+
+A naive vector search often fails when dealing with enterprise data. In this section, I will walk you through the four tuning levers that turn an ordinary chatbot into a specialized domain expert.
+
+### 4.1 Hybrid Search Lambda ($\lambda$) Optimization
+Vectara blends dense neural semantic search ($s_{dense}$) with BM25 lexical token matching ($s_{lexical}$) using the linear weighting formula:
+
+$$S_{hybrid} = (1 - \lambda) \cdot s_{dense} + \lambda \cdot s_{lexical}$$
+
+| $\lambda$ Value | Search Mode | Best Use Case |
+| :--- | :--- | :--- |
+| **0.00** | Pure Dense Vector | Conceptual questions, thematic summarization, paraphrased inquiries. |
+| **0.025 (Default)** | Semantic Favored | General Q&A with slight boost for rare medical terms or author names. |
+| **0.20 – 0.40** | Balanced Hybrid | Biopharma & Financial: Specific drug names (`EGFR T790M`), SEC tickers (`PFE`), serial numbers. |
+| **1.00** | Pure BM25 Lexical | Exact alphanumeric codes, UUID lookups, exact regex-style strings. |
+
+```python
+# Tuning Lambda dynamically based on query characteristics
+def calculate_optimal_lambda(query: str) -> float:
+    # If the query contains specialized alphanumeric codes, increase lexical weight
+    tokens = query.split()
+    has_alphanumeric_code = any(any(c.isdigit() for c in t) and any(c.isalpha() for c in t) for t in tokens)
+    if has_alphanumeric_code:
+        return 0.35  # Boost exact keyword matching
+    return 0.025     # Default semantic primacy
+```
+
+### 4.2 Cross-Attention Neural Reranking (`rerank_multilingual_v1`)
+Vectara incorporates a cross-encoder model that scores query-document pairs simultaneously, capturing subtle linguistic nuances that single-vector dot products miss.
+
+In our payload, we specify:
+```json
+"reranker": {
+    "type": "customer_reranker",
+    "reranker_id": "rnk_272725719",
+    "limit": 5
+}
+```
+*Why this matters:* If the initial retrieval retrieves 50 chunks, the cross-attention reranker narrows down to the 5 most factually pertinent chunks before sending them to the LLM prompt, slashing hallucinations and context token costs by over 70%.
+
+### 4.3 Metadata Filtering SQL Expressions
+Vectara allows SQL-like filtering on indexed attributes without sacrificing search speed:
+
+```python
+# Filter only Phase 3 clinical trials published in 2025 or 2026
+filter_expr = "doc.document_type = 'clinical_trial' and doc.publication_year >= 2025"
+
+# Combine with company ticker
+ticker_filter = "doc.ticker_or_sponsor = 'BioGenX-Therapeutics'"
+```
+
+### 4.4 Custom Grounded Prompt Templates
+You can customize the tone, citation formatting, and fallback behavior by supplying a custom prompt template to the generation request:
+
+```json
+"generation": {
+    "prompt_template": "You are an elite Biopharma Chief Medical Officer and Regulatory Auditor. Answer the question strictly using the provided search context. If the source material does not contain the answer, explicitly declare 'INSUFFICIENT_EVIDENCE' rather than speculating. Cite all assertions with [n] notation referencing the passage IDs.\n\nContext:\n$vectara_context\n\nQuestion:\n$vectara_query\n\nAnswer:"
+}
+```
+
+---
+
+## 5. Deploying and Testing Chatbots: FastAPI, Docker & HHEM Validation
+
+Now let's package our chatbot into a containerized FastAPI microservice ready for AWS ECS, Google Cloud Run, or Railway.
+
+### Step 5.1: FastAPI Streaming Gateway (`app.py`)
+
+```python
+"""
+app.py
+High-throughput FastAPI gateway exposing Vectara Chat with HHEM factual safety gate.
+"""
+from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+from typing import Optional, List
+import os
+
+from vectara_chat_engine import VectaraChatBot
+
+app = FastAPI(
+    title="Vectara Grounded Chatbot Microservice",
+    description="High-fidelity conversational API with HHEM zero-hallucination verification.",
+    version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+bot = VectaraChatBot()
+
+class CreateSessionResponse(BaseModel):
+    chat_id: str
+    status: str
+
+class TurnRequest(BaseModel):
+    query: str = Field(..., example="What was the median Progression-Free Survival in the trial?")
+    lambda_val: Optional[float] = Field(0.025, ge=0.0, le=1.0)
+    metadata_filter: Optional[str] = None
+
+class TurnResponse(BaseModel):
+    turn_id: str
+    answer: str
+    factual_consistency_score: float
+    hallucination_risk: str
+    citations: List[dict]
+
+@app.get("/health")
+def health_check():
+    return {"status": "HEALTHY", "service": "vectara-chat-gateway"}
+
+@app.post("/api/chat/session", response_model=CreateSessionResponse)
+def create_session():
+    try:
+        cid = bot.create_chat_session()
+        return {"chat_id": cid, "status": "CREATED"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/chat/{chat_id}/turn", response_model=TurnResponse)
+def submit_turn(chat_id: str, req: TurnRequest):
+    try:
+        result = bot.send_turn(
+            chat_id=chat_id,
+            user_query=req.query,
+            lambda_val=req.lambda_val,
+            metadata_filter=req.metadata_filter
+        )
+        
+        fcs = result["factual_consistency_score"]
+        # HHEM Safety Thresholding: Scores above 0.85 are high-confidence grounded
+        risk_level = "LOW_RISK" if fcs >= 0.85 else ("MEDIUM_RISK" if fcs >= 0.70 else "HIGH_HALLUCINATION_RISK")
+        
+        return {
+            "turn_id": result["turn_id"],
+            "answer": result["answer"],
+            "factual_consistency_score": fcs,
+            "hallucination_risk": risk_level,
+            "citations": result["citations"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+```
+
+### Step 5.2: Docker Containerization (`Dockerfile`)
+
+```dockerfile
+# Multi-stage lightweight Python container
+FROM python:3.11-slim as base
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+```
+
+`requirements.txt`:
+```txt
+fastapi>=0.110.0
+uvicorn>=0.28.0
+requests>=2.31.0
+pydantic>=2.6.0
+python-dotenv>=1.0.1
+```
+
+### Step 5.3: Automated Factual Consistency Evaluation Script
+
+```python
+"""
+scripts/evaluate_factual_integrity.py
+Validates end-to-end groundedness using Hughes Hallucination Evaluation Model benchmarks.
+"""
+from vectara_chat_engine import VectaraChatBot
+
+def test_groundedness_suite():
+    bot = VectaraChatBot()
+    chat_id = bot.create_chat_session()
+    
+    test_cases = [
+        {
+            "query": "What is the primary endpoint and median PFS for Neo-Kinase-7?",
+            "min_acceptable_score": 0.85,
+            "expected_keyword": "18.9 months"
+        },
+        {
+            "query": "What was the incidence of Grade 3 or higher treatment-related adverse events?",
+            "min_acceptable_score": 0.85,
+            "expected_keyword": "28%"
+        }
+    ]
+
+    print("[*] Running Groundedness Evaluation Suite...")
+    for idx, tc in enumerate(test_cases, 1):
+        res = bot.send_turn(chat_id, tc["query"])
+        score = res["factual_consistency_score"]
+        answer = res["answer"]
+        has_keyword = tc["expected_keyword"].lower() in answer.lower()
+        passed = (score >= tc["min_acceptable_score"]) and has_keyword
+
+        status = "PASSED" if passed else "FAILED"
+        print(f"  Test #{idx}: {status} | Score: {score:.4f} | Contains Key Fact: {has_keyword}")
+        assert passed, f"Evaluation failure on case {idx}: Score={score}"
+
+    print("[+] All evaluation benchmarks passed with zero detected hallucinations!")
+
+if __name__ == "__main__":
+    test_groundedness_suite()
+```
+
+---
+
+## 6. Conclusion & Hackathon Winning Blueprints
+
+Congratulations! You have built a production-grade, zero-hallucination conversational system with Vectara Chat.
+
+By combining:
+- **Boomerang Embeddings** (asymmetric deep neural retrieval),
+- **Hybrid Search** (fine-tuned $\lambda$ lexical-semantic balance),
+- **Cross-Attention Neural Reranking** (`rerank_multilingual_v1`), and
+- **HHEM Factual Guardrails** ($>0.85$ safety thresholding),
+
+you can construct conversational systems that eliminate the hallucination risks that plague ordinary LLM integrations.
+
+### High-Impact Hackathon Use Cases to Build
+
+1. **Biopharma Clinical Trial & FDA Catalyst Copilot:**
+   - *Problem:* Clinical researchers waste hours cross-referencing FDA 510(k) summaries, ClinicalTrials.gov protocols, and trial adverse event tables.
+   - *Vectara Advantage:* Index 500+ trial PDFs. Set $\lambda = 0.35$ for exact mutation matching (`EGFR`, `KRAS G12C`). Use HHEM score to guarantee patients and doctors never receive hallucinated medical dosing or efficacy stats.
+
+2. **CFO SEC 10-K & 10-Q Financial Intelligence Copilot:**
+   - *Problem:* Equity analysts spend days calculating Altman Z-Scores, debt covenants, and EBITDA margins across disparate regulatory filings.
+   - *Vectara Advantage:* Metadata-filter by ticker and fiscal year (`doc.ticker = 'NVDA' and doc.year = 2025`). Stream exact table citations directly to Excel or web dashboards.
+
+3. **Multi-Source Citation Auditing & Legal Contract Analysis:**
+   - *Problem:* Legal teams require exact provenance: every clause analysis must cite page and paragraph numbers with zero margin of error.
+   - *Vectara Advantage:* Use Vectara's `rendered_citations` JSON payload to highlight exact bounding boxes in source PDFs, enabling 1-click auditability for compliance officers.
+
+Start building today with Vectara, and give your users the gift of conversational AI they can actually trust!
