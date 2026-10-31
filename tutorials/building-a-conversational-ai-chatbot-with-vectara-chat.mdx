@@ -1,0 +1,47 @@
+---
+title: "Building a Grounded Conversational AI Chatbot with Vectara Chat"
+description: "Learn how to build, tune, test, and deploy a multi-turn conversational AI assistant using Vectara Chat, hybrid RAG, reranking, and hallucination detection."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a1b2c3d4-vectara-chat-tutorial/full"
+authorUsername: "john_stew685"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build, enhance, and deploy a production-ready conversational AI assistant using **Vectara Chat**. If you have ever built a Retrieval-Augmented Generation (RAG) pipeline from scratch, you already know how challenging it can be to stitch together document chunking, embedding models, vector databases, hybrid keyword search, cross-encoder reranking, multi-turn conversation history, and hallucination guardrails.
+
+Vectara solves this entire pipeline as an end-to-end ** Trusted Generative AI** platform. Specifically, **Vectara Chat** extends Vectara's grounded generation engine with built-in multi-turn conversational memory. Instead of manually managing chat history buffers and query reformulation prompts on the client side, Vectara Chat automatically:
+
+- **Maintains Stateful Conversations**: Stores chat turns (user questions and assistant responses) securely under a `conversation_id`.
+- **Reformulates Follow-up Queries**: Resolves pronouns and implicit context in follow-up questions (for example, turning *"What about its pricing tier?"* into a self-contained retrieval query based on prior turns).
+- **Grounds Every Answer in Your Data**: Uses retrieval-augmented generation with inline citations so users can verify every claim against source documents.
+- **Evaluates Factual Consistency**: Integrates the Hughes Hallucination Evaluation Model (HHEM) / Factual Consistency Score (FCS) to measure how faithfully the generated response reflects the retrieved facts.
+
+If you are completely new to the Vectara ecosystem, I recommend checking out the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) first to get familiar with basic document indexing, as well as the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) for domain-specific legal and customer support workflows. This time I want to show you how to take your applications to the next level by turning one-shot Q&A into a true multi-turn conversational experience with **Vectara Chat**.
+
+---
+
+## Getting Started with Vectara Chat
+
+Before writing any code, let's set up a Vectara account, create a data corpus, and generate the credentials required to authenticate our API requests.
+
+### Step 1: Create Your Vectara Account and Corpus
+
+1. Sign up or log in to the [Vectara Console](https://console.vectara.com/).
+2. Once inside the dashboard, note your **Customer ID** in the top-right profile menu.
+3. Navigate to **Data -> Corpora** and click **Create Corpus**.
+4. Give your corpus a descriptive name (e.g., `product-knowledge-base`) and description.
+5. Optionally define **Filter Attributes** (metadata fields such as `category`, `department`, or `updated_year`) so you can filter search results later.
+6. Once created, note the **Corpus ID** (or `corpus_key` in API v2) displayed on the corpus overview page.
+
+### Step 2: Generate an API Key
+
+1. In the Vectara Console, navigate to **Access Control -> API Keys**.
+2. Click **Create API Key**.
+3. Choose **Personal API Key** (or create an App Client for OAuth 2.0) and grant both **Index** and **Query** permissions on the corpus you just created.
+4. Copy your API key and store it safely.
+
+### Step 3: Set Up Your Local Development Environment
+
+Let's create a new Python project directory and install the required dependencies. Open your terminal and run:
+
+
