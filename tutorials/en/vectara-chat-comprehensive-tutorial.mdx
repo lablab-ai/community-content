@@ -1,0 +1,250 @@
+---
+title: 'Crafting a Conversational AI Assistant with Vectara Chat: From Corpus Setup to Production RAG'
+description: 'Learn how to build, customize, and deploy a hallucination-resistant conversational AI chatbot using Vectara Chat, Grounded Generation, and Multi-Turn Context.'
+image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/9651343e-e856-4f63-e7a9-695ec1247300/full'
+authorUsername: 'thinhnx128'
+---
+
+# Crafting a Conversational AI Assistant with Vectara Chat
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build a production-ready, grounded conversational AI assistant using **Vectara Chat**. Modern retrieval-augmented generation (RAG) pipelines often require stitching together document chunkers, embedding models, vector databases, rerankers, and chat session stores. Vectara simplifies this entire stack into a unified Grounded Generation platform with native multi-turn chat history, hybrid neural + keyword search, cross-lingual retrieval, and factual consistency scoring (Hughes Hallucination Evaluation Model).
+
+### Why Use Vectara Chat for Conversational AI?
+
+- **Managed End-to-End RAG Pipeline**: Automatic document extraction, semantic chunking, Boomerang embeddings, and hybrid retrieval out of the box.
+- **Stateful Multi-Turn Conversations**: Vectara Chat automatically stores conversation turns and reformulates follow-up questions (e.g., *"What are its pricing tiers?"*) using prior context.
+- **Hallucination Resistance & Citations**: Responses include inline factual citations tied directly to retrieved document segments.
+
+---
+
+## Getting Started with Vectara Chat
+
+Before writing code, let's set up a Vectara account, create a data corpus, and generate API credentials.
+
+### Step 1: Create a Corpus in the Vectara Console
+
+1. Sign in to the [Vectara Console](https://console.vectara.com/) and note your **Customer ID** in the top-right profile menu.
+2. Navigate to **Corpora** → **Create Corpus**.
+3. Name your corpus `product-knowledge-base` and click **Create**. Note the **Corpus ID** assigned to your new corpus.
+
+### Step 2: Generate API Keys and Install Dependencies
+
+Create a Personal API Key (or Query + Indexing API Key) under **API Access** in the console, then initialize your project environment:
+
+```bash
+mkdir vectara-chat-assistant && cd vectara-chat-assistant
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install requests python-dotenv streamlit
+```
+
+Create a `.env` file in your project root:
+
+```env
+VECTARA_CUSTOMER_ID="your_customer_id"
+VECTARA_CORPUS_ID="your_corpus_id"
+VECTARA_API_KEY="zwt_your_api_key"
+```
+
+---
+
+## Building a Chatbot with Vectara
+
+Now let's build a Python client that indexes knowledge documents into our corpus and initiates a stateful multi-turn Vectara Chat session.
+
+### Indexing Knowledge into Your Corpus
+
+Create `ingest.py` to upload structured documents into Vectara using the Indexing API:
+
+```python
+import os
+import json
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = os.environ["VECTARA_CORPUS_ID"]
+API_KEY = os.environ["VECTARA_API_KEY"]
+
+def index_document(doc_id: str, title: str, sections: list[dict]) -> dict:
+    url = "https://api.vectara.io/v1/index"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "customer-id": CUSTOMER_ID,
+        "x-api-key": API_KEY,
+    }
+    payload = {
+        "customerId": int(CUSTOMER_ID),
+        "corpusId": int(CORPUS_ID),
+        "document": {
+            "documentId": doc_id,
+            "title": title,
+            "section": sections,
+        },
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+if __name__ == "__main__":
+    sample_sections = [
+        {
+            "title": "Architecture Overview",
+            "text": "Vectara Chat combines Boomerang neural embeddings with BM25 lexical matching and cross-attentional reranking."
+        },
+        {
+            "title": "Security and Access Control",
+            "text": "All corpus queries support metadata filter expressions, TLS 1.3 encryption in transit, and AES-256 encryption at rest."
+        }
+    ]
+    result = index_document("vectara-guide-01", "Vectara Platform Architecture", sample_sections)
+    print("Indexed successfully:", result)
+```
+
+### Querying with Stateful Multi-Turn Chat
+
+Create `chat_client.py` to send queries with `chat.store = True`. On the first message, Vectara returns a `chat_id` (`conversationId`). Passing that `chat_id` on subsequent turns enables automatic query rewriting and conversational memory:
+
+```python
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class VectaraChatBot:
+    def __init__(self):
+        self.customer_id = int(os.environ["VECTARA_CUSTOMER_ID"])
+        self.corpus_id = int(os.environ["VECTARA_CORPUS_ID"])
+        self.api_key = os.environ["VECTARA_API_KEY"]
+        self.conversation_id = None
+
+    def ask(self, user_message: str, lambda_lexical: float = 0.025) -> dict:
+        url = "https://api.vectara.io/v1/query"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "customer-id": str(self.customer_id),
+            "x-api-key": self.api_key,
+        }
+        chat_config = {"store": True}
+        if self.conversation_id:
+            chat_config["conversationId"] = self.conversation_id
+
+        payload = {
+            "query": [
+                {
+                    "query": user_message,
+                    "start": 0,
+                    "numResults": 5,
+                    "contextConfig": {
+                        "sentencesBefore": 2,
+                        "sentencesAfter": 2,
+                    },
+                    "corpusKey": [
+                        {
+                            "customerId": self.customer_id,
+                            "corpusId": self.corpus_id,
+                            "lexicalInterpolationConfig": {"lambda": lambda_lexical},
+                        }
+                    ],
+                    "summary": [
+                        {
+                            "maxSummarizedResults": 5,
+                            "responseLang": "en",
+                            "chat": chat_config,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+
+        summary_block = data["responseSet"][0]["summary"][0]
+        if summary_block.get("chat", {}).get("conversationId"):
+            self.conversation_id = summary_block["chat"]["conversationId"]
+
+        return {
+            "answer": summary_block.get("text", ""),
+            "conversation_id": self.conversation_id,
+            "sources": data["responseSet"][0].get("response", []),
+        }
+```
+
+---
+
+## Enhancing Chatbot Intelligence
+
+To maximize answer accuracy in real-world deployments, we can tune three high-impact parameters in Vectara Chat:
+
+### 1. Hybrid Search Lexical Interpolation (`lambda`)
+
+Setting `lexicalInterpolationConfig.lambda` between `0.02` and `0.10` blends exact keyword matching (ideal for SKUs, error codes, and legal clauses) with neural semantic similarity.
+
+### 2. Maximal Marginal Relevance (MMR) Reranking
+
+Enabling the MMR reranker (`rerankerId: 272725718`) with a `diversityBias` of `0.3` prevents redundant chunks from dominating the summarization window and broadens coverage across documents.
+
+### 3. Metadata Filtering for Multi-Tenant Isolation
+
+Attach document-level metadata (such as `doc.department == 'engineering'`) and pass a `metadataFilter` inside `corpusKey` so users only receive answers grounded in documents they are authorized to view.
+
+---
+
+## Deploying and Testing Chatbots
+
+Let's wrap our `VectaraChatBot` in an interactive Streamlit web UI (`app.py`) and test multi-turn follow-up questions:
+
+```python
+import streamlit as st
+from chat_client import VectaraChatBot
+
+st.set_page_config(page_title="Vectara Chat Assistant", page_icon="🤖")
+st.title("🤖 Grounded AI Assistant with Vectara Chat")
+
+if "bot" not in st.session_state:
+    st.session_state.bot = VectaraChatBot()
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input("Ask a question about your knowledge base..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        result = st.session_state.bot.ask(prompt)
+        st.markdown(result["answer"])
+        st.caption(f"Conversation ID: {result['conversation_id']}")
+        st.session_state.messages.append({"role": "assistant", "content": result["answer"]})
+```
+
+Run your application locally:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Conclusion and Tips for Hackathon Participants
+
+In this tutorial, we covered how to set up a Vectara corpus, ingest structured documents, build a stateful multi-turn conversational client with `VectaraChatBot`, enhance retrieval quality with hybrid `lambda` interpolation and MMR reranking, and deploy an interactive Streamlit chat interface.
+
+### High-Impact Hackathon Use Cases
+
+- **Multi-Lingual Technical Support Copilot**: Ingest documentation in English and query in 100+ languages using Vectara's cross-lingual retrieval.
+- **Compliance & Legal Contract Auditor**: Use metadata filters and inline citations so every claim links directly to the exact clause and page number.
+- **Autonomous Agent Memory Layer**: Pair Vectara Chat with tool-calling agents to provide verifiable, low-latency long-term episodic memory.
