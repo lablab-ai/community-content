@@ -1,0 +1,273 @@
+---
+title: "Crafting a Comprehensive Tutorial for Vectara Chat: Building Grounded Conversational AI"
+description: "Learn how to build, enhance, and deploy a multi-turn, hallucination-resistant conversational AI chatbot using Vectara Chat, hybrid search, and React."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full"
+authorUsername: "DarkAlireza"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build a multi-turn, citation-backed conversational assistant using **Vectara Chat**. When building production AI applications, one of the toughest engineering challenges is keeping conversational agents grounded in real facts while remembering context across multiple user turns.
+
+Traditional Retrieval-Augmented Generation (RAG) stacks require stitching together a document parser, chunking heuristics, an embedding model, a vector database, a reranker, and a chat-history query rewriter. Vectara unifies all of those layers behind a single API and pairs them with its **Hughes Hallucination Evaluation Model (HHEM)** so you can measure factual consistency on every turn.
+
+If you are brand new to Vectara's core indexing workflow, I also recommend checking out the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) on lablab.ai.
+
+### Why Use Vectara Chat Over Stateless RAG
+
+Unlike stateless single-turn Q&A, **Vectara Chat** maintains stateful conversation sessions (`conversationId`) on the server side. When a user asks a follow-up question like *"How does that apply to enterprise teams?"*, Vectara automatically rewrites the follow-up query using the prior turns before retrieving and summarizing relevant document chunks.
+
+## Getting Started with Vectara Chat
+
+### Creating Your Corpus and API Credentials
+
+To get started, sign in to the [Link to Vectara Console](https://console.vectara.com/) and complete three quick setup steps:
+
+- **Find your Customer ID:** Click your profile icon in the top-right corner of the console and copy your numeric `customer_id`.
+- **Create a Corpus:** Navigate to **Corpora** and click **Create Corpus**. Give it a descriptive name such as `product-support-kb`. Note the numeric `corpus_id` assigned to your new corpus.
+- **Generate an API Key:** Open **Access Control -> API Keys** and create a key with both **IndexService** and **QueryService** permissions for backend development (plus a separate **QueryService-only** key if you plan to embed the frontend widget).
+
+### Setting Up Your Environment
+
+Export your credentials in your terminal so your code never hardcodes secrets:
+
+```bash
+export VECTARA_CUSTOMER_ID="your_customer_id"
+export VECTARA_CORPUS_ID="your_corpus_id"
+export VECTARA_API_KEY="your_api_key"
+```
+
+### Indexing Knowledge Base Documents
+
+Before starting a conversation, let's ingest a sample policy and technical guide into our corpus using Python and the `/v1/index` endpoint:
+
+```python
+import json
+import os
+import requests
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY = os.environ["VECTARA_API_KEY"]
+
+
+def ingest_knowledge_document(doc_id: str, title: str, sections: list[dict]) -> dict:
+    url = "https://api.vectara.io/v1/index"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "customer-id": CUSTOMER_ID,
+        "x-api-key": API_KEY,
+    }
+    payload = {
+        "customerId": int(CUSTOMER_ID),
+        "corpusId": CORPUS_ID,
+        "document": {
+            "documentId": doc_id,
+            "title": title,
+            "section": sections,
+        },
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+
+if __name__ == "__main__":
+    sections = [
+        {
+            "title": "Service Level Agreement and Refunds",
+            "text": (
+                "Standard subscriptions qualify for a full refund within 30 calendar days "
+                "if total query volume remains below 1,000 requests. Enterprise contracts "
+                "include a 99.95% uptime SLA and require 14 days written notice before renewal."
+            ),
+        },
+        {
+            "title": "Security and Data Retention",
+            "text": (
+                "Chat histories stored via Vectara Chat are encrypted at rest and can be "
+                "deleted at any time using the Manage Conversations API."
+            ),
+        },
+    ]
+    result = ingest_knowledge_document("kb-handbook-v1", "Customer Operations Handbook", sections)
+    print("Document indexed:", result)
+```
+
+## Building a Chatbot with Vectara
+
+### Managing Multi-Turn State with `conversationId`
+
+Now let's build a stateful chatbot class in Python. On the first turn, we pass `"chat": {"store": True}` inside the `summary` configuration. Vectara returns a `conversationId` and `turnId` in the response, which we pass on every subsequent question so the assistant remembers context across the dialogue.
+
+```python
+import json
+import os
+import requests
+from typing import Optional
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY = os.environ["VECTARA_API_KEY"]
+
+
+class VectaraChatbot:
+    def __init__(self, customer_id: str, corpus_id: int, api_key: str):
+        self.customer_id = customer_id
+        self.corpus_id = corpus_id
+        self.api_key = api_key
+        self.conversation_id: Optional[str] = None
+
+    def send_message(self, prompt: str, lambda_hybrid: float = 0.025) -> dict:
+        url = "https://api.vectara.io/v1/query"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "customer-id": self.customer_id,
+            "x-api-key": self.api_key,
+        }
+
+        chat_cfg: dict = {"store": True}
+        if self.conversation_id:
+            chat_cfg["conversationId"] = self.conversation_id
+
+        payload = {
+            "query": [
+                {
+                    "query": prompt,
+                    "start": 0,
+                    "numResults": 5,
+                    "contextConfig": {
+                        "sentencesBefore": 2,
+                        "sentencesAfter": 2,
+                    },
+                    "corpusKey": [
+                        {
+                            "customerId": int(self.customer_id),
+                            "corpusId": self.corpus_id,
+                            "lexicalInterpolationConfig": {"lambda": lambda_hybrid},
+                        }
+                    ],
+                    "summary": [
+                        {
+                            "maxSummarizedResults": 5,
+                            "responseLang": "en",
+                            "chat": chat_cfg,
+                            "factualConsistencyScore": True,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+        response.raise_for_status()
+        body = response.json()
+
+        resp_set = body["responseSet"][0]
+        summary_block = resp_set["summary"][0]
+        chat_meta = summary_block.get("chat", {})
+
+        if chat_meta.get("conversationId"):
+            self.conversation_id = chat_meta["conversationId"]
+
+        return {
+            "answer": summary_block.get("text", ""),
+            "conversation_id": self.conversation_id,
+            "turn_id": chat_meta.get("turnId"),
+            "fcs_score": summary_block.get("factualConsistency", {}).get("score"),
+            "citations": [r["text"] for r in resp_set.get("response", [])[:3]],
+        }
+
+
+if __name__ == "__main__":
+    bot = VectaraChatbot(CUSTOMER_ID, CORPUS_ID, API_KEY)
+
+    first = bot.send_message("What is the window for requesting a refund?")
+    print("User: What is the window for requesting a refund?")
+    print("Bot :", first["answer"])
+    print("FCS :", first["fcs_score"], "| Conversation ID:", first["conversation_id"])
+
+    follow_up = bot.send_message("What if we are on an Enterprise contract?")
+    print("\nUser: What if we are on an Enterprise contract?")
+    print("Bot :", follow_up["answer"])
+    print("FCS :", follow_up["fcs_score"], "| Turn ID:", follow_up["turn_id"])
+```
+
+## Enhancing Chatbot Intelligence
+
+### Hybrid Search (`lexicalInterpolationConfig`)
+
+Pure vector similarity excels at conceptual queries, but can miss exact part numbers, legal clauses, or error codes. In the code above, setting `lexicalInterpolationConfig.lambda` between `0.025` and `0.1` blends neural retrieval with keyword BM25 scoring.
+
+### Diversity Reranking with MMR
+
+When multiple chunks in a document repeat similar phrasing, standard top-k retrieval can fill your context window with redundant passages. Adding Vectara's Maximal Marginal Relevance (MMR) reranker (`rerankerId: 272725718`) increases diversity across retrieved passages:
+
+```json
+"rerankingConfig": {
+  "rerankerId": 272725718,
+  "mmrConfig": {
+    "diversityBias": 0.3
+  }
+}
+```
+
+### Guarding Against Hallucinations with Factual Consistency Score
+
+By enabling `"factualConsistencyScore": true`, Vectara evaluates every generated answer against the retrieved source chunks and returns a calibrated score between `0.0` and `1.0`. In high-stakes legal, medical, or financial chatbots, you can automatically append a human-escalation notice whenever `fcs_score < 0.5`.
+
+## Deploying and Testing Chatbots
+
+### Embedding the Official `@vectara/react-chatbot` Widget
+
+To ship your chatbot to users on the web, install the official [Link to Vectara React Chatbot NPM Package](https://www.npmjs.com/package/@vectara/react-chatbot):
+
+```bash
+npm install @vectara/react-chatbot
+```
+
+Drop the widget into your React application using a **QueryService-only** API key:
+
+```tsx
+import React from "react";
+import { ReactChatbot } from "@vectara/react-chatbot";
+import "@vectara/react-chatbot/dist/style.css";
+
+export function SupportChatWidget() {
+  return (
+    <div style={{ maxWidth: "720px", margin: "0 auto", padding: "2rem" }}>
+      <ReactChatbot
+        customerId={process.env.REACT_APP_VECTARA_CUSTOMER_ID!}
+        corpusKeys={[process.env.REACT_APP_VECTARA_CORPUS_ID!]}
+        apiKey={process.env.REACT_APP_VECTARA_QUERY_KEY!}
+        title="Product Support Assistant"
+        placeholder="Ask a question about billing, SLAs, or security..."
+        inputSize="large"
+        isInitiallyOpen={true}
+        enableStreaming={true}
+        language="eng"
+      />
+    </div>
+  );
+}
+```
+
+### Automated Regression Testing for Conversational Flows
+
+Before deploying to production, test your chatbot with multi-turn assertions that verify:
+
+- The `conversationId` persists from Turn 1 to Turn 2.
+- Pronoun resolution works when Turn 2 references an entity introduced in Turn 1.
+- The returned `fcs_score` remains above your quality threshold (for example, `>= 0.70`).
+
+## Conclusion / Tips for Hackathon participants on use cases for the models
+
+In this tutorial, we covered how to index structured data into Vectara, build a stateful multi-turn conversational agent with `VectaraChat`, tune retrieval accuracy with hybrid search and MMR reranking, verify factual consistency with HHEM, and deploy a streaming React chat UI.
+
+### High-Impact Hackathon Use Cases
+
+- **Legal & Compliance Copilot:** Combine multi-document contract ingestion with `factualConsistencyScore` gating so lawyers can interrogate clauses across hundreds of PDFs with verifiable citations.
+- **Multi-Language Customer Support Triage:** Ingest English engineering docs and set `responseLang` dynamically (`es`, `de`, `fr`, `ja`) so global users can chat in their native language over a single source of truth.
+- **Developer Documentation & Codebase Assistant:** Index API changelogs and OpenAPI specs with `lambda: 0.05` so exact function names and HTTP status codes are retrieved alongside architectural explanations.
