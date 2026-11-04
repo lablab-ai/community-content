@@ -1,0 +1,114 @@
+---
+title: "Crafting a Conversational AI Chatbot with Vectara Chat"
+description: "Step-by-step developer guide to building, grounding, and deploying an enterprise RAG conversational assistant using Vectara Chat APIs and React."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/vectara-chat-cover.png"
+authorUsername: "dukenordj-rgb"
+---
+
+## Introduction to Vectara Chat
+
+Vectara Chat is a grounded conversational AI and Retrieval-Augmented Generation (RAG) platform designed to eliminate hallucinations while preserving multi-turn conversational context. Unlike standard stateless LLM wrappers, Vectara manages corpus indexing, hybrid neural-lexical retrieval, reranking, and multi-turn chat history natively through a unified API.
+
+### Key Capabilities
+- **Grounded Generation (RAG):** Responses are strictly anchored to your uploaded documents with inline citations.
+- **Stateful Multi-Turn Conversations:** Automatic management of `chat_id` and conversation turns without manual prompt stuffing.
+- **Hybrid Search & Reranking:** Combines Boomerang neural embeddings with keyword match and cross-encoder reranking.
+
+## Getting Started with Vectara Chat
+
+### Prerequisites
+1. Create a free developer account at [Vectara Console](https://console.vectara.com).
+2. Create a **Corpus** to store your knowledge base documents.
+3. Generate an **API Key** (Query + Index permissions) and note your `customer_id` and `corpus_id`.
+
+```bash
+export VECTARA_CUSTOMER_ID="your_customer_id"
+export VECTARA_CORPUS_ID="your_corpus_id"
+export VECTARA_API_KEY="zwt_your_api_key"
+```
+
+## Building a Chatbot with Vectara
+
+Below is a complete Python implementation demonstrating how to initialize a Vectara Chat session and handle follow-up questions with full conversational memory:
+
+```python
+import os
+import requests
+
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = int(os.environ["VECTARA_CORPUS_ID"])
+API_KEY = os.environ["VECTARA_API_KEY"]
+
+def ask_vectara_chat(query: str, conversation_id: str | None = None) -> dict:
+    url = "https://api.vectara.io/v1/query"
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "customer-id": CUSTOMER_ID,
+        "x-api-key": API_KEY,
+    }
+    chat_config = {"store": True}
+    if conversation_id:
+        chat_config["conversation_id"] = conversation_id
+
+    payload = {
+        "query": [
+            {
+                "query": query,
+                "start": 0,
+                "numResults": 5,
+                "corpusKey": [{"customerId": int(CUSTOMER_ID), "corpusId": CORPUS_ID}],
+                "summary": [
+                    {
+                        "maxSummarizedResults": 5,
+                        "responseLang": "en",
+                        "chat": chat_config,
+                    }
+                ],
+            }
+        ]
+    }
+    response = requests.post(url, headers=headers, json=payload, timeout=30)
+    response.raise_for_status()
+    data = response.json()
+    summary = data["responseSet"][0]["summary"][0]
+    return {
+        "answer": summary.get("text", ""),
+        "conversation_id": summary.get("chat", {}).get("conversationId"),
+        "factual_consistency_score": summary.get("factualConsistency", {}).get("score"),
+    }
+```
+
+## Enhancing Chatbot Intelligence
+
+To maximize accuracy and prevent hallucinations in production:
+- **Enable Maximal Marginal Relevance (MMR) Reranking:** Set `rerankerId: 272725718` with a diversity bias (`mmrConfig.diversityBias = 0.3`) so the synthesizer receives non-redundant passages.
+- **Metadata Filtering:** Attach document-level metadata (e.g., `doc.department == 'engineering'`) to scope retrieval dynamically per user role.
+- **Factual Consistency Score (HHEM):** Inspect the returned `factualConsistency.score` (powered by Vectara's Hughes Hallucination Evaluation Model) and trigger a fallback warning if the score drops below `0.75`.
+
+## Deploying and Testing Chatbots
+
+For frontend integration, use the official `@vectara/react-chatbot` widget to embed a streaming conversational UI in minutes:
+
+```tsx
+import { ReactChatbot } from "@vectara/react-chatbot";
+
+export function SupportAssistant() {
+  return (
+    <ReactChatbot
+      customerId={process.env.NEXT_PUBLIC_VECTARA_CUSTOMER_ID!}
+      corpusIds={[process.env.NEXT_PUBLIC_VECTARA_CORPUS_ID!]}
+      apiKey={process.env.NEXT_PUBLIC_VECTARA_QUERY_KEY!}
+      title="Vectara Knowledge Assistant"
+      placeholder="Ask anything about our product documentation..."
+      isInitiallyOpen={false}
+    />
+  );
+}
+```
+
+## Conclusion and Hackathon Use Cases
+
+Vectara Chat accelerates hackathon prototypes by removing the need to maintain separate vector databases, chunking pipelines, and chat history stores. High-impact hackathon ideas include:
+- **Autonomous Legal & Compliance Auditor:** Grounded contract Q&A with strict HHEM hallucination thresholds.
+- **Multi-Repo DevOps Incident Copilot:** Indexing post-mortems and runbooks for instant troubleshooting.
