@@ -1,0 +1,189 @@
+---
+title: "Building a RAG Chatbot with Vectara Chat"
+description: "Create a production-ready conversational RAG assistant with Vectara's Python SDK — corpus setup, multi-turn chat, and factual consistency scoring."
+image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200"
+authorUsername: "Luminaiai"
+---
+
+# Building a RAG Chatbot with Vectara Chat
+
+## Introduction
+
+Retrieval Augmented Generation (RAG) lets you build chatbots that answer questions grounded in *your* documents instead of hallucinating from a model's memory. Vectara is an end-to-end RAG platform: it handles retrieval, ranking, and grounded generation in one API call — you don't need to glue together a vector database, an embedding model, and an LLM yourself.
+
+In this tutorial you will build a support-style chatbot on top of your own documents using the official `vectara` Python SDK. By the end you will have:
+
+- A Vectara corpus with your documents indexed
+- A multi-turn chat session with conversation history
+- Factual consistency scoring on every answer, so you know when the model is making things up
+
+## Prerequisites
+
+- Python 3.9 or later
+- A free Vectara account — get an API key from the [Vectara Console](https://console.vectara.com/)
+- Basic familiarity with Python
+
+## Getting Started with Vectara Chat
+
+### Install the SDK
+
+Create a virtual environment and install the official SDK:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install vectara
+```
+
+### Authenticate
+
+Store your API key in an environment variable (never hard-code it):
+
+```bash
+export VECTARA_API_KEY="zwt_abc123..."
+```
+
+Then create the client:
+
+```python
+import os
+from vectara import Vectara
+
+client = Vectara(api_key=os.environ["VECTARA_API_KEY"])
+```
+
+The key's role matters: use a key with admin rights to create corpora, and a serving (query) key for chat in production.
+
+### Create a Corpus and Index a Document
+
+A *corpus* is a searchable container for your documents. Create one and add a simple document:
+
+```python
+client.corpora.create(name="Support Docs", key="my-docs")
+
+client.documents.create(
+    corpus_key="my-docs",
+    id="faq-001",
+    document={
+        "id": "faq-001",
+        "sections": [
+            {"text": "To reset your password, open Settings and click 'Forgot password'. A reset link is emailed within 5 minutes."},
+            {"text": "Refunds are processed within 3-5 business days to the original payment method."},
+        ],
+    },
+)
+```
+
+In a real project you would upload your PDFs, HTML pages, or support tickets here. Vectara chunks, embeds, and indexes them automatically.
+
+## Building a Chatbot with Vectara
+
+### Create a Chat Session
+
+This is where Vectara Chat shines — one call wires up retrieval + generation + history:
+
+```python
+from vectara import SearchCorporaParameters, GenerationParameters, ChatParameters
+
+search = SearchCorporaParameters(
+    corpora=[{"corpus_key": "my-docs"}]
+)
+generation = GenerationParameters(
+    generation_preset_name="vectara-summary-ext-24-05-med-omni",
+    max_used_search_results=20,
+    response_language="eng",
+    enable_factual_consistency_score=True,
+)
+chat = ChatParameters(store=True)
+
+session = client.create_chat_session(
+    search=search,
+    generation=generation,
+    chat_config=chat,
+)
+
+response = session.chat(query="How do I reset my password?")
+print(f"Answer: {response.answer}")
+print(f"Factual Consistency: {response.factual_consistency_score:.2f}")
+```
+
+Key parameters explained:
+
+- `corpora` — which corpus(es) to ground the chat in
+- `generation_preset_name` — the summary quality/speed tradeoff preset
+- `max_used_search_results` — how many retrieved passages feed the answer
+- `enable_factual_consistency_score` — adds a 0–1 score of how grounded the answer is in your documents
+- `store=True` — persists the conversation so history is maintained across turns
+
+## Enhancing Chatbot Intelligence
+
+### Multi-Turn Conversation
+
+Because the session stores history, follow-up questions just work:
+
+```python
+response = session.chat(query="What if the email never arrives?")
+print(response.answer)
+
+response = session.chat(query="And for refunds — how long exactly?")
+print(response.answer)
+```
+
+Vectara resolves references like "the email" and "how long exactly" against the previous turns automatically.
+
+### Guarding Against Hallucination
+
+The factual consistency score is your quality gate. A practical pattern for production:
+
+```python
+def ask(session, question, min_score=0.6):
+    resp = session.chat(query=question)
+    if resp.factual_consistency_score < min_score:
+        return "I'm not confident about that based on the documentation — could you rephrase, or contact support?"
+    return resp.answer
+```
+
+Tune `min_score` for your domain: internal documentation can tolerate lower scores than legal or medical content.
+
+## Deploying a Simple Chat Interface
+
+For a quick demo UI, wrap the session in a 15-line terminal loop:
+
+```python
+def main():
+    print("Support bot ready. Type 'quit' to exit.")
+    while True:
+        q = input("\nYou: ").strip()
+        if q.lower() in {"quit", "exit"}:
+            break
+        print("Bot:", ask(session, q))
+
+if __name__ == "__main__":
+    main()
+```
+
+For a web UI, the same `ask()` function drops straight into a Streamlit or Chainlit callback — the chat session is the only state you need.
+
+## Listing and Managing Conversations
+
+Conversations with `store=True` can be listed and resumed later:
+
+```python
+convos = client.chats.list()
+for c in convos:
+    print(c.chat_id, c.created_at)
+```
+
+This is useful for analytics: which questions do users ask most, and where does the bot score low?
+
+## Conclusion
+
+You built a grounded, multi-turn chatbot in under 60 lines of Python — no vector database plumbing, no prompt engineering for grounding, and a built-in hallucination detector.
+
+Next steps to explore:
+
+- **Bulk indexing** — upload PDFs and crawls at scale with the indexing API
+- **Hybrid search tuning** — adjust `lambda` between lexical and neural retrieval
+- **OAuth authentication** — swap API keys for client credentials in production deployments
+
+Vectara's free tier is generous enough to run this entire tutorial without a credit card.
