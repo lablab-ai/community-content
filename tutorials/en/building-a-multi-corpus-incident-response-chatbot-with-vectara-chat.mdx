@@ -1,0 +1,684 @@
+---
+title: "Building a Multi-Corpus Incident Response Chatbot with Vectara Chat"
+description: "In this hands-on guide, learn how to build, tune, test, and deploy a multi-turn incident response assistant using Vectara Chat v2, hybrid search, metadata filters, and Factual Consistency Scores."
+image: "https://storage.googleapis.com/lablab-static-eu/images/tutorials/123Tutorial_image_template.png"
+authorUsername: "cyzcz"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build, evaluate, and ship a **multi-corpus incident response assistant** powered by [Vectara Chat](https://docs.vectara.com/docs/console-ui/vectara-chat-overview). Instead of building a single-prompt wrapper that forgets context on the second question, this time I want to show you how to wire Vectara's server-side conversational memory, hybrid retrieval, metadata filters, and hallucination guardrails into a service you can run locally or demo live at a hackathon.
+
+If you have not worked with Vectara corpora before, start by reading the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) to get familiar with document ingestion, and then check out the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) for deeper application patterns. Here we focus specifically on **Vectara Chat (`v2/chats`)**: managing multi-turn state, tuning retrieval quality across runbooks and postmortems, verifying groundedness with Factual Consistency Scores (FCS), and deploying a tested API.
+
+### Why Conversational RAG Breaks Without Turn Reformulation
+
+When an engineer in the middle of an outage asks:
+
+1. *"How do we drain traffic from the payments-eu cluster?"*
+2. *"What if that fails because the NAT gateway is saturated?"*
+
+A naive RAG pipeline embeds the second question literally (`"What if that fails..."`). Because the words *"payments-eu cluster"* and *"drain traffic"* are missing from turn 2, vector search pulls back unrelated NAT gateway snippets.
+
+Vectara Chat solves this inside the platform:
+
+- **Contextual query reformulation**: Each follow-up turn is rewritten using the stored conversation history before retrieval runs.
+- **Hybrid Boomerang + lexical search**: Neural semantic retrieval is blended with exact keyword matching (`lexical_interpolation`) so error codes like `ERR_WAL_FSYNC_504` and CLI flags match accurately.
+- **Cross-attentive reranking & MMR**: Candidate passages are reranked for relevance or diversity before synthesis.
+- **Grounded synthesis + Factual Consistency Score**: Answers include inline citations (`[1]`, `[2]`) and a calibrated probability score measuring whether the summary stays faithful to the retrieved passages.
+
+### System Architecture
+
+```
++-------------------------------------------------------------------+
+|                     Engineer / Incident Channel                   |
+|   Turn 1: "How do we fail over checkout-db in eu-central-1?"      |
+|   Turn 2: "Which feature flag disables writes during that step?"  |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                Incident Copilot Service (FastAPI)                 |
+|  - Session registry (maps incident_id -> vectara chat_id)         |
+|  - Metadata filter builder (service, severity, region)            |
+|  - FCS confidence gate (warns if score < threshold)               |
++---------------------------------+---------------------------------+
+                                  |
+                                  | HTTPS (REST / SSE Stream)
+                                  v
++-------------------------------------------------------------------+
+|                        Vectara Chat API v2                        |
+|                                                                   |
+|  1. Chat Turn Reformulation (resolves pronouns & prior context)   |
+|  2. Hybrid Retrieval across Corpora:                              |
+|     +-------------------------+   +----------------------------+  |
+|     |   sre-runbooks corpus   |   |  postmortems-2026 corpus   |  |
+|     +-------------------------+   +----------------------------+  |
+|  3. Reranker (Customer-Specific / MMR Diversity Reranker)         |
+|  4. Grounded Generation + Inline Citations [1][2] + FCS Score     |
+|  5. Persistent Turn Log (Chat History Corpus)                     |
++-------------------------------------------------------------------+
+```
+
+---
+
+## Getting Started with Vectara Chat
+
+### Prerequisites and Environment Setup
+
+To follow along and run every script in this guide, you will need:
+
+- **Python 3.10+** installed locally
+- A free [Vectara Console](https://console.vectara.com/) account
+- `httpx`, `fastapi`, `uvicorn`, and `pydantic`
+
+Create a clean working directory and virtual environment:
+
+```bash
+mkdir vectara-incident-chat && cd vectara-incident-chat
+python3 -m venv .venv
+source .venv/bin/activate
+pip install "httpx>=0.27.0" "fastapi>=0.115.0" "uvicorn>=0.30.0" "pydantic>=2.8.0" "pytest>=8.2.0"
+```
+
+### Creating Your Corpora and Filter Attributes
+
+In this tutorial I will show you how to query across two complementary knowledge sources—an operational **runbooks** corpus and an **incident postmortems** corpus—or a single unified corpus with filterable metadata attributes.
+
+1. Sign in to the [Vectara Console](https://console.vectara.com/).
+2. Open **Data → Corpora** and click **Create Corpus**.
+3. Set the corpus key to `sre-runbooks` (or create it programmatically using the ingestion script below).
+4. Add three **Filter Attributes** at the `document` level so your chatbot can scope searches to specific services or severities:
+   - `service` (`text`, indexed for filtering)
+   - `severity` (`text`, e.g., `sev1`, `sev2`, `sev3`)
+   - `doc_type` (`text`, e.g., `runbook`, `postmortem`)
+5. Under **API Keys**, create a **Personal API Key** (or a Query + Index API Key scoped to `sre-runbooks`) and export it in your terminal:
+
+```bash
+export VECTARA_API_KEY="YOUR_VECTARA_API_KEY"
+export VECTARA_CORPUS_KEY="sre-runbooks"
+```
+
+### Automating Corpus Setup and Sample Runbook Ingestion
+
+Save the following script as `ingest_runbooks.py`. It creates the `sre-runbooks` corpus if it does not already exist and indexes three realistic SRE documents with structured metadata and sections:
+
+```python
+import os
+import sys
+import httpx
+
+VECTARA_BASE_URL = "https://api.vectara.io/v2"
+
+SAMPLE_DOCUMENTS = [
+    {
+        "id": "runbook-checkout-db-failover",
+        "type": "structured",
+        "title": "Checkout PostgreSQL Primary Failover Runbook (eu-central-1)",
+        "metadata": {
+            "service": "checkout-db",
+            "severity": "sev1",
+            "doc_type": "runbook",
+        },
+        "sections": [
+            {
+                "title": "Pre-Failover Write Freeze",
+                "text": (
+                    "Before promoting the standby replica in eu-central-1, freeze incoming "
+                    "checkout writes by enabling feature flag FF_CHECKOUT_READONLY_MODE=true "
+                    "in LaunchControl. Wait 15 seconds for active transactions to drain and "
+                    "verify that pg_stat_activity shows zero active write queries."
+                ),
+            },
+            {
+                "title": "Replica Promotion Procedure",
+                "text": (
+                    "Run `sre-ctl db promote --cluster checkout-eu-1 --target replica-b`. "
+                    "If replication lag exceeds 500ms, pass `--force-wal-replay` and capture "
+                    "the final LSN offset for the incident timeline. After promotion, update "
+                    "PgBouncer routing pool `checkout-rw` to point to `replica-b.internal:5432`."
+                ),
+            },
+        ],
+    },
+    {
+        "id": "runbook-payments-nat-saturation",
+        "type": "structured",
+        "title": "Payments EU Cluster Drain and NAT Gateway Exhaustion Runbook",
+        "metadata": {
+            "service": "payments-eu",
+            "severity": "sev1",
+            "doc_type": "runbook",
+        },
+        "sections": [
+            {
+                "title": "Draining Traffic from payments-eu",
+                "text": (
+                    "To drain traffic from payments-eu without dropping in-flight webhook "
+                    "callbacks, shift Envoy ingress weights to 0% over 120 seconds using "
+                    "`mesh-cli traffic shift --service payments-eu --weight 0 --window 120s`."
+                ),
+            },
+            {
+                "title": "Handling NAT Gateway Port Exhaustion",
+                "text": (
+                    "If draining stalls because outbound PSP callbacks time out with "
+                    "ERR_NAT_PORT_EXHAUSTED, attach secondary elastic IP pool `eip-pool-eu-fallback` "
+                    "to the regional NAT gateway and lower idle TCP timeout from 350s to 60s."
+                ),
+            },
+        ],
+    },
+    {
+        "id": "postmortem-2026-10-wal-stall",
+        "type": "structured",
+        "title": "Postmortem INC-4092: Checkout DB WAL Fsync Stall",
+        "metadata": {
+            "service": "checkout-db",
+            "severity": "sev1",
+            "doc_type": "postmortem",
+        },
+        "sections": [
+            {
+                "title": "Root Cause and Mitigation",
+                "text": (
+                    "During INC-4092, EBS burst balance depletion caused ERR_WAL_FSYNC_504 "
+                    "spikes on checkout-eu-1. Promoting replica-b while FF_CHECKOUT_READONLY_MODE "
+                    "was active resolved the incident in 4 minutes with zero lost orders."
+                ),
+            },
+        ],
+    },
+]
+
+
+def get_headers(api_key: str) -> dict[str, str]:
+    return {
+        "x-api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+
+def ensure_corpus(client: httpx.Client, corpus_key: str) -> None:
+    resp = client.get(f"{VECTARA_BASE_URL}/corpora/{corpus_key}")
+    if resp.status_code == 200:
+        print(f"[ok] Corpus '{corpus_key}' already exists.")
+        return
+
+    payload = {
+        "key": corpus_key,
+        "name": "SRE Runbooks & Postmortems",
+        "description": "Operational runbooks and incident postmortems for Vectara Chat.",
+        "filter_attributes": [
+            {"name": "service", "level": "document", "type": "text", "indexed": True},
+            {"name": "severity", "level": "document", "type": "text", "indexed": True},
+            {"name": "doc_type", "level": "document", "type": "text", "indexed": True},
+        ],
+    }
+    create_resp = client.post(f"{VECTARA_BASE_URL}/corpora", json=payload)
+    create_resp.raise_for_status()
+    print(f"[created] Corpus '{corpus_key}' initialized.")
+
+
+def ingest_documents(client: httpx.Client, corpus_key: str) -> None:
+    for doc in SAMPLE_DOCUMENTS:
+        doc_id = doc["id"]
+        del_resp = client.delete(
+            f"{VECTARA_BASE_URL}/corpora/{corpus_key}/documents/{doc_id}"
+        )
+        if del_resp.status_code not in (200, 204, 404):
+            del_resp.raise_for_status()
+
+        resp = client.post(
+            f"{VECTARA_BASE_URL}/corpora/{corpus_key}/documents",
+            json=doc,
+        )
+        resp.raise_for_status()
+        print(f"[indexed] {doc_id}: {doc['title']}")
+
+
+if __name__ == "__main__":
+    api_key = os.environ.get("VECTARA_API_KEY")
+    corpus_key = os.environ.get("VECTARA_CORPUS_KEY", "sre-runbooks")
+    if not api_key:
+        sys.exit("Set VECTARA_API_KEY before running ingest_runbooks.py")
+
+    with httpx.Client(headers=get_headers(api_key), timeout=30.0) as http_client:
+        ensure_corpus(http_client, corpus_key)
+        ingest_documents(http_client, corpus_key)
+```
+
+---
+
+## Building a Chatbot with Vectara
+
+### How Vectara Chat Sessions and Turns Work
+
+Vectara Chat separates **starting a conversation** from **continuing a conversation**:
+
+1. **Start Chat (`POST /v2/chats`)**: Sends the user's opening `query`, `search` configuration, `generation` parameters, and `chat: {"store": True}`. The response includes a `chat_id`, `turn_id`, `answer`, `search_results`, and `factual_consistency_score`.
+2. **Add Turn (`POST /v2/chats/{chat_id}/turns`)**: Sends follow-up questions to the existing `chat_id`. Vectara automatically loads the previous turns in that session to reformulate the new query before searching your corpora.
+
+### Implementing the Multi-Turn Vectara Chat Client
+
+Create `vectara_chat_client.py` with a clean, typed client that supports starting sessions, sending follow-up turns, extracting numbered citations, and listing or deleting stored chat history:
+
+```python
+from __future__ import annotations
+
+import os
+import re
+from dataclasses import dataclass, field
+from typing import Any
+import httpx
+
+VECTARA_BASE_URL = "https://api.vectara.io/v2"
+
+
+@dataclass
+class Citation:
+    index: int
+    document_id: str
+    title: str
+    snippet: str
+    score: float
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ChatTurnResponse:
+    chat_id: str
+    turn_id: str
+    answer: str
+    factual_consistency_score: float | None
+    citations: list[Citation]
+    low_confidenceWarning: bool = False
+
+
+def extract_referenced_indices(answer: str) -> list[int]:
+    """Return 1-based citation numbers referenced in the generated answer, e.g. [1], [2]."""
+    seen: list[int] = []
+    for match in re.findall(r"\[(\d+)\]", answer):
+        idx = int(match)
+        if idx not in seen:
+            seen.append(idx)
+    return seen
+
+
+class VectaraChatClient:
+    def __init__(
+        self,
+        api_key: str | None = None,
+        corpus_key: str | None = None,
+        base_url: str = VECTARA_BASE_URL,
+        fcs_threshold: float = 0.5,
+        http_client: httpx.Client | None = None,
+    ) -> None:
+        self.api_key = api_key or os.environ.get("VECTARA_API_KEY", "")
+        if not self.api_key:
+            raise ValueError("VECTARA_API_KEY is required")
+        self.corpus_key = corpus_key or os.environ.get(
+            "VECTARA_CORPUS_KEY", "sre-runbooks"
+        )
+        self.base_url = base_url.rstrip("/")
+        self.fcs_threshold = fcs_threshold
+        self._client = http_client or httpx.Client(
+            headers={
+                "x-api-key": self.api_key,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            timeout=30.0,
+        )
+
+    def build_payload(
+        self,
+        query: str,
+        *,
+        metadata_filter: str | None = None,
+        lexical_interpolation: float = 0.025,
+        max_used_search_results: int = 5,
+        response_language: str = "eng",
+        diversity_bias: float | None = None,
+        custom_prompt_template: str | None = None,
+    ) -> dict[str, Any]:
+        corpus_spec: dict[str, Any] = {
+            "corpus_key": self.corpus_key,
+            "lexical_interpolation": lexical_interpolation,
+        }
+        if metadata_filter:
+            corpus_spec["metadata_filter"] = metadata_filter
+
+        search_config: dict[str, Any] = {
+            "corpora": [corpus_spec],
+            "limit": 10,
+            "context_configuration": {
+                "sentences_before": 2,
+                "sentences_after": 2,
+            },
+        }
+
+        if diversity_bias is not None:
+            search_config["reranker"] = {
+                "type": "mmr",
+                "diversity_bias": diversity_bias,
+            }
+        else:
+            search_config["reranker"] = {
+                "type": "customer_reranker",
+                "reranker_name": "Rerank_Multilingual_v1",
+            }
+
+        generation_config: dict[str, Any] = {
+            "max_used_search_results": max_used_search_results,
+            "response_language": response_language,
+            "citations": {"style": "numeric"},
+            "enable_factual_consistency_score": True,
+        }
+        if custom_prompt_template:
+            generation_config["prompt_template"] = custom_prompt_template
+
+        return {
+            "query": query,
+            "search": search_config,
+            "generation": generation_config,
+            "chat": {"store": True},
+        }
+
+    def ask(
+        self,
+        query: str,
+        *,
+        chat_id: str | None = None,
+        metadata_filter: str | None = None,
+        lexical_interpolation: float = 0.025,
+        diversity_bias: float | None = None,
+        custom_prompt_template: str | None = None,
+    ) -> ChatTurnResponse:
+        payload = self.build_payload(
+            query,
+            metadata_filter=metadata_filter,
+            lexical_interpolation=lexical_interpolation,
+            diversity_bias=diversity_bias,
+            custom_prompt_template=custom_prompt_template,
+        )
+        endpoint = (
+            f"{self.base_url}/chats/{chat_id}/turns"
+            if chat_id
+            else f"{self.base_url}/chats"
+        )
+        response = self._client.post(endpoint, json=payload)
+        response.raise_for_status()
+        data = response.json()
+        return self._parse_turn_response(data)
+
+    def _parse_turn_response(self, data: dict[str, Any]) -> ChatTurnResponse:
+        answer = data.get("answer", "")
+        raw_results = data.get("search_results", [])
+        referenced = extract_referenced_indices(answer)
+
+        citations: list[Citation] = []
+        for idx in referenced:
+            if 1 <= idx <= len(raw_results):
+                hit = raw_results[idx - 1]
+                doc_meta = hit.get("document_metadata", {})
+                citations.append(
+                    Citation(
+                        index=idx,
+                        document_id=hit.get("document_id", "unknown"),
+                        title=doc_meta.get("title", hit.get("document_id", "unknown")),
+                        snippet=hit.get("text", ""),
+                        score=float(hit.get("score", 0.0)),
+                        metadata=doc_meta,
+                    )
+                )
+
+        fcs = data.get("factual_consistency_score")
+        fcs_val = float(fcs) if fcs is not None else None
+        low_confidence = fcs_val is not None and fcs_val < self.fcs_threshold
+
+        return ChatTurnResponse(
+            chat_id=data["chat_id"],
+            turn_id=data["turn_id"],
+            answer=answer,
+            factual_consistency_score=fcs_val,
+            citations=citations,
+            low_confidenceWarning=low_confidence,
+        )
+
+    def get_chat_turns(self, chat_id: str) -> list[dict[str, Any]]:
+        resp = self._client.get(f"{self.base_url}/chats/{chat_id}/turns")
+        resp.raise_for_status()
+        return resp.json().get("turns", [])
+
+    def delete_chat(self, chat_id: str) -> None:
+        resp = self._client.delete(f"{self.base_url}/chats/{chat_id}")
+        if resp.status_code not in (200, 204, 404):
+            resp.raise_for_status()
+```
+
+---
+
+## Enhancing Chatbot Intelligence
+
+Once your baseline multi-turn chat works, three tuning levers dramatically improve precision during live demos:
+
+### Hybrid Search (`lexical_interpolation`)
+
+Pure semantic vectors understand paraphrases, but technical users paste exact error codes (`ERR_WAL_FSYNC_504`), CLI commands (`sre-ctl db promote`), and feature flags (`FF_CHECKOUT_READONLY_MODE`). By setting `lexical_interpolation` between `0.025` and `0.10`, Vectara blends BM25-style lexical scoring with neural embeddings so exact identifiers always surface in the top candidate passages.
+
+### Metadata Filter Expressions
+
+When an incident responder is triaging `checkout-db`, retrieving passages from unrelated services wastes context window slots. Passing a SQL-style filter expression scopes retrieval before generation:
+
+```python
+turn1 = client.ask(
+    "How do we promote the standby replica in eu-central-1?",
+    metadata_filter="doc.service = 'checkout-db' AND doc.severity = 'sev1'",
+    lexical_interpolation=0.05,
+)
+
+# Turn 2 reuses turn1.chat_id so Vectara remembers "checkout-db" and "eu-central-1"
+turn2 = client.ask(
+    "Which feature flag freezes writes before we run that command?",
+    chat_id=turn1.chat_id,
+    metadata_filter="doc.service = 'checkout-db'",
+    lexical_interpolation=0.05,
+)
+```
+
+### Factual Consistency Score (FCS) Guardrails
+
+Every Vectara Chat turn can compute `enable_factual_consistency_score: True`. In `VectaraChatClient`, we compare `factual_consistency_score` against `fcs_threshold` (default `0.5`). If the score drops below the threshold, `low_confidenceWarning` flips to `True` so your UI or Slack bot can display a clear warning badge and ask a human responder to verify the cited runbook directly.
+
+---
+
+## Deploying and Testing Chatbots
+
+### FastAPI Service with Session Management
+
+Save the following server as `app.py`. It exposes `/chat` for multi-turn incident conversations and `/chats/{chat_id}` to inspect or purge stored conversation history:
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from vectara_chat_client import VectaraChatClient
+
+app = FastAPI(title="Vectara Chat Incident Copilot")
+
+
+class ChatRequest(BaseModel):
+    query: str = Field(..., min_length=1)
+    chat_id: str | None = None
+    service: str | None = None
+    severity: str | None = None
+    lexical_interpolation: float = Field(default=0.05, ge=0.0, le=1.0)
+
+
+@app.post("/chat")
+def chat_endpoint(req: ChatRequest) -> dict:
+    filters: list[str] = []
+    if req.service:
+        filters.append(f"doc.service = '{req.service}'")
+    if req.severity:
+        filters.append(f"doc.severity = '{req.severity}'")
+    metadata_filter = " AND ".join(filters) if filters else None
+
+    try:
+        client = VectaraChatClient()
+        result = client.ask(
+            req.query,
+            chat_id=req.chat_id,
+            metadata_filter=metadata_filter,
+            lexical_interpolation=req.lexical_interpolation,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    return {
+        "chat_id": result.chat_id,
+        "turn_id": result.turn_id,
+        "answer": result.answer,
+        "factual_consistency_score": result.factual_consistency_score,
+        "low_confidence_warning": result.low_confidenceWarning,
+        "citations": [
+            {
+                "index": c.index,
+                "document_id": c.document_id,
+                "title": c.title,
+                "snippet": c.snippet,
+                "score": c.score,
+            }
+            for c in result.citations
+        ],
+    }
+```
+
+### Automated Unit and Contract Tests
+
+Before deploying to Render, Fly.io, or Cloud Run during a hackathon, verify your payload builder, multi-turn endpoint routing (`/v2/chats` vs `/v2/chats/{chat_id}/turns`), citation extraction, and FCS guardrail logic using `pytest`:
+
+```python
+import httpx
+from vectara_chat_client import VectaraChatClient, extract_referenced_indices
+
+
+def test_extract_referenced_indices_deduplicates_in_order() -> None:
+    text = "Freeze writes with FF_CHECKOUT_READONLY_MODE [2], then promote replica-b [1][2]."
+    assert extract_referenced_indices(text) == [2, 1]
+
+
+def test_multi_turn_chat_routes_and_fcs_guardrail() -> None:
+    captured_requests: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_requests.append((request.method, request.url.path))
+        if request.url.path == "/v2/chats":
+            return httpx.Response(
+                200,
+                json={
+                    "chat_id": "cht_101",
+                    "turn_id": "trn_001",
+                    "answer": "Enable FF_CHECKOUT_READONLY_MODE=true first [1].",
+                    "factual_consistency_score": 0.91,
+                    "search_results": [
+                        {
+                            "document_id": "runbook-checkout-db-failover",
+                            "text": "freeze incoming checkout writes by enabling FF_CHECKOUT_READONLY_MODE=true",
+                            "score": 0.88,
+                            "document_metadata": {"title": "Checkout Failover Runbook"},
+                        }
+                    ],
+                },
+            )
+        return httpx.Response(
+            200,
+            json={
+                "chat_id": "cht_101",
+                "turn_id": "trn_002",
+                "answer": "Run sre-ctl db promote --cluster checkout-eu-1 [1].",
+                "factual_consistency_score": 0.32,
+                "search_results": [
+                    {
+                        "document_id": "runbook-checkout-db-failover",
+                        "text": "Run sre-ctl db promote --cluster checkout-eu-1 --target replica-b.",
+                        "score": 0.84,
+                        "document_metadata": {"title": "Checkout Failover Runbook"},
+                    }
+                ],
+            },
+        )
+
+    mock_http = httpx.Client(transport=httpx.MockTransport(handler))
+    client = VectaraChatClient(
+        api_key="test-key",
+        corpus_key="sre-runbooks",
+        fcs_threshold=0.5,
+        http_client=mock_http,
+    )
+
+    turn1 = client.ask("How do we freeze checkout writes?")
+    assert turn1.chat_id == "cht_101"
+    assert turn1.low_confidenceWarning is False
+    assert len(turn1.citations) == 1
+
+    turn2 = client.ask("What command promotes the replica after that?", chat_id=turn1.chat_id)
+    assert turn2.turn_id == "trn_002"
+    assert turn2.low_confidenceWarning is True
+    assert captured_requests == [
+        ("POST", "/v2/chats"),
+        ("POST", "/v2/chats/cht_101/turns"),
+    ]
+```
+
+---
+
+## Conclusion and Tips for Hackathon Participants
+
+In this tutorial we covered how Vectara Chat turns static document collections into a stateful, citation-backed conversational assistant:
+
+- **Conversational state (`chat_id` + `turn_id`)** keeps follow-up pronouns and implicit context grounded without manual prompt stitching.
+- **Hybrid retrieval (`lexical_interpolation`)** and **metadata filter attributes** combine neural recall with exact symbol matching.
+- **Factual Consistency Scores (FCS)** give your UI a quantitative trustworthiness signal on every turn.
+
+### High-Impact Hackathon Use Cases
+
+1. **On-Call Incident & Runbook Copilot**: Pair Vectara Chat with PagerDuty or Slack webhooks so engineers can ask follow-up remediation questions grounded in internal runbooks and past postmortems.
+2. **Clinical Trial & Regulatory Protocol Navigator**: Filter by `phase`, `jurisdiction`, and `inclusion_criteria` while displaying inline citations and FCS badges for every answer.
+3. **Multi-Repo SDK & Migration Assistant**: Index changelogs, RFCs, and breaking-change guides so developers can interactively debug upgrade errors across versions.
+
+<Quiz
+  questions={[
+    {
+      question: "Which Vectara API v2 endpoint appends a follow-up question to an existing conversation?",
+      options: [
+        "POST /v2/queries",
+        "POST /v2/chats/{chat_id}/turns",
+        "PUT /v2/corpora/{corpus_key}/chats",
+        "GET /v2/chats/{chat_id}/history"
+      ],
+      answer: 1
+    },
+    {
+      question: "Why should you set a non-zero lexical_interpolation value when querying technical runbooks in Vectara Chat?",
+      options: [
+        "It disables neural embeddings completely",
+        "It blends exact keyword/token matching (like error codes and CLI flags) with semantic search",
+        "It increases the maximum token length of the generated summary",
+        "It automatically deletes old chat turns"
+      ],
+      answer: 1
+    },
+    {
+      question: "What does the Factual Consistency Score (FCS) measure in a Vectara Chat response?",
+      options: [
+        "Network latency between your FastAPI server and Vectara",
+        "How likely the generated answer is factually grounded in and consistent with the retrieved source passages",
+        "The number of documents stored in the corpus",
+        "How many turns exist in the current chat session"
+      ],
+      answer: 1
+    }
+  ]}
+/>
