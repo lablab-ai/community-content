@@ -1,0 +1,484 @@
+---
+title: "Crafting a Comprehensive Tutorial for Vectara Chat: Building Context-Aware RAG Chatbots"
+description: "Learn how to build, enhance, test, and deploy a production-ready conversational AI assistant using Vectara Chat, hybrid semantic search, multi-turn conversation memory, and factual consistency evaluation."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2fa0b7f2-58bc-496b-bdcd-a840358af200/full"
+authorUsername: "jeffreygraham"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial, I will show you how to build a multi-turn, grounded conversational AI assistant from scratch using **Vectara Chat**. When building AI assistants during hackathons or for production workloads, one of the hardest challenges is keeping a chatbot grounded in your own source documents while maintaining multi-turn conversation context without hallucinating.
+
+Vectara solves this end-to-end by combining neural retrieval, hybrid keyword search, cross-lingual indexing, conversational memory, and grounded generation into a single managed platform. If you have already explored the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) or the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case), this guide will take you a step further by focusing specifically on **Vectara Chat**—showing you how stateful conversation management, query rewriting, hybrid retrieval tuning, and factual consistency scoring work together.
+
+### Why Use Vectara Chat for Conversational AI?
+
+Traditional Retrieval-Augmented Generation (RAG) pipelines require you to stitch together a separate chunker, embedding model, vector database, conversation state store, query rewriter, reranker, and LLM prompt template. With Vectara Chat, all of those pieces are handled natively:
+
+- **Stateful Multi-Turn Memory**: Vectara automatically stores conversation turns (`chat_id` / `conversation_id`) and rewrites follow-up user questions (such as *"What are its rate limits?"*) into self-contained search queries using the prior conversation context.
+- **Zero-Hallucination Grounded Generation**: Every response is synthesized strictly from retrieved document segments with inline citations, paired with Vectara's Hallucination Evaluation Model (HEM) / Factual Consistency Score (FCS).
+- **Hybrid Neural + Keyword Search**: Fine-tune the balance between Boomerang neural embeddings and BM25 lexical matching using `lexical_interpolation` (`lambda`) for technical terms, SKUs, and error codes.
+- **Full Chat Privacy and Lifecycle Control**: Inspect, list, or delete conversation histories at any time through the Vectara Chat Management API, or embed a ready-made widget with `@vectara/react-chatbot`.
+
+---
+
+## Getting Started with Vectara Chat
+
+Before writing our chatbot application, let's set up a Vectara account, create a document corpus, enable Chat, and generate the credentials required to authenticate with the Vectara REST APIs.
+
+### Creating Your Vectara Account and Corpus
+
+1. Sign in to the [Vectara Console](https://console.vectara.com/) and navigate to the **Corpora** section in the left sidebar.
+2. Click **Create Corpus** and give your corpus a descriptive name such as `product-knowledge-base`.
+3. Define filterable metadata attributes on your corpus (for example, `doc.category` as `text` and `doc.version` as `text`) so your chatbot can scope answers to specific documentation sections.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/07fb1c4e-ac6f-4c48-2797-1b526c5c4d00/full" alt="Navigate to Vectara Dashboard" caption="Sign in to the Vectara Console and open the Corpora panel to create your knowledge store." />
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/96947ca1-9f6c-4183-4c2d-be77dd935900/full" alt="Configure Vectara Corpus" caption="Create a new corpus to store your documents and conversation context." />
+
+### Generating Your Customer ID, Corpus ID, and API Key
+
+Once your corpus is created, upload a few sample documents (PDFs, Markdown files, or JSON records) or use the Indexing API to populate the corpus. Next, generate an API key that has both **QueryService** and **IndexService** permissions:
+
+1. Open your corpus and note the **Corpus ID** (and **Corpus Key** in v2) along with your **Customer ID** from the top-right account menu.
+2. Navigate to **Access Control → API Keys** and click **Create API Key**.
+3. Select **QueryService & IndexService** role permissions, copy the generated key, and store it safely.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/0d03c653-64a1-4845-e808-d2e29c7aba00/full" alt="API Key Creation" caption="Generate an API key with QueryService and IndexService permissions." />
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/841ee296-7ae8-4385-95d7-8e88dbd96b00/full" alt="Corpus and Customer ID" caption="Record your Customer ID and Corpus ID for your environment configuration." />
+
+### Configuring Your Local Python Environment
+
+Create a new project directory, set up a Python virtual environment, and install the dependencies we will use to build and test our Vectara Chat service:
+
+```bash
+mkdir vectara-chat-assistant && cd vectara-chat-assistant
+python3 -m venv .venv
+source .venv/bin/activate
+pip install requests python-dotenv fastapi uvicorn streamlit pytest
+```
+
+Create a `.env` file in the root of your project:
+
+```bash
+VECTARA_CUSTOMER_ID="your_customer_id"
+VECTARA_CORPUS_ID="your_corpus_id"
+VECTARA_API_KEY="zwt_your_vectara_api_key"
+```
+
+---
+
+## Building a Chatbot with Vectara
+
+Now let's build a complete Python client (`vectara_chat.py`) that indexes knowledge documents into our corpus and conducts multi-turn conversations using Vectara Chat.
+
+### Indexing Knowledge Base Documents with Metadata
+
+First, let's write a helper method to ingest structured documents into our Vectara corpus so our chatbot has authoritative material to cite:
+
+```python
+import os
+import json
+import uuid
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+@dataclass
+class ChatTurnResult:
+    chat_id: str
+    turn_id: str
+    answer: str
+    factual_consistency_score: Optional[float]
+    citations: List[Dict[str, Any]] = field(default_factory=list)
+
+
+class VectaraChatClient:
+    """Client for indexing documents and running stateful multi-turn Vectara Chat sessions."""
+
+    def __init__(
+        self,
+        customer_id: Optional[str] = None,
+        corpus_id: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: str = "https://api.vectara.io",
+    ) -> None:
+        self.customer_id = customer_id or os.environ["VECTARA_CUSTOMER_ID"]
+        self.corpus_id = int(corpus_id or os.environ["VECTARA_CORPUS_ID"])
+        self.api_key = api_key or os.environ["VECTARA_API_KEY"]
+        self.base_url = base_url.rstrip("/")
+
+    def _headers(self) -> Dict[str, str]:
+        return {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "customer-id": str(self.customer_id),
+            "x-api-key": self.api_key,
+        }
+
+    def index_document(
+        self,
+        document_id: str,
+        title: str,
+        sections: List[Dict[str, str]],
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Indexes a structured document with sections and filterable metadata into Vectara."""
+        payload = {
+            "customerId": int(self.customer_id),
+            "corpusId": self.corpus_id,
+            "document": {
+                "documentId": document_id,
+                "title": title,
+                "metadataJson": json.dumps(metadata or {}),
+                "section": [
+                    {"title": sec.get("title", ""), "text": sec["text"]}
+                    for sec in sections
+                ],
+            },
+        }
+        response = requests.post(
+            f"{self.base_url}/v1/index",
+            headers=self._headers(),
+            json=payload,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()
+```
+
+### Implementing Multi-Turn Stateful Conversations
+
+When querying Vectara with `chat: {"store": True}`, the first request in a conversation returns a `chatId` and `turnId`. On every subsequent question from the user, passing that `chatId` inside the `chat` configuration instructs Vectara to load the conversation history, rewrite follow-up pronouns and references, retrieve the most relevant chunks, and generate a context-aware answer.
+
+Let's add the `ask()` method to `VectaraChatClient`:
+
+```python
+    def ask(
+        self,
+        question: str,
+        chat_id: Optional[str] = None,
+        lexical_interpolation: float = 0.025,
+        metadata_filter: str = "",
+        num_results: int = 5,
+        summary_prompt_name: str = "vectara-summary-ext-v1.3.0",
+        response_lang: str = "eng",
+    ) -> ChatTurnResult:
+        """Sends a user message to Vectara Chat and returns the grounded answer, citations, and chat_id."""
+        chat_config: Dict[str, Any] = {"store": True}
+        if chat_id:
+            chat_config["conversationId"] = chat_id
+
+        corpus_key: Dict[str, Any] = {
+            "customerId": int(self.customer_id),
+            "corpusId": self.corpus_id,
+            "lexicalInterpolationConfig": {"lambda": lexical_interpolation},
+        }
+        if metadata_filter:
+            corpus_key["metadataFilter"] = metadata_filter
+
+        payload = {
+            "query": [
+                {
+                    "query": question,
+                    "start": 0,
+                    "numResults": num_results,
+                    "contextConfig": {
+                        "sentencesBefore": 2,
+                        "sentencesAfter": 2,
+                        "startTag": "[",
+                        "endTag": "]",
+                    },
+                    "corpusKey": [corpus_key],
+                    "rerankingConfig": {
+                        "rerankerId": 272725718,  # Maximal Marginal Relevance (MMR) / Slingshot reranker
+                        "mmrConfig": {"diversityBias": 0.2},
+                    },
+                    "summary": [
+                        {
+                            "maxSummarizedResults": num_results,
+                            "responseLang": response_lang,
+                            "summarizerPromptName": summary_prompt_name,
+                            "chat": chat_config,
+                            "factualConsistencyScore": True,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        response = requests.post(
+            f"{self.base_url}/v1/query",
+            headers=self._headers(),
+            json=payload,
+            timeout=30,
+        )
+        response.raise_for_status()
+        data = response.json()
+
+        response_set = data["responseSet"][0]
+        summary_block = response_set["summary"][0]
+        raw_results = response_set.get("response", [])
+        documents = response_set.get("document", [])
+
+        citations = []
+        for item in raw_results[:num_results]:
+            doc_idx = item.get("documentIndex", 0)
+            doc_info = documents[doc_idx] if doc_idx < len(documents) else {}
+            citations.append(
+                {
+                    "text": item.get("text", ""),
+                    "score": item.get("score", 0.0),
+                    "document_id": doc_info.get("id", ""),
+                }
+            )
+
+        return ChatTurnResult(
+            chat_id=summary_block.get("chat", {}).get("conversationId", chat_id or str(uuid.uuid4())),
+            turn_id=summary_block.get("chat", {}).get("turnId", ""),
+            answer=summary_block.get("text", ""),
+            factual_consistency_score=summary_block.get("factualConsistency", {}).get("score"),
+            citations=citations,
+        )
+```
+
+---
+
+## Enhancing Chatbot Intelligence
+
+A great hackathon or production chatbot does more than basic vector similarity search. In this section, I will show you how to tune Vectara Chat for maximum precision and trustworthiness.
+
+### Hybrid Search Tuning with Lexical Interpolation
+
+Pure semantic search excels at understanding intent and synonyms, but exact keyword matching is critical when users ask about specific API flags, model identifiers, or legal clause numbers. Vectara's `lexicalInterpolationConfig.lambda` parameter controls this blend:
+
+- `lambda = 0.0`: 100% neural semantic search using Vectara's Boomerang embeddings.
+- `lambda = 0.025` to `0.1`: Ideal hybrid sweet spot for technical documentation and customer support chatbots.
+- `lambda = 1.0`: 100% lexical keyword matching.
+
+### Diversity Reranking and Metadata Filtering
+
+When several chunks from the same paragraph match a query, standard top-$k$ retrieval can fill the context window with redundant text. Enabling Maximal Marginal Relevance (`mmrConfig.diversityBias = 0.2`) or Vectara's multilingual reranker ensures that the summarizer sees diverse, complementary facts across your corpus.
+
+You can also scope queries dynamically using filter expressions:
+
+```python
+result = client.ask(
+    question="How do I rotate my webhook signing secret?",
+    chat_id=current_chat_id,
+    lexical_interpolation=0.05,
+    metadata_filter="doc.category = 'security' AND doc.version = 'v2'",
+)
+```
+
+### Guarding Against Hallucinations with Factual Consistency Score (FCS)
+
+By setting `"factualConsistencyScore": True` in the summary request, Vectara evaluates the generated chat response against the retrieved source snippets using its Hallucination Evaluation Model and returns a calibrated probability between `0.0` and `1.0`. You can use this score in your application UI to warn users or trigger a fallback whenever confidence drops below a threshold:
+
+```python
+def format_verified_response(turn: ChatTurnResult, threshold: float = 0.75) -> str:
+    score = turn.factual_consistency_score
+    badge = (
+        f"Verified (FCS: {score:.2f})"
+        if score is not None and score >= threshold
+        else f"Low Grounding Confidence (FCS: {score:.2f})" if score is not None else "Unscored"
+    )
+    return f"{turn.answer}\n\n[{badge} | Conversation ID: {turn.chat_id}]"
+```
+
+### Managing and Auditing Conversation History via the Chat API
+
+To list previous conversations or delete a user's chat session for privacy compliance, add a management method to `VectaraChatClient`:
+
+```python
+    def delete_conversation(self, chat_id: str) -> Dict[str, Any]:
+        """Deletes a stored conversation and all of its turns from Vectara."""
+        payload = {
+            "customerId": int(self.customer_id),
+            "conversationId": [chat_id],
+        }
+        response = requests.post(
+            f"{self.base_url}/v1/delete-conversations",
+            headers=self._headers(),
+            json=payload,
+            timeout=15,
+        )
+        response.raise_for_status()
+        return response.json()
+```
+
+---
+
+## Deploying and Testing Chatbots
+
+Once your `VectaraChatClient` is ready, you can expose it through an interactive web interface or embed Vectara's React widget directly into your frontend.
+
+### Building an Interactive Streamlit Chat UI (`app.py`)
+
+Create `app.py` to launch a stateful web chat interface that displays inline citations and the Factual Consistency Score for every turn:
+
+```python
+import streamlit as st
+from vectara_chat import VectaraChatClient
+
+st.set_page_config(page_title="Vectara Chat Assistant", page_icon="💬", layout="wide")
+st.title("💬 Grounded AI Assistant Powered by Vectara Chat")
+
+if "client" not in st.session_state:
+    st.session_state.client = VectaraChatClient()
+if "chat_id" not in st.session_state:
+    st.session_state.chat_id = None
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+with st.sidebar:
+    st.header("Retrieval Settings")
+    lambda_val = st.slider("Hybrid Lexical Weight (lambda)", 0.0, 0.25, 0.025, 0.005)
+    if st.button("Reset Conversation"):
+        st.session_state.chat_id = None
+        st.session_state.messages = []
+        st.rerun()
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input("Ask a question about your knowledge base..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        result = st.session_state.client.ask(
+            question=prompt,
+            chat_id=st.session_state.chat_id,
+            lexical_interpolation=lambda_val,
+        )
+        st.session_state.chat_id = result.chat_id
+        fcs_label = (
+            f"*(Factual Consistency Score: {result.factual_consistency_score:.2f})*"
+            if result.factual_consistency_score is not None
+            else ""
+        )
+        reply_md = f"{result.answer}\n\n{fcs_label}"
+        st.markdown(reply_md)
+        st.session_state.messages.append({"role": "assistant", "content": reply_md})
+```
+
+### Embedding the React Chatbot Component (`@vectara/react-chatbot`)
+
+If you are building a React or Next.js frontend during a hackathon, you can also drop in Vectara's official `<ReactChatbot />` component:
+
+```tsx
+import { ReactChatbot } from "@vectara/react-chatbot";
+import "@vectara/react-chatbot/dist/style.css";
+
+export function KnowledgeBaseChatWidget() {
+  return (
+    <ReactChatbot
+      customerId={process.env.NEXT_PUBLIC_VECTARA_CUSTOMER_ID!}
+      corpusIds={[process.env.NEXT_PUBLIC_VECTARA_CORPUS_ID!]}
+      apiKey={process.env.NEXT_PUBLIC_VECTARA_QUERY_API_KEY!}
+      title="Product Documentation Assistant"
+      placeholder="Ask anything about our APIs or architecture..."
+      inputSize="large"
+      isInitiallyOpen={false}
+      enableStreaming={true}
+      language="eng"
+    />
+  );
+}
+```
+
+### Writing Automated Unit Tests (`test_vectara_chat.py`)
+
+Before deploying your chatbot to Streamlit Community Cloud, Railway, or Docker, verify your conversation state management and citation parsing with `pytest`:
+
+```python
+from unittest.mock import patch, MagicMock
+from vectara_chat import VectaraChatClient
+
+
+@patch("vectara_chat.requests.post")
+def test_multi_turn_chat_preserves_conversation_id(mock_post):
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "responseSet": [
+            {
+                "response": [{"text": "Rate limit is 100 req/s.", "score": 0.94, "documentIndex": 0}],
+                "document": [{"id": "api-limits-doc"}],
+                "summary": [
+                    {
+                        "text": "The API rate limit is 100 requests per second [1].",
+                        "chat": {"conversationId": "conv-12345", "turnId": "turn-2"},
+                        "factualConsistency": {"score": 0.96},
+                    }
+                ],
+            }
+        ]
+    }
+    mock_post.return_value = mock_response
+
+    client = VectaraChatClient(customer_id="123456", corpus_id="7", api_key="zwt_test")
+    turn = client.ask("What are its rate limits?", chat_id="conv-12345")
+
+    assert turn.chat_id == "conv-12345"
+    assert turn.turn_id == "turn-2"
+    assert turn.factual_consistency_score == 0.96
+    assert len(turn.citations) == 1
+    assert turn.citations[0]["document_id"] == "api-limits-doc"
+```
+
+---
+
+## Conclusion and Tips for Hackathon Participants
+
+Congratulations! You have built a complete, context-aware conversational AI application with **Vectara Chat**, equipped with hybrid semantic-keyword retrieval, MMR diversity reranking, Factual Consistency Score verification, and both Python and React UI integrations.
+
+### High-Impact Hackathon Use Cases for Vectara Chat
+
+If you are competing in an upcoming AI hackathon on [lablab.ai](https://lablab.ai), here are several high-leverage project ideas where Vectara Chat shines:
+
+1. **Legal & Regulatory Compliance Co-Pilot**: Combine the patterns from the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) with multi-turn chat and metadata filters (`jurisdiction`, `effective_date`) so legal teams can interrogate contracts with clause-level citations and FCS verification.
+2. **Omnichannel Customer Support & Incident Triage Agent**: Build on the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) by indexing runbooks, postmortems, and ticket history, then surfacing the Factual Consistency Score so human agents immediately know when a draft reply is 100% grounded.
+3. **Cross-Lingual Healthcare or Public-Sector Navigator**: Leverage Vectara's cross-lingual retrieval to index official policy PDFs in English while allowing citizens or patients to chat naturally in Spanish, Arabic, French, or German (`responseLang`).
+
+<Quiz
+  questions={[
+    {
+      question: "Which parameter in Vectara's query payload enables storing turns and continuing a multi-turn conversation?",
+      options: [
+        "rerankingConfig.mmrConfig",
+        "summary.chat (with store: true and conversationId)",
+        "contextConfig.sentencesBefore",
+        "corpusKey.metadataFilter"
+      ],
+      answer: 1
+    },
+    {
+      question: "What does Vectara's Factual Consistency Score (FCS) measure?",
+      options: [
+        "Network latency of the query API",
+        "The number of tokens in the user prompt",
+        "How faithfully the generated summary is grounded in the retrieved source documents",
+        "The size of the indexed corpus in megabytes"
+      ],
+      answer: 2
+    },
+    {
+      question: "Which configuration blends neural semantic retrieval with exact BM25 keyword matching in Vectara?",
+      options: [
+        "lexicalInterpolationConfig.lambda",
+        "responseLang",
+        "maxSummarizedResults",
+        "startTag and endTag"
+      ],
+      answer: 0
+    }
+  ]}
+/>
