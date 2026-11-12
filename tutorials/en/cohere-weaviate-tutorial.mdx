@@ -1,0 +1,482 @@
+---
+title: "Integrating Cohere Coral and Weaviate for Advanced AI Applications"
+description: "How to set up Cohere Coral, integrate it with Weaviate, and build a simple yet powerful Flask-based application."
+image: ""
+authorUsername: "abdibrokhim"
+---
+
+
+## Introduction
+[Cohere](https://cohere.ai/) platform provides a suite of world-class `Large Language Models (LLMs)` help enterprises build powerful, secure applications that search, understand meaning and converse in text. Read more about **Cohere LLMs** in [Official documentation](https://docs.cohere.com/docs).
+
+[Weaviate](https://weaviate.io/) is an open-source vector database. It allows you to store data objects and vector embeddings from your favorite ML-models, and scale seamlessly into billions of data objects. Read more about **Weaviate** and integration with LLMs in [Official documentation](https://console.weaviate.cloud/documentation). A [Python Native Client](https://github.com/weaviate/weaviate-python-client) for easy interaction with a Weaviate instance.
+
+[Flask](https://flask.palletsprojects.com/en/3.0.x/) a lightweight and flexible Python web framework, provides the perfect platform to build and deploy web applications. Its simplicity and scalability make it an excellent choice for integrating advanced AI functionalities provided by **Cohere** and **Weaviate**. Flask Quickstart [here](https://flask.palletsprojects.com/en/3.0.x/quickstart/#).
+
+
+## Prerequisites
+
+Go to [Cohere](https://cohere.ai/) to register for an account and obtain your `API keys`. We'll need them later in the tutorial.
+
+Click on the `Try Now` button to get started.
+<Img src="https://iili.io/JCkUIl1.png" caption="Cohere Official"/>
+
+Create an account by filling in the required details.
+<Img src="https://iili.io/JCkUoiB.png" caption="Cohere Sign Up"/>
+
+Once you've created an account, you'll be redirected to the Cohere dashboard. Click on the `API Keys` tab to obtain your API key.
+<Img src="https://iili.io/JCkUnVV.png" caption="Cohere Dashboard"/>
+
+
+Go to [Weaviate](https://weaviate.io/) to register for an account and obtain your `API keys`. We'll need them later in the tutorial.
+
+Click on the `Try Now` button to get started.
+<Img src="https://iili.io/JCkiAJI.png" caption="Weaviate Official"/>
+
+Create an account by filling in the required details.
+<Img src="https://iili.io/JCkilsf.png" caption="Weaviate Sign Up"/>
+
+Once you've created an account, you'll be redirected to the Weaviate dashboard. Click on the `API Keys` tab to obtain your API key.
+<Img src="https://iili.io/JCki1f4.png" caption="Weaviate Dashboard"/>
+
+
+
+## In this tutorial...
+In this tutorial, I will show you how to harness the combined power of Cohere Coral and the Weaviate Vector Database to create sophisticated AI-driven applications. 
+**Bonus:** I'll also walk you through the basics of Weaviate, so you can get started with it right away. 
+Sit back, relax, and enjoy the tutorial!
+
+
+## Learning Objectives
+- Learn how to set up Cohere account.
+- Learn how to set up Weaviate account.
+- Quickstart with Flask web framework.
+- Learn how to integrate Weaviate with LLMs like Cohere Coral.
+- Learn how to build a simple yet powerful Flask-based application.
+- Learn how to Create your own cloud-based vector database with Weaviate.
+- Learn how to Populate it with data objects: Using an inference API and Using custom vectors.
+- Learn how to Performe searches, including: Semantic search, Sementic search with a filter and Generative search.
+
+
+## 1. Introduction to Cohere Coral
+
+### What is Cohere Coral?
+[Cohere Coral](https://cohere.com/coral) is an advanced `Natural Language Processing (NLP)` tool designed to understand and generate human-like text. It's part of Cohere's suite of AI models, known for their efficiency in processing and producing language data. API reference can be found [here](https://docs.cohere.com/docs/cochat-beta).
+
+### Capabilities of Coral
+- **Contextual Understanding**: Coral excels in grasping the nuances of human language, ensuring responses are not just accurate but contextually relevant.
+- **Language Generation**: It can generate coherent and contextually appropriate text, making it ideal for applications like content creation and dialogue systems.
+
+### Exploring Use Cases
+Coral is versatile, fitting into various scenarios:
+- **Customer Support Bots**: Enhance user experience by providing responsive and accurate support.
+- **Automated Content Generation**: Streamline the creation of articles, blogs, and marketing copy.
+
+### User Impressions and Alternatives
+Users often praise Coral for its ease of use and effectiveness in diverse scenarios. However, depending on your specific requirements, alternatives like `OpenAI's ChatGPT (GPT-4)` models might also be worth considering.
+
+
+## 2. Set Up and Installation Showcase
+
+### Create an environment
+
+Create a project folder and a `.venv` folder within:
+
+```bash
+
+mkdir cohere-weaviate-tutorial
+cd cohere-weaviate-tutorial
+
+// On MacOS/Linux
+python3 -m venv .venv
+
+// On Windows
+py -3 -m venv .venv
+```
+
+
+### Activate the environment
+Before you work on your project, activate the corresponding environment:
+
+```bash
+// On MacOS/Linux
+source .venv/bin/activate
+
+// On Windows
+.venv\Scripts\activate
+```
+
+
+### Setting Up Cohere Coral
+Within the activated environment, use the following command to install Cohere:
+
+- **Install Cohere SDK**:
+```bash
+pip install cohere
+```
+
+- **Initialize Cohere Client**: 
+  
+```python
+import cohere
+co = cohere.Client('YOUR_API_KEY')  # replace `YOUR_API_KEY` with the key you copyed earlier
+```
+
+
+## 3. Integrating Weaviate
+
+### Why Weaviate?
+[Weaviate](https://weaviate.io/) is a vector database that enables efficient semantic search. It's crucial for applications where understanding the context and content of data is more important than keyword matching.
+
+### Integrating Weaviate with Coral
+Using Weaviate alongside Cohere allows you to effectively store and search through large datasets based on semantic similarities, enhancing the application's ability to retrieve relevant information.
+
+When we query Weaviate, Weaviate will:
+<Img src="https://iili.io/JC8x9bS.png" caption="Weaviate Cohere Diagram" alt="ref: https://weaviate.io/blog/cohere-multilingual-with-weaviate"/>
+
+
+## 4. Building a Basic Application
+
+### Application Structure
+We'll create a Flask-based web application that uses Cohere Coral for processing user queries and Weaviate for semantic data retrieval.
+
+#### Flask Setup
+Within the activated environment, use the following command to install Flask:
+
+- **Install Flask application**:
+```bash
+pip install Flask
+```
+
+Set up a basic Flask application.
+
+```python
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return 'Hello World!'
+```
+
+#### Cohere Integration
+Implement Cohere Coral for query processing.
+
+```python
+@app.route('/api/query', methods=['POST'])
+def response():
+    data = request.json
+    query = data.get('query')
+    
+    response = co.embed(
+        texts=[query], 
+        model='embed-english-v3.0', 
+        input_type='search_query'
+    )
+
+    embedding = response.embeddings[0]
+```
+
+
+#### Connect to Weaviate
+
+Within the activated environment, use the following command to install Flask:
+
+- **Install Weaviate client library**:
+
+```bash
+// Python (v4)
+pip install --pre "weaviate-client==4.*"
+
+// Python (v3)
+pip install "weaviate-client==3.*"
+```
+
+#### Create a Weaviate instance. 
+Create a free sandbox instance on [Weaviate Cloud Services](https://console.weaviate.cloud/). 
+Go to [Weaviate Cloud Services](https://console.weaviate.cloud/), sing in and create a new sandbox instance.
+For more details, feel free refer to the WCS [Quickstart guide](https://weaviate.io/developers/wcs/quickstart).
+
+```python
+import weaviate
+
+auth_config = weaviate.AuthApiKey(api_key="YOUR-WEAVIATE-API-KEY")
+
+client = weaviate.Client(
+  url="YOUR-WEAVIATE-SANDBOX-URL",
+  auth_client_secret=auth_config,
+  additional_headers={
+        "X-Cohere-Api-Key": "YOUR-COHERE-API-KEY"
+    }
+)
+```
+
+
+#### Semantic Search with Weaviate
+Use Cohere embeddings for a Weaviate semantic search. Specifying `custom vectors` (embeddings) (i.e. generated outside of Weaviate).
+
+```python
+result = (
+    client.query
+    .get("Your_Class_Name", ["fields"])
+    .with_near_vector({"vector": embedding, "certainty": 0.7})
+    .with_limit(10)
+    .do()
+)
+
+```
+
+
+#### Formatting Results
+Format and return the search results.
+
+```python
+message = {'results': []}
+for d in result['data']['Get']['Your_Class_Name_Here']:
+    message['results'].append({
+        'title': d['field1'],
+        'snippet': d['field2'],
+    })
+
+resp = jsonify(message)
+resp.status_code = 200
+return resp
+```
+
+
+#### Add a Main Function
+Add a main function to run the application.
+
+```python
+if __name__ == '__main__':
+    app.run()  # Optional: You may set port and host.
+```
+
+
+#### Run the Application
+Run the application. Here is `main`: the name of the file.
+
+```bash
+flask --app main run
+```
+Go to http://127.0.0.1:5000/ to see the application in action.
+
+
+### Bonus: Let's go through the basics of Weaviate
+
+#### Create a class
+
+```python
+if client.schema.exists("Question"):
+    client.schema.delete_class("Question")
+
+class_obj = {
+    "class": "Question",
+    "vectorizer": "text2vec-cohere",
+    "moduleConfig": {
+        "text2vec-cohere": {},
+        "generative-cohere": {}
+    }
+}
+
+client.schema.create_class(class_obj)
+```
+
+#### Add objects
+We'll add objects to our Weaviate instance using a batch import process. For this tutorial we'll go with [this dataset](https://raw.githubusercontent.com/weaviate-tutorials/quickstart/main/data/jeopardy_tiny.json).
+You can also try a larger, [1K row](https://raw.githubusercontent.com/databyjp/wv_demo_uploader/main/weaviate_datasets/data/jeopardy_1k.json) version of the Jeopardy Dataset, or this tiny set of [50 wine reviews](https://raw.githubusercontent.com/databyjp/wv_demo_uploader/main/weaviate_datasets/data/winemag_tiny.csv).
+
+```python
+import requests
+
+url = 'https://raw.githubusercontent.com/weaviate-tutorials/quickstart/main/data/jeopardy_tiny.json'  # replace with your desired dataset
+resp = requests.get(url)
+
+# Load data
+data = json.loads(resp.text)
+
+# Configuring a batch process
+with client.batch(batch_size=100) as batch:
+    # Batch import all Questions
+    for i, d in enumerate(data):
+        print(f"importing question: {i+1}")
+
+        properties = {
+            "answer": d["Answer"],
+            "question": d["Question"],
+            "category": d["Category"],
+        }
+
+        client.batch.add_data_object(
+            properties,
+            "Question",
+        )
+```
+
+Next, do same thing but with a custom vector. Specify `custom vectors` (embeddings) (i.e. generated outside of Weaviate)
+
+```python
+import requests
+
+file_name = "jeopardy_tiny_with_vectors_all-OpenAI-ada-002.json"  # This file includes pre-generated vectors
+url = f'https://raw.githubusercontent.com/weaviate-tutorials/quickstart/main/data/{file_name}'
+resp = requests.get(url)
+
+# Load data
+data = json.loads(resp.text)
+
+# Configuring a batch process
+with client.batch(batch_size=100) as batch:
+    # Batch import all Questions
+    for i, d in enumerate(data):
+        print(f"importing question: {i+1}")
+
+        properties = {
+            "answer": d["Answer"],
+            "question": d["Question"],
+            "category": d["Category"],
+        }
+
+        custom_vector = d["vector"]
+        client.batch.add_data_object(
+            properties,
+            "Question",
+            vector=custom_vector  # Adding custom vector
+        )
+```
+
+
+#### Semantic Search with Weaviate
+
+##### Default Semantic search
+Let's try a similarity search. We'll use nearText search to look for quiz objects most similar to `biology`.
+
+```python
+nearText = {"concepts": ["biology"]}
+
+response = (
+    client.query
+    .get("Question", ["question", "answer", "category"])
+    .with_near_text(nearText)
+    .with_limit(2)
+    .do()
+)
+
+print(json.dumps(response, indent=4))
+```
+
+You should see the following results:
+
+```bash
+{
+    "data": {
+        "Get": {
+            "Question": [
+                {
+                    "answer": "DNA",
+                    "category": "SCIENCE",
+                    "question": "In 1953 Watson & Crick built a model of the molecular structure of this, the gene-carrying substance"
+                },
+                {
+                    "answer": "species",
+                    "category": "SCIENCE",
+                    "question": "2000 news: the Gunnison sage grouse isn't just another northern sage grouse, but a new one of this classification"
+                }
+            ]
+        }
+    }
+}
+```
+
+
+##### Semantic search with a filter
+You can add a Boolean filter to your example. For example, let's run the same search, but only look in objects that have a `category` value of `ANIMALS`.
+
+```python
+nearText = {"concepts": ["biology"]}
+
+response = (
+    client.query
+    .get("Question", ["question", "answer", "category"])
+    .with_near_text(nearText)
+    .with_where({
+        "path": ["category"],
+        "operator": "Equal",
+        "valueText": "ANIMALS"
+    })
+    .with_limit(2)
+    .do()
+)
+
+print(json.dumps(response, indent=4))
+```
+
+You should see the following results:
+
+```bash
+{
+    "data": {
+        "Get": {
+            "Question": [
+                {
+                    "answer": "the nose or snout",
+                    "category": "ANIMALS",
+                    "question": "The gavial looks very much like a crocodile except for this bodily feature"
+                },
+                {
+                    "answer": "Elephant",
+                    "category": "ANIMALS",
+                    "question": "It's the only living mammal in the order Proboseidea"
+                }
+            ]
+        }
+    }
+}
+```
+
+##### Generative search `(grouped task)`
+Next, we will use a grouped task prompt instead to combine all search results and send them to the LLM with specific prompt. We will ask the LLM to write a tweet about all of these search results.
+
+```python
+response = (
+    client.query
+    .get("Question", ["question", "answer", "category"])
+    .with_near_text({"concepts": ["biology"]})
+    .with_generate(grouped_task="Write a tweet with emojis about these facts.")
+    .with_limit(2)
+    .do()
+)
+
+print(response["data"]["Get"]["Question"][0]["_additional"]["generate"]["groupedResult"])
+```
+
+```bash
+🧬 Did you know? In 1953, Watson & Crick 🧪 built a model of the molecular structure of DNA, the gene-carrying substance! 🧬 #ScienceFacts 🐦🌿 Exciting news! In 2000, a new species 🆕 of sage grouse, the Gunnison sage grouse, was discovered. It's not just another northern sage grouse, but a unique classification! 🦆🌿 #ScienceDiscoveries
+```
+
+
+Generative search sends retrieved data from `Weaviate` to a `Large Language Model (LLM)`. This allows you to go beyond simple data retrieval, but transform the data into a more useful form, without ever leaving `Weaviate`. Learn more about [Generative Search - Cohere](https://weaviate.io/developers/weaviate/modules/reader-generator-modules/generative-cohere).
+
+
+## 5. Conclusion
+
+Congratulations on completing this tutorial where we explored the exciting integration of Cohere Coral and Weaviate Vector Database within a Flask web application. Through this journey, you have gained valuable insights and practical skills in harnessing advanced AI and database technologies for semantic understanding and data retrieval.
+
+### Key Takeaways:
+
+1. **Understanding Cohere Coral**: You've learned about Cohere Coral's powerful NLP capabilities, enabling applications to understand and generate human-like text. This knowledge equips you to apply contextual understanding and language generation in various scenarios, from chatbots to content creation.
+
+2. **Leveraging Weaviate's Power**: Weaviate's role as a vector database in handling semantic searches adds an advanced layer to data retrieval. You've seen how it efficiently stores and searches data, not just by keywords, but by understanding the context and content.
+
+3. **Flask as a Flexible Framework**: The simplicity and flexibility of Flask have been demonstrated as you've built a web application. Flask's adaptability makes it an excellent choice for integrating AI functionalities like those provided by Cohere and Weaviate.
+
+4. **Hands-On Application Building**: The step-by-step process of building a basic yet powerful application has given you a practical understanding of integrating these technologies. From setting up the environment to running the final application, you've experienced the entire development lifecycle.
+
+5. **Exploring Advanced Features**: The tutorial also introduced you to advanced concepts like custom vector generation and generative search within Weaviate. These concepts open doors to further experimentation and more sophisticated application development.
+
+Thank you for following along with this tutorial.
+
+If you have any questions, feel free to reach out to me on [LinkedIn](https://linkedin.com/in/abdibrokhim) or [Twitter](https://twitter.com/abdibrokhim). I'd love to hear from you!
+
+made with 💜 by [abdibrokhim](https://linkedin.com/in/abdibrokhim) for [lablab.ai tutorials](https://lablab.ai/t).
