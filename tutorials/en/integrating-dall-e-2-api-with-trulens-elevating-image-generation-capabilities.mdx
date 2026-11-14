@@ -1,265 +1,599 @@
 ---
-title: "Unlocking Creativity: Integrating DALL·E 2 API with TruLens for Enhanced Image Generation"
-description: "This tutorial guides you through building an innovative image generation and analysis application using the powerful DALL·E 2 API and TruLens"
+title: "Integrating DALL·E 2 API with TruLens: Elevating Image Generation Capabilities"
+description: "Learn how to build a DALL·E 2 image generation app and use TruLens Evals to measure, compare, and improve prompt-to-image results."
 image: 'https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/ae1f2033-987e-4969-4def-83a01506ea00/full'
 authorUsername: "Youknowsthevibes"
 ---
 
-# Unlocking Creativity: Integrating DALL·E 2 API with TruLens
+# Integrating DALL·E 2 API with TruLens: Elevating Image Generation Capabilities
 
-Welcome to this comprehensive tutorial on integrating DALL·E 2 API with TruLens. In this guide, we'll explore the process step by step, from understanding the fundamentals to building a functional application.
+In this tutorial I will show you how to combine two powerful tools: the [DALL·E 2 API](https://platform.openai.com/docs/guides/images/usage?context=node) for generating images from text prompts, and [TruLens](https://lablab.ai/tech/truera/trulens) for evaluating and improving the quality of your AI application. We will build a small Streamlit app that generates an image with [DALL·E 2](https://lablab.ai/tech/openai/dall-e-2), captions the generated image with a vision-language model, and records the prompt-to-caption quality inside TruLens.
 
-## Introduction
+The goal is not just to generate a pretty image. The goal is to create a feedback loop: generate, evaluate, refine, and generate again. That loop is exactly what makes an AI prototype feel like a real product.
 
-DALL·E 2 is an advanced AI model capable of generating images from textual descriptions, while TruLens provides enhanced analysis and insights into these generated images.
+<Img src="https://hotpot.ai/images/site/blog/dall_e_2.webp" alt="DALL·E 2 generated artwork" caption="DALL·E 2 can turn natural-language prompts into detailed images." />
 
-![DALL·E 2 Image](https://hotpot.ai/images/site/blog/dall_e_2.webp)
+## Why DALL·E 2 and TruLens Work Well Together
 
-### How DALL·E 2 Works
+DALL·E 2 is an image generation model from OpenAI. You give it a text prompt, and it returns one or more images that match the prompt. The API is simple, but building a reliable application around it is not always simple. Prompts can be ambiguous, outputs can drift from the original intent, and it is hard to know whether a prompt change actually improved the result.
 
-DALL·E 2 works by interpreting textual prompts and generating corresponding images. Its sophisticated algorithms can produce images resembling human-created drawings, paintings, and photographs.
+TruLens helps with that second problem. TruLens Evals gives you instrumentation and feedback functions for LLM-based applications. You can wrap your application, record inputs and outputs, and attach feedback functions that score quality. For a DALL·E 2 app, we can use TruLens to evaluate the relationship between the original prompt and a caption of the generated image. If the caption does not match the prompt, that is a strong signal that the image may not match the prompt either.
 
-## Major Sections Overview
+This is a practical pattern for hackathons because it gives you a measurable improvement loop without requiring a full research pipeline.
 
-Let's walk through the major sections of the codebase:
+### What You Will Build
 
-1. **Data Processing**: This section handles the preprocessing of input data, including text prompts and generated images.
+By the end of this tutorial, you will have:
 
-2. **Model Integration**: Here, we integrate the DALL·E 2 API into our application, allowing us to generate images from textual descriptions.
+- A Streamlit interface for entering image prompts.
+- A DALL·E 2 API call that generates a 1024×1024 image.
+- A Hugging Face image-captioning step that describes the generated image.
+- TruLens feedback functions that score prompt-caption alignment.
+- A TruLens dashboard where you can compare runs and inspect feedback scores.
+- A prompt-refinement workflow you can use to improve DALL·E 2 outputs.
 
-3. **TruLens Integration**: We incorporate TruLens for enhanced image analysis, providing additional insights into the generated images.
+### Prerequisites
 
-4. **User Interface Implementation**: The user interface is built using Streamlit, enabling users to interact with the application seamlessly.
+You will need:
 
-## Function and Class Descriptions
+- Python 3.9 or newer.
+- An OpenAI API key with access to DALL·E 2.
+- A Hugging Face access token for the image-captioning inference endpoint.
+- Basic familiarity with Python and Streamlit.
 
-### `preprocess_data(text_prompt)`
+## Understanding the DALL·E 2 API
 
-This function preprocesses the input text prompt, ensuring it is formatted correctly for the DALL·E 2 API.
+The DALL·E 2 API is part of the OpenAI Images API. In modern OpenAI Python SDK versions, you call it through the `images.generate` method. A minimal request looks like this:
 
-### `generate_image(text_prompt)`
+```python
+from openai import OpenAI
 
-This function interacts with the DALL·E 2 API to generate an image based on the provided text prompt.
+client = OpenAI()
 
-### `analyze_image(image)`
+response = client.images.generate(
+    model="dall-e-2",
+    prompt="A cozy reading nook with warm sunlight and plants",
+    size="1024x1024",
+    n=1,
+)
 
-Using TruLens, this function analyzes the generated image, providing insights such as image quality, content accuracy, and style consistency.
-
-### `display_results(image, analysis)`
-
-This function displays the generated image along with the analysis results to the user via the Streamlit interface.
-
-## Step-by-Step Instructions
-
-### Step 1: Clone the Repository
-
-Clone the repository containing the Streamlit app to your local machine.
-
-```bash
-git clone https://github.com/feliciien/integrating-dall-e-2-api-with-trulens-elevating-image-generation-capabilities
-cd dall-e
+image_url = response.data[0].url
+print(image_url)
 ```
 
-### Step 2: Create and Activate a Virtual Environment
+The response contains a URL to the generated image. DALL·E 2 supports several image sizes, including `256x256`, `512x512`, and `1024x1024`. For most demos, `1024x1024` is a good default because it gives enough detail for a portfolio or hackathon presentation.
 
-Create a virtual environment to isolate the dependencies for the app.
+### Important DALL·E 2 API Details
+
+- Use `model="dall-e-2"` explicitly so your app does not accidentally switch to another image model.
+- Keep prompts descriptive but focused. DALL·E 2 responds well to subject, style, lighting, composition, and mood.
+- Generated image URLs are temporary. If you need to keep an image, download it and store it yourself.
+- The API returns image URLs by default. You can also request base64 data with `response_format="b64_json"` if your app needs to avoid external URLs.
+
+### A Better Prompt Template
+
+A useful prompt template for DALL·E 2 is:
+
+```text
+[subject] + [environment] + [lighting] + [style] + [composition] + [quality details]
+```
+
+For example:
+
+```text
+A friendly robot barista in a small futuristic coffee shop, warm morning light,
+cinematic composition, soft shadows, highly detailed digital illustration
+```
+
+This structure gives the model enough constraints to produce a coherent image while still leaving room for creativity.
+
+## Understanding TruLens Evals
+
+TruLens Evals is designed for evaluating LLM applications. It records inputs, outputs, and metadata, then applies feedback functions to score quality. Common feedback functions include groundedness, relevance, language match, and toxicity. You can also write custom feedback functions.
+
+For image generation, we cannot directly score pixels with TruLens out of the box. Instead, we use a bridge: we caption the generated image with a vision-language model, then evaluate the caption against the original prompt. This gives us a text-based proxy for prompt adherence.
+
+The workflow looks like this:
+
+1. User enters a prompt.
+2. DALL·E 2 generates an image.
+3. A vision-language model captions the image.
+4. TruLens records the prompt and caption.
+5. TruLens feedback functions score the prompt-caption relationship.
+6. The developer inspects the scores and refines the prompt if needed.
+
+This is not a perfect replacement for human evaluation, but it is a fast and useful signal during development.
+
+## Step-by-Step Guide: Integrating DALL·E 2 with TruLens
+
+In this section I will show you how to build the complete application. We will create a project folder, install dependencies, configure secrets, write the Streamlit app, and run the TruLens dashboard.
+
+### Step 1: Create the Project Structure
+
+Create a new folder and move into it:
 
 ```bash
-python3.8 -m venv venv
+mkdir dalle2-trulens-demo
+cd dalle2-trulens-demo
+```
+
+Create the following files:
+
+```text
+dalle2-trulens-demo/
+├── app.py
+├── requirements.txt
+└── .streamlit/
+    └── secrets.toml
+```
+
+### Step 2: Create a Virtual Environment
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv venv
 source venv/bin/activate
+```
+
+On Windows, use:
+
+```bash
+venv\Scripts\activate
 ```
 
 ### Step 3: Install Dependencies
 
-Install the required Python dependencies from the `requirements.txt` file.
+Create `requirements.txt` with the following content:
+
+```text
+streamlit>=1.31.0
+openai>=1.12.0
+trulens-eval>=0.28.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+```
+
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 4: Integrate TruLens Evals
+### Step 4: Configure API Keys
 
-Implement TruLens Evals to enhance the DALL-E 2 output. Follow TruLens documentation [here](https://colab.research.google.com/drive/1n77IGrPDO2XpeIVo_LQW0gY78enV-tY9?usp=sharing#scrollTo=Osch8gN27v1s) or integration guide for specific instructions.
-
-```bash
-import sys
-!{sys.executable} -m pip install trulens
-!{sys.executable} -m pip install torchvision
-!{sys.executable} -m pip install matplotlib
-```
-
-### Step 5: Create and Activate a Conda Environment for DALL-E
-
-Create a Conda environment named "dall-e" to isolate the dependencies for the app.
-
-```bash
-conda create -n dall-e
-```
-
-### Step 6: Activate the "dall-e" Environment
-
-Activate the "dall-e" environment using the following command:
-
-```bash
-conda activate dall-e
-```
-
-### Step 7: Install Necessary Libraries
-
-Install the necessary libraries using pip:
-
-```bash
-pip install streamlit langchain trulens-eval openai
-```
-
-### Step 8: Set Up Streamlit Secrets
-
-To incorporate your OpenAI API key and HuggingFace Access Token into Streamlit secrets, follow these steps:
-
-1. Create a `.streamlit/secrets.toml` file within your project directory:
-
-```bash
-touch .streamlit/secrets.toml
-```
-
-### Configure API Keys
-
-To configure your API keys for OpenAI and HuggingFace, follow these steps:
-
-1. Create a `.streamlit/secrets.toml` file in your project directory.
-
-2. Add the following lines to the file, replacing `"YOUR_API_KEY"` and `"YOUR_ACCESS_TOKEN"` with your respective keys:
+Create `.streamlit/secrets.toml`:
 
 ```toml
-OPENAI_API_KEY = "YOUR_API_KEY"
-HUGGINGFACE_API_KEY = "YOUR_ACCESS_TOKEN"
+OPENAI_API_KEY = "sk-your-openai-api-key"
+HUGGINGFACE_API_KEY = "hf_your-hugging-face-token"
 ```
 
-### Step 9: Run the Streamlit App
+If you prefer environment variables, you can also create a `.env` file:
 
-Run the Streamlit app using the `streamlit` command.
-
-```bash
-streamlit run main.py
+```text
+OPENAI_API_KEY=sk-your-openai-api-key
+HUGGINGFACE_API_KEY=hf_your-hugging-face-token
 ```
 
-### Step 10: Access the App
+The application below reads from Streamlit secrets first and falls back to environment variables.
 
-Access the Streamlit app in your web browser by navigating to the URL provided by Streamlit, typically [http://localhost:8501](http://localhost:8501).
+### Step 5: Write the Complete Streamlit Application
 
-### Using the DALL-E Application
-
-1. **Navigate to the Text-to-Image Feature**
-
-   Go to the sidebar and select the "Text to Image" option.
-
-   ![Text to Image Sidebar](https://i.ibb.co/60vMbLh/Capture-d-e-cran-2024-02-12-a-21-44-52.png)
-
-2. **Enter Your Prompt**
-
-   Once on the "Text to Image" page, enter your prompt. For example, you can input "beautiful pitbull".
-
-   ![Example Prompt](https://i.ibb.co/6ZhjqSb/prompt.png)
-
-3. **Click on Submit**
-
-   After entering your prompt, click on the "Submit" button.
-
-4. **View the Result**
-
-   You will receive the resulting image based on your prompt.
-
-   ![Resulting Image](https://i.ibb.co/BjBKMZH/result-dog.png)
-
-5. **View Result in Editor**
-
-   Additionally, you can view the result in the editor, which will display the output of Truelens.
-
-   ![Truelens Result in Editor](https://i.ibb.co/TgJnPkV/truelens-result-on-terminal.png)
-
-## Step 11: explanation of the Main Application Code
-
-This code integrates the DALL·E 2 API with TruLens and defines the functionality for generating images and analyzing them.
-
-### `main.py` Code Explanation:
+Create `app.py` and paste the following complete code:
 
 ```python
-import streamlit as st
-from src.page1 import page1
-from src.page2 import page2
-from src.page3 import page3
-from src.page4 import page4
-from trulens_eval import TruBasicApp, Feedback, Huggingface
-import openai
+import json
 import os
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
+import requests
+import streamlit as st
+from dotenv import load_dotenv
+from openai import OpenAI
+from trulens_eval import Feedback, Huggingface, Tru, TruBasicApp
+
 load_dotenv()
 
-# Initialize HuggingFace client
-huggingface_client = Huggingface(api_key=os.getenv("HUGGINGFACE_API_KEY"))
+st.set_page_config(
+    page_title="DALL·E 2 + TruLens",
+    page_icon="🎨",
+    layout="wide",
+)
 
-# Define feedback function for language matching
-f_langmatch = Feedback(huggingface_client.language_match).on_input_output()
+OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY", os.getenv("OPENAI_API_KEY"))
+HUGGINGFACE_API_KEY = st.secrets.get(
+    "HUGGINGFACE_API_KEY", os.getenv("HUGGINGFACE_API_KEY")
+)
 
-# Define the function for the text-to-text application using OpenAI
-def gpt35_turbo(prompt):
-    # Implement your OpenAI text-to-text application here
-    return "Placeholder response from OpenAI"
+if not OPENAI_API_KEY:
+    st.error(
+        "Missing OPENAI_API_KEY. Add it to .streamlit/secrets.toml or your environment."
+    )
+    st.stop()
 
-# Define the TruBasicApp with the HuggingFace client and language matching feedback
-gpt35_turbo_recorder = TruBasicApp(gpt35_turbo, app_id="gpt-3.5-turbo", feedbacks=[f_langmatch])
+if not HUGGINGFACE_API_KEY:
+    st.error(
+        "Missing HUGGINGFACE_API_KEY. Add it to .streamlit/secrets.toml or your environment."
+    )
+    st.stop()
 
-# Function to generate image using OpenAI API
-def generate_image(prompt):
-    # Make request to OpenAI API to generate image
-    response = openai.Completion.create(
-        engine="davinci-002",
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+HF_CAPTION_MODEL_URL = (
+    "https://api-inference.huggingface.co/models/"
+    "Salesforce/blip-image-captioning-large"
+)
+
+
+def generate_dalle_image(prompt: str, size: str = "1024x1024") -> str:
+    """Generate an image with DALL·E 2 and return its temporary URL."""
+    response = client.images.generate(
+        model="dall-e-2",
         prompt=prompt,
-        max_tokens=50
+        size=size,
+        n=1,
+    )
+    return response.data[0].url
+
+
+def caption_image_bytes(image_bytes: bytes) -> str:
+    """Caption an image with a Hugging Face image-to-text model."""
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
+    response = requests.post(
+        HF_CAPTION_MODEL_URL,
+        headers=headers,
+        data=image_bytes,
+        timeout=120,
+    )
+    response.raise_for_status()
+    payload = response.json()
+
+    if isinstance(payload, list) and payload:
+        return payload[0].get("generated_text", "")
+
+    if isinstance(payload, dict):
+        return payload.get("generated_text", str(payload))
+
+    return str(payload)
+
+
+def generate_and_caption(prompt: str) -> str:
+    """
+    Generate a DALL·E 2 image, caption it, and return a JSON string.
+
+    Returning JSON keeps both the image URL and the caption together while
+    still giving TruLens a text output to record and evaluate.
+    """
+    image_url = generate_dalle_image(prompt)
+    image_response = requests.get(image_url, timeout=120)
+    image_response.raise_for_status()
+    caption = caption_image_bytes(image_response.content)
+
+    return json.dumps(
+        {
+            "image_url": image_url,
+            "caption": caption,
+        }
     )
 
-    # Check if request was successful
-    if response and response.status == 200:
-        # Extract the generated image URL from the response
-        image_url = response.choices[0].raw['media'][0]['url']
-        # Display the generated image
-        st.image(image_url, caption="Generated Image from OpenAI API", use_column_width=True)
+
+def prompt_caption_relevance(input_prompt: str, output_json: str) -> float:
+    """
+    A simple custom feedback function.
+
+    It measures how many words from the prompt appear in the generated image
+    caption. This is intentionally lightweight and easy to understand. For a
+    production app, you could replace it with an LLM-based relevance judge.
+    """
+    try:
+        data = json.loads(output_json)
+        caption = data.get("caption", "")
+    except json.JSONDecodeError:
+        caption = output_json
+
+    prompt_words = {
+        word.strip(".,!?;:()[]{}'\"").lower()
+        for word in input_prompt.split()
+        if word.strip(".,!?;:()[]{}'\"")
+    }
+    caption_words = {
+        word.strip(".,!?;:()[]{}'\"").lower()
+        for word in caption.split()
+        if word.strip(".,!?;:()[]{}'\"")
+    }
+
+    if not prompt_words:
+        return 0.0
+
+    overlap = len(prompt_words.intersection(caption_words)) / len(prompt_words)
+    return float(overlap)
+
+
+huggingface_client = Huggingface(api_key=HUGGINGFACE_API_KEY)
+
+f_lang_match = Feedback(huggingface_client.language_match).on_input_output()
+
+f_prompt_caption_relevance = Feedback(
+    prompt_caption_relevance,
+    name="Prompt-Caption Relevance",
+).on_input_output()
+
+tru_app = TruBasicApp(
+    generate_and_caption,
+    app_id="dalle2_trulens_demo",
+    feedbacks=[f_lang_match, f_prompt_caption_relevance],
+)
+
+
+def run_tru_app(prompt: str) -> str:
+    """Run the wrapped app inside a TruLens recording context."""
+    with tru_app as recording:
+        result_json = tru_app.app(prompt)
+    return result_json
+
+
+st.title("DALL·E 2 + TruLens")
+st.caption(
+    "Generate an image, caption it, and evaluate prompt adherence with TruLens."
+)
+
+with st.sidebar:
+    st.header("Settings")
+    image_size = st.selectbox(
+        "Image size",
+        options=["1024x1024", "512x512", "256x256"],
+        index=0,
+    )
+    st.markdown("---")
+    st.markdown(
+        "Run the TruLens dashboard in a separate terminal:\n\n"
+        "```bash\n"
+        "python -c \"from trulens_eval import Tru; Tru().run_dashboard()\"\n"
+        "```"
+    )
+
+prompt = st.text_area(
+    "Describe the image you want to generate",
+    value=(
+        "A friendly robot barista in a small futuristic coffee shop, "
+        "warm morning light, cinematic composition, highly detailed illustration"
+    ),
+    height=120,
+)
+
+col1, col2 = st.columns([1, 1])
+
+with col1:
+    generate_clicked = st.button("Generate and evaluate", type="primary")
+
+with col2:
+    st.write("")
+
+if generate_clicked:
+    if not prompt.strip():
+        st.warning("Please enter a prompt first.")
     else:
-        st.error("Error occurred while generating image.")
+        with st.spinner("Generating image with DALL·E 2..."):
+            try:
+                result_json = run_tru_app(prompt)
+                result = json.loads(result_json)
 
-# Define a function to integrate Truelens functionality into your Streamlit app
-def truelens_functionality():
-    st.header("Truelens Functionality")
+                st.subheader("Generated Image")
+                st.image(
+                    result["image_url"],
+                    caption=result["caption"],
+                    use_column_width=True,
+                )
 
-    # Example data to analyze
-    data = "cat"
+                st.subheader("Image Caption")
+                st.write(result["caption"])
 
-    # Perform analysis using Truelens
-    result = gpt35_turbo_recorder.app(data)  # Use the app method from the TruBasicApp object
+                st.subheader("TruLens Recording")
+                st.success(
+                    "This run was recorded in TruLens. Open the dashboard to "
+                    "inspect feedback scores and compare prompts."
+                )
 
-    # Display the result
-    st.write("Truelens analysis result:")
-    st.write(result)
+                st.info(
+                    "If the caption does not match your prompt, refine the prompt "
+                    "with more concrete subject, style, lighting, and composition "
+                    "details, then run it again."
+                )
 
-# Define the pages dictionary with the added Truelens functionality
-pages = {
-    "Entry point": page1,
-    "Text to image": page2,
-    "Image variation": page3,
-    "Image edit": page4,
-    "Truelens Functionality": truelens_functionality
-}
+            except Exception as exc:
+                st.error(f"Something went wrong: {exc}")
+```
 
-# Create the selectbox in the sidebar
-page = st.sidebar.selectbox("Select a page", list(pages.keys()))
+### Step 6: Run the Streamlit App
 
-# Display the selected page
-pages[page]()
+Start the app:
+
+```bash
+streamlit run app.py
+```
+
+Open the URL shown in your terminal, usually:
+
+```text
+http://localhost:8501
+```
+
+### Step 7: Run the TruLens Dashboard
+
+In a separate terminal, start the TruLens dashboard:
+
+```bash
+python -c "from trulens_eval import Tru; Tru().run_dashboard()"
+```
+
+The dashboard lets you inspect recorded runs, inputs, outputs, and feedback scores. This is where the evaluation loop becomes useful. You can compare a weak prompt with a refined prompt and see whether the prompt-caption relevance score improves.
+
+## How the Application Works
+
+Let's walk through the important parts of the code.
+
+### `generate_dalle_image(prompt, size)`
+
+This function calls the DALL·E 2 API:
+
+```python
+response = client.images.generate(
+    model="dall-e-2",
+    prompt=prompt,
+    size=size,
+    n=1,
+)
+return response.data[0].url
+```
+
+It returns the temporary image URL. The rest of the app downloads the image bytes so the captioning model can analyze the actual image.
+
+### `caption_image_bytes(image_bytes)`
+
+This function sends the image bytes to a Hugging Face image-to-text model. The model returns a short caption such as:
+
+```text
+a robot standing in a coffee shop
+```
+
+That caption becomes the text representation of the generated image.
+
+### `generate_and_caption(prompt)`
+
+This is the function wrapped by TruLens. It performs the full pipeline:
+
+1. Generate the image with DALL·E 2.
+2. Download the image.
+3. Caption the image.
+4. Return a JSON string containing both the image URL and the caption.
+
+Returning JSON is a practical choice because TruLens records text outputs. We keep the image URL for the Streamlit UI and the caption for evaluation.
+
+### `prompt_caption_relevance(input_prompt, output_json)`
+
+This custom feedback function compares the original prompt with the generated caption. It is intentionally simple: it measures word overlap. That makes it easy to understand and fast to run.
+
+In a production system, you could replace this with an LLM-based judge that asks:
+
+```text
+Does this caption accurately describe an image that would satisfy the original prompt?
+```
+
+For a hackathon, the simple version is often enough to demonstrate the evaluation loop.
+
+### `TruBasicApp`
+
+`TruBasicApp` wraps our pipeline and records each run. The `feedbacks` argument attaches the language-match feedback and our custom prompt-caption relevance feedback. When we call `run_tru_app(prompt)`, TruLens records the input, output, and feedback scores.
+
+## Using TruLens Evals to Improve DALL·E 2 Output
+
+Now let's look at the practical improvement loop. This is the part I recommend showing in your hackathon demo.
+
+### Step 1: Start with a Vague Prompt
+
+Try a prompt like:
+
+```text
+a dog
+```
+
+DALL·E 2 will generate an image, but the result may be generic. The caption might be something like:
+
+```text
+a dog sitting on the grass
+```
+
+The prompt-caption relevance may be high because the word "dog" appears, but the image may not match the style or mood you wanted.
+
+### Step 2: Add Concrete Details
+
+Refine the prompt:
+
+```text
+a golden retriever puppy sitting in a sunlit meadow, soft morning light,
+shallow depth of field, warm colors, professional pet photography
+```
+
+Now the caption is more likely to include details such as "dog", "grass", "sunlight", or "meadow". The relevance score becomes more meaningful because the prompt contains more evaluable concepts.
+
+### Step 3: Compare Runs in TruLens
+
+Run both prompts and open the TruLens dashboard. Compare:
+
+- The original prompt.
+- The generated caption.
+- The language-match score.
+- The prompt-caption relevance score.
+
+If the refined prompt scores higher, you have evidence that the added details improved prompt adherence. If it scores lower, inspect the caption to understand why. Maybe the model focused on the wrong subject, or maybe the captioning model missed an important detail.
+
+### Step 4: Iterate
+
+Use the feedback to adjust the prompt. Good refinements usually add:
+
+- A clear subject.
+- A specific environment.
+- Lighting details.
+- Style or medium.
+- Composition or camera angle.
+- Quality descriptors.
+
+This loop is simple, but it demonstrates a real evaluation-driven workflow.
+
+## Real-World App Ideas Using DALL·E 2 and TruLens
+
+Here are a few app ideas you can build for a hackathon. Each one benefits from TruLens because it gives you a way to measure whether prompt changes are actually improving the output.
+
+### 1. Product Mockup Generator
+
+A user enters a product idea, and the app generates a mockup image. TruLens evaluates whether the caption matches the product description. This helps you catch cases where DALL·E 2 generated a beautiful image that does not represent the product.
+
+### 2. Children's Book Illustrator
+
+A user enters a scene from a story, and the app generates an illustration. TruLens tracks prompt-caption alignment so you can keep characters and settings consistent across pages. You can extend the feedback function to check for character names, colors, and locations.
+
+### 3. Marketing Asset Generator
+
+A marketing team enters a campaign concept, and the app generates social media visuals. TruLens records each run so the team can compare prompts and choose the version that best matches the campaign brief.
+
+### 4. Interior Design Mood Board
+
+A user describes a room style, and the app generates mood-board images. TruLens helps evaluate whether the generated image caption includes the requested style, materials, and lighting.
+
+### 5. Game Asset Concept Art
+
+A game designer enters a character or environment description. TruLens evaluates prompt adherence and helps the designer iterate quickly on concept art.
+
+## Tips for Hackathon Participants
+
+Here are a few practical tips if you are building with DALL·E 2 and TruLens during a hackathon.
+
+### Keep the Evaluation Loop Small
+
+You do not need a perfect evaluation system. A simple feedback function that compares the prompt with a generated caption is enough to demonstrate the value of TruLens. Focus on showing the loop: generate, evaluate, refine, compare.
+
+### Use Caching During Development
+
+DALL·E 2 calls cost money and take time. During development, cache generated image URLs or save images locally so you do not regenerate the same prompt repeatedly. Streamlit's `st.cache_data` is a quick way to add caching.
+
+### Make the Demo Visual
+
+Show the prompt, the generated image, the caption, and the TruLens feedback score side by side. Judges and viewers understand the value immediately when they can see the before-and-after improvement.
+
+### Be Honest About the Proxy Metric
+
+Caption-based evaluation is a proxy for image quality. It is not a perfect measure of aesthetics or prompt adherence. Explain that clearly in your demo. Then explain how you would improve it with a stronger vision-language judge or human evaluation.
+
+### Add a Prompt Refinement Step
+
+If you have time, add a button that asks an LLM to rewrite the user's prompt with more detail. Then run both the original and refined prompts through the same TruLens evaluation pipeline. This creates a compelling demo of automated prompt optimization.
 
 ## Conclusion
 
-by  integrating DALL·E 2 API with TruLens, we've created a powerful tool for generating and analyzing images from textual descriptions. We hope this tutorial has provided you with valuable insights and practical knowledge for your projects.
+In this tutorial I showed you how to integrate the [DALL·E 2 API](https://platform.openai.com/docs/guides/images/usage?context=node) with [TruLens](https://lablab.ai/tech/truera/trulens) to build an image generation app with an evaluation loop. We covered the DALL·E 2 API, built a complete Streamlit application, captioned generated images with a vision-language model, and used TruLens feedback functions to score prompt-caption alignment.
 
-Now, let's dive into the code and build something amazing!
+The key idea is simple: do not treat image generation as a one-shot API call. Treat it as a loop. Generate an image, evaluate how well it matches the prompt, refine the prompt, and compare the results. TruLens gives you the instrumentation and feedback layer to make that loop visible and repeatable.
+
+If you are building for a hackathon, start with a narrow use case, make the demo visual, and show a clear before-and-after improvement. That is often more impressive than a large but unfinished application.
+
+Now you have the foundation. Go build something creative with [DALL·E 2](https://lablab.ai/tech/openai/dall-e-2) and [TruLens](https://lablab.ai/tech/truera/trulens).
