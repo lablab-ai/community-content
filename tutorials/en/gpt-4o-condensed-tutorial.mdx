@@ -1,0 +1,430 @@
+---
+title: "GPT-4o Condensed Tutorial: Build with OpenAI's Omni Model"
+description: "A concise, hands-on guide to setting up, using, and debugging GPT-4o with Python, including text, vision, streaming, and practical application patterns."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a70589c4-15f1-41c9-dbfd-0a229e252000/full"
+authorUsername: "lablab-ai"
+---
+
+# GPT-4o Condensed Tutorial
+
+In this tutorial I will show you how to get productive with GPT-4o quickly. We will cover what GPT-4o is, how to set up a clean Python environment, how to call the model for text and image inputs, how to stream responses, and how to handle the errors you are most likely to see in production. This is a condensed guide, so the goal is to give you the essential patterns without unnecessary detours.
+
+<Img src="https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/a70589c4-15f1-41c9-dbfd-0a229e252000/full" alt="GPT-4o condensed tutorial cover" caption="GPT-4o brings fast multimodal reasoning to text and image workflows." />
+
+## Introduction to GPT-4o
+
+GPT-4o is part of OpenAI's GPT-4 family and is designed to be a fast, multimodal model for text and image inputs. In practice, that means you can use one model family for chat, summarization, extraction, image understanding, and tool-calling workflows. For audio-heavy products, you can compose GPT-4o with dedicated speech-to-text and text-to-speech endpoints, which keeps the architecture simple and modular.
+
+### Why GPT-4o matters
+
+- **Multimodal understanding**: GPT-4o can reason over text and images in the same conversation.
+- **Low latency**: It is a strong fit for interactive chat and assistant experiences.
+- **Strong instruction following**: It works well for structured outputs, summaries, and tool use.
+- **Cost-effective design**: You can tune `max_tokens`, temperature, and streaming to control cost and responsiveness.
+
+### What we will build
+
+This time I want to show you a small set of reusable Python patterns:
+
+- A basic chat completion call.
+- A streaming response loop.
+- An image-understanding request.
+- A JSON-mode extraction example.
+- A function-calling example.
+- A retry wrapper for common API errors.
+
+## Setting Up the Environment
+
+Before writing application code, let us create a clean project and install only what we need.
+
+### Prerequisites
+
+- Python 3.10 or newer.
+- An OpenAI API key from [OpenAI API keys](https://platform.openai.com/api-keys).
+- A terminal or command prompt.
+
+### Create a project and virtual environment
+
+```bash
+mkdir gpt4o-condensed
+cd gpt4o-condensed
+python -m venv .venv
+source .venv/bin/activate
+```
+
+On Windows, activate the environment with:
+
+```bash
+.venv\Scripts\activate
+```
+
+### Install dependencies
+
+```bash
+pip install --upgrade openai python-dotenv
+```
+
+### Configure the API key
+
+Create a `.env` file in the project root:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+```
+
+Add `.env` to `.gitignore` so you never commit secrets:
+
+```bash
+.env
+.venv/
+__pycache__/
+```
+
+### Verify the installation
+
+```python
+import openai
+
+print(openai.__version__)
+```
+
+## Basic Usage of GPT-4o
+
+The OpenAI Python SDK uses a client object. Once your environment variable is loaded, you can create the client and start sending messages.
+
+### Text completion with Chat Completions
+
+```python
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a concise, helpful assistant."},
+        {"role": "user", "content": "Explain GPT-4o in two sentences."},
+    ],
+    temperature=0.3,
+    max_tokens=200,
+)
+
+print(response.choices[0].message.content)
+```
+
+### Streaming responses
+
+Streaming is useful for chat interfaces because the user sees progress immediately.
+
+```python
+stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": "Write a short product tagline for an AI note-taking app.",
+        }
+    ],
+    stream=True,
+)
+
+for chunk in stream:
+    delta = chunk.choices[0].delta.content
+    if delta:
+        print(delta, end="", flush=True)
+```
+
+### Image understanding
+
+GPT-4o can accept image URLs or base64 data URLs. The helper below converts a local image into a data URL.
+
+```python
+import base64
+from pathlib import Path
+
+
+def image_to_data_url(path: str) -> str:
+    data = Path(path).read_bytes()
+    encoded = base64.b64encode(data).decode("utf-8")
+    return f"data:image/jpeg;base64,{encoded}"
+
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "What is in this image? Be specific."},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image_to_data_url("sample.jpg")},
+                },
+            ],
+        }
+    ],
+    max_tokens=300,
+)
+
+print(response.choices[0].message.content)
+```
+
+### Structured output with JSON mode
+
+JSON mode is helpful when you need predictable fields for downstream code.
+
+```python
+response = client.chat.completions.create(
+    model="gpt-4o",
+    response_format={"type": "json_object"},
+    messages=[
+        {
+            "role": "system",
+            "content": "Return JSON with keys: title, summary, tags.",
+        },
+        {
+            "role": "user",
+            "content": "Summarize this article: OpenAI released GPT-4o, a faster multimodal model for text and image inputs.",
+        },
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+## Practical Applications
+
+Now let us look at a few practical patterns you can adapt to real products.
+
+### Application 1: Support assistant with streaming
+
+This pattern is useful for customer support, onboarding assistants, and internal help desks.
+
+```python
+def support_reply(user_message: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a friendly support agent. Ask one clarifying question if needed.",
+            },
+            {"role": "user", "content": user_message},
+        ],
+        temperature=0.2,
+        max_tokens=400,
+    )
+    return response.choices[0].message.content
+
+
+print(support_reply("I cannot connect my account to the dashboard."))
+```
+
+### Application 2: Image-based quality check
+
+This is a simple pattern for product photo review, document inspection, or visual QA.
+
+```python
+def inspect_product_image(image_path: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a QA assistant. List visible defects or say 'No visible defects'.",
+            },
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Inspect this product photo."},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": image_to_data_url(image_path)},
+                    },
+                ],
+            },
+        ],
+        max_tokens=200,
+    )
+    return response.choices[0].message.content
+
+
+print(inspect_product_image("sample.jpg"))
+```
+
+### Application 3: Meeting notes summarizer
+
+This pattern turns messy notes into decisions, action items, and owners.
+
+```python
+def summarize_notes(notes: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "system",
+                "content": "Summarize meeting notes into decisions, action items, and owners.",
+            },
+            {"role": "user", "content": notes},
+        ],
+        temperature=0.1,
+        max_tokens=500,
+    )
+    return response.choices[0].message.content
+
+
+notes = """
+The team agreed to launch the beta on June 10.
+Maya will prepare the onboarding email.
+Leo will fix the login redirect bug before Friday.
+We need a final QA pass on mobile.
+"""
+
+print(summarize_notes(notes))
+```
+
+### Application 4: Function calling with tools
+
+Function calling lets the model request structured tool calls that your application can execute.
+
+```python
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current weather for a city",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string"},
+                },
+                "required": ["city"],
+            },
+        },
+    }
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "What's the weather in Berlin?"},
+    ],
+    tools=tools,
+    tool_choice="auto",
+)
+
+print(response.choices[0].message.tool_calls)
+```
+
+## Handling Errors and Debugging
+
+Production code needs to handle API failures gracefully. The most common issues are authentication problems, rate limits, invalid request parameters, and temporary network failures.
+
+### Common errors
+
+- `AuthenticationError`: the API key is missing, invalid, or lacks access.
+- `RateLimitError`: you have exceeded a rate limit or quota.
+- `APIConnectionError`: the SDK could not reach the API.
+- `BadRequestError`: a parameter, model name, or message format is invalid.
+- `APIError`: a server-side or unexpected API error occurred.
+
+### Robust wrapper with retries
+
+```python
+import time
+from openai import (
+    OpenAI,
+    APIError,
+    RateLimitError,
+    APIConnectionError,
+    AuthenticationError,
+    BadRequestError,
+)
+
+client = OpenAI()
+
+
+def safe_chat(messages, model="gpt-4o", retries=3):
+    for attempt in range(retries):
+        try:
+            return client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.3,
+                max_tokens=500,
+            )
+        except AuthenticationError as exc:
+            raise RuntimeError("Check OPENAI_API_KEY and account access.") from exc
+        except BadRequestError as exc:
+            raise RuntimeError(f"Invalid request: {exc}") from exc
+        except RateLimitError:
+            if attempt == retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+        except APIConnectionError:
+            if attempt == retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+        except APIError:
+            if attempt == retries - 1:
+                raise
+            time.sleep(2 ** attempt)
+```
+
+### Debugging checklist
+
+- Print the model name and request parameters while testing, but never print the API key.
+- Keep `max_tokens` small during development to reduce cost and latency.
+- Validate image MIME types and base64 encoding before sending vision requests.
+- Use `try/except` blocks and return user-friendly error messages.
+- Log request IDs when available so support teams can trace failures.
+- Set timeouts in production clients and retry only transient failures.
+
+### Cost and latency tips
+
+- Use streaming for chat UIs so users see progress immediately.
+- Lower `max_tokens` for classification, extraction, and short replies.
+- Use lower temperature for deterministic tasks such as JSON extraction.
+- Cache repeated prompts or generated results when your product allows it.
+- Keep system prompts short and specific.
+
+## Conclusion and Further Resources
+
+In this condensed tutorial, we covered the essentials of working with GPT-4o: environment setup, text completions, streaming, image understanding, JSON mode, practical application patterns, function calling, and error handling. You now have a compact foundation for building GPT-4o-powered features without carrying unnecessary complexity into your first implementation.
+
+### Further resources
+
+- [OpenAI API documentation](https://platform.openai.com/docs/)
+- [OpenAI Python SDK](https://github.com/openai/openai-python)
+- [OpenAI API keys](https://platform.openai.com/api-keys)
+- [lablab.ai tutorials](https://lablab.ai/tutorials)
+
+<Quiz
+  questions={[
+    {
+      question: "Which OpenAI model is designed as a fast multimodal model for text and image inputs?",
+      options: ["GPT-3.5", "GPT-4o", "Whisper", "DALL-E 3"],
+      answer: 1
+    },
+    {
+      question: "Which environment variable is commonly used to store the OpenAI API key?",
+      options: ["OPENAI_TOKEN", "OPENAI_API_KEY", "API_SECRET", "GPT_KEY"],
+      answer: 1
+    },
+    {
+      question: "What should you do when you receive a RateLimitError?",
+      options: [
+        "Delete the API key",
+        "Retry with exponential backoff",
+        "Switch to CPU",
+        "Disable streaming"
+      ],
+      answer: 1
+    }
+  ]}
+/>
