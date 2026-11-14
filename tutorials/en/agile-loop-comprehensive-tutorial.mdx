@@ -1,0 +1,291 @@
+---
+title: "Agile Loop and Synapse Copilot: A Comprehensive Tutorial for AI-Powered API Automation"
+description: "Learn how to use Agile Loop's Synapse Copilot to automate API workflows, integrate Trello, Jira, and Salesforce, and debug AI-driven API interactions."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/e4b0d9cf-f05c-4108-f0a6-b9d98240c500/full"
+authorUsername: "sanchayt743"
+---
+
+# Agile Loop and Synapse Copilot: A Comprehensive Tutorial for AI-Powered API Automation
+
+In this tutorial I will show you how to use Agile Loop's Synapse Copilot to turn natural-language instructions into real API calls. If you have ever wished you could tell your project management tool to "create a board for the Q3 launch" and have it happen automatically, this is the tutorial for you. I'll walk you through the concepts, setup, practical applications, and debugging techniques so you can build reliable AI-powered API workflows.
+
+## Introduction to Agile Loop
+
+### What is Agile Loop?
+
+Agile Loop is the team behind Synapse Copilot, an open-source project that explores how large language models can act as a bridge between human intent and structured APIs. Instead of manually reading API documentation, constructing HTTP requests, and handling responses, you describe what you want in plain English. Synapse Copilot interprets your instruction, selects the right API operation, fills in the parameters, and executes the call.
+
+### What is Synapse Copilot?
+
+Synapse Copilot is an AI-powered assistant for API interactions. It uses OpenAI models to understand user instructions and a set of API specifications (OpenAPI/Swagger files) to know what operations are available. The project includes a planner that breaks down a request, an API selector that chooses the correct endpoint, and a runner that executes the call with your credentials.
+
+Key features:
+
+- Natural-language API calls
+- Support for multiple scenarios such as Trello, Jira, and Salesforce
+- OpenAPI specification-driven operation selection
+- Configurable via `config.yml`
+- Extensible architecture for adding new APIs
+
+### How Synapse Copilot works
+
+At a high level, Synapse Copilot follows this flow:
+
+1. You provide an instruction, e.g., "Create a new board named 'Health Planner'".
+2. The planner analyzes the instruction and determines the steps.
+3. The API selector chooses the best matching operation from the OpenAPI spec.
+4. The request builder fills in parameters using the instruction and your credentials.
+5. The runner executes the HTTP request.
+6. The response is returned to you.
+
+This architecture is powerful because it separates the reasoning (LLM) from the execution (API client). You can swap models, add new API specs, and debug each stage independently.
+
+## Usage of Agile Loop
+
+### Prerequisites
+
+Before you start, make sure you have:
+
+- Python 3.9+
+- Git
+- An OpenAI API key
+- API credentials for the service you want to automate (e.g., Trello API key and token)
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/Agile-Loop/Synapse-Copilot.git
+cd Synapse-Copilot
+```
+
+### Step 2: Create a virtual environment
+
+```bash
+python3 -m venv env
+source env/bin/activate
+```
+
+On Windows:
+
+```bash
+virtualenv env
+env\Scripts\activate
+```
+
+### Step 3: Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Obtain API credentials
+
+For Trello, you need an API key and token. Go to the [Trello Power-Ups admin page](https://trello.com/power-ups/admin), create or open a Power-Up, and generate an API key. Then click the "Token" link next to the key to generate a token. Keep both secret.
+
+For OpenAI, sign in to the [OpenAI platform](https://platform.openai.com/), navigate to API keys, and create a new secret key.
+
+### Step 5: Configure `config.yml`
+
+Create or edit `config.yml` in the project root:
+
+```yaml
+openai_api_key: "your_openai_api_key"
+trello_api_key: "your_trello_api_key"
+trello_token: "your_trello_token"
+```
+
+If you are using Jira or Salesforce, add the corresponding credentials as required by the scenario.
+
+### Step 6: Update `run.py`
+
+Open `run.py` and locate the scenario block you want to use. For Trello, the active block should read environment variables from `config.yml` and pass them to the API spec processor and model replacers:
+
+```python
+elif scenario == "trello":
+    os.environ["TRELLO_API_KEY"] = config["trello_api_key"]
+    os.environ["TRELLO_TOKEN"] = config["trello_token"]
+
+    key = os.environ["TRELLO_API_KEY"]
+    token = os.environ["TRELLO_TOKEN"]
+
+    replace_api_credentials_in_json(
+        scenario=scenario,
+        actual_key=key,
+        actual_token=token,
+    )
+    api_spec, headers = process_spec_file(
+        file_path="specs/trello_oas.json",
+        token=token,
+        key=key,
+    )
+
+    replace_api_credentials(
+        model="api_selector",
+        scenario=scenario,
+        actual_key=key,
+        actual_token=token,
+    )
+    replace_api_credentials(
+        model="planner",
+        scenario=scenario,
+        actual_key=key,
+        actual_token=token,
+    )
+
+    query_example = "Create a new board with name 'abc_board'"
+```
+
+This code sets the environment variables, injects credentials into the OpenAPI spec, and prepares the planner and API selector models.
+
+### Step 7: Run Synapse Copilot
+
+```bash
+python run.py
+```
+
+You will be prompted to select a scenario and enter a user ID. For Trello:
+
+```plaintext
+Please select a scenario (trello/jira/salesforce): trello
+Enter the user id: 1
+Example instruction: Create a new board with name 'abc_board'
+Please input an instruction (Press ENTER to use the example instruction):
+```
+
+Type your instruction or press Enter to use the example. For example:
+
+```plaintext
+Query: Create a new board with name 'Health Planner'
+```
+
+Synapse Copilot will process the instruction and call the Trello API. If successful, you will see the API response and the new board will appear in your Trello workspace.
+
+### Adding a new API scenario
+
+To add a new API, you need an OpenAPI specification file in the `specs/` directory and a scenario block in `run.py`. The block should load the spec, inject credentials, and set an example query. You can then extend the planner and API selector prompts if needed. This makes Synapse Copilot a flexible foundation for your own copilots.
+
+## Practical Applications
+
+### Project management automation
+
+The most immediate use case is automating Trello and Jira. You can create boards, lists, cards, issues, and comments from natural-language instructions. For example, a product manager could say, "Create a card in the Sprint Backlog called 'Fix login bug' and assign it to Alice." Synapse Copilot translates that into the correct API calls.
+
+### CRM and sales workflows
+
+With Salesforce support, you can automate lead creation, opportunity updates, and contact management. A sales team could use a chat interface to update records without navigating complex CRM screens.
+
+### Personal productivity assistants
+
+You can build a personal assistant that interacts with multiple APIs. For example, a Slack bot could accept commands like "Create a Trello card for my next blog post" and execute them using Synapse Copilot as the backend.
+
+### Multi-step workflows
+
+Because the planner can break down instructions, you can chain operations. For example, "Create a board called 'Launch Plan', add a list called 'Tasks', and create three cards for design, development, and marketing." The planner can decompose this into multiple API calls.
+
+### Custom copilots for internal tools
+
+If your company has internal APIs with OpenAPI specs, you can add them to Synapse Copilot and give employees a natural-language interface to internal systems. This reduces training time and makes APIs more accessible.
+
+## Handling Errors and Debugging
+
+Even with AI assistance, API automation can fail. Here are common issues and how to debug them.
+
+### Common errors
+
+- **Missing or invalid API keys**: Check `config.yml` and environment variables. Ensure there are no extra spaces or quotes.
+- **OpenAI quota exceeded**: Verify your OpenAI billing and usage limits.
+- **Invalid OpenAPI spec**: Ensure the spec file is valid JSON and contains the operations you expect.
+- **Unsupported instruction**: If the instruction is too vague, the planner may not find a matching operation. Be specific.
+- **Network or rate-limit errors**: APIs like Trello and Salesforce have rate limits. Add retries and backoff.
+- **Malformed parameters**: The LLM may generate incorrect parameter names. Inspect the generated request and adjust the prompt or spec.
+
+### Debugging checklist
+
+1. **Run the example query first**: If the example works, your credentials and setup are correct.
+2. **Check the logs**: Add print statements or use logging to see the planner output, selected operation, and request payload.
+3. **Inspect the OpenAPI spec**: Make sure the operation you need is present and the parameters are correctly defined.
+4. **Test the API directly**: Use `curl` or Postman to verify your credentials and endpoint.
+5. **Simplify the instruction**: Break complex requests into smaller steps.
+6. **Validate JSON**: Use a JSON validator on your spec and config files.
+7. **Check environment variables**: Print the first few characters of your keys to confirm they are loaded.
+
+### Example: adding error handling
+
+You can wrap the execution in a try/except block to catch and log errors:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+try:
+    response = execute_instruction(query)
+    logging.info("API response: %s", response)
+except Exception as exc:
+    logging.error("Failed to execute instruction: %s", exc)
+    # Optionally, retry with a simplified instruction
+```
+
+### Debugging the planner and API selector
+
+Synapse Copilot uses separate models for planning and API selection. If the wrong endpoint is chosen, inspect the prompt and the list of available operations. You can temporarily print the candidate operations to see what the model is choosing from. If the planner produces an incorrect plan, try adding examples to the prompt or making the instruction more explicit.
+
+### Handling rate limits
+
+For rate-limited APIs, implement exponential backoff:
+
+```python
+import time
+
+def call_with_retry(func, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return func()
+        except Exception as exc:
+            if attempt == max_retries - 1:
+                raise
+            wait = 2 ** attempt
+            print(f"Retrying in {wait} seconds...")
+            time.sleep(wait)
+```
+
+## Conclusion and Further Resources
+
+In this tutorial I showed you how Agile Loop's Synapse Copilot can turn natural-language instructions into real API calls. We covered the core concepts, setup, practical applications, and debugging strategies. You now have a foundation to automate Trello, Jira, Salesforce, or your own internal APIs with an AI-powered copilot.
+
+To continue learning:
+
+- [Synapse Copilot repository](https://github.com/Agile-Loop/Synapse-Copilot)
+- [OpenAI API documentation](https://platform.openai.com/docs/)
+- [Trello REST API documentation](https://developer.atlassian.com/cloud/trello/rest/)
+- [lablab.ai tutorials](https://lablab.ai/tutorials)
+
+<Quiz
+  questions={[
+    {
+      question: "What is the main purpose of Synapse Copilot?",
+      options: [
+        "To replace OpenAPI specifications",
+        "To translate natural-language instructions into API calls",
+        "To host databases",
+        "To design user interfaces"
+      ],
+      answer: 1
+    },
+    {
+      question: "Which file is used to store API keys in the tutorial?",
+      options: ["requirements.txt", "config.yml", "run.py", "README.md"],
+      answer: 1
+    },
+    {
+      question: "What should you do if the planner selects the wrong API operation?",
+      options: [
+        "Delete the OpenAPI spec",
+        "Make the instruction more specific and inspect the available operations",
+        "Disable the OpenAI key",
+        "Restart the computer"
+      ],
+      answer: 1
+    }
+  ]}
+/>
