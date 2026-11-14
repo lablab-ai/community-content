@@ -1,0 +1,334 @@
+---
+title: "Llama-3 Comprehensive Tutorial: From Setup to Advanced Applications"
+description: "A complete guide to Llama-3. Learn how to set up the environment, use the model for text generation, chat, code generation, and more. Includes practical examples and debugging tips."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/full"
+authorUsername: "lablab_ai"
+---
+
+# Llama-3 Comprehensive Tutorial: From Setup to Advanced Applications
+
+Hey there! In this tutorial I will show you everything you need to know about Llama-3, Meta's latest open-source large language model. Whether you're a seasoned AI engineer or just getting started, I'll walk you through setting up the environment, using the model for various tasks, and building practical applications. This time I want to show you not just the basics, but also how to handle errors and debug like a pro. Let's dive in!
+
+<Img src="https://iili.io/HPaF59p.png" alt="Llama-3 tutorial cover" caption="Llama-3 is a powerful open-source language model" />
+
+## Introduction to Llama-3
+
+### What is Llama-3?
+Llama-3 is the third generation of Meta's open-source large language model family. It comes in two sizes: 8B and 70B parameters. Trained on a massive dataset of 15 trillion tokens, Llama-3 significantly outperforms its predecessor, Llama-2, in reasoning, code generation, and instruction following. The model is available under a permissive license that allows commercial use, making it a game-changer for developers and researchers.
+
+### Why Llama-3?
+- **Open-source and commercially usable**: You can use it in your products without worrying about restrictive licenses.
+- **State-of-the-art performance**: Benchmarks show it competes with much larger proprietary models.
+- **Efficient**: The 8B model runs on consumer hardware, while the 70B model can be served on a single GPU with quantization.
+- **Rich ecosystem**: Supported by Hugging Face Transformers, Ollama, vLLM, and many other tools.
+
+### What we'll build
+In this tutorial, we'll:
+- Set up a Python environment with all necessary libraries.
+- Load Llama-3 using Hugging Face Transformers.
+- Generate text, chat, and write code.
+- Build a simple chatbot and a code assistant.
+- Learn how to handle common errors and debug issues.
+- Explore alternative inference methods like Ollama.
+
+## Setting Up the Environment
+
+### Prerequisites
+Before we start, make sure you have:
+- Python 3.9 or higher
+- A Hugging Face account (to access the model)
+- At least 16GB of RAM (for the 8B model in 4-bit) or a GPU with 16GB+ VRAM
+- Basic knowledge of Python and command line
+
+### Installing Dependencies
+First, let's create a virtual environment and install the required packages. I recommend using `pip` and a `requirements.txt` file.
+
+```bash
+python -m venv llama3-env
+source llama3-env/bin/activate  # On Windows: llama3-env\Scripts\activate
+pip install torch transformers accelerate bitsandbytes sentencepiece
+```
+
+If you have a CUDA-capable GPU, make sure to install the appropriate PyTorch version from [pytorch.org](https://pytorch.org/get-started/locally/).
+
+### Accessing the Model
+Llama-3 is gated on Hugging Face. You need to:
+1. Create a Hugging Face account.
+2. Accept the license on the model page: [meta-llama/Meta-Llama-3-8B](https://huggingface.co/meta-llama/Meta-Llama-3-8B) (or the 70B version).
+3. Generate an access token from your account settings.
+
+Then, log in using the Hugging Face CLI:
+
+```bash
+huggingface-cli login
+```
+
+Paste your token when prompted. Alternatively, you can set the `HF_TOKEN` environment variable.
+
+## Basic Usage of Llama-3
+
+### Loading the Model
+Let's load the 8B model with 4-bit quantization to save memory. We'll use `transformers` and `bitsandbytes`.
+
+```python
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+model_id = "meta-llama/Meta-Llama-3-8B"
+
+# 4-bit quantization config
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True,
+)
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    quantization_config=bnb_config,
+    device_map="auto",
+    torch_dtype=torch.float16,
+)
+```
+
+If you have enough VRAM, you can skip quantization and load in `float16`:
+
+```python
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    device_map="auto",
+    torch_dtype=torch.float16,
+)
+```
+
+### Generating Text
+Now let's generate some text. Llama-3 uses a chat template, but for plain text generation we can just pass a prompt.
+
+```python
+prompt = "Once upon a time, in a land far away,"
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
+outputs = model.generate(
+    **inputs,
+    max_new_tokens=100,
+    temperature=0.7,
+    do_sample=True,
+    top_p=0.9,
+)
+
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+```
+
+### Chat Completion
+Llama-3 is instruction-tuned, so it works best with a chat format. The tokenizer provides a `apply_chat_template` method.
+
+```python
+messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Explain the concept of quantum entanglement in simple terms."},
+]
+
+input_ids = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=True,
+    return_tensors="pt"
+).to(model.device)
+
+terminators = [
+    tokenizer.eos_token_id,
+    tokenizer.convert_tokens_to_ids("<|eot_id|>")
+]
+
+outputs = model.generate(
+    input_ids,
+    max_new_tokens=256,
+    eos_token_id=terminators,
+    do_sample=True,
+    temperature=0.6,
+    top_p=0.9,
+)
+
+response = outputs[0][input_ids.shape[-1]:]
+print(tokenizer.decode(response, skip_special_tokens=True))
+```
+
+## Practical Applications
+
+### Building a Chatbot
+Let's build a simple interactive chatbot that maintains conversation history.
+
+```python
+def chat_with_llama():
+    messages = [
+        {"role": "system", "content": "You are a friendly and knowledgeable assistant."}
+    ]
+    print("Chatbot ready! Type 'quit' to exit.")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == "quit":
+            break
+        messages.append({"role": "user", "content": user_input})
+        
+        input_ids = tokenizer.apply_chat_template(
+            messages,
+            add_generation_prompt=True,
+            return_tensors="pt"
+        ).to(model.device)
+        
+        outputs = model.generate(
+            input_ids,
+            max_new_tokens=256,
+            eos_token_id=terminators,
+            do_sample=True,
+            temperature=0.6,
+            top_p=0.9,
+        )
+        
+        response = outputs[0][input_ids.shape[-1]:]
+        assistant_reply = tokenizer.decode(response, skip_special_tokens=True)
+        print(f"Assistant: {assistant_reply}")
+        messages.append({"role": "assistant", "content": assistant_reply})
+
+chat_with_llama()
+```
+
+### Code Generation
+Llama-3 is excellent at writing code. Let's ask it to generate a Python function.
+
+```python
+messages = [
+    {"role": "system", "content": "You are a senior Python developer. Write clean, efficient code with comments."},
+    {"role": "user", "content": "Write a Python function that checks if a string is a palindrome."},
+]
+
+input_ids = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=True,
+    return_tensors="pt"
+).to(model.device)
+
+outputs = model.generate(
+    input_ids,
+    max_new_tokens=256,
+    eos_token_id=terminators,
+    do_sample=True,
+    temperature=0.2,
+    top_p=0.9,
+)
+
+print(tokenizer.decode(outputs[0][input_ids.shape[-1]:], skip_special_tokens=True))
+```
+
+### Summarization
+You can also use Llama-3 for summarization tasks.
+
+```python
+text_to_summarize = """
+Llama-3 is a family of large language models released by Meta in April 2024. 
+It includes models with 8 billion and 70 billion parameters. 
+The models were trained on 15 trillion tokens of data, which is seven times larger than Llama-2's training set. 
+Llama-3 uses a tokenizer with a vocabulary of 128,000 tokens, improving efficiency for non-English languages. 
+The models are available under the Llama 3 Community License, allowing commercial use.
+"""
+
+messages = [
+    {"role": "system", "content": "You are a helpful assistant that summarizes text concisely."},
+    {"role": "user", "content": f"Summarize the following text in one sentence:\n\n{text_to_summarize}"},
+]
+
+input_ids = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=True,
+    return_tensors="pt"
+).to(model.device)
+
+outputs = model.generate(
+    input_ids,
+    max_new_tokens=100,
+    eos_token_id=terminators,
+    do_sample=True,
+    temperature=0.3,
+    top_p=0.9,
+)
+
+print(tokenizer.decode(outputs[0][input_ids.shape[-1]:], skip_special_tokens=True))
+```
+
+### Using Ollama for Local Inference
+If you want an even simpler setup, you can use [Ollama](https://ollama.com/). It's a lightweight tool that runs Llama-3 locally with a single command.
+
+1. Install Ollama from [ollama.com](https://ollama.com/).
+2. Pull the Llama-3 model:
+   ```bash
+   ollama pull llama3
+   ```
+3. Run the model:
+   ```bash
+   ollama run llama3
+   ```
+4. Or use the Python library:
+   ```python
+   import ollama
+   
+   response = ollama.chat(model='llama3', messages=[
+       {'role': 'user', 'content': 'Why is the sky blue?'}
+   ])
+   print(response['message']['content'])
+   ```
+
+Ollama is great for quick prototyping and runs on CPU or GPU.
+
+## Handling Errors and Debugging
+
+### Common Issues
+- **Out of Memory (OOM)**: The 8B model in 4-bit needs ~6GB VRAM. If you run out, try reducing `max_new_tokens`, using a smaller batch size, or offloading to CPU with `device_map="auto"`.
+- **Access Denied**: Make sure you've accepted the license on Hugging Face and logged in with `huggingface-cli login`.
+- **Slow Generation**: On CPU, generation will be slow. Consider using a GPU or Ollama for better performance.
+- **Tokenization Errors**: Always use `apply_chat_template` for chat models. For plain text, ensure you don't include special tokens manually.
+
+### Debugging Tips
+- **Check your environment**: Run `nvidia-smi` to verify GPU availability.
+- **Inspect inputs**: Print the tokenized input to see if the chat template is applied correctly.
+- **Use smaller models**: For debugging, try a smaller model like `TinyLlama` to iterate faster.
+- **Enable logging**: Set `transformers.logging.set_verbosity_info()` to see detailed logs.
+- **Clear cache**: If you change model configs, clear the Hugging Face cache with `rm -rf ~/.cache/huggingface/hub`.
+
+## Conclusion and Further Resources
+
+In this tutorial, I showed you how to set up Llama-3, use it for text generation, chat, code generation, and summarization. We also built a simple chatbot and explored Ollama for easy local inference. I hope you found this comprehensive guide helpful and that you're now ready to build your own AI applications with Llama-3.
+
+Here are some further resources to continue your journey:
+- [Llama-3 model card on Hugging Face](https://huggingface.co/meta-llama/Meta-Llama-3-8B)
+- [Meta's official Llama-3 announcement](https://ai.meta.com/blog/meta-llama-3/)
+- [Hugging Face Transformers documentation](https://huggingface.co/docs/transformers/index)
+- [Ollama documentation](https://github.com/ollama/ollama)
+- [lablab.ai AI tutorials](https://lablab.ai/tutorials)
+
+Happy coding, and enjoy building with Llama-3!
+
+<Quiz
+  questions={[
+    {
+      question: "What is the maximum number of parameters in the Llama-3 models released by Meta?",
+      options: ["8B", "70B", "175B", "405B"],
+      answer: 1
+    },
+    {
+      question: "Which library is commonly used to load Llama-3 in Python?",
+      options: ["TensorFlow", "PyTorch", "Hugging Face Transformers", "Keras"],
+      answer: 2
+    },
+    {
+      question: "What is the purpose of the `apply_chat_template` method?",
+      options: [
+        "To tokenize plain text",
+        "To format messages for chat models",
+        "To generate text",
+        "To quantize the model"
+      ],
+      answer: 1
+    }
+  ]}
+/>
