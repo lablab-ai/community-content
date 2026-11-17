@@ -1,0 +1,155 @@
+---
+title: "GPT-4o Quick Start: From API Key to Vision, JSON Mode, and Streaming in 10 Minutes"
+description: "A condensed, code-first GPT-4o tutorial: get an API key, make your first chat completion, use vision, JSON mode, and streaming with the OpenAI Python SDK"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5d3704df-e473-45d9-403b-373ee7838500/full"
+authorUsername: "idev9101"
+---
+
+# GPT-4o Quick Start: From API Key to Vision, JSON Mode, and Streaming in 10 Minutes
+
+## Introduction to GPT-4o
+
+In this condensed tutorial I will show you the fastest path to a working **GPT-4o** application. GPT-4o — the "o" stands for *omni* — is OpenAI's flagship model: it natively handles text, images, and audio in a single model, responds roughly twice as fast as GPT-4 Turbo, and costs half as much per token. You do not need a new SDK or new endpoints: everything below works through the standard `chat.completions` API you may already know.
+
+By the end of this tutorial you will have made your first API call, fed GPT-4o an image, forced valid JSON output, and streamed a response token by token. All you need is Python and an API key.
+
+## Setting Up the Environment
+
+### Step 1: Get an API key
+
+Create a key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys) and export it:
+
+```bash
+export OPENAI_API_KEY="sk-..."
+```
+
+### Step 2: Install the SDK
+
+```bash
+pip install openai
+```
+
+That's the whole setup. The SDK reads `OPENAI_API_KEY` automatically — no key in your code means no key in your repo.
+
+## Basic Usage of GPT-4o
+
+### Your first request
+
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a precise assistant. Answer in one short sentence."},
+        {"role": "user", "content": "What is GPT-4o?"},
+    ],
+    temperature=0,
+)
+
+print(response.choices[0].message.content)
+```
+
+Three things matter in this call: `model="gpt-4o"` selects the omni model (there is also `gpt-4o-mini`, roughly 15x cheaper), the `system` message steers tone and format, and `temperature=0` makes output as deterministic as the model gets — handy when you test prompts.
+
+## Practical Applications
+
+This time I want to show you the three patterns that cover about 90% of real GPT-4o usage.
+
+### Vision: images as input
+
+GPT-4o accepts images inline in the `user` message — no separate vision endpoint:
+
+```python
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "What is in this image?"},
+                {
+                    "type": "image_url",
+                    "image_url": {"url": "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png"},
+                },
+            ],
+        }
+    ],
+    max_tokens=150,
+)
+print(response.choices[0].message.content)
+```
+
+The `content` field becomes a list mixing `text` and `image_url` parts. For local files, base64-encode the image and use a `data:image/png;base64,...` URL.
+
+### JSON mode: guaranteed-parseable output
+
+When your program consumes the output, ask for JSON explicitly:
+
+```python
+response = client.chat.completions.create(
+    model="gpt-4o",
+    response_format={"type": "json_object"},
+    messages=[
+        {"role": "system", "content": "Extract the fields as JSON."},
+        {"role": "user", "content": "Invoice #42, total $1,250, due 2026-12-01, customer Acme Corp"},
+    ],
+)
+
+import json
+data = json.loads(response.choices[0].message.content)
+print(data)
+```
+
+`response_format={"type": "json_object"}` forces the whole reply to be valid JSON. Remember that JSON mode requires the word "JSON" somewhere in your messages — otherwise the API returns a 400. For fully structured output with a defined schema, look at `client.beta.chat.completions.parse(...)` and Structured Outputs.
+
+### Streaming: token-by-token answers
+
+For interactive apps, stream the response as it is generated:
+
+```python
+stream = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Name three colors."}],
+    stream=True,
+)
+
+for chunk in stream:
+    delta = chunk.choices[0].delta.content or ""
+    print(delta, end="", flush=True)
+```
+
+Each `chunk` carries a small `delta`; append them for the full message. Streaming cuts perceived latency dramatically because the user sees text the moment the model produces it.
+
+## Handling Errors and Debugging
+
+The failures you will actually hit, in order of likelihood:
+
+### `RateLimitError` (HTTP 429)
+
+You are out of requests-per-minute or out of credit. Check your usage dashboard, then retry with exponential backoff — the SDK's built-in retry (`OpenAI(max_retries=5)`) handles most transient 429s for you.
+
+### `AuthenticationError` (HTTP 401)
+
+The key is missing or wrong. `print(os.environ.get("OPENAI_API_KEY"))` first — nine times out of ten the variable simply is not exported in the shell running your script.
+
+### `BadRequestError` (HTTP 400)
+
+Usually a malformed `messages` array or a parameter the model does not support — e.g. forgetting the word "JSON" while `json_object` mode is on. The error message body tells you which parameter failed; read it, it is unusually specific.
+
+### Content is cut off
+
+Raise `max_tokens` — the default lets the model stop wherever it likes, but a small cap truncates mid-sentence. Also check `response.choices[0].finish_reason`: `"length"` means you hit the cap, `"stop"` means the model finished naturally.
+
+## Conclusion and Further Resources
+
+In this condensed tutorial I showed you the complete GPT-4o starter kit: API key setup, the `chat.completions` call shape, vision input, JSON mode, and streaming — plus the four errors you will meet first and how to fix them. From here:
+
+- The [OpenAI API reference](https://platform.openai.com/docs/api-reference/chat) for every parameter of `chat.completions`
+- [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs) when JSON mode is not strict enough
+- [Function/tool calling](https://platform.openai.com/docs/guides/function-calling) for letting GPT-4o call your own code
+- More [lablab.ai tutorials](https://lablab.ai/t) on building with OpenAI models
+
+Happy building!

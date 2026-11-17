@@ -1,0 +1,184 @@
+---
+title: "Getting Started with Llama 3: Setup, Usage, and Practical Applications"
+description: "Learn how to install, run, and build applications with Meta's Llama 3 using Ollama and its HTTP API, with working code samples you can try yourself"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5d3704df-e473-45d9-403b-373ee7838500/full"
+authorUsername: "idev9101"
+---
+
+# Getting Started with Llama 3: Setup, Usage, and Practical Applications
+
+## Introduction to Llama 3
+
+In this tutorial I will show you how to get up and running with **Llama 3**, the open large language model family released by Meta. The Llama 3 generation includes the original 8B and 70B parameter models and was later extended by the Llama 3.1 (8B, 70B, 405B) and Llama 3.2 (1B, 3B text models plus 11B and 90B vision models) releases. All of them ship as downloadable weights, which means you can run them on your own machine — no API key, no subscription, and no data leaving your computer.
+
+This time I want to show you the complete workflow: installing a runner, pulling a model, talking to it from the command line and over HTTP, building a small application on top of it, and debugging the problems you are most likely to hit. I will be using [**Ollama**](https://lablab.ai/tech/ollama) as the runner because it is the easiest way to serve Llama 3 locally, and the small `llama3.2:3b` variant so that everything in this tutorial fits on an ordinary laptop.
+
+## Setting Up the Environment
+
+### Step 1: Install Ollama
+
+On Linux, the official installer is a single command:
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+On macOS and Windows you can download a graphical installer from [ollama.com](https://ollama.com) instead. Once installed, Ollama runs a small local server on port `11434` that handles model downloads and inference. You can check that everything is working:
+
+```bash
+ollama --version
+```
+
+### Step 2: Download a Model
+
+Pull the model you want to use. The `ollama pull` command downloads the weights once and caches them:
+
+```bash
+ollama pull llama3.2:3b
+```
+
+The tag after the colon selects the variant. `llama3.2:3b` is about 2 GB on disk and runs comfortably on a CPU; `llama3.1:8b` is roughly 4.7 GB and noticeably smarter but slower. `ollama list` shows what you have installed:
+
+```
+NAME           ID              SIZE      MODIFIED
+llama3.2:3b    a80c4f17acd5    2.0 GB    7 seconds ago
+```
+
+## Basic Usage of Llama 3
+
+### Chatting from the Command Line
+
+The fastest way to play with the model is `ollama run`:
+
+```bash
+ollama run llama3.2:3b "Reply in exactly one sentence: what is Llama 3?"
+```
+
+On my machine this prints:
+
+```
+Llama 3 is a third-generation large language model developed by Meta, designed to process and understand natural language inputs and generate human-like responses.
+```
+
+Run the same command without a prompt to drop into an interactive chat session; type `/bye` to exit.
+
+### Talking to the HTTP API
+
+Everything the CLI can do is also available over the local HTTP API, which is how your own programs will talk to the model. The simplest endpoint is `/api/generate` for single-shot completion:
+
+```bash
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.2:3b",
+  "prompt": "Translate to French: The weather is nice today.",
+  "stream": false,
+  "options": {"seed": 7, "temperature": 0}
+}'
+```
+
+The response is a JSON object whose `response` field contains the text:
+
+```json
+{"model":"llama3.2:3b","response":"\"Le temps est agréable aujourd'hui.\"","done":true}
+```
+
+Setting `"stream": false` collects the whole answer into one JSON object; leave it out (or set it to `true`) and you get one JSON line per token, which is what you want for interactive applications. Two options are worth remembering: `temperature` controls randomness (`0` makes the model deterministic-ish), and `num_predict` caps the number of generated tokens.
+
+### Multi-Turn Conversations with `/api/chat`
+
+For chat-style applications, `/api/chat` takes a list of messages with roles — `system`, `user`, and `assistant`:
+
+```bash
+curl http://localhost:11434/api/chat -d '{
+  "model": "llama3.2:3b",
+  "messages": [
+    {"role": "system", "content": "You are a precise assistant that answers with one short sentence."},
+    {"role": "user", "content": "What is the capital of France?"}
+  ],
+  "stream": false,
+  "options": {"seed": 1, "temperature": 0}
+}'
+```
+
+The reply comes back in `message.content`:
+
+```json
+{"model":"llama3.2:3b","message":{"role":"assistant","content":"Paris."},"done":true}
+```
+
+The `system` message is how you steer the model's persona and output format; it has a big effect on small models like the 3B.
+
+## Practical Applications
+
+Now that the basics work, this time I want to show you a small but real application: a Python script that summarizes text using Llama 3. You only need the standard library — the API is plain HTTP:
+
+```python
+import json
+import urllib.request
+
+def summarize(text, model="llama3.2:3b"):
+    req = urllib.request.Request(
+        "http://localhost:11434/api/generate",
+        data=json.dumps({
+            "model": model,
+            "prompt": (
+                "Summarize the following text in one sentence.\n\n"
+                + text
+            ),
+            "stream": False,
+            "options": {"temperature": 0.2, "num_predict": 80},
+        }).encode(),
+        headers={"Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        return json.loads(r.read())["response"].strip()
+
+article = """
+The city council approved a new light rail line on Tuesday after a
+six-hour public hearing. The line will connect the airport to the
+downtown core with eleven stations and is scheduled to open in 2031.
+"""
+print(summarize(article))
+```
+
+Save it as `summarize.py`, run `python3 summarize.py`, and you get a one-sentence summary generated entirely on your own hardware. The same pattern — POST a prompt, read `response` — is all you need for translation, classification, question answering over your documents, or feeding model output into another pipeline step.
+
+If you prefer a library, `pip install ollama` gives you the official Python client with the same endpoints, and the popular LangChain and LlamaIndex frameworks both ship Ollama integrations, so the code you write here ports over unchanged when your project grows.
+
+## Handling Errors and Debugging
+
+These are the issues I ran into most often, and how to fix them:
+
+### `model 'xyz' not found`
+
+```json
+{"error": "model 'nosuchmodel:1b' not found"}
+```
+
+You asked for a model that has not been pulled. Run `ollama pull <tag>` first, and check available tags with `ollama list`.
+
+### `connection refused` on port 11434
+
+The Ollama server is not running. On Linux, `systemctl status ollama` tells you whether the service is up; `ollama serve` starts it in the foreground so you can see the logs. The CLI talks to the same server, so if `ollama run` works but your script cannot connect, check that you are using `127.0.0.1:11434` and that no proxy variable like `HTTP_PROXY` is redirecting localhost traffic.
+
+### Very slow generation
+
+Llama 3 runs on CPU, but speed drops quickly with model size. If `ollama run ... --verbose` shows a low `eval rate`, switch to a smaller tag (`llama3.2:1b` or `llama3.2:3b`), reduce `num_predict`, or run on a machine with a GPU — Ollama uses it automatically when present.
+
+### Truncated or rambling answers
+
+Small models stop mid-sentence when they hit the default token budget. Raise `num_predict`, and prefer chat models (the `-instruct`/`llama3.x` tags) with a clear `system` message that constrains length, e.g. `"answer in one short sentence"`.
+
+### Out of memory when loading
+
+`ollama run` prints an error like `model requires more system memory` when the weights do not fit. Pick a smaller parameter count or a more aggressive quantization tag (for example `llama3.1:8b-instruct-q4_0`).
+
+## Conclusion and Further Resources
+
+In this tutorial I showed you how to install Ollama, download Llama 3, chat with it from the CLI, call it over the HTTP API with streaming and deterministic options, and wire it into a real Python script — plus the fixes for the most common errors. From here you can explore:
+
+- The [Ollama model library](https://ollama.com/library) for the full list of Llama 3 tags and quantizations
+- The [Ollama API documentation](https://github.com/ollama/ollama/blob/main/docs/api.md) for embeddings, structured output, and tool calling
+- Meta's [Llama documentation](https://www.llama.com/docs/) for model cards and the license terms
+- More [lablab.ai tutorials](https://lablab.ai/t) on building applications with open models
+
+Happy hacking!
