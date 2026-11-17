@@ -1,0 +1,132 @@
+---
+title: "Build API Agents with Agile Loop's Synapse Copilot: Setup, OpenAPI Integration, and Debugging"
+description: "A hands-on tutorial for Agile Loop's Synapse Copilot: install the agent framework, plug in any OpenAPI spec, understand the planner/selector/caller pipeline, and debug common issues"
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/5d3704df-e473-45d9-403b-373ee7838500/full"
+authorUsername: "idev9101"
+---
+
+# Build API Agents with Agile Loop's Synapse Copilot: Setup, OpenAPI Integration, and Debugging
+
+## Introduction to Agile Loop
+
+In this tutorial I will show you how to get started with **Synapse Copilot**, the open-source agent framework from Agile Loop that turns any OpenAPI-described API into a tool an LLM can call for you. Instead of hand-writing glue code for each endpoint, you point Synapse Copilot at an OpenAPI spec (or a Postman collection it can convert) and it handles the rest: planning which endpoints to call, picking the right one for a task, and executing the request.
+
+This time I want to show you a full walkthrough — installation, spec loading, the internal agent pipeline, and the errors you will hit along the way. I will use the public Swagger Petstore spec so you can follow along with zero signup and zero API keys for the target service.
+
+## Setting Up the Environment
+
+### Step 1: Clone and install
+
+Synapse Copilot is a Python project:
+
+```bash
+git clone https://github.com/Agile-Loop/Synapse-Copilot.git
+cd Synapse-Copilot
+pip install -r requirements.txt
+```
+
+The requirements pin `langchain==0.0.315` and `openai==0.28.1` — legacy versions by design, since the framework was built against the classic LangChain chain API. Use a virtual environment so these older versions do not clash with newer projects on your machine:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+```
+
+### Step 2: Understand the configuration
+
+`config.yaml` holds two kinds of credentials: your `openai_api_key` (the LLM that powers the agent's planning and selection) and per-scenario service tokens — `tmdb_access_token`, `spotipy_*`, Jira/Trello keys — depending on which API you want the agent to drive.
+
+You do not need every key. You only need the LLM key plus credentials for the one scenario you plan to run — and for this tutorial's spec-loading walkthrough you do not even need that, because parsing an OpenAPI document happens offline.
+
+## Basic Usage: Loading an OpenAPI Spec
+
+### Step 3: Fetch a real spec
+
+Download the Petstore spec — a complete, public OpenAPI 3 document:
+
+```bash
+curl -s https://petstore3.swagger.io/api/v3/openapi.json -o petstore.json
+```
+
+### Step 4: Reduce the spec
+
+Synapse Copilot's first job is turning a full OpenAPI document into a compact description the LLM can reason over. `helper.process_spec_file` does exactly that — it dereferences `$ref` links and keeps only what the agent needs:
+
+```python
+from helper import process_spec_file
+
+api_spec, headers = process_spec_file(file_path="petstore.json")
+
+print("servers:", api_spec.servers)
+print("endpoints:", len(api_spec.endpoints))
+for method_path, summary, _detail in api_spec.endpoints[:5]:
+    print(" ", method_path, "-", summary)
+```
+
+Running this on my machine prints real output:
+
+```
+servers: [{'url': '/api/v3'}]
+endpoints: 19
+  PUT /pet - Update an existing pet by Id.
+  POST /pet - Add a new pet to the store.
+  GET /pet/findByStatus - Multiple status values can be provided with comma separated strings.
+  GET /pet/findByTags - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+  GET /pet/{petId} - Returns a single pet.
+```
+
+Nineteen Petstore operations, each reduced to a method/path plus its natural-language summary and parameter details. That list — not the raw spec — is what the agent sees when it decides what to call.
+
+### Step 5: Convert a Postman collection (optional)
+
+If your API has no OpenAPI spec, the `api_collection` folder contains a Node.js converter: export your collection from Postman, run `postmantest.py`'s conversion flow, and you get a spec file usable in the same `process_spec_file` call.
+
+## Practical Applications
+
+### How the agent pipeline works
+
+Once a spec is loaded, Synapse Copilot runs a three-stage pipeline on every user request:
+
+1. **Planner** (`model/planner.py`) — reads your request in plain English and produces a step-by-step plan ("find the pet by ID, then update its status"). The planner uses in-context examples from `icl_examples/planner/` per scenario.
+2. **API Selector** (`model/api_selector.py`) — matches each plan step to one of the reduced endpoints, e.g. turning "find the pet by ID" into `GET /pet/{petId}`.
+3. **Caller** (`model/caller.py`) — fills in the parameters, builds the actual HTTP request through LangChain's `RequestsWrapper`, executes it, and hands the JSON result back.
+
+The `ApiLLM` chain in `model/api_llm.py` orchestrates all three with up to 15 iterations and an early-stopping rule — the standard LangChain agent loop shape, specialized for API driving.
+
+### A realistic end-to-end run
+
+With an OpenAI key configured in `config.yaml`, the project's `run.py` drives the whole loop interactively — it asks for a scenario (`trello`, `jira`, `salesforce`, or your own), loads that scenario's spec and credentials, then answers questions like "Give me the number of movies directed by Sofia Coppola" by planning, selecting the right TMDB endpoints, and calling them in sequence. For your own API, drop your spec into `specs/`, add a scenario block in `run.py`, and the same pipeline works against your endpoints — no changes to the core code.
+
+## Handling Errors and Debugging
+
+These are the issues I actually hit setting this up:
+
+### `ModuleNotFoundError` on `mysql.connector`
+
+`run.py` imports `mysql.connector` for user-state tracking even in simple scenarios. Install `mysql-connector-python` — and know that you will also need a local MySQL instance with the `synapse-copilot` database (schema in `synapse-copilot.sql`) to use `run.py` end to end. The spec-loading and pipeline components do not need the database.
+
+### `langchain` import warnings and deprecations
+
+The pinned `0.0.315` release emits `UserWarning: Importing OpenAI from langchain root module is no longer supported` at import time — harmless noise, not an error. Do not upgrade langchain to fix it; the agent classes (`Chain`, `BaseLLM`, `RequestsWrapper`) were removed from newer releases and an upgrade will break everything.
+
+### `openai.error.AuthenticationError`
+
+The `openai_api_key` in `config.yaml` is unset or invalid — `run.py` injects it into `OPENAI_API_KEY` at startup. Get a key from platform.openai.com and replace the placeholder.
+
+### Spec parses but has zero endpoints
+
+If `len(api_spec.endpoints)` comes back `0`, your input is usually a Postman collection (not an OpenAPI spec) or a Swagger 2.0 document. Synapse Copilot expects OpenAPI 3.x — convert first via the `api_collection` Node tool, or upgrade the spec with an online Swagger-to-OpenAPI converter.
+
+### Wrong endpoint selected at runtime
+
+If the agent picks a sensible-looking but wrong endpoint, the usual cause is overlapping endpoint descriptions in your spec. Give each operation a specific `summary`/`description` — the selector relies on them literally — or trim your spec to the endpoints the agent actually needs.
+
+## Conclusion and Further Resources
+
+In this tutorial I showed you how to install Synapse Copilot, feed it a real OpenAPI spec, see the reduced endpoint list the agent reasons over, and understand the planner → selector → caller pipeline that turns plain-English requests into live API calls — plus the five issues you are most likely to hit. From here:
+
+- The [Synapse Copilot repository](https://github.com/Agile-Loop/Synapse-Copilot) for `run.py` scenarios and `icl_examples` you can adapt
+- The [OpenAPI specification](https://spec.openapis.org/oas/latest.html) for writing specs the loader handles cleanly
+- [Agile Loop](https://agileloop.ai/) for the hosted platform built on the same ideas
+- More [lablab.ai tutorials](https://lablab.ai/t) on agent frameworks and LLM tooling
+
+Happy hacking!
