@@ -1,0 +1,379 @@
+---
+title: "Vectara Chat Tutorial: Build a Grounded Support-Ticket Triage Bot"
+description: "A hands-on Vectara Chat tutorial: ingest a support knowledge base, build a grounded multi-turn triage bot with the Python SDK, add metadata filtering and a React chat widget, then deploy and test it for a hackathon."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/2fa0b7f2-58bc-496b-bdcd-a840358af200/full"
+authorUsername: "pethapixels-create"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how I build a **support-ticket triage bot** with [Vectara Chat](https://docs.vectara.com/docs/console-ui/vectara-chat-overview) — the kind of assistant that reads your help center and answers a customer with a real, cited answer instead of a confident guess. I picked triage on purpose: it is the demo that survives a judge poking at it, because every answer is grounded in documents you actually own.
+
+This time I want to focus on the **retrieval + grounding loop** rather than yet another legal-document clone. By the end we will have:
+
+1. A corpus of support articles ingested with the official Python SDK
+2. A multi-turn chat session that remembers "it" and "that plan"
+3. Metadata filters so answers stay inside one product line
+4. A thin FastAPI backend and a React chat widget you can actually click
+5. A test pass and deploy checklist you can run the night before submission
+
+If you have never touched Vectara corpora, walk through the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) first, then skim the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) for richer indexing patterns. This guide picks up where those leave off.
+
+### Why grounding beats a raw LLM call
+
+A plain `gpt-4` wrapper will answer "how do I reset my 2FA device?" with something plausible and occasionally wrong. In a support context, wrong is worse than slow. Vectara is an API-first platform for **Retrieval-Augmented Generation (RAG)**: you load private text into a **corpus**, and at query time Vectara retrieves the most relevant passages and generates an answer *from those passages*, not from the model's general memory. That single design choice is what lets you ship a bot you can defend.
+
+### What we are building
+
+A small support assistant for a fictional SaaS called **Northwind Cloud**. The corpus holds a dozen help-center articles. The bot answers account, billing, and security questions, cites the article it used, and refuses to invent policy when nothing relevant is retrieved. The architecture is deliberately boring so it fits in a weekend:
+
+- **Ingest** — a Python script that creates a corpus and uploads articles as documents
+- **Serve** — a FastAPI endpoint that opens a chat session and streams turns
+- **Present** — a React widget that renders answers with citations
+
+## Getting Started with Vectara Chat
+
+### Prerequisites
+
+You need Python 3.10+, a free [Vectara account](https://console.vectara.com/), and Node 18+ if you want the React widget. That is genuinely it — no GPU, no local model, no embedding server to babysit.
+
+### Create an API key without leaking it
+
+Sign in to the Vectara console, open **Access Control → API Keys**, and create a key scoped to the corpus you are about to make. Treat it like a password: put it in a `.env` file and add that file to `.gitignore` before your first commit.
+
+```bash
+# .env  (never commit this)
+VECTARA_API_KEY="zk-your-key-here"
+VECTARA_CUSTOMER_ID="your-customer-id"
+VECTARA_CORPUS_ID="your-corpus-id"
+```
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+VECTARA_API_KEY = os.environ["VECTARA_API_KEY"]
+CUSTOMER_ID = os.environ["VECTARA_CUSTOMER_ID"]
+CORPUS_ID = os.environ["VECTARA_CORPUS_ID"]
+```
+
+### Install the SDK
+
+```bash
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate.bat
+pip install vectara-client==0.2.8 fastapi uvicorn python-dotenv
+```
+
+Pin the client version. Vectara's SDK moves quickly and an unpinned install is the classic way to spend an hour debugging a method that got renamed.
+
+### Create the corpus from code
+
+I like to create the corpus in code so the whole setup is reproducible from a clean checkout. The snippet below creates a corpus tuned for question-answering and prints its ID.
+
+```python
+from vectara_client import Vectara
+
+client = Vectara(api_key=VECTARA_API_KEY, customer_id=CUSTOMER_ID)
+
+corpus = client.create_corpus(
+    name="northwind-support",
+    description="Northwind Cloud help-center articles for the support triage bot",
+    custom_metadata={
+        "source": "help-center",
+        "language": "en",
+    },
+)
+
+print("Created corpus:", corpus.id)
+```
+
+Copy the printed ID into your `.env` as `VECTARA_CORPUS_ID`. From here on the corpus is the single source of truth for every answer the bot gives.
+
+## Building a Chatbot with Vectara
+
+### Seed a support knowledge base
+
+Realistic articles beat lorem ipsum, so I keep a small list of dicts and index them in a loop. Each article carries metadata — `product`, `topic`, and `audience` — because we will filter on it later.
+
+```python
+ARTICLES = [
+    {
+        "id": "reset-2fa",
+        "title": "Reset your two-factor authentication device",
+        "product": "northwind-core",
+        "topic": "security",
+        "body": (
+            "If you lost the device that generates your 2FA codes, an account "
+            "owner can reset it from Settings > Security > Reset two-factor. "
+            "You will receive a recovery email valid for 30 minutes. "
+            "Enterprise plans can require re-enrollment on next login."
+        ),
+    },
+    {
+        "id": "billing-failed-payment",
+        "title": "Why did my payment fail?",
+        "product": "northwind-core",
+        "topic": "billing",
+        "body": (
+            "A failed payment usually means the card on file expired or the bank "
+            "declined the charge. Update your card under Billing > Payment methods. "
+            "We retry failed charges automatically for 7 days before suspending the account."
+        ),
+    },
+    {
+        "id": "enterprise-sso",
+        "title": "Set up SAML single sign-on",
+        "product": "northwind-enterprise",
+        "topic": "security",
+        "body": (
+            "SAML SSO is available on the Enterprise plan. Go to Settings > "
+            "Authentication, upload your IdP metadata XML, and map the email "
+            "attribute. SCIM provisioning can be enabled from the same page."
+        ),
+    },
+]
+
+def index_articles(corpus_id: str) -> None:
+    for article in ARTICLES:
+        client.index_document(
+            corpus_id=corpus_id,
+            document_id=article["id"],
+            title=article["title"],
+            metadata_json={
+                "product": article["product"],
+                "topic": article["topic"],
+            },
+            sections=[{"text": article["body"]}],
+        )
+        print("Indexed", article["id"])
+
+index_articles(CORPUS_ID)
+```
+
+Indexing is idempotent by `document_id`, so re-running the script updates articles in place instead of duplicating them. That matters when you are iterating on wording at 2 a.m.
+
+### One-shot grounded query (warm-up)
+
+Before the chat session, prove the corpus answers a single question. This is the fastest way to confirm your key, corpus, and data are all wired correctly.
+
+```python
+def ask_once(question: str) -> dict:
+    response = client.query(
+        corpus_id=CORPUS_ID,
+        query=question,
+        search={"lexical_interpolation": 0.1, "limit": 5},
+        rerank={"limit": 3, "recency": "day"},
+        generation={
+            "generation_preset_name": "vectara-summary-table-1-2-1",
+            "max_used_search_results": 5,
+        },
+    )
+    return response
+
+result = ask_once("How do I reset my two-factor device?")
+print(result.summary)
+for citation in result.citations:
+    print("-", citation.get("document_id"), citation.get("url", ""))
+```
+
+The `summary` field is the grounded answer. The `citations` list is what you render in the UI so a customer can click through to the source article — this is the feature that makes a support bot trustworthy.
+
+### Open a multi-turn chat session
+
+A one-shot query forgets everything the moment it returns. Vectara Chat keeps a **server-side session** so follow-ups like "and what about enterprise?" stay grounded in the same conversation. You create a chat once, then pass turns to it.
+
+```python
+def start_chat() -> str:
+    chat = client.create_chat(
+        corpus_id=CORPUS_ID,
+        generation={
+            "generation_preset_name": "vectara-summary-table-1-2-1",
+            "max_used_search_results": 5,
+        },
+    )
+    return chat.chat_id
+
+def chat_turn(chat_id: str, message: str) -> dict:
+    turn = client.chat(
+        chat_id=chat_id,
+        query=message,
+        search={"lexical_interpolation": 0.1, "limit": 5},
+    )
+    return turn
+
+chat_id = start_chat()
+print(chat_turn(chat_id, "My payment failed. What do I do?").summary)
+print(chat_turn(chat_id, "Will you retry it?").summary)  # "it" resolves to the payment
+```
+
+That second turn is the whole point. A naive RAG wrapper would have lost the thread; the session keeps "it" bound to the failed payment from the first turn.
+
+## Enhancing Chatbot Intelligence
+
+### Filter by metadata to stay on-topic
+
+Northwind has two products, and a `northwind-core` customer should not get `northwind-enterprise` SSO instructions. Metadata filters let you scope retrieval deterministically.
+
+```python
+def chat_turn_filtered(chat_id: str, message: str, product: str) -> dict:
+    return client.chat(
+        chat_id=chat_id,
+        query=message,
+        search={
+            "lexical_interpolation": 0.1,
+            "limit": 5,
+            "filter": f"doc.product = '{product}'",
+        },
+    )
+
+print(chat_turn_filtered(chat_id, "How do I turn on SSO?", "northwind-core").summary)
+```
+
+With the filter in place the bot will tell a core customer that SSO is an Enterprise feature instead of dumping the enterprise setup steps. Deterministic scoping is worth more than clever prompt engineering.
+
+### Tune hybrid search
+
+Vectara blends lexical (keyword) and semantic (embedding) scoring. `lexical_interpolation` controls the mix: `0.0` is pure semantic, `1.0` is pure keyword. For support articles full of product names and error codes, I keep a little lexical weight so exact matches like "SCIM" still surface.
+
+```python
+search = {
+    "lexical_interpolation": 0.1,  # mostly semantic, a nudge toward exact terms
+    "limit": 8,                    # retrieve wider, let the reranker cut down
+}
+```
+
+### Use the factual consistency score as a guardrail
+
+Every grounded response ships with a **factual consistency score** between 0 and 1. Treat a low score as "I am not sure" and fall back to a human handoff instead of guessing.
+
+```python
+turn = chat_turn(chat_id, "Do you support on-prem deployment?")
+score = turn.factual_consistency
+if score is not None and score < 0.5:
+    answer = "I'm not fully certain from our help center. Let me connect you with support."
+else:
+    answer = turn.summary
+print(answer, f"(fcs={score})")
+```
+
+This one `if` is the difference between a demo that looks smart and a bot that is safe to point at real customers.
+
+### Manage the chat history corpus
+
+Vectara can archive conversations into a **Chat History Corpus** so you can review what users actually asked. During a hackathon this is gold: after a demo you read the transcripts and immediately see which articles are missing. Store the `chat_id` with each session and you can trace any answer back to its turn.
+
+## Deploying and Testing Chatbots
+
+### A FastAPI backend that streams turns
+
+Wrapping the chat in an endpoint keeps your API key on the server and lets the frontend stay dumb. This minimal app exposes one `/chat` route.
+
+```python
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI(title="Northwind Support Bot")
+
+class ChatRequest(BaseModel):
+    chat_id: str
+    message: str
+    product: str = "northwind-core"
+
+@app.post("/chat")
+def chat_endpoint(req: ChatRequest):
+    turn = chat_turn_filtered(req.chat_id, req.message, req.product)
+    return {
+        "answer": turn.summary,
+        "factual_consistency": turn.factual_consistency,
+        "citations": turn.citations,
+    }
+
+@app.post("/chat/start")
+def start_endpoint():
+    return {"chat_id": start_chat()}
+```
+
+Run it locally with `uvicorn app:app --reload` and hit `http://localhost:8000/docs` to try the routes from Swagger UI before you touch the frontend.
+
+### A React chat widget
+
+The frontend only needs two calls: start a session, then post each message. This component keeps the citations visible under every answer.
+
+```tsx
+import { useState } from "react";
+
+type Citation = { document_id: string; url?: string };
+
+export default function SupportChat() {
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<{ role: string; text: string; cites?: Citation[] }[]>([]);
+  const [input, setInput] = useState("");
+
+  async function start() {
+    const res = await fetch("http://localhost:8000/chat/start", { method: "POST" });
+    const data = await res.json();
+    setChatId(data.chat_id);
+  }
+
+  async function send() {
+    if (!chatId || !input.trim()) return;
+    const res = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, message: input }),
+    });
+    const data = await res.json();
+    setMessages((m) => [...m, { role: "user", text: input }, { role: "bot", text: data.answer, cites: data.citations }]);
+    setInput("");
+  }
+
+  return (
+    <div className="chat">
+      {!chatId && <button onClick={start}>Start chat</button>}
+      <div className="log">
+        {messages.map((m, i) => (
+          <p key={i} className={m.role}><strong>{m.role}:</strong> {m.text}</p>
+        ))}
+      </div>
+      <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask about your account..." />
+      <button onClick={send}>Send</button>
+    </div>
+  );
+}
+```
+
+### Test checklist before you record the demo
+
+Run these every time; they catch the failures that embarrass you on stage:
+
+- **Grounding** — ask a question whose answer is *not* in the corpus and confirm the bot declines or scores low.
+- **Memory** — ask a follow-up with a pronoun ("what about that plan?") and confirm it resolves.
+- **Filtering** — ask a core question while filtered to enterprise and confirm it does not leak enterprise steps.
+- **Citations** — confirm every answer renders at least one clickable source.
+- **Failure mode** — kill the backend mid-conversation and confirm the UI shows an error, not a blank screen.
+
+### Deploy notes for a weekend
+
+Deploy the FastAPI app to any container host (Render, Railway, Fly.io) and the React widget to any static host. Keep `VECTARA_API_KEY` in the host's secret manager, never in the bundle. Point the frontend at the deployed `/chat` URL and you have a shareable link — which is exactly what hackathon judges want to click.
+
+## Conclusion and Tips for Hackathon Participants
+
+We went from an empty corpus to a grounded, citation-backed, metadata-filtered support bot with a real frontend and a test pass. The pattern — **ingest, ground, filter, guardrail, ship** — transfers to almost any RAG demo you can imagine.
+
+### Use-case blueprints you can steal
+
+- **Legal intake** — ingest practice templates, filter by jurisdiction, cite the clause.
+- **Internal IT helpdesk** — ingest runbooks, hand off low-confidence questions to a human.
+- **E-commerce copilot** — ingest return policies per region, filter by `region` metadata.
+
+### Tips that separate real demos from fluff
+
+- Always show citations on screen. Trust is the product.
+- Use the factual consistency score as a visible "confidence" signal.
+- Keep one deterministic filter (product, region, plan) — it reads as rigor to a judge.
+- Read your chat history corpus after the demo and name the missing article out loud; it shows product thinking.
+
+Ship the boring, grounded version. It wins.
