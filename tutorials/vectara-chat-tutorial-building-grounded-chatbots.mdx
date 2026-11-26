@@ -1,0 +1,259 @@
+---
+title: "Vectara Chat Tutorial: Building Grounded Chatbots for AI Hackathons"
+description: "Build grounded AI hackathon chatbots with Vectara Chat. Step-by-step Python and Streamlit guide covering multi-turn memory, citations, and guardrails."
+image: "https://imagedelivery.net/K11gkZF3xaVyYzFESMdWIQ/1f01d403-aa8b-43fd-0a0f-e7f5ee3e8b00/public"
+authorUsername: "meer9374-a11y"
+---
+
+## Introduction to Vectara Chat
+
+In this tutorial I will show you how to build, tune, test, and deploy a multi-turn chatbot using **Vectara Chat**. Unlike stateless LLM wrappers where you have to wire together your own vector store, chunking logic, conversation history window, and citation formatting, Vectara Chat handles document retrieval, conversational memory, and source grounding in a single API call.
+
+Every reply is grounded in the documents uploaded to your Vectara **Corpus**, returns verifiable source passages, and tracks multi-turn context through a server-managed `conversationId`. For teams building [online AI hackathon projects](https://lablab.ai/event), that means you can spend your weekend on product UX and evaluation rather than debugging RAG plumbing.
+
+If you have not worked with Vectara's single-turn query API yet, read the [Vectara Beginner App Tutorial](https://lablab.ai/t/vectara-beginner-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-use-case) and the [Vectara Advanced App Tutorial](https://lablab.ai/t/vectara-advanced-app-tutorial-showcase-the-creation-of-vectara-app-in-legal-or-customer-support-use-case) first. This time I want to show you how to add stateful multi-turn conversation and hallucination guardrails on top of a corpus.
+
+## Getting Started with Vectara Chat
+
+### Create a Corpus and API Key
+
+1. Sign in to the [Vectara Console](https://console.vectara.com/).
+2. Create a corpus (for example, `hackathon-docs`) and note your **Customer ID** and **Corpus ID**.
+3. Upload two or three PDF or Markdown documents under the **Data** tab.
+4. Open **Access Control -> API Keys**, generate a key with **QueryService** permissions, and store it locally.
+
+### Set Up Your Python Environment
+
+Create a virtual environment and install the packages needed for the client and Streamlit frontend:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install requests python-dotenv streamlit pytest
+```
+
+Save your credentials in a `.env` file at the project root:
+
+```env
+VECTARA_API_KEY=your_api_key_here
+VECTARA_CUSTOMER_ID=your_customer_id_here
+VECTARA_CORPUS_ID=1
+```
+
+## Building a Chatbot with Vectara
+
+### Implement a Multi-Turn Python Client
+
+Create `vectara_chat.py` to wrap the `/v1/query` endpoint with `chat.store = True`. On the first turn, omit `conversationId` so Vectara initializes a session. Passing the returned `conversationId` on later turns resolves follow-up references automatically.
+
+```python
+import os
+from typing import Any
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+class VectaraChatClient:
+    BASE_URL = "https://api.vectara.io/v1"
+
+    def __init__(self) -> None:
+        self.api_key = os.environ["VECTARA_API_KEY"]
+        self.customer_id = os.environ["VECTARA_CUSTOMER_ID"]
+        self.corpus_id = int(os.environ["VECTARA_CORPUS_ID"])
+        self.headers = {
+            "x-api-key": self.api_key,
+            "customer-id": self.customer_id,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
+    def ask(
+        self,
+        query: str,
+        conversation_id: str | None = None,
+        lambda_val: float = 0.025,
+        metadata_filter: str = "",
+        prompt_name: str = "vectara-summary-ext-v1.2.0",
+    ) -> dict[str, Any]:
+        chat_cfg: dict[str, Any] = {"store": True}
+        if conversation_id:
+            chat_cfg["conversationId"] = conversation_id
+
+        payload = {
+            "query": [
+                {
+                    "query": query,
+                    "start": 0,
+                    "numResults": 8,
+                    "contextConfig": {
+                        "sentencesBefore": 2,
+                        "sentencesAfter": 2,
+                    },
+                    "corpusKey": [
+                        {
+                            "customerId": int(self.customer_id),
+                            "corpusId": self.corpus_id,
+                            "metadataFilter": metadata_filter,
+                            "lexicalInterpolationConfig": {"lambda": lambda_val},
+                        }
+                    ],
+                    "summary": [
+                        {
+                            "maxSummarizedResults": 5,
+                            "responseLang": "eng",
+                            "summarizerPromptName": prompt_name,
+                            "chat": chat_cfg,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        resp = requests.post(
+            f"{self.BASE_URL}/query",
+            headers=self.headers,
+            json=payload,
+            timeout=30,
+        )
+        resp.raise_for_status()
+        response_set = resp.json()["responseSet"][0]
+        summary_block = response_set["summary"][0]
+
+        return {
+            "answer": summary_block.get("text", ""),
+            "conversation_id": summary_block.get("chat", {}).get("conversationId"),
+            "factual_consistency": summary_block.get("factualConsistency", {}).get("score"),
+            "sources": [
+                {
+                    "text": item["text"],
+                    "score": round(item["score"], 3),
+                    "doc_id": response_set["document"][item["documentIndex"]]["id"],
+                }
+                for item in response_set.get("response", [])[:3]
+            ],
+        }
+
+
+if __name__ == "__main__":
+    bot = VectaraChatClient()
+    active_conversation: str | None = None
+    print("Vectara Chat CLI ready. Type 'exit' to quit.\n")
+    while True:
+        user_input = input("You: ").strip()
+        if user_input.lower() in {"exit", "quit"}:
+            break
+        result = bot.ask(user_input, conversation_id=active_conversation)
+        active_conversation = result["conversation_id"]
+        print(f"\nBot (FCS={result['factual_consistency']}): {result['answer']}\n")
+```
+
+## Enhancing Chatbot Intelligence
+
+### Tune Hybrid Search and Metadata Filters
+
+Pure vector search occasionally misses exact SKUs, API error codes, or clause identifiers. Keeping `lambda_val` between `0.01` and `0.05` blends dense semantic matching with lexical keyword scoring.
+
+When your corpus mixes documents from multiple departments or product versions, attach document metadata at index time and pass an explicit filter expression such as `metadata_filter="doc.category = 'billing' and doc.version = 'v2'"`.
+
+### Add a Factual Consistency Guardrail
+
+Vectara includes a Factual Consistency Score (`factualConsistency.score`) on each generated summary. Wrapping `ask()` with a threshold check lets you flag low-confidence replies before users act on them:
+
+```python
+def ask_with_guardrail(
+    bot: VectaraChatClient,
+    query: str,
+    conversation_id: str | None = None,
+    min_fcs: float = 0.65,
+) -> dict[str, Any]:
+    result = bot.ask(query, conversation_id=conversation_id, lambda_val=0.03)
+    fcs = result.get("factual_consistency")
+    if fcs is not None and fcs < min_fcs:
+        result["answer"] = (
+            f"{result['answer']}\n\n"
+            f"Note: Grounding confidence is low ({fcs:.2f}). Check the cited passages below."
+        )
+    return result
+```
+
+## Deploying and Testing Chatbots
+
+### Build a Streamlit Web Interface
+
+Create `app.py` to expose multi-turn chat alongside expandable source citations:
+
+```python
+import streamlit as st
+from vectara_chat import VectaraChatClient
+
+st.set_page_config(page_title="Vectara Chat Assistant", page_icon="💬")
+st.title("Grounded Assistant with Vectara Chat")
+
+if "bot" not in st.session_state:
+    st.session_state.bot = VectaraChatClient()
+    st.session_state.conversation_id = None
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
+
+if prompt := st.chat_input("Ask a question about your uploaded docs..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        res = st.session_state.bot.ask(
+            prompt,
+            conversation_id=st.session_state.conversation_id,
+        )
+        st.session_state.conversation_id = res["conversation_id"]
+        st.markdown(res["answer"])
+        if res["factual_consistency"] is not None:
+            st.caption(f"Factual Consistency Score: {res['factual_consistency']:.2f}")
+        with st.expander("Cited sources"):
+            for src in res["sources"]:
+                st.caption(f"{src['doc_id']} (score {src['score']}): {src['text']}")
+
+    st.session_state.messages.append({"role": "assistant", "content": res["answer"]})
+```
+
+Launch locally with `streamlit run app.py`, or push the repository to GitHub and deploy on [Streamlit Community Cloud](https://streamlit.io/cloud) with your `.env` keys stored under **App Settings -> Secrets**.
+
+### Verify Multi-Turn Memory with Automated Tests
+
+Add `test_vectara_chat.py` to verify that follow-up turns preserve `conversation_id` and meet your factual consistency threshold:
+
+```python
+from vectara_chat import VectaraChatClient
+
+
+def test_multi_turn_retention() -> None:
+    bot = VectaraChatClient()
+    first = bot.ask("What is the standard refund window?")
+    assert first["conversation_id"], "Expected Vectara Chat to return a conversation_id"
+
+    second = bot.ask(
+        "Does that policy also cover annual plans?",
+        conversation_id=first["conversation_id"],
+    )
+    assert second["answer"], "Expected a grounded follow-up reply"
+    if second["factual_consistency"] is not None:
+        assert second["factual_consistency"] >= 0.5
+```
+
+Run the check with `pytest -q`.
+
+## Conclusion and Hackathon Tips
+
+You now have a working multi-turn Vectara Chat client, a factual consistency guardrail, a deployable Streamlit UI, and an automated retention test.
+
+### Strong Use Cases for Your Next AI Hackathon
+
+- **Policy and Compliance Copilot:** Index regulatory PDFs and surface both the exact cited clause and the Factual Consistency Score directly in the UI.
+- **Release-Scoped Support Bot:** Tag documentation by version (`doc.version = 'v2'`) so users never receive outdated instructions from deprecated releases.
+- **Cross-Lingual Research Assistant:** Query in English across corpora containing papers or manuals written in other languages while keeping follow-up context intact.
+- **Demo Tip:** Display the Factual Consistency Score badge next to every answer during your pitch so judges can see grounding behavior in real time.
